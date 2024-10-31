@@ -14,50 +14,192 @@ paths:
     post:
       tags:
         - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
       responses:
         "200":
-          description: ...
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/User"
+                  - type: object
+                    properties:
+                      email:
+                        type: string
+                        format: email
+        "404":
+          description: User not found
   /auth/register:
     post:
       tags:
         - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
       responses:
         "200":
-          description: ...
+          description: OK
   /auth/logout:
     delete:
       tags:
         - auth
       responses:
         "200":
-          description: ...
+          description: OK
+        "401":
+          description: Unauthorized
   /auth/forgot-password:
     post:
       tags:
         - auth
       responses:
         "200":
-          description: ...
+          description: OK
   /auth/reset-password:
     post:
       tags:
         - auth
       responses:
         "200":
-          description: ...
+          description: OK
+        "401":
+          description: Unauthorized
   /auth/verify-email:
     post:
       tags:
         - auth
       responses:
         "200":
-          description: ...
-  /profile/{username}:
+          description: OK
+        "401":
+          description: Unauthorized
+  /profile/@me:
+    patch:
+      tags:
+        - profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+    delete:
+      tags:
+        - profile
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+  /profile/@me/notifications:
+    get:
+      tags:
+        - profile
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+    post:
+      tags:
+        - profile
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+  /profile/@me/channels:
+    get:
+      tags:
+        - profile
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+    post:
+      tags:
+        - profile
+      requestBody:
+        content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recipient_id:
+                    type: integer
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+  /profile/@me/channels/{channel.id}/messages:
     get:
       tags:
         - profile
       parameters:
-        - name: username
+        - name: channel.id
+          in: path
+          description: Channel
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          description: Unauthorized
+    post:
+      tags:
+        - profile
+      parameters:
+        - name: channel.id
+          in: path
+          description: Channel
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+  /profile/{user.username}:
+    get:
+      tags:
+        - profile
+      parameters:
+        - name: user.username
           in: path
           description: Username
           required: true
@@ -65,9 +207,30 @@ paths:
             type: string
       responses:
         "200":
-          description: ...
-  /profile/{username}/like:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+  /profile/{user.username}/like:
     post:
+      tags:
+        - profile
+      parameters:
+        - name: user.username
+          in: path
+          description: Username
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+    delete:
       tags:
         - profile
       parameters:
@@ -79,30 +242,20 @@ paths:
             type: string
       responses:
         "200":
-          description: ...
+          description: OK
+        "401":
+          description: Unauthorized
 components:
   schemas:
     User:
       type: object
-      required:
-        - username
-        - email
-        - password
-        - first_name
-        - last_name
       properties:
         id:
           type: integer
+          readOnly: true
         username:
           type: string
-        email:
-          type: string
-          format: email
-        email_verified:
-          type: boolean
-          default: false
-        password:
-          type: string
+          readOnly: true
         first_name:
           type: string
           example: "John"
@@ -111,6 +264,7 @@ components:
           example: "Doe"
         age:
           type: integer
+          minimum: 18
         gender:
           type: string
           enum: ["M", "F", "O"]
@@ -124,19 +278,38 @@ components:
           items:
             type: string
             pattern: '^#[a-zA-Z]{1,25}$'
+          example: ["#cheese", "#geek"]
+        pictures:
+          type: array
+          items:
+            type: string
+            format: byte
+          minItems: 1
+          maxItems: 5
         localisation:
-          oneOf:
-            - type: string
-            - nullable: true
+          type: string
+          nullable: true
         premium:
           type: boolean
+          readOnly: true
         profile_verified:
           type: boolean
+          readOnly: true
         fame_rating:
           type: number
           format: float
+          default: 100
+          readOnly: true
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        content:
+          type: string
   securitySchemes:
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
