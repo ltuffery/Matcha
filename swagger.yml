@@ -1,0 +1,58 @@
+openapi: 3.0.3
+info:
+  title: Swagger Matcha - OpenAPI 3.0
+  version: 0.0.1
+servers:
+  - url: http://localhost:3000/api/
+tags:
+  - name: auth
+    description: Everything about your Pets
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: ...
+  /auth/register:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: ...
+  /auth/logout:
+    delete:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: ...
+  /auth/forgot-password:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: ...
+  /auth/reset-password:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: ...
+  /auth/verify-email:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: ...
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
