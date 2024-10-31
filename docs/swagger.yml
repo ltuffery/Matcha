@@ -6,7 +6,9 @@ servers:
   - url: http://localhost:3000/api/
 tags:
   - name: auth
-    description: Everything about your Pets
+    description: Auth routes
+  - name: profile
+    description: Profile routes
 paths:
   /auth/login:
     post:
@@ -50,7 +52,89 @@ paths:
       responses:
         "200":
           description: ...
+  /profile/{username}:
+    get:
+      tags:
+        - profile
+      parameters:
+        - name: username
+          in: path
+          description: Username
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ...
+  /profile/{username}/like:
+    post:
+      tags:
+        - profile
+      parameters:
+        - name: username
+          in: path
+          description: Username
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ...
 components:
+  schemas:
+    User:
+      type: object
+      required:
+        - username
+        - email
+        - password
+        - first_name
+        - last_name
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        email_verified:
+          type: boolean
+          default: false
+        password:
+          type: string
+        first_name:
+          type: string
+          example: "John"
+        last_name:
+          type: string
+          example: "Doe"
+        age:
+          type: integer
+        gender:
+          type: string
+          enum: ["M", "F", "O"]
+        sexual_preferences:
+          type: string
+          enum: ["A", "M", "F", "O"]
+        biography:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+            pattern: '^#[a-zA-Z]{1,25}$'
+        localisation:
+          oneOf:
+            - type: string
+            - nullable: true
+        premium:
+          type: boolean
+        profile_verified:
+          type: boolean
+        fame_rating:
+          type: number
+          format: float
   securitySchemes:
     api_key:
       type: apiKey
