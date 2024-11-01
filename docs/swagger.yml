@@ -1,0 +1,373 @@
+openapi: 3.0.3
+info:
+  title: Swagger Matcha - OpenAPI 3.0
+  version: 0.0.1
+servers:
+  - url: http://localhost:3000/api/
+tags:
+  - name: auth
+    description: Auth routes
+  - name: profile
+    description: Profile routes
+  - name: notification
+    description: Notification routes
+  - name: chat
+    description: Chat routes
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+        "404":
+          description: User not found
+  /auth/register:
+    post:
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        "200":
+          description: OK
+  /auth/logout:
+    delete:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+  /auth/forgot-password:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: OK
+  /auth/reset-password:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+  /auth/verify-email:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+  /profile/@me:
+    patch:
+      tags:
+        - profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/User"
+                - type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+    delete:
+      tags:
+        - profile
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+  /profile/@me/dm:
+    get:
+      tags:
+        - chat
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DM"
+        "401":
+          description: Unauthorized
+  /profile/@me/dm/{user.id}/messages:
+    get:
+      tags:
+        - chat
+      parameters:
+        - name: channel.id
+          in: path
+          description: Channel
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+        "401":
+          description: Unauthorized
+    post:
+      tags:
+        - chat
+      parameters:
+        - name: channel.id
+          in: path
+          description: Channel
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+  /profile/{user.username}:
+    get:
+      tags:
+        - profile
+      parameters:
+        - name: user.username
+          in: path
+          description: Username
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+  /profile/{user.username}/like:
+    post:
+      tags:
+        - profile
+      parameters:
+        - name: user.username
+          in: path
+          description: Username
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+    delete:
+      tags:
+        - profile
+      parameters:
+        - name: username
+          in: path
+          description: Username
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+  /profile/@me/notifications:
+    get:
+      tags:
+        - notification
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+                maxItems: 20
+        "401":
+          description: Unauthorized
+  /profile/@me/notifications/{notification.id}/view:
+    post:
+      tags:
+        - notification
+      parameters:
+        - name: notification.id
+          in: path
+          description: Notification ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+        "401":
+          description: Unauthorized
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        first_name:
+          type: string
+          example: "John"
+        last_name:
+          type: string
+          example: "Doe"
+        age:
+          type: integer
+          minimum: 18
+        gender:
+          type: string
+          enum: ["M", "F", "O"]
+        sexual_preferences:
+          type: string
+          enum: ["A", "M", "F", "O"]
+        biography:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+            pattern: '^#[a-zA-Z]{1,25}$'
+          example: ["#cheese", "#geek"]
+        pictures:
+          type: array
+          items:
+            type: string
+            format: byte
+          minItems: 1
+          maxItems: 5
+        localisation:
+          type: string
+          nullable: true
+        premium:
+          type: boolean
+          readOnly: true
+        profile_verified:
+          type: boolean
+          readOnly: true
+        fame_rating:
+          type: number
+          format: float
+          default: 100
+          readOnly: true
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        content:
+          type: string
+        sender_id:
+          type: integer
+        recever_id:
+          type: integer
+    Notification:
+      type: object
+      required:
+        - type
+        - issued_by
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          type: string
+          enum:
+            - LIKE
+            - UNLIKE
+            - MATCH
+            - VIEWED
+            - MESSAGE
+        viewed:
+          type: boolean
+          default: false
+          readOnly: true
+        issued_by:
+          type: integer
+        created_at:
+          type: integer
+          format: int64
+          readOnly: true
+    DM:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        last_message:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
