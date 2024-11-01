@@ -9,6 +9,10 @@ tags:
     description: Auth routes
   - name: profile
     description: Profile routes
+  - name: notification
+    description: Notification routes
+  - name: chat
+    description: Chat routes
 paths:
   /auth/login:
     post:
@@ -31,13 +35,12 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: "#/components/schemas/User"
-                  - type: object
-                    properties:
-                      email:
-                        type: string
-                        format: email
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
         "404":
           description: User not found
   /auth/register:
@@ -103,7 +106,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              allOf:
+                - $ref: "#/components/schemas/User"
+                - type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
       responses:
         "200":
           description: OK
@@ -117,52 +126,25 @@ paths:
           description: OK
         "401":
           description: Unauthorized
-  /profile/@me/notifications:
+  /profile/@me/dm:
     get:
       tags:
-        - profile
+        - chat
       responses:
         "200":
           description: OK
-        "401":
-          description: Unauthorized
-    post:
-      tags:
-        - profile
-      responses:
-        "200":
-          description: OK
-        "401":
-          description: Unauthorized
-  /profile/@me/channels:
-    get:
-      tags:
-        - profile
-      responses:
-        "200":
-          description: OK
-        "401":
-          description: Unauthorized
-    post:
-      tags:
-        - profile
-      requestBody:
-        content:
+          content:
             application/json:
               schema:
-                type: object
-                properties:
-                  recipient_id:
-                    type: integer
-      responses:
-        "200":
-          description: OK
+                type: array
+                items:
+                  $ref: "#/components/schemas/DM"
         "401":
           description: Unauthorized
-  /profile/@me/channels/{channel.id}/messages:
+  /profile/@me/dm/{user.id}/messages:
     get:
       tags:
-        - profile
+        - chat
       parameters:
         - name: channel.id
           in: path
@@ -176,12 +158,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Message"
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
         "401":
           description: Unauthorized
     post:
       tags:
-        - profile
+        - chat
       parameters:
         - name: channel.id
           in: path
@@ -243,6 +227,42 @@ paths:
       responses:
         "200":
           description: OK
+        "401":
+          description: Unauthorized
+  /profile/@me/notifications:
+    get:
+      tags:
+        - notification
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+                maxItems: 20
+        "401":
+          description: Unauthorized
+  /profile/@me/notifications/{notification.id}/view:
+    post:
+      tags:
+        - notification
+      parameters:
+        - name: notification.id
+          in: path
+          description: Notification ID
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
         "401":
           description: Unauthorized
 components:
@@ -307,6 +327,44 @@ components:
           type: integer
           readOnly: true
         content:
+          type: string
+        sender_id:
+          type: integer
+        recever_id:
+          type: integer
+    Notification:
+      type: object
+      required:
+        - type
+        - issued_by
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          type: string
+          enum:
+            - LIKE
+            - UNLIKE
+            - MATCH
+            - VIEWED
+            - MESSAGE
+        viewed:
+          type: boolean
+          default: false
+          readOnly: true
+        issued_by:
+          type: integer
+        created_at:
+          type: integer
+          format: int64
+          readOnly: true
+    DM:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        last_message:
           type: string
   securitySchemes:
     bearerAuth:
