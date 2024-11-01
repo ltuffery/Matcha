@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    volumes:
+      - db:/var/lib/postgresql/data
+    expose:
+      - '5432'
+    networks:
+      - matchaNetwork
+    env_file:
+      - ./.env
+
+  node-app:
+    build:
+      context: ./
+    container_name: node-app
+    image: node-app
+    restart: always
+    volumes:
+      - app:/app
+    ports:
+      - 4212:4212
+    networks:
+      - matchaNetwork
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+
+volumes:
+  app:
+    name: app
+  db:
+    name: db
+
+networks:
+  matchaNetwork:
+    driver: bridge
+    name: matchaNetwork
