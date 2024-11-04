@@ -51,6 +51,14 @@ services:
       - matchaNetwork
     depends_on:
       - mysql
+  
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    expose:
+      - "1025"
+    ports:
+      - 8025:8025
 
 volumes:
   api:
