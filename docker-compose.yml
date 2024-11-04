@@ -1,10 +1,10 @@
 services:
-  postgres:
-    image: postgres:latest
+  mysql:
+    image: mysql:latest
     container_name: postgres
     restart: always
     volumes:
-      - db:/var/lib/postgresql/data
+      - db:/var/lib/mysql/data
     expose:
       - '5432'
     networks:
@@ -12,26 +12,60 @@ services:
     env_file:
       - ./.env
 
-  node-app:
+  api:
     build:
-      context: ./
-    container_name: node-app
-    image: node-app
+      context: ./api/
+    container_name: api
+    image: api
     restart: always
     volumes:
-      - app:/app
+      - api:/app
     ports:
-      - 4212:4212
+      - 3000:3000
     networks:
       - matchaNetwork
     depends_on:
-      - postgres
+      - mysql
     env_file:
-      - ./.env
+      - ./api/.env
+
+  websocket:
+    build:
+      context: ./websocket/
+    container_name: websocket
+    image: websocket
+    restart: always
+    volumes:
+      - api:/app
+    ports:
+      - 3001:3001
+    networks:
+      - matchaNetwork
+    depends_on:
+      - mysql
+    env_file:
+      - ./websocket/.env
+
+  frontend:
+    build:
+      context: ./frontend/
+    container_name: frontend
+    image: frontend
+    restart: always
+    volumes:
+      - api:/app
+    ports:
+      - 3002:3002
+    networks:
+      - matchaNetwork
+    depends_on:
+      - mysql
+    env_file:
+      - ./frontend/.env
 
 volumes:
-  app:
-    name: app
+  api:
+    name: api
   db:
     name: db
 
