@@ -1,9 +1,13 @@
-FROM node:22.11
-
+# étape de build
+FROM node:lts-alpine as build-stage
 WORKDIR /app
-
-COPY . .
-
+COPY package*.json ./
 RUN npm install
+COPY . .
+RUN npm run build
 
-CMD ["npm", "run", "dev"]
+# étape de production
+FROM nginx:stable-alpine as production-stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
