@@ -23,8 +23,6 @@ services:
       - matchaNetwork
     depends_on:
       - mysql
-    env_file:
-      - ./api/.env
 
   websocket:
     build:
@@ -38,8 +36,6 @@ services:
       - matchaNetwork
     depends_on:
       - mysql
-    env_file:
-      - ./websocket/.env
 
   frontend:
     build:
@@ -53,8 +49,6 @@ services:
       - matchaNetwork
     depends_on:
       - mysql
-    env_file:
-      - ./frontend/.env
 
 volumes:
   api:
