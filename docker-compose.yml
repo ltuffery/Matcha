@@ -17,8 +17,8 @@ services:
     container_name: api
     volumes:
       - api:/api
-    ports:
-      - 3000:3000
+    expose:
+      - '3000'
     networks:
       - matchaNetwork
     depends_on:
@@ -30,8 +30,8 @@ services:
     container_name: websocket
     volumes:
       - websocket:/app
-    ports:
-      - 3001:3001
+    expose:
+      - '3001'
     networks:
       - matchaNetwork
     depends_on:
@@ -43,8 +43,10 @@ services:
     container_name: frontend
     volumes:
       - frontend:/app
+    expose:
+      - '1212'
     ports:
-      - 8080:80
+      - 1212:1212
     networks:
       - matchaNetwork
     depends_on:
