@@ -2,6 +2,7 @@ services:
   mysql:
     image: mysql:latest
     container_name: mysql
+    restart: always
     volumes:
       - db:/var/lib/mysql
     expose:
@@ -15,6 +16,7 @@ services:
     build:
       context: ./api/
     container_name: api
+    restart: always
     volumes:
       - api:/api
     expose:
@@ -28,6 +30,7 @@ services:
     build:
       context: ./websocket/
     container_name: websocket
+    restart: always
     volumes:
       - websocket:/app
     expose:
@@ -41,6 +44,7 @@ services:
     build:
       context: ./frontend/
     container_name: frontend
+    restart: always
     volumes:
       - frontend:/app
     expose:
@@ -53,12 +57,27 @@ services:
       - mysql
 
 volumes:
-  api:
-    name: api
-  websocket:
-    name: websocket
   frontend:
+    driver: local
     name: frontend
+    driver_opts:
+      o: bind
+      type: none
+      device: ./frontend
+  websocket:
+    driver: local
+    name: websocket
+    driver_opts:
+      o: bind
+      type: none
+      device: ./websocket
+  api:
+    driver: local
+    name: api
+    driver_opts:
+      o: bind
+      type: none
+      device: ./api
   db:
     name: db
 
