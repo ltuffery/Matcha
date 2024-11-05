@@ -1,0 +1,68 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    volumes:
+      - db:/var/lib/mysql
+    expose:
+      - '5432'
+    networks:
+      - matchaNetwork
+    env_file:
+      - ./.env
+
+  api:
+    build:
+      context: ./api/
+    container_name: api
+    volumes:
+      - api:/api
+    expose:
+      - '3000'
+    networks:
+      - matchaNetwork
+    depends_on:
+      - mysql
+
+  websocket:
+    build:
+      context: ./websocket/
+    container_name: websocket
+    volumes:
+      - websocket:/app
+    expose:
+      - '3001'
+    networks:
+      - matchaNetwork
+    depends_on:
+      - mysql
+
+  frontend:
+    build:
+      context: ./frontend/
+    container_name: frontend
+    volumes:
+      - frontend:/app
+    expose:
+      - '1212'
+    ports:
+      - 1212:1212
+    networks:
+      - matchaNetwork
+    depends_on:
+      - mysql
+
+volumes:
+  api:
+    name: api
+  websocket:
+    name: websocket
+  frontend:
+    name: frontend
+  db:
+    name: db
+
+networks:
+  matchaNetwork:
+    driver: bridge
+    name: matchaNetwork
