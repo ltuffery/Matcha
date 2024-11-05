@@ -1,9 +1,5 @@
 FROM node:22.11
 
 WORKDIR /app
-
-COPY . .
-
-RUN npm install
-
-CMD ["npm", "run", "dev"]
+COPY --chmod=777 ./entrypoint_docker.sh .
+ENTRYPOINT ["sh", "entrypoint_docker.sh"]

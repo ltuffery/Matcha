@@ -148,3 +148,6 @@ dist-ssr
 *.sw?
 
 *.tsbuildinfo
+
+# api cache
+__pycache__
