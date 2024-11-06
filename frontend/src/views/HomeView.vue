@@ -2,7 +2,9 @@
 function createUserAccount(e) {
   e.preventDefault();
 
-  fetch("http://localhost:3000/", { mode: 'no-cors'}).then(res => console.log(res))
+  fetch("http://localhost:3000/")
+    .then(res => res.json())
+    .then(console.log)
 }
 </script>
 
