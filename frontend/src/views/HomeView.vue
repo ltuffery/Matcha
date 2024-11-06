@@ -1,4 +1,9 @@
 <script setup>
+function createUserAccount(e) {
+  e.preventDefault();
+
+  fetch("http://localhost:3000/", { mode: 'no-cors'}).then(res => console.log(res))
+}
 </script>
 
 <template>
@@ -10,7 +15,7 @@
           <a role="tab" class="tab tab-active">Register</a>
         </div>
         <h3 class="text-3xl font-bold my-5">Register !</h3>
-        <form>
+        <form @submit="createUserAccount">
           <div class="form-control">
             <label class="label">
               <span class="label-text">Username</span>
@@ -30,7 +35,7 @@
             <input type="password" placeholder="password" class="input input-bordered" required />
           </div>
           <div class="form-control mt-6">
-            <button class="btn btn-primary">Register</button>
+            <button class="btn btn-primary" type="submit">Register</button>
           </div>
         </form>
       </div>

@@ -19,8 +19,8 @@ services:
     restart: always
     volumes:
       - api:/api
-    expose:
-      - '3000'
+    ports:
+      - 3000:3000
     networks:
       - matchaNetwork
     depends_on:
