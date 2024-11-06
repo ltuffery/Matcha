@@ -57,8 +57,6 @@ services:
       - matchaNetwork
     depends_on:
       - mysql
-    env_file:
-      - ./frontend/.env
 
 volumes:
   frontend:
