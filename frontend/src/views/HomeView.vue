@@ -2,7 +2,8 @@
 function createUserAccount(e) {
   e.preventDefault();
 
-  fetch("http://localhost:3000/", { mode: 'no-cors'}).then(res => console.log(res))
+  fetch(import.meta.env.VITE_APP_API_URL, { mode: 'no-cors'})
+    .then(res => console.log(res))
 }
 </script>
 
