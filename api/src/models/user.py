@@ -7,20 +7,20 @@ class UserModel:
     @classmethod
     def from_dict(cls, data: dict):
         try:
-            name = data["name"]
+            username = data["username"]
             password = data["password"]
             email = data["email"]
         except KeyError as e:
             raise ValueError(f"Missing field: {e}")
 
-        if not isinstance(name, str) or not name:
+        if not isinstance(username, str) or not username:
             raise ValueError("Username must be a non-empty string")
         if not isinstance(password, str) or not password:
             raise ValueError("Password must be a non-empty string")
         if email and (not isinstance(email, str) or "@" not in email):
             raise ValueError("Invalid email format")
         
-        return cls(name, email, password)
+        return cls(username, email, password)
 
     def to_dict(self):
         return {"username": self.username, "email": self.email}
