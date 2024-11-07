@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .migrate import apply_migration
 from .models.user import UserModel
 import json
+import mysql.connector
 
 app = FastAPI()
 
@@ -31,6 +32,11 @@ async def user_register(request: Request):
     try:
         body = await request.json()
         user = UserModel.from_dict(body)
+        try:
+            user.save()
+        except mysql.connector.IntegrityError as err:
+            return {"status": "error", "code": 1, "message": "field exist"}
+
         return {"status": "success", "user": user.to_dict()}
     except (json.JSONDecodeError, ValueError) as e:
         raise HTTPException(status_code=400, detail=str(e))

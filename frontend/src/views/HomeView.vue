@@ -6,12 +6,6 @@ let username = ref(''), email = ref(''), password = ref('')
 function createUserAccount(e) {
   e.preventDefault();
 
-  console.log(JSON.stringify({
-      username: username.value,
-      email: email.value,
-      password: password.value,
-    }))
-
   fetch("http://localhost:3000/auth/register", {
     method: 'POST',
     headers: {

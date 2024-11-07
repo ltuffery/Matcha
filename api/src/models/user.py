@@ -1,7 +1,16 @@
+import os
+import mysql.connector
+import bcrypt
+
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 class UserModel:
     def __init__(self, username: str, email: str, password: str):
         self.username = username
-        self.password = password
+        self.password = bcrypt.hashpw(password, bcrypt.gensalt())
         self.email = email
 
     @classmethod
@@ -24,3 +33,18 @@ class UserModel:
 
     def to_dict(self):
         return {"username": self.username, "email": self.email}
+
+    def save(self):
+        db = mysql.connector.connect(
+                host="mysql",
+                user=os.environ["MYSQL_USER"],
+                password=os.environ["MYSQL_PASSWORD"],
+                database=os.environ["MYSQL_DATABASE"]
+            )
+        sql = "INSERT INTO users (`username`, `email`, `password`) VALUES (%s, %s, %s)"
+
+        cursor = db.cursor()
+        cursor.execute(sql, (self.username, self.email, self.password))
+        db.commit()
+        cursor.close()
+        db.close()
