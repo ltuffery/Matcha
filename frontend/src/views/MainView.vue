@@ -63,9 +63,9 @@ import MainUser from '../components/MainUser.vue'
 <template>
 
  <main class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200">
-    <div class="card bg-base-100 h-screen w-full max-w-lg shrink-0 shadow-2xl">
+    <div class="card bg-base-100  w-full max-w-lg shrink-0 shadow-2xl">
 
-  <div class="carousel w-full h-screen">
+  <div class="carousel w-full h-screen rounded-lg">
     <swiper
       :direction="'vertical'"
       :slides-per-view="1"
@@ -77,7 +77,7 @@ import MainUser from '../components/MainUser.vue'
     >
       <!-- Div différente pour chaque slide -->
       <swiper-slide v-for="(content, index) in sections" :key="index" class="flex items-center justify-center h-full bg-gray-100">
-        <div class="bg-white rounded-lg shadow-lg text-center max-w-lg">
+        <div class="bg-white shadow-lg text-center max-w-lg">
           <component :is="MainUser" :name="content" />
         </div>
       </swiper-slide>
@@ -114,5 +114,6 @@ export default {
 /* Style additionnel pour ajuster la taille si nécessaire */
 .carousel {
   height: 100vh; /* Pour que chaque slide prenne toute la hauteur de l'écran */
+  max-height: 70rem;
 }
 </style>
