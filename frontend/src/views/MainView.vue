@@ -1,62 +1,26 @@
-<!-- <template>
-  <main class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200">
-    <div class="card bg-base-100 h-screen w-full max-w-lg shrink-0 shadow-2xl">
-      coucou
-    </div>
-  </main>
-</template> -->
-
-
-
-
-
-
-
-<!-- <template>
-  <div class="carousel w-full">
-    <swiper
-      :slides-per-view="1"
-      :space-between="10"
-      :loop="true"
-      :pagination="{ clickable: true }"
-      class="w-full h-64 bg-gray-200 rounded-lg shadow-md"
-    >
-      <swiper-slide v-for="(image, index) in images" :key="index">
-        <img :src="image" alt="Slide image" class="w-full h-full object-cover rounded-lg" />
-      </swiper-slide>
-
-      <div class="swiper-pagination"></div>
-    </swiper>
-  </div>
-</template>
-
-<script>
-import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/swiper-bundle.css"; // Import Swiper styles
-
-export default {
-  components: {
-    Swiper,
-    SwiperSlide,
-  },
-  data() {
-    return {
-      images: [
-        "https://via.placeholder.com/600x400?text=Image+1",
-        "https://via.placeholder.com/600x400?text=Image+2",
-        "https://via.placeholder.com/600x400?text=Image+3",
-      ],
-    };
-  },
-};
-</script> -->
-
-
-
-
-
 <script setup>
-import MainUser from '../components/MainUser.vue'
+import MainUser from '../components/MainUser.vue';
+import { ref } from 'vue';
+import { Swiper, SwiperSlide } from "swiper/vue";
+import "swiper/swiper-bundle.css";
+
+// Créer une référence pour accéder aux méthodes de Swiper
+const swiperRef = ref(null);
+const swiperInstance = ref(null); // Définir swiperInstance comme une référence Vue
+
+// Fonction pour initialiser swiperInstance lorsqu'il est prêt
+const onSwiperInit = (swiper) => {
+  swiperInstance.value = swiper; // Stocker l'instance Swiper dans swiperInstance
+};
+
+// Fonction pour aller au slide suivant
+const goToNextSlide = () => {
+  if (swiperInstance.value) { // Accéder à l'instance via swiperInstance.value
+    swiperInstance.value.slideNext(); // Passe au slide suivant
+  } else {
+    console.log("Swiper instance n'est pas encore prête.");
+  }
+};
 </script>
 
 
@@ -67,6 +31,7 @@ import MainUser from '../components/MainUser.vue'
 
   <div class="carousel w-full h-screen rounded-lg">
     <swiper
+      ref="swiperRef"
       :direction="'vertical'"
       :slides-per-view="1"
       :space-between="10"
@@ -74,11 +39,12 @@ import MainUser from '../components/MainUser.vue'
       :pagination="{ clickable: true }"
       :watchOverflow="true"
       class="w-full h-full"
+      @swiper="onSwiperInit"
     >
       <!-- Div différente pour chaque slide -->
       <swiper-slide v-for="(content, index) in sections" :key="index" class="flex items-center justify-center h-full bg-gray-100">
-        <div class="bg-white shadow-lg text-center max-w-lg">
-          <component :is="MainUser" :name="content" />
+        <div class="bg-base-200 shadow-lg text-center max-w-lg">
+          <component :is="MainUser" @nextSlide="goToNextSlide" :name="content" />
         </div>
       </swiper-slide>
 
@@ -91,8 +57,8 @@ import MainUser from '../components/MainUser.vue'
 </template>
 
 <script>
-import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/swiper-bundle.css";
+// import { Swiper, SwiperSlide } from "swiper/vue";
+// import "swiper/swiper-bundle.css";
 
 export default {
   components: {

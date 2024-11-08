@@ -17,17 +17,20 @@
     <div class="absolute left-0 bottom-0 w-full text-black bg-neutral-content/40 flex flex-col items-start z-20">
       <div class="m-2">
         <div class="flex items-center">
-          <span class="text-4xl whitespace-nowrap overflow-hidden">Display Name</span>
+          <span class="text-4xl whitespace-nowrap overflow-hidden">{{name}}</span>
           <img src="../images/checked.png" alt="profile verified" class="size-7 mx-2" />
         </div>
-        <p class="truncate whitespace-nowrap overflow-hidden text-ellipsis text-sm mt-1">Mini bio en non wrap</p>
+        <p class="truncate whitespace-nowrap overflow-hidden text-ellipsis text-sm mt-1">Mini bio en non wrap sdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfdssdfsdfsdfsdfsdfsdfsdfsdfdsfsdfsdfsdfsdfsdfdsf</p>
       </div>
     </div>
     <div class="absolute right-0 bottom-20 text-black m-2 z-20">
-      <img :src="isLiked ? '/src/images/heart-broken.svg' : '/src/images/heart.svg'" @click="dislike" alt="like btn" class="size-10 my-2" />
+      <img :src="isLiked ? '/src/images/heart-broken.svg' : '/src/images/heart.svg'" @click="btnlike" alt="like btn" class="size-10 my-2" />
       <!-- <img src="../images/user.svg" alt="like btn" class="size-10 my-2" /> -->
       <img src="../images/double-arrow-up.svg" alt="like btn" class="size-10 my-2" />
     </div>
+    <!-- <div class="absolute inset-x-1/2 inset-y-1/2 z-20"> -->
+      <img src="../images/heart.svg" class="absolute inset-x-1/2 inset-y-1/2 z-20 size-10" :class="[scaleClass]"/>
+    <!-- </div> -->
   </div>
 </template>
 
@@ -47,6 +50,12 @@ export default {
   directives: {
     doubleTap, // Enregistrement de la directive
   },
+  computed: {
+    // Renvoie la classe CSS dynamique en fonction de l'état
+    scaleClass() {
+      return this.animated ? 'scale-[300] transition-transform duration-500' : 'scale-100';
+    }
+  },
   data() {
     return {
       images: [
@@ -55,16 +64,25 @@ export default {
         "https://via.placeholder.com/600x400?text=Image+3",
       ],
       isLiked: false,
+      animated: false,
     };
   },
   methods: {
     likeUser(event) {
       console.log("This user is liked: ", this.name);
       this.isLiked = true;
+      this.animated = !this.animated;
+      setTimeout(() => {
+        this.animated = false;
+        // this.$emit("nextSlide");
+      }, 500);
+      // this.$emit("nextSlide");
     },
-    dislike(event)
+    btnlike(event)
     {
-      this.isLiked = false;
+      this.isLiked = !this.isLiked;
+      if (this.isLiked)
+        this.$emit("nextSlide");
     }
   },
 };
