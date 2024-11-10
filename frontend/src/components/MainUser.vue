@@ -25,18 +25,15 @@
     </div>
     <div class="absolute right-0 bottom-20 text-black m-2 z-20">
       <img :src="isLiked ? '/src/images/heart-broken.svg' : '/src/images/heart.svg'" @click="btnlike" alt="like btn" class="size-10 my-2" />
-      <!-- <img src="../images/user.svg" alt="like btn" class="size-10 my-2" /> -->
       <img src="../images/double-arrow-up.svg" alt="like btn" class="size-10 my-2" />
     </div>
-    <!-- <div class="absolute inset-x-1/2 inset-y-1/2 z-20"> -->
-      <img src="../images/heart.svg" class="absolute inset-x-1/2 inset-y-1/2 z-20 size-10" :class="[scaleClass]"/>
-    <!-- </div> -->
+    <img src="../images/heart.svg" class="absolute inset-x-1/2 inset-y-1/2 z-20 size-10 transition-transform duration-500" :class="[animated ? 'scale-[15] opacity-100' : 'scale-100 opacity-0']"/>
   </div>
 </template>
 
 <script>
 import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/swiper-bundle.css"; // Import Swiper styles
+import "swiper/swiper-bundle.css";
 import doubleTap from '../directives/doubleTap.js';
 
 export default {
@@ -48,13 +45,7 @@ export default {
     SwiperSlide,
   },
   directives: {
-    doubleTap, // Enregistrement de la directive
-  },
-  computed: {
-    // Renvoie la classe CSS dynamique en fonction de l'état
-    scaleClass() {
-      return this.animated ? 'scale-[300] transition-transform duration-500' : 'scale-100';
-    }
+    doubleTap,
   },
   data() {
     return {
@@ -71,12 +62,11 @@ export default {
     likeUser(event) {
       console.log("This user is liked: ", this.name);
       this.isLiked = true;
-      this.animated = !this.animated;
+      this.animated = true;
       setTimeout(() => {
         this.animated = false;
-        // this.$emit("nextSlide");
-      }, 500);
-      // this.$emit("nextSlide");
+        this.$emit("nextSlide");
+      }, 300);
     },
     btnlike(event)
     {

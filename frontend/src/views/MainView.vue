@@ -4,19 +4,17 @@ import { ref } from 'vue';
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/swiper-bundle.css";
 
-// Créer une référence pour accéder aux méthodes de Swiper
 const swiperRef = ref(null);
-const swiperInstance = ref(null); // Définir swiperInstance comme une référence Vue
+const swiperInstance = ref(null);
 
-// Fonction pour initialiser swiperInstance lorsqu'il est prêt
+
 const onSwiperInit = (swiper) => {
-  swiperInstance.value = swiper; // Stocker l'instance Swiper dans swiperInstance
+  swiperInstance.value = swiper;
 };
 
-// Fonction pour aller au slide suivant
 const goToNextSlide = () => {
-  if (swiperInstance.value) { // Accéder à l'instance via swiperInstance.value
-    swiperInstance.value.slideNext(); // Passe au slide suivant
+  if (swiperInstance.value) {
+    swiperInstance.value.slideNext();
   } else {
     console.log("Swiper instance n'est pas encore prête.");
   }
@@ -41,14 +39,12 @@ const goToNextSlide = () => {
       class="w-full h-full"
       @swiper="onSwiperInit"
     >
-      <!-- Div différente pour chaque slide -->
       <swiper-slide v-for="(content, index) in sections" :key="index" class="flex items-center justify-center h-full bg-gray-100">
         <div class="bg-base-200 shadow-lg text-center max-w-lg">
           <component :is="MainUser" @nextSlide="goToNextSlide" :name="content" />
         </div>
       </swiper-slide>
 
-      <!-- Pagination Swiper -->
       <div class="swiper-pagination"></div>
     </swiper>
   </div>
@@ -57,9 +53,6 @@ const goToNextSlide = () => {
 </template>
 
 <script>
-// import { Swiper, SwiperSlide } from "swiper/vue";
-// import "swiper/swiper-bundle.css";
-
 export default {
   components: {
     Swiper,
@@ -77,9 +70,8 @@ export default {
 };
 </script>
 <style>
-/* Style additionnel pour ajuster la taille si nécessaire */
 .carousel {
-  height: 100vh; /* Pour que chaque slide prenne toute la hauteur de l'écran */
+  height: 100vh;
   max-height: 70rem;
 }
 </style>
