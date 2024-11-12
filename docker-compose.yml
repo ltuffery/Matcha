@@ -10,7 +10,7 @@ services:
     env_file:
       - ./.env
     ports:
-      - "3005:3005"
+      - "3005:3306"
 
   api:
     build:
@@ -19,8 +19,8 @@ services:
     restart: always
     volumes:
       - api:/api
-    expose:
-      - '3000'
+    ports:
+      - 3000:3000
     networks:
       - matchaNetwork
     depends_on:
