@@ -4,7 +4,7 @@
       <div class="card-body">
         <Tabs>
           <Tab name="Login">
-            caca
+            <h3 class="text-3xl font-bold my-5">Login !</h3>
           </Tab>
           <Tab name="Register">
             <h3 class="text-3xl font-bold my-5">Register !</h3>
@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import RegisterFrom from "@/components/RegisterFrom.vue";
+import RegisterFrom from "@/components/RegisterForm.vue";
 import Tabs from "@/components/tabs/Tabs.vue";
 import Tab from "@/components/tabs/Tab.vue";
 </script>
