@@ -1,9 +1,9 @@
-FROM python:3.9
+FROM composer:latest
 
 WORKDIR /api
 
-COPY requirements.txt requirements.txt
+COPY composer.json composer.json
 
-RUN pip install --no-cache-dir --upgrade -r /api/requirements.txt
+RUN composer dump-autoload
 
-CMD ["fastapi", "run", "src/main.py", "--port", "3000"]
+CMD ["php", "-S", "0.0.0.0:3000", "-t", "public/"]
