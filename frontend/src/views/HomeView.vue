@@ -5,16 +5,13 @@
         <Tabs>
           <Tab name="Login">
             <h3 class="text-3xl font-bold my-5">Login !</h3>
+            <LoginForm />
           </Tab>
           <Tab name="Register">
             <h3 class="text-3xl font-bold my-5">Register !</h3>
             <RegisterFrom />
           </Tab>
         </Tabs>
-<!--        <div role="tablist" class="tabs tabs-boxed">-->
-<!--          <a role="tab" class="tab">Login</a>-->
-<!--          <a role="tab" class="tab tab-active">Register</a>-->
-<!--        </div>-->
       </div>
     </div>
   </main>
@@ -24,4 +21,5 @@
 import RegisterFrom from "@/components/RegisterForm.vue";
 import Tabs from "@/components/tabs/Tabs.vue";
 import Tab from "@/components/tabs/Tab.vue";
+import LoginForm from "@/components/LoginForm.vue";
 </script>
