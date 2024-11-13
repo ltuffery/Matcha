@@ -15,10 +15,11 @@ services:
   api:
     build:
       context: ./api/
+      dockerfile: Dockerfile
     container_name: api
     restart: always
     volumes:
-      - api:/api
+      - api:/app
     ports:
       - 3000:3000
     networks:

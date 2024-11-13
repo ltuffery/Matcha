@@ -1,9 +1,6 @@
-FROM composer:latest
+FROM composer:2.0
 
-WORKDIR /api
+WORKDIR /app
 
-COPY composer.json composer.json
-
-RUN composer dump-autoload
-
-CMD ["php", "-S", "0.0.0.0:3000", "-t", "public/"]
+COPY --chmod=777 ./entrypoint_docker.sh .
+ENTRYPOINT ["sh", "entrypoint_docker.sh"]
