@@ -11,4 +11,14 @@ class User extends Entity
     public string $password;
     public string $email;
     public int $created_at;
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'username' => $this->username,
+            'email' => $this->email,
+            'created_at' => $this->created_at,
+        ];
+    }
 }

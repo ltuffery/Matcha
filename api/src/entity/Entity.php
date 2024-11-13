@@ -4,10 +4,11 @@ namespace Matcha\Api\entity;
 
 use Exception;
 use Flight;
+use JsonSerializable;
 use PDO;
 use ReflectionClass;
 
-abstract class Entity
+abstract class Entity implements JsonSerializable
 {
 
     public static PDO|null $db = null;
