@@ -16,9 +16,10 @@ function createUserAccount(e) {
       email: email.value,
       password: password.value,
     }),
+    mode: "no-cors"
   })
-    .then(res => res.json())
     .then(console.log)
+    // .then(console.log)
 }
 </script>
 

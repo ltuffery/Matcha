@@ -7,6 +7,8 @@ use Flight;
 use JsonSerializable;
 use PDO;
 use ReflectionClass;
+use ReflectionException;
+use ReflectionProperty;
 
 abstract class Entity implements JsonSerializable
 {
@@ -28,7 +30,7 @@ abstract class Entity implements JsonSerializable
 
         $propsToImplode = [];
 
-        foreach ($class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
             $propertyName = $property->getName();
             $propsToImplode[] = '`' . $propertyName . '` = "' . $this->{$propertyName} . '"';
         }
@@ -52,20 +54,23 @@ abstract class Entity implements JsonSerializable
 
     /**
      *
+     * @param array $object
      * @return Entity
+     * @throws ReflectionException
      */
-    public static function morph(array $object) {
-        $class = new \ReflectionClass(get_called_class()); // this is static method that's why i use get_called_class
+    public static function morph(array $object): Entity
+    {
+        $class = new \ReflectionClass(get_called_class());
 
         $entity = $class->newInstance();
 
-        foreach($class->getProperties(\ReflectionProperty::PUBLIC) as $prop) {
+        foreach($class->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
             if (isset($object[$prop->getName()])) {
-                $prop->setValue($entity,$object[$prop->getName()]);
+                $prop->setValue($entity, $object[$prop->getName()]);
             }
         }
 
-        $entity->initialize(); // soft magic
+        $entity->initialize();
 
         return $entity;
     }
