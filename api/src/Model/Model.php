@@ -5,15 +5,12 @@ namespace Matcha\Api\Model;
 use Exception;
 use Flight;
 use JsonSerializable;
-use PDO;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 
 abstract class Model implements JsonSerializable
 {
-
-    public static PDO|null $db = null;
     protected string $table = '';
 
     /**
@@ -31,8 +28,15 @@ abstract class Model implements JsonSerializable
         $propsToImplode = [];
 
         foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            if (!$property->isInitialized($this)) {
+                continue;
+            }
+
             $propertyName = $property->getName();
-            $propsToImplode[] = '`' . $propertyName . '` = "' . $this->{$propertyName} . '"';
+
+            if ($propertyName != 'id') {
+                $propsToImplode[] = '`' . $propertyName . '` = "' . $this->{$propertyName} . '"';
+            }
         }
 
         $setClause = implode(',', $propsToImplode);
@@ -43,13 +47,14 @@ abstract class Model implements JsonSerializable
             $sqlQuery = 'INSERT INTO `' . $tableName . '` SET ' . $setClause . ', id = ' . $this->id;
         }
 
-        $result = self::$db->exec($sqlQuery);
+        return Flight::db()->exec($sqlQuery);
+    }
 
-        if (self::$db->errorCode()) {
-            throw new Exception(self::$db->errorInfo()[2]);
+    public function fill(array $data): void
+    {
+        foreach ($data as $key => $value) {
+            $this->{$key} = $value;
         }
-
-        return $result;
     }
 
     /**
@@ -75,11 +80,4 @@ abstract class Model implements JsonSerializable
         return $entity;
     }
 
-    public function __call($name, $arguments) {
-        self::$db = Flight::db();
-    }
-
-    public static function __callStatic($name, $arguments) {
-        self::$db = Flight::db();
-    }
 }

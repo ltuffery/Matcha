@@ -18,8 +18,8 @@ function createUserAccount(e) {
     }),
     mode: "no-cors"
   })
+    .then(res => res.json())
     .then(console.log)
-    // .then(console.log)
 }
 </script>
 

@@ -6,7 +6,7 @@ class User extends Model
 {
     protected string $table = 'users';
 
-    public int $id;
+    public int $id = 0;
     public string $username;
     public string $password;
     public string $email;

@@ -24,8 +24,6 @@ class AuthController
 
         if ($saved) {
             Flight::json(['success' => true], 201);
-        } else {
-            Flight::json(['success' => false], 500);
         }
     }
 }
