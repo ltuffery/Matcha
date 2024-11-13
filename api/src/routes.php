@@ -1,6 +1,6 @@
 <?php
 
-use Matcha\Api\controllers\AuthController;
+use Matcha\Api\Controllers\AuthController;
 
 Flight::route('GET /', function () {
     Flight::json([

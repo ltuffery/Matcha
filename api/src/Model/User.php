@@ -1,8 +1,8 @@
 <?php
 
-namespace Matcha\Api\entity;
+namespace Matcha\Api\Model;
 
-class User extends Entity
+class User extends Model
 {
     protected string $table = 'users';
 

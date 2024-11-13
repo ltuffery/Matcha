@@ -1,6 +1,6 @@
 <?php
 
-namespace Matcha\Api\entity;
+namespace Matcha\Api\Model;
 
 use Exception;
 use Flight;
@@ -10,7 +10,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 
-abstract class Entity implements JsonSerializable
+abstract class Model implements JsonSerializable
 {
 
     public static PDO|null $db = null;
@@ -55,10 +55,10 @@ abstract class Entity implements JsonSerializable
     /**
      *
      * @param array $object
-     * @return Entity
+     * @return Model
      * @throws ReflectionException
      */
-    public static function morph(array $object): Entity
+    public static function morph(array $object): Model
     {
         $class = new \ReflectionClass(get_called_class());
 

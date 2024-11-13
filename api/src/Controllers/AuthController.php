@@ -1,10 +1,10 @@
 <?php
 
-namespace Matcha\Api\controllers;
+namespace Matcha\Api\Controllers;
 
 use Exception;
 use Flight;
-use Matcha\Api\entity\User;
+use Matcha\Api\Model\User;
 
 class AuthController
 {
