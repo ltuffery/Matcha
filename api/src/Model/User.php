@@ -10,7 +10,7 @@ class User extends Model
     public string $username;
     public string $password;
     public string $email;
-    public int $created_at;
+    public int $created_at = 0;
 
     public function jsonSerialize(): array
     {
