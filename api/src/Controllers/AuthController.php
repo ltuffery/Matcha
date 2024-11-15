@@ -5,6 +5,7 @@ namespace Matcha\Api\Controllers;
 use Exception;
 use Flight;
 use Matcha\Api\Model\User;
+use Matcha\Api\Validator\Validator;
 
 class AuthController
 {
@@ -13,6 +14,12 @@ class AuthController
      */
     public function register(): void
     {
+        Validator::make([
+            'username' => 'required',
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
         $request = Flight::request();
 
         $user = new User();
