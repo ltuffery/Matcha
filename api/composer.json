@@ -1,5 +1,6 @@
 {
     "name": "matcha/api",
+    "version": "0.0.1",
     "require": {
         "flightphp/core": "^3.13",
         "ext-pdo": "*"

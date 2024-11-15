@@ -3,8 +3,12 @@
 use Matcha\Api\Controllers\AuthController;
 
 Flight::route('GET /', function () {
+    $content = file_get_contents(dirname(__DIR__) . '/composer.json');
+    $data = json_decode($content, true);
+
     Flight::json([
-        "version" => '0.1',
+        "version" => $data["version"],
+        "authors" => $data["authors"],
     ]);
 });
 

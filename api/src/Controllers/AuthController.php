@@ -22,6 +22,8 @@ class AuthController
 
         $saved = $user->save();
 
-        Flight::json(['success' => $saved], $saved ? 201 : 400);
+        Flight::json([
+            'success' => $saved,
+        ], $saved ? 201 : 400);
     }
 }
