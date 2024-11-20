@@ -15,7 +15,7 @@ class EmailValidator extends Validator
 
         if (isset(Flight::request()->data->{$this->field})) {
             return preg_match(
-                "^[\w-\.]+@([\w-]+\.)+[\w-]$",
+                "/^[\w\-\.]+@([\w\-]+\.)+[\w\-]+$/",
                 Flight::request()->data->{$this->field}
             );
         }
