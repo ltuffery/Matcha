@@ -3,7 +3,6 @@
 namespace Matcha\Api\Validator;
 
 use Flight;
-use flight\net\Request;
 
 abstract class Validator
 {
@@ -14,7 +13,7 @@ abstract class Validator
     public static function make(array $rules): void
     {
         foreach ($rules as $name => $value) {
-            $split = preg_split('|', $value);
+            $split = preg_split('/|/', $value);
 
             foreach ($split as $rule) {
                 if (isset(self::$rules[$rule])) {

@@ -29,6 +29,10 @@ function save_migration(PDO $db, $migrationName): void {
 
 function already_exists(PDO $db, string $migrationName): bool
 {
+    if (!migration_table_exist($db)) {
+        return false;
+    }
+
     $statement = $db->prepare("SELECT * FROM migrations WHERE migration = :migration_name");
     $statement->bindValue(':migration_name', $migrationName);
     $statement->execute();
