@@ -3,17 +3,19 @@
 namespace Matcha\Api\Validator;
 
 use Flight;
+use InvalidDataException;
 
 abstract class Validator
 {
     private static array $rules = [
         'required' => RequiredValidator::class,
+        'email' => EmailValidator::class,
     ];
 
     public static function make(array $rules): void
     {
         foreach ($rules as $name => $value) {
-            $split = preg_split('/|/', $value);
+            $split = explode("|", $value);
 
             foreach ($split as $rule) {
                 if (isset(self::$rules[$rule])) {
@@ -21,11 +23,7 @@ abstract class Validator
                     $class = new self::$rules[$rule];
 
                     if (!$class->validate($name)) {
-                        Flight::jsonHalt([
-                            'code' => $class->getCode(),
-                            'message' => $class->getMessage(),
-                        ], 400);
-                        return;
+                        throw new InvalidDataException($class->getCode(), $class->getMessage());
                     }
                 }
             }

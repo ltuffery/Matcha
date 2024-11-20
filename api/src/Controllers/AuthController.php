@@ -22,6 +22,8 @@ class AuthController
 
         $request = Flight::request();
 
+        var_dump(Flight::response());
+
         $user = new User();
         $user->username = $request->data->username;
         $user->email = $request->data->email;

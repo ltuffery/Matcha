@@ -1,10 +1,25 @@
 <?php
 
+include "Exceptions/InvalidDataException.php";
+
 Flight::register('db', PDO::class, [
     'mysql:host=mysql;dbname=' . $_ENV['MYSQL_DATABASE'],
     $_ENV['MYSQL_USER'],
     $_ENV['MYSQL_PASSWORD'],
 ]);
+
+Flight::map('error', function (Throwable $error) {
+    if ($error instanceof InvalidDataException) {
+        header("Content-Type: application/json; charset=utf-8", response_code: 400);
+
+        echo json_encode([
+            'message' => $error->getMessage(),
+            'code' => $error->getCode(),
+        ]);
+    } else {
+        echo $error->getTraceAsString();
+    }
+});
 
 Flight::before('start', function (array $params) {
     $request = Flight::request();
