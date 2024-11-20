@@ -130,19 +130,19 @@ abstract class Model implements JsonSerializable
      */
     public static function find($options = []): array
     {
-
         $result = [];
-
         $whereConditions = [];
+        $class = new ReflectionClass(get_called_class());
+        $table = $class->getDefaultProperties()['table'];
 
         if (!empty($options)) {
             foreach ($options as $key => $value) {
                 $whereConditions[] = '`'.$key.'` = "'.$value.'"';
             }
-            $whereClause = " WHERE ".implode(' AND ',$whereConditions);
+            $whereClause = " WHERE ".implode(' AND ', $whereConditions);
         }
 
-        $raw = self::db()->query("SELECT * FROM " . strtolower(get_called_class()) . $whereClause);
+        $raw = self::db()->query("SELECT * FROM " . $table->getValue() . $whereClause);
 
         if (self::db()->errorCode()) {
             throw new Exception(self::db()->errorInfo()[2]);
