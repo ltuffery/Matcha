@@ -1,0 +1,30 @@
+{
+    "name": "matcha/api",
+    "version": "0.0.1",
+    "require": {
+        "flightphp/core": "^3.13",
+        "ext-pdo": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Matcha\\Api\\": "src/"
+        },
+        "files": [
+            "src/config.php",
+            "src/routes.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "ltuffery",
+            "email": "123221865+ltuffery@users.noreply.github.com"
+        },
+        {
+            "name": "swotex",
+            "email": "33070724+swotex@users.noreply.github.com"
+        }
+    ]
+}

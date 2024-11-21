@@ -1,9 +1,14 @@
-FROM python:3.9
+FROM composer:2.0
 
-WORKDIR /api
+WORKDIR /app
 
-COPY requirements.txt requirements.txt
+RUN apk add --no-cache \
+    php8-pdo \
+    php8-pdo_mysql \
+    php8-mysqli \
+    mysql-client
 
-RUN pip install --no-cache-dir --upgrade -r /api/requirements.txt
+RUN docker-php-ext-install pdo pdo_mysql
 
-CMD ["fastapi", "run", "src/main.py", "--port", "3000"]
+COPY --chmod=777 ./entrypoint_docker.sh .
+ENTRYPOINT ["sh", "entrypoint_docker.sh"]
