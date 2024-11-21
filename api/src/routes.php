@@ -14,6 +14,8 @@ Flight::route('GET /', function () {
 
 Flight::group('/auth', function () {
     Flight::route('POST /register', [AuthController::class, 'register']);
+    Flight::route('POST /login', [AuthController::class, 'login']);
+
 });
 
 // 404 route
