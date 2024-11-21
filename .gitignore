@@ -151,3 +151,6 @@ dist-ssr
 
 # api cache
 __pycache__
+
+# Composer
+vendor
