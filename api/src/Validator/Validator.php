@@ -23,6 +23,12 @@ abstract class Validator
                     $class = new self::$rules[$rule];
 
                     if (!$class->validate($name)) {
+                        Flight::response()->clear();
+                        Flight::json([
+                            'code' => $class->getCode(),
+                            'message' => $class->getMessage(),
+                        ], 400);
+
                         throw new InvalidDataException($class->getCode(), $class->getMessage());
                     }
                 }

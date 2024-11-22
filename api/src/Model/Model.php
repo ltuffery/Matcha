@@ -113,46 +113,52 @@ abstract class Model implements JsonSerializable
 
         foreach($class->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
             if (isset($object[$prop->getName()])) {
-                $prop->setValue($entity, $object[$prop->getName()]);
+                $entity->{$prop->getName()} = $object[$prop->getName()];
             }
         }
-
-        $entity->initialize();
 
         return $entity;
     }
 
     /**
      *
-     * @return Model[]
+     * @return Model|null
      * @throws ReflectionException
      * @throws Exception
      */
-    public static function find($options = []): array
+    public static function find(array $options): Model|null
     {
-        $result = [];
-        $whereConditions = [];
+        $class = new ReflectionClass(get_called_class());
+        $table = $class->getDefaultProperties()['table'];
+        $where = array_map(function ($k) {
+            return $k . "=?";
+        }, array_keys($options));
+
+        $stmt = self::db()->prepare("SELECT * FROM " . $table . " WHERE " . implode(" AND ", $where));
+        $stmt->execute(array_values($options));
+
+        $result = $stmt->fetch();
+
+        if ($result == false) {
+            return null;
+        }
+
+        return self::morph($result);
+    }
+
+    /**
+     * Get all model
+     * 
+     * @return Model[]
+     * @throws ReflectionException
+     */
+    public static function all(): array
+    {
         $class = new ReflectionClass(get_called_class());
         $table = $class->getDefaultProperties()['table'];
 
-        if (!empty($options)) {
-            foreach ($options as $key => $value) {
-                $whereConditions[] = '`'.$key.'` = "'.$value.'"';
-            }
-            $whereClause = " WHERE ".implode(' AND ', $whereConditions);
-        }
-
-        $raw = self::db()->query("SELECT * FROM " . $table->getValue() . $whereClause);
-
-        if (self::db()->errorCode()) {
-            throw new Exception(self::db()->errorInfo()[2]);
-        }
-
-        foreach ($raw as $rawRow) {
-            $result[] = self::morph($rawRow);
-        }
-
-        return $result;
+        $stmt = self::db()->query("SELECT * FROM " . $table);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 }

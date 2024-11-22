@@ -23,8 +23,6 @@ class AuthController
 
         $request = Flight::request();
 
-        var_dump(Flight::response());
-
         $user = new User();
         $user->username = $request->data->username;
         $user->email = $request->data->email;
@@ -52,15 +50,13 @@ class AuthController
 
         $user = User::find([
             'username' => $request->data->username,
-        ])[0];
+        ]);
 
         if ($user == null) {
             Flight::json([
                 'success' => false,
             ]);
-        }
-
-        if (password_verify($request->data->password, $user->password)) {
+        } else if (password_verify($request->data->password, $user->password)) {
             Flight::json([
                 'success' => true,
             ]);
