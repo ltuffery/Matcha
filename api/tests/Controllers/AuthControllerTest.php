@@ -11,6 +11,7 @@ class AuthControllerTest extends TestCase
 
     protected function setUp(): void
     {
+        Flight::register('db', PDO::class, ['sqlite::memory:']);
         $this->controller = new AuthController();
     }
 
@@ -20,6 +21,22 @@ class AuthControllerTest extends TestCase
 
         try {
             $this->controller->register();
+        } catch (Exception $e) {
+            $body = Flight::response()->getBody();
+            $data = json_decode($body);
+
+            $this->assertEquals(1, $data->code);
+            $this->assertEquals("username is required", $data->message);
+            $this->assertEquals(400, Flight::response()->status());
+        }
+    }
+
+    public function testLoginWithNoData()
+    {
+        Flight::request()->data = new Collection();
+
+        try {
+            $this->controller->login();
         } catch (Exception $e) {
             $body = Flight::response()->getBody();
             $data = json_decode($body);

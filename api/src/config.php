@@ -12,12 +12,18 @@ Flight::map('error', function (Throwable $error) {
     if ($error instanceof InvalidDataException) {
         header("Content-Type: application/json; charset=utf-8", response_code: 400);
 
+        $data = json_decode(Flight::response()->getBody());
+
         echo json_encode([
-            'message' => $error->getMessage(),
-            'code' => $error->getCode(),
+            'message' => $data->message,
+            'code' => $data->code,
         ]);
     } else {
-        echo $error->getTraceAsString();
+        header("Content-Type: application/json; charset=utf-8", response_code: 500);
+
+        echo json_encode([
+            'message' => $error->getTraceAsString(),
+        ]);
     }
 });
 

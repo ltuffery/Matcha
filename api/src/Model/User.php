@@ -2,6 +2,9 @@
 
 namespace Matcha\Api\Model;
 
+/**
+ * @method static User find()
+ */
 class User extends Model
 {
     protected string $table = 'users';
@@ -10,7 +13,7 @@ class User extends Model
     public string $username;
     public string $password;
     public string $email;
-    public int $created_at;
+    public string $created_at;
 
     public function jsonSerialize(): array
     {
