@@ -8,25 +8,29 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['submit', 'changeStep'])
+
 let currentStep = ref(0)
+emit("changeStep", currentStep)
 
 function nextStep() {
   if (currentStep.value < props.totalSteps - 1) {
     currentStep.value++;
+    emit("changeStep", currentStep)
   }
 }
 
 function prevStep() {
   if (currentStep.value > 0) {
     currentStep.value--;
+    emit("changeStep", currentStep)
   }
 }
-
-const emit = defineEmits(['submit'])
 
 function submitForm() {
   currentStep.value++
   emit('submit');
+  emit("changeStep", currentStep)
 }
 </script>
 
