@@ -25,7 +25,7 @@ function handleChangeStep(n) {
 </script>
 
 <template>
-  <progress class="progress progress-primary fixed top-0 rounded-none" :value="step.value" :max="totalSteps"></progress>
+  <progress class="progress progress-primary fixed top-0 rounded-none" :value="step.value + 1" :max="totalSteps"></progress>
   <main class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200 px-2">
     <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
       <div class="card-body">
@@ -35,9 +35,23 @@ function handleChangeStep(n) {
             <form>
               <div class="form-control">
                 <label class="label">
-                  <span class="label-text">Username</span>
+                  <span class="label-text">First Name</span>
                 </label>
-                <input v-model="formData.username" type="text" placeholder="username" class="input input-bordered" required />
+                <input v-model="formData.username" type="text" placeholder="First Name" class="input input-bordered" required />
+              </div>
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Last Name</span>
+                </label>
+                <input v-model="formData.username" type="text" placeholder="last Name" class="input input-bordered" required />
+              </div>
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Age</span>
+                </label>
+                <input v-model="formData.username" type="number" placeholder="Age" class="input input-bordered" min="18" required />
               </div>
             </form>
           </template>
@@ -47,9 +61,25 @@ function handleChangeStep(n) {
             <form>
               <div class="form-control">
                 <label class="label">
-                  <span class="label-text">Email</span>
+                  <span class="label-text">Gender</span>
                 </label>
-                <input v-model="formData.email" type="email" placeholder="Email" class="input input-bordered" required />
+                <select class="select select-bordered w-full max-w-xs">
+                  <option>M</option>
+                  <option>F</option>
+                  <option>O</option>
+                </select>
+              </div>
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Sexual Preferences</span>
+                </label>
+                <select class="select select-bordered w-full max-w-xs">
+                  <option>M</option>
+                  <option>F</option>
+                  <option>O</option>
+                  <option>A</option>
+                </select>
               </div>
             </form>
           </template>
@@ -59,9 +89,9 @@ function handleChangeStep(n) {
             <form>
               <div class="form-control">
                 <label class="label">
-                  <span class="label-text">Phone</span>
+                  <span class="label-text">Bio</span>
                 </label>
-                <input v-model="formData.phone" type="text" placeholder="Phone" class="input input-bordered" required />
+                <textarea class="textarea textarea-bordered" placeholder="Bio"></textarea>
               </div>
             </form>
           </template>
