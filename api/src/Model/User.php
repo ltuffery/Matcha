@@ -13,6 +13,12 @@ class User extends Model
     public string $username;
     public string $password;
     public string $email;
+    public int $age;
+    public string $firstName;
+    public string $lastName;
+    public string $gender;
+    public string $sexualPreferences;
+    public string $bio;
     public string $created_at;
 
     public function jsonSerialize(): array

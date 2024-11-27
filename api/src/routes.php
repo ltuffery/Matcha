@@ -13,7 +13,7 @@ Flight::route('GET /', function () {
 });
 
 Flight::group('/auth', function () {
-    Flight::route('POST /register', [AuthController::class, 'register']);
+    Flight::route('POST /register', [RegisterController::class, 'store']);
     Flight::route('POST /login', [AuthController::class, 'login']);
 
 });
