@@ -21,8 +21,8 @@ function emailVerifSend($userTarget): void
         $mail->isSMTP();                                            //Send using SMTP
         $mail->Host       = 'mail.delaware.o2switch.net';                     //Set the SMTP server to send through
         $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-        $mail->Username   = 'user@name.fr';                     //SMTP username
-        $mail->Password   = 'Password';                               //SMTP password
+        $mail->Username   = 'matcha@swotex.fr';                     //SMTP username
+        $mail->Password   = 'matcha_password';                               //SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
         $mail->Port       = 465; 
 
@@ -35,6 +35,7 @@ function emailVerifSend($userTarget): void
         $mail->isHTML(true);
         $mail->Subject = 'Verify your email';
         $bodyMail = file_get_contents(__DIR__ . '/file.html');
+        $bodyMail = str_replace('{{username}}', htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $bodyMail);
         $mail->Body    = $bodyMail;
 
         $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
