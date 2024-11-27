@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import MultiStepForm from '@/components/MultiStepForm.vue'
+import { Api } from '@/utils/api'
 import { ref } from 'vue'
 
 let formData = {
@@ -17,10 +18,8 @@ let formData = {
 const totalSteps = 4
 let step = ref(0)
 
-function handleSubmit(message) {
-  console.log(message)
-  console.log(formData)
-  alert('Formulaire soumis avec succès !')
+function handleSubmit() {
+  Api.post('auth/register').send(formData)
 }
 
 function handleChangeStep(n) {
@@ -29,7 +28,11 @@ function handleChangeStep(n) {
 </script>
 
 <template>
-  <!-- <progress class="progress progress-primary fixed top-0 rounded-none" :value="step + 1" :max="totalSteps"></progress> -->
+  <progress
+    class="progress progress-primary fixed top-0 left-0 rounded-none"
+    :value="step.value"
+    :max="totalSteps"
+  ></progress>
   <MultiStepForm
     :totalSteps="totalSteps"
     @submit="handleSubmit"

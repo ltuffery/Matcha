@@ -28,7 +28,6 @@ function prevStep() {
 }
 
 function submitForm() {
-  currentStep.value++
   emit('submit')
   emit('changeStep', currentStep)
 }
