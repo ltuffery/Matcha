@@ -1,6 +1,7 @@
 <?php
 
 use Matcha\Api\Controllers\AuthController;
+use Matcha\Api\Controllers\RegisterController;
 
 Flight::route('GET /', function () {
     $content = file_get_contents(dirname(__DIR__) . '/composer.json');

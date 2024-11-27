@@ -11,12 +11,13 @@ export class Api {
   }
 
   async send(body) {
+
     let req = await fetch(`http://localhost:3000/${this.path}`, {
       method: this.method,
       headers: {
         'Content-Type': 'application/json',
       },
-      body: body,
+      body: JSON.stringify(body),
     })
 
     return await req.json()

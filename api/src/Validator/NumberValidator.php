@@ -1,6 +1,8 @@
 <?php
 
-use Matcha\Api\Validator\Validator;
+namespace Matcha\Api\Validator;
+
+use Flight;
 
 class NumberValidator extends Validator
 {

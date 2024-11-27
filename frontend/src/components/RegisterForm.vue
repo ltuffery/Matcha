@@ -12,7 +12,7 @@ let formData = {
   last_name: '',
   gender: '' as 'M' | 'F' | 'O',
   sexual_preferences: '' as 'M' | 'F' | 'A' | 'O',
-  bio: '',
+  biography: '',
 }
 
 const totalSteps = 4
@@ -22,7 +22,7 @@ function handleSubmit() {
   Api.post('auth/register').send(formData)
 }
 
-function handleChangeStep(n) {
+function handleChangeStep(n: number) {
   step.value = n
 }
 </script>
@@ -161,12 +161,16 @@ function handleChangeStep(n) {
             <span class="label-text">Bio</span>
           </label>
           <textarea
-            v-model="formData.bio"
+            v-model="formData.biography"
             class="textarea textarea-bordered"
             placeholder="Bio"
           ></textarea>
         </div>
       </form>
+    </template>
+
+    <template #finish>
+      <p>Compte créé avec succès, connectez-vous.</p>
     </template>
   </MultiStepForm>
 </template>

@@ -28,8 +28,9 @@ function prevStep() {
 }
 
 function submitForm() {
-  emit('submit')
+  currentStep.value++
   emit('changeStep', currentStep)
+  emit('submit')
 }
 </script>
 
@@ -67,7 +68,7 @@ function submitForm() {
       </div>
     </div>
     <div v-else>
-      <p>Merci pour votre soumission !</p>
+      <slot name="finish"></slot>
     </div>
   </div>
 </template>

@@ -1,14 +1,22 @@
 <?php
 
+namespace Matcha\Api\Controllers;
+
+use Exception;
+use Flight;
+use InvalidDataException;
 use Matcha\Api\Model\User;
 use Matcha\Api\Validator\Validator;
 
-class RegisterController {
+class RegisterController
+{
 
     /**
      * Register new user
+     * @throws InvalidDataException
+     * @throws Exception
      */
-    public function store()
+    public function store(): void
     {
         Validator::make([
             'username' => 'required',
@@ -19,7 +27,7 @@ class RegisterController {
             'last_name' => 'required',
             'gender' => 'required',
             'sexual_preferences' => 'required',
-            'bio' => 'required',
+            'biography' => 'required',
         ]);
 
         $request = Flight::request();
@@ -29,17 +37,19 @@ class RegisterController {
         $user->email = $request->data->email;
         $user->password = password_hash($request->data->password, PASSWORD_DEFAULT);
         $user->age = $request->data->age;
-        $user->firstName = $request->data->first_name;
-        $user->lastName = $request->data->last_name;
+        $user->first_name = $request->data->first_name;
+        $user->last_name = $request->data->last_name;
         $user->gender = $request->data->gender;
-        $user->sexualPreferences = $request->data->sexual_preferences;
-        $user->bio = $request->data->bio;
+        $user->sexual_preferences = $request->data->sexual_preferences;
+        $user->biography = $request->data->biography;
 
         $saved = $user->save();
 
-        Flight::json([
-            'user' => json_encode($user),
-        ], $saved ? 201 : 400);
+        if ($saved) {
+            Flight::json([
+                'user' => json_encode($user),
+            ], 201);
+        }
     }
 
 }

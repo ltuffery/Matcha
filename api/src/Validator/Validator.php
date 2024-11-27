@@ -4,7 +4,6 @@ namespace Matcha\Api\Validator;
 
 use Flight;
 use InvalidDataException;
-use NumberValidator;
 
 abstract class Validator
 {
