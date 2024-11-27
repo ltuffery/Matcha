@@ -1,49 +1,169 @@
-<script setup>
-import { ref } from 'vue';
+<script lang="ts" setup>
+import MultiStepForm from '@/components/MultiStepForm.vue'
+import { ref } from 'vue'
 
-let username = ref(''), email = ref(''), password = ref('')
+let formData = {
+  username: '',
+  email: '',
+  password: '',
+  age: 0,
+  first_name: '',
+  last_name: '',
+  gender: '' as 'M' | 'F' | 'O',
+  sexual_preferences: '' as 'M' | 'F' | 'A' | 'O',
+  bio: '',
+}
 
-function createUserAccount(e) {
-  e.preventDefault();
+const totalSteps = 4
+let step = ref(0)
 
-  fetch("http://localhost:3000/auth/register", {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username: username.value,
-      email: email.value,
-      password: password.value,
-    }),
-  })
-    .then(res => res.json())
-    .then(console.log)
+function handleSubmit(message) {
+  console.log(message)
+  console.log(formData)
+  alert('Formulaire soumis avec succès !')
+}
+
+function handleChangeStep(n) {
+  step.value = n
 }
 </script>
 
 <template>
-  <form @submit="createUserAccount">
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Username</span>
-      </label>
-      <input v-model="username" type="text" placeholder="username" class="input input-bordered" required />
-    </div>
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Email</span>
-      </label>
-      <input v-model="email" type="email" placeholder="email" class="input input-bordered" required />
-    </div>
-    <div class="form-control">
-      <label class="label">
-        <span class="label-text">Password</span>
-      </label>
-      <input v-model="password" type="password" placeholder="password" class="input input-bordered" required />
-    </div>
-    <div class="form-control mt-6">
-      <button class="btn btn-primary" type="submit">Register</button>
-    </div>
-  </form>
+  <!-- <progress class="progress progress-primary fixed top-0 rounded-none" :value="step + 1" :max="totalSteps"></progress> -->
+  <MultiStepForm
+    :totalSteps="totalSteps"
+    @submit="handleSubmit"
+    @change-step="handleChangeStep"
+  >
+    <template #step-0>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Username</span>
+        </label>
+        <input
+          v-model="formData.username"
+          type="text"
+          placeholder="username"
+          class="input input-bordered"
+          required
+        />
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Email</span>
+        </label>
+        <input
+          v-model="formData.email"
+          type="email"
+          placeholder="email"
+          class="input input-bordered"
+          required
+        />
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Password</span>
+        </label>
+        <input
+          v-model="formData.password"
+          type="password"
+          placeholder="password"
+          class="input input-bordered"
+          required
+        />
+      </div>
+    </template>
+
+    <template #step-1>
+      <form>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">First Name</span>
+          </label>
+          <input
+            v-model="formData.first_name"
+            type="text"
+            placeholder="First Name"
+            class="input input-bordered"
+            required
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Last Name</span>
+          </label>
+          <input
+            v-model="formData.last_name"
+            type="text"
+            placeholder="last Name"
+            class="input input-bordered"
+            required
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Age</span>
+          </label>
+          <input
+            v-model="formData.age"
+            type="number"
+            placeholder="Age"
+            class="input input-bordered"
+            min="18"
+            required
+          />
+        </div>
+      </form>
+    </template>
+
+    <template #step-2>
+      <form>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Gender</span>
+          </label>
+          <select
+            v-model="formData.gender"
+            class="select select-bordered w-full max-w-xs"
+          >
+            <option>M</option>
+            <option>F</option>
+            <option>O</option>
+          </select>
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Sexual Preferences</span>
+          </label>
+          <select
+            v-model="formData.sexual_preferences"
+            class="select select-bordered w-full max-w-xs"
+          >
+            <option>M</option>
+            <option>F</option>
+            <option>O</option>
+            <option>A</option>
+          </select>
+        </div>
+      </form>
+    </template>
+
+    <template #step-3>
+      <form>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Bio</span>
+          </label>
+          <textarea
+            v-model="formData.bio"
+            class="textarea textarea-bordered"
+            placeholder="Bio"
+          ></textarea>
+        </div>
+      </form>
+    </template>
+  </MultiStepForm>
 </template>

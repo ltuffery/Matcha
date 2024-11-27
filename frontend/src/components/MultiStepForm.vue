@@ -1,36 +1,36 @@
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue';
+import { defineProps, defineEmits, ref } from 'vue'
 
 const props = defineProps({
   totalSteps: {
     type: Number,
-    required: true
-  }
+    required: true,
+  },
 })
 
 const emit = defineEmits(['submit', 'changeStep'])
 
 let currentStep = ref(0)
-emit("changeStep", currentStep)
+emit('changeStep', currentStep)
 
 function nextStep() {
   if (currentStep.value < props.totalSteps - 1) {
-    currentStep.value++;
-    emit("changeStep", currentStep)
+    currentStep.value++
+    emit('changeStep', currentStep)
   }
 }
 
 function prevStep() {
   if (currentStep.value > 0) {
-    currentStep.value--;
-    emit("changeStep", currentStep)
+    currentStep.value--
+    emit('changeStep', currentStep)
   }
 }
 
 function submitForm() {
   currentStep.value++
-  emit('submit');
-  emit("changeStep", currentStep)
+  emit('submit')
+  emit('changeStep', currentStep)
 }
 </script>
 
@@ -44,13 +44,25 @@ function submitForm() {
 
       <!-- Navigation entre les étapes -->
       <div class="flex gap-4">
-        <div class="form-control mt-6 w-full" v-if="currentStep > 0" @click="prevStep">
+        <div
+          class="form-control mt-6 w-full"
+          v-if="currentStep > 0"
+          @click="prevStep"
+        >
           <button class="btn btn-primary" type="submit">Précédent</button>
         </div>
-        <div class="form-control mt-6 w-full" v-if="currentStep < props.totalSteps - 1" @click="nextStep">
+        <div
+          class="form-control mt-6 w-full"
+          v-if="currentStep < props.totalSteps - 1"
+          @click="nextStep"
+        >
           <button class="btn btn-primary" type="submit">Suivant</button>
         </div>
-        <div class="form-control mt-6 w-full" v-if="currentStep === props.totalSteps - 1" @click="submitForm">
+        <div
+          class="form-control mt-6 w-full"
+          v-if="currentStep === props.totalSteps - 1"
+          @click="submitForm"
+        >
           <button class="btn btn-primary" type="submit">Soumettre</button>
         </div>
       </div>

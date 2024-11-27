@@ -1,38 +1,46 @@
 <script lang="ts">
-import {defineComponent, reactive, provide, onMounted, onBeforeMount, toRefs, VNode} from "vue";
+import {
+  defineComponent,
+  reactive,
+  provide,
+  onMounted,
+  onBeforeMount,
+  toRefs,
+  VNode,
+} from 'vue'
 
 export interface TabProps {
-  title: string;
+  title: string
 }
 
 export default defineComponent({
-  name: "Tabs",
-  setup(_, {slots}) {
+  name: 'Tabs',
+  setup(_, { slots }) {
     const state = reactive({
       selectedIndex: 0,
       tabs: [] as VNode<TabProps>[],
-      count: 0
-    });
+      count: 0,
+    })
 
-    provide("TabsProvider", state);
+    provide('TabsProvider', state)
 
     const selectTab = (i: number) => {
-      state.selectedIndex = i;
-    };
+      state.selectedIndex = i
+    }
 
     onBeforeMount(() => {
       if (slots.default) {
-        state.tabs = slots.default().filter((child) => child.type.name === "Tab");
+        state.tabs = slots.default().filter(child => child.type.name === 'Tab')
       }
-    });
+    })
 
     onMounted(() => {
-      selectTab(0);
-    });
+      selectTab(0)
+    })
 
-    return {...toRefs(state), selectTab};
-  }
-});
+    return { ...toRefs(state), selectTab }
+  },
+})
 </script>
 
 <template>
@@ -42,7 +50,7 @@ export default defineComponent({
         v-for="(tab, index) in tabs"
         :key="index"
         @click="selectTab(index)"
-        :class="{'tab-active': selectedIndex===index}"
+        :class="{ 'tab-active': selectedIndex === index }"
         class="tab"
       >
         {{ tab.props.name }}
