@@ -6,6 +6,7 @@ use Exception;
 use Flight;
 use JsonSerializable;
 use PDO;
+use PDOException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
@@ -53,17 +54,13 @@ abstract class Model implements JsonSerializable
             $sqlQuery = 'INSERT INTO `' . $tableName . '` SET ' . $setClause;
         }
 
-        try {
-            $result = self::db()->exec($sqlQuery);
+        $result = self::db()->exec($sqlQuery);
 
-            if ($result) {
-                $this->reload();
-            }
-
-            return $result;
-        } catch (Exception $e) {
-            return false;
+        if ($result) {
+            $this->reload();
         }
+
+        return $result;
     }
 
     /**
