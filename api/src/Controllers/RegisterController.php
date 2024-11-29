@@ -10,7 +10,6 @@ use Matcha\Api\Validator\Validator;
 
 class RegisterController
 {
-
     /**
      * Register new user
      * @throws InvalidDataException
