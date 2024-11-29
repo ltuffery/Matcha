@@ -1,5 +1,7 @@
 <template>
-  <main class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200 px-2">
+  <main
+    class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200 px-2"
+  >
     <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
       <div class="card-body">
         <Tabs>
@@ -18,8 +20,8 @@
 </template>
 
 <script setup>
-import RegisterFrom from "@/components/RegisterForm.vue";
-import Tabs from "@/components/tabs/Tabs.vue";
-import Tab from "@/components/tabs/Tab.vue";
-import LoginForm from "@/components/LoginForm.vue";
+import RegisterFrom from '@/components/RegisterForm.vue'
+import Tabs from '@/components/tabs/Tabs.vue'
+import Tab from '@/components/tabs/Tab.vue'
+import LoginForm from '@/components/LoginForm.vue'
 </script>

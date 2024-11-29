@@ -10,6 +10,7 @@ abstract class Validator
     private static array $rules = [
         'required' => RequiredValidator::class,
         'email' => EmailValidator::class,
+        'number' => NumberValidator::class,
     ];
 
     public static function make(array $rules): void
