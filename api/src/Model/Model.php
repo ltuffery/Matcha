@@ -108,7 +108,7 @@ abstract class Model implements JsonSerializable
 
         $entity = $class->newInstance();
 
-        foreach($class->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
+        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
             if (isset($object[$prop->getName()])) {
                 $entity->{$prop->getName()} = $object[$prop->getName()];
             }
@@ -145,7 +145,7 @@ abstract class Model implements JsonSerializable
 
     /**
      * Get all model
-     * 
+     *
      * @return Model[]
      * @throws ReflectionException
      */

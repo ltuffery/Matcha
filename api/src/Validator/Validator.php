@@ -21,7 +21,7 @@ abstract class Validator
             foreach ($split as $rule) {
                 if (isset(self::$rules[$rule])) {
                     /** @var Validator $class */
-                    $class = new self::$rules[$rule];
+                    $class = new self::$rules[$rule]();
 
                     if (!$class->validate($name)) {
                         Flight::response()->clear();
@@ -37,10 +37,10 @@ abstract class Validator
         }
     }
 
-    public abstract function validate(string $field): bool;
+    abstract public function validate(string $field): bool;
 
-    public abstract function getCode(): int;
+    abstract public function getCode(): int;
 
-    public abstract function getMessage(): string;
+    abstract public function getMessage(): string;
 
 }

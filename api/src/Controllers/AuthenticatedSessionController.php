@@ -2,20 +2,21 @@
 
 namespace Matcha\Api\Controllers;
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Flight;
 use InvalidDataException;
 use Matcha\Api\Model\User;
 use Matcha\Api\Validator\Validator;
 use ReflectionException;
 
-class AuthController
+class AuthenticatedSessionController
 {
-
     /**
      * @throws InvalidDataException
      * @throws ReflectionException
      */
-    public function login(): void
+    public function store(): void
     {
         Validator::make([
             'username' => 'required',
@@ -32,9 +33,18 @@ class AuthController
             Flight::json([
                 'success' => false,
             ]);
-        } else if (password_verify($request->data->password, $user->password)) {
+        } elseif (password_verify($request->data->password, $user->password)) {
+            $time = time();
+
+            $jwt = JWT::encode([
+                'exp' => $time + 600,
+                'iat' => $time,
+                'username' => $user->username,
+            ], $_ENV['SECRET_KEY'], 'HS256');
+
             Flight::json([
                 'success' => true,
+                'token' => $jwt,
             ]);
         } else {
             Flight::json([

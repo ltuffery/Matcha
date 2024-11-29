@@ -1,6 +1,6 @@
 <?php
 
-use Matcha\Api\Controllers\AuthController;
+use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Controllers\RegisterController;
 
 Flight::route('GET /', function () {
@@ -15,12 +15,12 @@ Flight::route('GET /', function () {
 
 Flight::group('/auth', function () {
     Flight::route('POST /register', [RegisterController::class, 'store']);
-    Flight::route('POST /login', [AuthController::class, 'login']);
+    Flight::route('POST /login', [AuthenticatedSessionController::class, 'store']);
 
 });
 
 // 404 route
-Flight::map('notFound', function() {
+Flight::map('notFound', function () {
     Flight::json([
         "message" => "Not found"
     ], 404);
