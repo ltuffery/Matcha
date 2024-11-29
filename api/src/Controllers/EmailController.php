@@ -36,6 +36,11 @@ function emailVerifSend($userTarget): void
         $mail->Subject = 'Verify your email';
         $bodyMail = file_get_contents(__DIR__ . '/file.html');
         $bodyMail = str_replace('{{username}}', htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $bodyMail);
+        $request = Flight::request();
+        $temporaryToken = $userTarget->username . (string)rand();
+        $temporaryToken = password_hash($temporaryToken, PASSWORD_DEFAULT);
+        $url = "http://localhost:1212/verify?user=" . $userTarget->username . "&token=" . $temporaryToken;
+        $bodyMail = str_replace('{{url}}', $url, $bodyMail);
         $mail->Body    = $bodyMail;
 
         $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
@@ -85,6 +90,47 @@ class EmailController
             Flight::json([
                 'success' => false,
                 'error' => "This email is already verified",
+            ]);
+        }
+    }
+
+    /**
+     * @throws InvalidDataException
+     * @throws ReflectionException
+     */
+    public function verifToken(): void
+    {
+        Validator::make([
+            'username' => 'required',
+        ]);
+
+        $request = Flight::request();
+
+        $user = User::find([
+            'username' => $request->data->username,
+        ]);
+
+        if ($user == null) {
+            Flight::json([
+                'success' => false,
+                'error' => "Bad Link",
+            ]);
+        }
+
+        // add [if] to know if the user is already verifyed 
+
+        // future check if the token is ok
+        else if (true) {
+            // future update db
+            echo $request->data->token;
+            Flight::json([
+                'success' => true,
+            ]);
+        }
+        else {
+            Flight::json([
+                'success' => false,
+                'error' => "Bad Link",
             ]);
         }
     }

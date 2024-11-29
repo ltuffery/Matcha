@@ -21,6 +21,7 @@ Flight::group('/auth', function () {
 
 Flight::group('/email', function () {
     Flight::route('POST /verif', [EmailController::class, 'emailVerif']);
+    Flight::route('POST /token', [EmailController::class, 'verifToken']);
 
 });
 
