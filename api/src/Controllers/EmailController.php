@@ -122,7 +122,7 @@ class EmailController
         // future check if the token is ok
         else if (true) {
             // future update db
-            echo $request->data->token;
+            // echo $request->data->token;
             Flight::json([
                 'success' => true,
             ]);
