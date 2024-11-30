@@ -20,6 +20,6 @@ export class Api {
       body: JSON.stringify(body),
     })
 
-    return await req.json()
+    return req
   }
 }

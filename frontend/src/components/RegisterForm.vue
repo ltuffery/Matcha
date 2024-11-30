@@ -17,11 +17,18 @@ let formData = {
 }
 
 const totalSteps = 4
-let step = ref(0)
-let hasError = ref(false)
+const step = ref(0)
+const hasError = ref(false)
+const titleAlert = ref('')
 
-function handleSubmit() {
-  Api.post('auth/register').send(formData)
+async function handleSubmit() {
+  const req = await Api.post('/auth/register').send(formData)
+  const data = await req.json()
+  
+  if (req.status == 400) {
+    hasError.value = true
+    titleAlert.value = data.message
+  }
 }
 
 function handleChangeStep(n: number) {
@@ -35,7 +42,7 @@ function handleChangeStep(n: number) {
     :value="step.value"
     :max="totalSteps"
   ></progress>
-  <Alert v-if="hasError" type="error" title="oui" />
+  <Alert v-if="hasError" type="error" :title="titleAlert" />
   <MultiStepForm
     :totalSteps="totalSteps"
     @submit="handleSubmit"
