@@ -2,6 +2,7 @@
 import MultiStepForm from '@/components/MultiStepForm.vue'
 import { Api } from '@/utils/api'
 import { ref } from 'vue'
+import Alert from './Alert.vue';
 
 let formData = {
   username: '',
@@ -17,6 +18,7 @@ let formData = {
 
 const totalSteps = 4
 let step = ref(0)
+let hasError = ref(false)
 
 function handleSubmit() {
   Api.post('auth/register').send(formData)
@@ -33,6 +35,7 @@ function handleChangeStep(n: number) {
     :value="step.value"
     :max="totalSteps"
   ></progress>
+  <Alert v-if="hasError" type="error" title="oui" />
   <MultiStepForm
     :totalSteps="totalSteps"
     @submit="handleSubmit"
