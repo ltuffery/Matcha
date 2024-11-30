@@ -23,9 +23,4 @@ class RequiredValidatorTest extends TestCase
     {
         $this->assertFalse($this->validator->validate('unexist'));
     }
-
-    public function testGetCode()
-    {
-        $this->assertEquals(1, $this->validator->getCode());
-    }
 }

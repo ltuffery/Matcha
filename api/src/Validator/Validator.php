@@ -22,15 +22,16 @@ abstract class Validator
                 if (isset(self::$rules[$rule])) {
                     /** @var Validator $class */
                     $class = new self::$rules[$rule]();
+                    $code = array_search($rule, array_keys(self::$rules));
 
                     if (!$class->validate($name)) {
                         Flight::response()->clear();
                         Flight::json([
-                            'code' => $class->getCode(),
+                            'code' => $code,
                             'message' => $class->getMessage(),
                         ], 400);
 
-                        throw new InvalidDataException($class->getCode(), $class->getMessage());
+                        throw new InvalidDataException($code, $class->getMessage());
                     }
                 }
             }
@@ -38,8 +39,6 @@ abstract class Validator
     }
 
     abstract public function validate(string $field): bool;
-
-    abstract public function getCode(): int;
 
     abstract public function getMessage(): string;
 

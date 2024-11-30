@@ -16,11 +16,6 @@ class NumberValidator extends Validator
         return !isset($value) || is_numeric($value);
     }
 
-    public function getCode(): int
-    {
-        return 3;
-    }
-
     public function getMessage(): string
     {
         return sprintf('%s is not a valid number', $this->field);
