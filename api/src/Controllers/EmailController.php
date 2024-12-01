@@ -41,6 +41,8 @@ function emailVerifSend($userTarget): void
         $temporaryToken = password_hash($temporaryToken, PASSWORD_DEFAULT);
         $url = "http://localhost:1212/verify?user=" . $userTarget->username . "&token=" . $temporaryToken;
         $bodyMail = str_replace('{{url}}', $url, $bodyMail);
+        $userTarget->temporary_email_token = $temporaryToken;
+        $userTarget->save();
         $mail->Body    = $bodyMail;
 
         $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
@@ -80,7 +82,7 @@ class EmailController
             ]);
         }
         // future check if the email is already validate or not
-        else if (true) {
+        else if ($user->email_verified == false) {
             emailVerifSend($user);
             Flight::json([
                 'success' => true,
@@ -120,9 +122,12 @@ class EmailController
         // add [if] to know if the user is already verifyed 
 
         // future check if the token is ok
-        else if (true) {
+        else if ($user->temporary_email_token == $request->data->token) {
             // future update db
             // echo $request->data->token;
+            $user->temporary_email_token = "";
+            $user->email_verified = true;
+            $user->save();
             Flight::json([
                 'success' => true,
             ]);

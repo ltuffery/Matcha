@@ -4,10 +4,13 @@
     "require": {
         "flightphp/core": "^3.13",
         "ext-pdo": "*",
-        "phpmailer/phpmailer": "^6.9"
+        "phpmailer/phpmailer": "^6.9",
+        "firebase/php-jwt": "^6.10"
     },
     "require-dev": {
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "*",
+        "squizlabs/php_codesniffer": "*",
+        "friendsofphp/php-cs-fixer": "^3.65"
     },
     "autoload": {
         "psr-4": {

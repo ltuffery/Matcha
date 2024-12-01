@@ -1,5 +1,14 @@
 <template>
-  <main class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200 px-2">
+    <main v-if="skeleton">
+        <div class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200 px-2">
+            <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+                <div class="skeleton card-body h-24">
+                </div>
+            </div>
+        </div>
+    </main>
+
+  <main v-else class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200 px-2">
     <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
         <div class="card-body">
             <span v-if="responseOK">Your email have been verified</span>
@@ -14,6 +23,7 @@
     import { ref } from 'vue';
 
     const responseOK = ref(false);
+    const skeleton = ref(true);
 
     const checkToken = async () => {
         let urlParams = new URLSearchParams(window.location.search);
@@ -23,14 +33,11 @@
             "token": urlParams.get('token'),
             }
         let req = await Api.post("email/token").send(test);
-        console.log(req.success);
         if (req.success)
-        {
             responseOK.value = true;
-            console.log(responseOK);
-        }
         else
             responseOK.value = false;
+        skeleton.value = false;
     }
     checkToken();
 </script>

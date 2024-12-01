@@ -6,7 +6,6 @@ use Flight;
 
 class RequiredValidator extends Validator
 {
-
     private string $field;
 
     public function validate(string $field): bool
