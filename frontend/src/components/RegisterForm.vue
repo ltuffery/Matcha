@@ -19,15 +19,21 @@ let formData = {
 const totalSteps = 4
 const step = ref(0)
 const hasError = ref(false)
-const titleAlert = ref('')
+const titleAlert = ref('test')
 
 async function handleSubmit() {
-  const req = await Api.post('/auth/register').send(formData)
-  const data = await req.json()
-  
-  if (req.status == 400) {
-    hasError.value = true
-    titleAlert.value = data.message
+  try {
+    const req = await Api.post('/auth/register').send(formData);
+    const data = await req.json();
+
+    if (req.status == 400) {
+      hasError.value = true;
+      titleAlert.value = data.message;
+    }
+  } catch (error) {
+    console.error("Error during API request:", error);
+    hasError.value = true;
+    titleAlert.value = "An unexpected error occurred.";
   }
 }
 

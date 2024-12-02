@@ -25,7 +25,7 @@ abstract class Validator
                     $code = array_search($rule, array_keys(self::$rules));
 
                     if (!$class->validate($name)) {
-                        Flight::response()->clear();
+                        Flight::response()->clearBody();
                         Flight::json([
                             'code' => $code,
                             'message' => $class->getMessage(),

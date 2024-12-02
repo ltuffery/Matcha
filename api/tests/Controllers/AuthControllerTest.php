@@ -11,7 +11,7 @@ class AuthControllerTest extends TestCase
 
     protected function setUp(): void
     {
-        Flight::response()->clear();
+        Flight::response()->clearBody();
         Flight::register('db', PDO::class, ['sqlite::memory:']);
 
         Flight::db()->exec("CREATE TABLE IF NOT EXISTS users(
