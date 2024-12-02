@@ -10,54 +10,53 @@ use ReflectionException;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-function emailVerifSend($userTarget): void
-{
-    $mail = new PHPMailer(true);
-    
-    try {
-        
-        //Server settings
-        // $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
-        $mail->isSMTP();                                            //Send using SMTP
-        $mail->Host       = 'mail.delaware.o2switch.net';                     //Set the SMTP server to send through
-        $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-        $mail->Username   = 'matcha@swotex.fr';                     //SMTP username
-        $mail->Password   = 'matcha_password';                               //SMTP password
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
-        $mail->Port       = 465; 
-
-        //Recipients
-        $mail->setFrom('noreply@matcha.com', 'Matcha');
-        // $mail->setFrom('bouffemoilecul@denis.fr');
-        // $mail->addAddress('swotex21@gmail.com', 'swotex');
-        $mail->addAddress($userTarget->email, $userTarget->username);
-
-        $mail->isHTML(true);
-        $mail->Subject = 'Verify your email';
-        $bodyMail = file_get_contents(__DIR__ . '/file.html');
-        $bodyMail = str_replace('{{username}}', htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $bodyMail);
-        $request = Flight::request();
-        $temporaryToken = $userTarget->username . (string)rand();
-        $temporaryToken = password_hash($temporaryToken, PASSWORD_DEFAULT);
-        $url = "http://localhost:1212/verify?user=" . $userTarget->username . "&token=" . $temporaryToken;
-        $bodyMail = str_replace('{{url}}', $url, $bodyMail);
-        $userTarget->temporary_email_token = $temporaryToken;
-        $userTarget->save();
-        $mail->Body    = $bodyMail;
-
-        $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-
-        $mail->CharSet = 'UTF-8';
-        $mail->Encoding = 'base64';
-        $mail->send();
-        echo 'Message has been sent';
-    } catch (Exception $e) {
-        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-    }
-}
-
 class EmailController
 {
+
+    private function emailVerifSend($userTarget): void
+    {
+        $mail = new PHPMailer(true);
+        
+        try
+        {
+            //Server settings
+            $mail->isSMTP();
+            $mail->Host       = $_ENV['SMTP_HOST'];
+            $mail->Username   = $_ENV['SMTP_USER'];
+            $mail->Password   = $_ENV['SMTP_PASS'];
+            $mail->SMTPAuth   = true;
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port       = 465;
+
+            // Generate token/link and save it in db
+            $temporaryToken = $userTarget->username . (string)rand();
+            $temporaryToken = password_hash($temporaryToken, PASSWORD_DEFAULT);
+            $url = "http://localhost:1212/verify?user=" . $userTarget->username . "&token=" . $temporaryToken;
+            $userTarget->temporary_email_token = $temporaryToken;
+            $userTarget->save();
+            // get and replace body mail
+            $bodyMail = file_get_contents(__DIR__ . '/../template/file.html');
+            $bodyMail = str_replace('{{username}}', htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $bodyMail);
+            $bodyMail = str_replace('{{url}}', $url, $bodyMail);
+
+            //Recipients
+            $mail->setFrom('noreply@matcha.com', 'Matcha');
+            $mail->addAddress($userTarget->email, $userTarget->username);
+    
+            $mail->isHTML(true);
+            $mail->Subject = 'Verify your email';
+            $mail->Body    = $bodyMail;
+            $mail->AltBody = 'This is your link to verify your mail : ' . $url;
+    
+            $mail->CharSet = 'UTF-8';
+            $mail->Encoding = 'base64';
+            $mail->send();
+        }
+        catch (Exception $e)
+        {
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        }
+    }
 
     /**
      * @throws InvalidDataException
@@ -75,24 +74,26 @@ class EmailController
             'email' => $request->data->email,
         ]);
 
-        if ($user == null) {
+        if ($user == null)
+        {
             Flight::json([
                 'success' => false,
                 'error' => "this email doesn't exist",
-            ]);
+            ], 404);
         }
-        // future check if the email is already validate or not
-        else if ($user->email_verified == false) {
-            emailVerifSend($user);
+        else if ($user->email_verified == false)
+        {
+            EmailController::emailVerifSend($user);
             Flight::json([
                 'success' => true,
-            ]);
+            ], 200);
         }
-        else {
+        else
+        {
             Flight::json([
                 'success' => false,
                 'error' => "This email is already verified",
-            ]);
+            ], 409);
         }
     }
 
@@ -112,31 +113,29 @@ class EmailController
             'username' => $request->data->username,
         ]);
 
-        if ($user == null) {
+        if ($user == null)
+        {
             Flight::json([
                 'success' => false,
-                'error' => "Bad Link",
-            ]);
+                'error' => "Bad Link (user not found)",
+            ], 404);
         }
 
-        // add [if] to know if the user is already verifyed 
-
-        // future check if the token is ok
-        else if ($user->temporary_email_token == $request->data->token) {
-            // future update db
-            // echo $request->data->token;
+        else if ($user->email_verified == false && $user->temporary_email_token == $request->data->token)
+        {
             $user->temporary_email_token = "";
             $user->email_verified = true;
             $user->save();
             Flight::json([
                 'success' => true,
-            ]);
+            ], 201);
         }
-        else {
+        else
+        {
             Flight::json([
                 'success' => false,
-                'error' => "Bad Link",
-            ]);
+                'error' => "Bad Link (Token broken or already verfy)",
+            ], 400);
         }
     }
 }

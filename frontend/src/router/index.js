@@ -21,7 +21,7 @@ const router = createRouter({
       name: 'verify',
       component: VerifyEmailView,
     }
-  ]
+  ],
 })
 
 export default router
