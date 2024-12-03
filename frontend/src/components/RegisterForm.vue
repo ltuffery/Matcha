@@ -20,6 +20,7 @@ let step = ref(0)
 
 function handleSubmit() {
   Api.post('auth/register').send(formData)
+  Api.post('email/verif').send({email: formData.email})
 }
 
 function handleChangeStep(n: number) {
@@ -170,7 +171,7 @@ function handleChangeStep(n: number) {
     </template>
 
     <template #finish>
-      <p>Compte créé avec succès, connectez-vous.</p>
+      <p>Account created successfully, check your email before you connect.</p>
     </template>
   </MultiStepForm>
 </template>
