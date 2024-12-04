@@ -154,3 +154,4 @@ __pycache__
 
 # Composer
 vendor
+.phpunit*
