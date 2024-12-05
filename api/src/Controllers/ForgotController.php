@@ -10,10 +10,10 @@ use ReflectionException;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-class EmailController
+class ForgotController
 {
 
-    private function emailVerifSend($userTarget): void
+    private function emailForgotSend($userTarget): void
     {
         $mail = new PHPMailer(true);
         
@@ -31,11 +31,11 @@ class EmailController
             // Generate token/link and save it in db
             $temporaryToken = $userTarget->username . (string)rand();
             $temporaryToken = password_hash($temporaryToken, PASSWORD_DEFAULT);
-            $url = "http://localhost:1212/verify?user=" . $userTarget->username . "&token=" . $temporaryToken;
+            $url = "http://localhost:1212/forgot?user=" . $userTarget->username . "&token=" . $temporaryToken;
             $userTarget->temporary_email_token = $temporaryToken;
             $userTarget->save();
             // get and replace body mail
-            $bodyMail = file_get_contents(__DIR__ . '/../template/file.html');
+            $bodyMail = file_get_contents(__DIR__ . '/../template/forgot.html');
             $bodyMail = str_replace('{{username}}', htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $bodyMail);
             $bodyMail = str_replace('{{url}}', $url, $bodyMail);
 
@@ -62,7 +62,7 @@ class EmailController
      * @throws InvalidDataException
      * @throws ReflectionException
      */
-    public function emailVerif(): void
+    public function forgotCredencial(): void
     {
         Validator::make([
             'email' => 'required|email',
@@ -81,9 +81,9 @@ class EmailController
                 'error' => "this email doesn't exist",
             ], 404);
         }
-        else if ($user->email_verified == false)
+        else if ($user->email_verified == true)
         {
-            $this->emailVerifSend($user);
+            $this->emailForgotSend($user);
             Flight::json([
                 'success' => true,
             ], 200);
@@ -92,8 +92,8 @@ class EmailController
         {
             Flight::json([
                 'success' => false,
-                'error' => "This email is already verified",
-            ], 409);
+                'error' => "This email is not verified",
+            ], 409); //change code ?
         }
     }
 
@@ -101,7 +101,7 @@ class EmailController
      * @throws InvalidDataException
      * @throws ReflectionException
      */
-    public function verifToken(): void
+    public function tokenVerify(): void
     {
         Validator::make([
             'username' => 'required',
@@ -118,25 +118,78 @@ class EmailController
         {
             Flight::json([
                 'success' => false,
-                'error' => "Bad Link (user not found)",
+                'error' => "bad user",
             ], 404);
         }
-
-        else if ($user->email_verified == false && $user->temporary_email_token == $request->data->token)
+        else if ($user->temporary_email_token == $request->data->token && $request->data->token != "")
         {
-            $user->temporary_email_token = "";
-            $user->email_verified = true;
+            $changePwdToken = (string)rand();
+            $user->temporary_email_token = $changePwdToken;
             $user->save();
             Flight::json([
                 'success' => true,
-            ], 201);
+                'token' => $changePwdToken,
+            ], 200); //good code ?
         }
         else
         {
             Flight::json([
                 'success' => false,
-                'error' => "Bad Link (Token broken or already verfy)",
-            ], 400);
+                'error' => "Bad token, you don't have right",
+            ], 403); //change error code?
+        }
+    }
+
+    /**
+     * @throws InvalidDataException
+     * @throws ReflectionException
+     */
+    public function changePwd(): void
+    {
+        Validator::make([
+            'username' => 'required',
+            'pass1' => 'required',
+            'pass2' => 'required',
+            // add required token
+        ]);
+
+        $request = Flight::request();
+
+        $user = User::find([
+            'username' => $request->data->username,
+        ]);
+
+        if ($user == null)
+        {
+            Flight::json([
+                'success' => false,
+                'error' => "bad user",
+            ], 404);
+        }
+        else if ($request->data->pass1 != $request->data->pass2)
+        {
+            Flight::json([
+                'success' => false,
+                'error' => "2 password are not same",
+            ], 403); //good code ?
+        }
+
+        else if ($user->temporary_email_token == $request->data->token && $request->data->token != "")
+        {
+            $user->temporary_email_token = "";
+            $user->password = password_hash($request->data->pass1, PASSWORD_DEFAULT);
+            $user->save();
+            Flight::json([
+                'success' => true,
+            ], 200); //good code ?
+        }
+
+        else
+        {
+            Flight::json([
+                'success' => false,
+                'error' => "Bad token, you don't have right",
+            ], 403); //change error code?
         }
     }
 }
