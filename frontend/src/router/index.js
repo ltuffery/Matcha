@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import MainView from '../views/MainView.vue'
+import VerifyEmailView from '../views/VerifyEmailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,6 +16,11 @@ const router = createRouter({
       name: 'main',
       component: MainView,
     },
+    {
+      path: '/verify',
+      name: 'verify',
+      component: VerifyEmailView,
+    }
   ],
 })
 

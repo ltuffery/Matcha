@@ -30,6 +30,10 @@ async function handleSubmit() {
       hasError.value = true;
       titleAlert.value = data.message;
     }
+    else
+    {
+      Api.post('email/verif').send({email: formData.email})
+    }
   } catch (error) {
     console.error("Error during API request:", error);
     hasError.value = true;
@@ -186,7 +190,7 @@ function handleChangeStep(n: number) {
     </template>
 
     <template #finish>
-      <p>Compte créé avec succès, connectez-vous.</p>
+      <p>Account created successfully, check your email before you connect.</p>
     </template>
   </MultiStepForm>
 </template>
