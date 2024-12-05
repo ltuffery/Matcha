@@ -22,11 +22,6 @@ class EmailValidator extends Validator
         return true;
     }
 
-    public function getCode(): int
-    {
-        return 2;
-    }
-
     public function getMessage(): string
     {
         return sprintf('%s is not a valid email address', $this->field);

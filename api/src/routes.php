@@ -1,5 +1,6 @@
 <?php
 
+use Matcha\Api\Controllers\EmailController;
 use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Controllers\RegisterController;
 
@@ -16,6 +17,12 @@ Flight::route('GET /', function () {
 Flight::group('/auth', function () {
     Flight::route('POST /register', [RegisterController::class, 'store']);
     Flight::route('POST /login', [AuthenticatedSessionController::class, 'store']);
+
+});
+
+Flight::group('/email', function () {
+    Flight::route('POST /verif', [EmailController::class, 'emailVerif']);
+    Flight::route('POST /token', [EmailController::class, 'verifToken']);
 
 });
 
