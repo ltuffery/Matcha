@@ -2,6 +2,7 @@
 import MultiStepForm from '@/components/MultiStepForm.vue'
 import { Api } from '@/utils/api'
 import { ref } from 'vue'
+import Alert from './Alert.vue';
 
 let formData = {
   username: '',
@@ -16,11 +17,28 @@ let formData = {
 }
 
 const totalSteps = 4
-let step = ref(0)
+const step = ref(0)
+const hasError = ref(false)
+const titleAlert = ref('test')
 
-function handleSubmit() {
-  Api.post('auth/register').send(formData)
-  Api.post('email/verif').send({email: formData.email})
+async function handleSubmit() {
+  try {
+    const req = await Api.post('/auth/register').send(formData);
+    const data = await req.json();
+
+    if (req.status == 400) {
+      hasError.value = true;
+      titleAlert.value = data.message;
+    }
+    else
+    {
+      Api.post('email/verif').send({email: formData.email})
+    }
+  } catch (error) {
+    console.error("Error during API request:", error);
+    hasError.value = true;
+    titleAlert.value = "An unexpected error occurred.";
+  }
 }
 
 function handleChangeStep(n: number) {
@@ -34,6 +52,7 @@ function handleChangeStep(n: number) {
     :value="step.value"
     :max="totalSteps"
   ></progress>
+  <Alert v-if="hasError" type="error" :title="titleAlert" />
   <MultiStepForm
     :totalSteps="totalSteps"
     @submit="handleSubmit"

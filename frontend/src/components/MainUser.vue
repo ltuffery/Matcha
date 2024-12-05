@@ -43,7 +43,7 @@
     >
       <div class="p-2 w-full relative">
         <img
-          src="../images/arrow-up.svg"
+          src="../assets/icons/arrow-up.svg"
           alt="like btn"
           class="absolute inset-x-[47%] mr-5 bottom-2/3 size-14 cursor-pointer"
         />
@@ -53,7 +53,7 @@
             >{{ name }}</span
           >
           <img
-            src="../images/checked.png"
+            src="../assets/checked.png"
             alt="profile verified"
             class="size-7 mx-2"
           />
@@ -69,20 +69,20 @@
     <div class="absolute right-0 bottom-20 text-black m-2 z-20">
       <img
         :src="
-          isLiked ? '/src/images/heart-broken.svg' : '/src/images/heart.svg'
+          isLiked ? '/src/assets/icons/heart-broken.svg' : '/src/assets/icons/heart.svg'
         "
         @click="btnlike"
         alt="like btn"
         class="size-10 my-2 cursor-pointer"
       />
       <img
-        src="../images/flag.svg"
+        src="../assets/icons/flag.svg"
         alt="more option btn"
         class="size-10 my-2 cursor-pointer"
       />
     </div>
     <img
-      src="../images/heart.svg"
+      src="../assets/icons/heart.svg"
       class="absolute inset-x-1/2 inset-y-1/2 z-20 size-10 transition-transform duration-500"
       :class="[animated ? 'scale-[15] opacity-100' : 'scale-100 opacity-0']"
     />
@@ -108,7 +108,7 @@ export default {
   data() {
     return {
       images: [
-        '../../cat.gif',
+        'src/assets/cat.gif',
         'https://via.placeholder.com/600x400?text=Image+2',
         'https://via.placeholder.com/600x400?text=Image+3',
       ],
