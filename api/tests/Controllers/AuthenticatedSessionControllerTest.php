@@ -1,13 +1,13 @@
 <?php
 
 use flight\util\Collection;
-use Matcha\Api\Controllers\AuthController;
+use Matcha\Api\Controllers\AuthenticatedSessionController;
 use PHPUnit\Framework\TestCase;
 
-class AuthControllerTest extends TestCase
+class AuthenticatedSessionControllerTest extends TestCase
 {
 
-    private AuthController $controller;
+    private AuthenticatedSessionController $controller;
 
     protected function setUp(): void
     {
@@ -22,25 +22,7 @@ class AuthControllerTest extends TestCase
             `created_at` timestamp DEFAULT CURRENT_TIMESTAMP
         );");
 
-        $this->controller = new AuthController();
-    }
-
-    public function testRegisterWithNoData()
-    {
-        Flight::request()->data = new Collection();
-
-        try {
-            $this->controller->register();
-
-            $this->fail();
-        } catch (Exception $e) {
-            $body = Flight::response()->getBody();
-            $data = json_decode($body);
-
-            $this->assertEquals(1, $data->code);
-            $this->assertEquals("username is required", $data->message);
-            $this->assertEquals(400, Flight::response()->status());
-        }
+        $this->controller = new AuthenticatedSessionController();
     }
 
     public function testLoginWithNoData()
@@ -48,7 +30,7 @@ class AuthControllerTest extends TestCase
         Flight::request()->data = new Collection();
 
         try {
-            $this->controller->login();
+            $this->controller->store();
 
             $this->fail();
         } catch (Exception $e) {
@@ -78,7 +60,7 @@ class AuthControllerTest extends TestCase
             'created_at' => time()
         ]);
 
-        $this->controller->login();
+        $this->controller->store();
 
         $data = json_decode(Flight::response()->getBody());
 
