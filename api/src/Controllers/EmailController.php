@@ -83,7 +83,7 @@ class EmailController
         }
         else if ($user->email_verified == false)
         {
-            EmailController::emailVerifSend($user);
+            $this->emailVerifSend($user);
             Flight::json([
                 'success' => true,
             ], 200);
