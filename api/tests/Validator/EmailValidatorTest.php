@@ -32,9 +32,4 @@ class EmailValidatorTest extends TestCase
         $this->assertFalse($this->check('@bar.com'));
         $this->assertFalse($this->check('foo@.com'));
     }
-
-    public function testGetCode()
-    {
-        $this->assertEquals(2, $this->validator->getCode());
-    }
 }

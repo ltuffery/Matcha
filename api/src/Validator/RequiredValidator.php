@@ -16,11 +16,6 @@ class RequiredValidator extends Validator
         return isset($request->data->{$field});
     }
 
-    public function getCode(): int
-    {
-        return 1;
-    }
-
     public function getMessage(): string
     {
         return sprintf('%s is required', $this->field);
