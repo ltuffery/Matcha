@@ -2,6 +2,7 @@
 
 namespace Matcha\Api\Middleware;
 
+use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Flight;
@@ -9,17 +10,19 @@ use Flight;
 class AuthMiddleware
 {
 
-    public function before(): bool
+    public function before($params): void
     {
-        $jwt = Flight::request()->header('Authorization', null);
+        $jwt = Flight::request()->header('Authorization');
 
-        if (is_null($jwt)) {
-            return false;
+        if (empty($jwt)) {
+            Flight::jsonHalt(['message' => 'Unauthorized'], 401);
         }
 
-        JWT::decode($jwt, new Key($_ENV['SECRET_KEY'], 'HS256'));
-
-        return true;
+        try {
+            JWT::decode($jwt, new Key($_ENV['SECRET_KEY'], 'HS256'));
+        } catch (Exception $e) {
+            Flight::jsonHalt(['message' => $e->getMessage()], 400);
+        }
     }
 
 }
