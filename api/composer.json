@@ -30,5 +30,8 @@
             "name": "swotex",
             "email": "33070724+swotex@users.noreply.github.com"
         }
-    ]
+    ],
+    "scripts": {
+        "test": "phpunit"
+    }
 }
