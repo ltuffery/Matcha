@@ -3,7 +3,7 @@
 namespace Matcha\Api\Model;
 
 /**
- * @method static User find()
+ * @method static User find(array $data)
  */
 class User extends Model
 {
@@ -20,7 +20,7 @@ class User extends Model
     public string $sexual_preferences;
     public string $biography;
     public string $created_at;
-    public int $email_verified;
+    public bool $email_verified = false;
     public string $temporary_email_token;
 
     public function jsonSerialize(): array
