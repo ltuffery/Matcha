@@ -109,7 +109,7 @@ class ForgotController
     {
         Validator::make([
             'username' => 'required',
-            // add required token
+            'token' =>'required',
         ]);
 
         $request = Flight::request();
@@ -152,9 +152,9 @@ class ForgotController
     {
         Validator::make([
             'username' => 'required',
-            'pass1' => 'required',
-            'pass2' => 'required',
-            // add required token
+            'newPassword' => 'required',
+            'confirmPassword' => 'required',
+            'token' =>'required',
         ]);
 
         $request = Flight::request();
@@ -170,7 +170,7 @@ class ForgotController
                 'error' => "bad user",
             ], 404);
         }
-        else if ($request->data->pass1 != $request->data->pass2)
+        else if ($request->data->newPassword != $request->data->confirmPassword)
         {
             Flight::json([
                 'success' => false,
@@ -181,7 +181,7 @@ class ForgotController
         else if ($user->temporary_email_token == $request->data->token && $request->data->token != "")
         {
             $user->temporary_email_token = "";
-            $user->password = password_hash($request->data->pass1, PASSWORD_DEFAULT);
+            $user->password = password_hash($request->data->newPassword, PASSWORD_DEFAULT);
             $user->save();
             Flight::json([
                 'success' => true,

@@ -44,7 +44,7 @@
                             d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                             clip-rule="evenodd" />
                         </svg>
-                        <input v-model="pwd1" type="password" class="grow" placeholder="********" required />
+                        <input v-model="newPassword" type="password" class="grow" placeholder="********" required />
                     </label>
                     <label class="label mt-2">
                         <span class="label-text">Confirm new password</span>
@@ -60,7 +60,7 @@
                             d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                             clip-rule="evenodd" />
                         </svg>
-                        <input v-model="pwd2" type="password" class="grow" placeholder="********" required />
+                        <input v-model="confirmPassword" type="password" class="grow" placeholder="********" required />
                     </label>
                     </div>
                     <div class="flex justify-end mt-3 w-full">
@@ -90,8 +90,8 @@
     const tokenPwd = ref();
 
     // Input form
-    const pwd1 = ref(),
-            pwd2 = ref()
+    const newPassword = ref(),
+            confirmPassword = ref()
 
     let urlParams = new URLSearchParams(window.location.search);
 
@@ -109,7 +109,7 @@
 
     async function changePassword(e)
     {
-        if (pwd1.value != pwd2.value)
+        if (newPassword.value != confirmPassword.value)
         {
             printBack(false, "the password need to be same")
         }
@@ -117,8 +117,8 @@
         {
             const info = {
                 "username": urlParams.get('user'),
-                "pass1": pwd1.value,
-                "pass2": pwd2.value,
+                "newPassword": newPassword.value,
+                "confirmPassword": confirmPassword.value,
                 "token": tokenPwd.value,
             } 
             let req = await Api.post("forgot/change-password").send(info);
