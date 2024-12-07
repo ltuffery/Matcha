@@ -36,8 +36,10 @@ class EmailController
             $userTarget->save();
             // get and replace body mail
             $bodyMail = file_get_contents(__DIR__ . '/../template/file.html');
-            $bodyMail = str_replace('{{username}}', htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $bodyMail);
-            $bodyMail = str_replace('{{url}}', $url, $bodyMail);
+            $bodyMail = str_replace(
+                ['{{username}}', '{{url}}'],
+                [htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $url],
+                $bodyMail);
 
             //Recipients
             $mail->setFrom('noreply@matcha.com', 'Matcha');
@@ -105,7 +107,7 @@ class EmailController
     {
         Validator::make([
             'username' => 'required',
-            // add required token
+            'token' =>'required',
         ]);
 
         $request = Flight::request();
