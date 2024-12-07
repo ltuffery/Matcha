@@ -97,7 +97,7 @@ class ForgotController
             Flight::json([
                 'success' => false,
                 'error' => "This email is not verified",
-            ], 409); //change code ?
+            ], 400);
         }
     }
 
@@ -133,14 +133,14 @@ class ForgotController
             Flight::json([
                 'success' => true,
                 'token' => $changePwdToken,
-            ], 200); //good code ?
+            ], 200);
         }
         else
         {
             Flight::json([
                 'success' => false,
                 'error' => "Bad token, you don't have right",
-            ], 403); //change error code?
+            ], 403);
         }
     }
 
@@ -175,7 +175,7 @@ class ForgotController
             Flight::json([
                 'success' => false,
                 'error' => "2 password are not same",
-            ], 403); //good code ?
+            ], 400);
         }
 
         else if ($user->temporary_email_token == $request->data->token && $request->data->token != "")
@@ -185,7 +185,7 @@ class ForgotController
             $user->save();
             Flight::json([
                 'success' => true,
-            ], 200); //good code ?
+            ], 200);
         }
 
         else
@@ -193,7 +193,7 @@ class ForgotController
             Flight::json([
                 'success' => false,
                 'error' => "Bad token, you don't have right",
-            ], 403); //change error code?
+            ], 403);
         }
     }
 }
