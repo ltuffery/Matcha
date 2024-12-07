@@ -17,8 +17,10 @@ class AuthMiddleware
         if (empty($jwt)) {
             Flight::jsonHalt(['message' => 'Unauthorized'], 401);
         } else {
+            $token = str_replace('Bearer ', '', $jwt);
+
             try {
-                JWT::decode($jwt, new Key($_ENV['SECRET_KEY'], 'HS256'));
+                JWT::decode($token, new Key($_ENV['SECRET_KEY'], 'HS256'));
             } catch (Exception $e) {
                 Flight::jsonHalt(['message' => $e->getMessage()], 400);
             }

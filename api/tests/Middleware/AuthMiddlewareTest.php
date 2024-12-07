@@ -2,6 +2,7 @@
 
 namespace Middleware;
 
+use Firebase\JWT\JWT;
 use Flight;
 use Matcha\Api\Middleware\AuthMiddleware;
 use Matcha\Api\Testing\Cases\HttpTestCase;
@@ -38,7 +39,7 @@ class AuthMiddlewareTest extends TestCase
         $this->response->assertJson(['message' => "Unauthorized"]);
     }
 
-    public function testInvalidJWT(): void
+    public function testInvalidJWTSegments(): void
     {
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer foo';
 
@@ -46,5 +47,25 @@ class AuthMiddlewareTest extends TestCase
 
         $this->response->assertStatus(400);
         $this->response->assertJson(['message' => "Wrong number of segments"]);
+    }
+
+    public function testInvalidJWT(): void
+    {
+        $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
+        $this->middleware->before([]);
+
+        $this->response->assertStatus(400);
+        $this->response->assertJson(['message' => "Signature verification failed"]);
+    }
+
+    public function testValidJWT(): void
+    {
+        $token = JWT::encode(['username' => 'John'], $_ENV['SECRET_KEY'], 'HS256');
+        $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . $token;
+
+        $this->middleware->before([]);
+
+        $this->response->assertStatus(200);
     }
 }
