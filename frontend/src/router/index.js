@@ -10,6 +10,9 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      beforeEnter: () => {
+        console.log(RegExp("token=[^;]+").exec(document.cookie)[0])
+      }
     },
     {
       path: '/main',
