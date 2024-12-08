@@ -17,7 +17,7 @@ final class Factory
     public function count(int $n): static
     {
         if ($n <= 0) {
-            throw new Exception("..."); // TODO: write exception message
+            throw new Exception("The count value must be greater than zero. Provided value: {$n}");
         }
 
         $this->count = $n;
