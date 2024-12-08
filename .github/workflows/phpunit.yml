@@ -26,6 +26,11 @@ jobs:
           cd api
           composer install
 
+      - name: Load .env file
+        uses: aarcangeli/load-dotenv@v1
+        with:
+          filename: example.env
+
       - name: PHPUnit Tests
         run: |
           cd api
@@ -33,4 +38,3 @@ jobs:
         env:
           XDEBUG_MODE: coverage
           TEST_NAME: Scarlett
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
