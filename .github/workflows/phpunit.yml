@@ -29,7 +29,7 @@ jobs:
       - name: Load .env file
         uses: aarcangeli/load-dotenv@v1
         with:
-          filename: example.env
+          filenames: example.env
 
       - name: PHPUnit Tests
         run: |
