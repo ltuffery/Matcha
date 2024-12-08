@@ -61,7 +61,7 @@ class AuthMiddlewareTest extends TestCase
 
     public function testValidJWT(): void
     {
-        $token = JWT::encode(['username' => 'John'], $_ENV['SECRET_KEY'], 'HS256');
+        $token = JWT::encode(['username' => 'John'], getenv('SECRET_KEY'), 'HS256');
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . $token;
 
         $this->middleware->before([]);

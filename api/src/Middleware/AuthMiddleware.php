@@ -20,7 +20,7 @@ class AuthMiddleware
             $token = str_replace('Bearer ', '', $jwt);
 
             try {
-                JWT::decode($token, new Key($_ENV['SECRET_KEY'], 'HS256'));
+                JWT::decode($token, new Key(getenv('SECRET_KEY'), 'HS256'));
             } catch (Exception $e) {
                 Flight::jsonHalt(['message' => $e->getMessage()], 400);
             }

@@ -31,9 +31,6 @@ jobs:
         with:
           filenames: example.env
 
-      - name: Check environment variable SECRET_KEY
-        run: echo $SECRET_KEY
-
       - name: PHPUnit Tests
         run: |
           cd api
