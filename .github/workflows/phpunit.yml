@@ -33,3 +33,4 @@ jobs:
         env:
           XDEBUG_MODE: coverage
           TEST_NAME: Scarlett
+          SECRET_KEY: secret_jwt_key
