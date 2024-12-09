@@ -5,7 +5,9 @@
         "flightphp/core": "^3.13",
         "ext-pdo": "*",
         "phpmailer/phpmailer": "^6.9",
-        "firebase/php-jwt": "^6.10"
+        "firebase/php-jwt": "^6.10",
+        "fakerphp/faker": "^1.24",
+        "php": "^8.0"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
@@ -14,11 +16,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Matcha\\Api\\": "src/"
+            "Matcha\\Api\\": "src/",
+            "Matcha\\Database\\Seeders\\": "database/seeders"
         },
         "files": [
             "src/config.php",
-            "src/routes.php"
+            "src/routes.php",
+            "src/helpers.php"
         ]
     },
     "authors": [
