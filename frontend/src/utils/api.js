@@ -1,3 +1,5 @@
+import { logout } from "@/services/auth"
+
 export class Api {
   method = ''
 
@@ -11,8 +13,7 @@ export class Api {
   }
 
   async send(body) {
-
-    let req = await fetch(`http://localhost:3000/${this.path}`, {
+    let res = await fetch(`http://localhost:3000/${this.path}`, {
       method: this.method,
       headers: {
         'Content-Type': 'application/json',
@@ -20,6 +21,10 @@ export class Api {
       body: JSON.stringify(body),
     })
 
-    return req
+    if (res.status == 401) {
+      logout()
+    }
+
+    return res
   }
 }
