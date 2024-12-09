@@ -47,7 +47,7 @@ class AuthenticatedSessionController
                 'exp' => $time + 600,
                 'iat' => $time,
                 'username' => $user->username,
-            ], $_ENV['SECRET_KEY'], 'HS256');
+            ], getenv('SECRET_KEY'), 'HS256');
 
             Flight::json([
                 'success' => true,
