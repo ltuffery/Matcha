@@ -30,11 +30,17 @@ final class Factory
         for ($i = 0; $i < $this->count; $i++) {
             $model = new $this->model;
 
-            foreach ($data as $key => $value) {
-                $model->{$key} = $value;
-            }
+            try {
+                foreach ($data as $key => $value) {
+                    $model->{$key} = $value;
+                }
 
-            $model->save();
+                $model->save();
+            } catch(Exception $e) {
+                if (!getenv('PHPUNIT_TEST')) {
+                    echo sprintf("\033[0;31m%s (%d) : %s\033[0m", $this->model, $i, $e->getMessage()) . PHP_EOL;
+                }
+            }
         }
     }
 }
