@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import MainView from '../views/MainView.vue'
 import VerifyEmailView from '../views/VerifyEmailView.vue'
+import { authGuard } from '@/middlewares/auth'
+import { isAuthenticated } from '@/services/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,14 +12,19 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      beforeEnter: () => {
-        console.log(RegExp("token=[^;]+").exec(document.cookie)[0])
+      beforeEnter: (to, from, next) => {
+        if (isAuthenticated()) {
+          next({ name: 'main' })
+        } else {
+          next()
+        }
       }
     },
     {
       path: '/main',
       name: 'main',
       component: MainView,
+      beforeEnter: [authGuard],
     },
     {
       path: '/verify',
