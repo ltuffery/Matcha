@@ -6,7 +6,7 @@
       <div class="card-body">
         <Tabs>
           <Tab name="Login">
-            <h3 class="text-3xl font-bold my-5">Login !</h3>
+            <!-- <h3 class="text-3xl font-bold my-5">Login !</h3> -->
             <LoginForm />
           </Tab>
           <Tab name="Register">

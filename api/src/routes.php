@@ -1,6 +1,7 @@
 <?php
 
 use Matcha\Api\Controllers\EmailController;
+use Matcha\Api\Controllers\ForgotController;
 use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Controllers\RegisterController;
 
@@ -23,7 +24,12 @@ Flight::group('/auth', function () {
 Flight::group('/email', function () {
     Flight::route('POST /verif', [EmailController::class, 'emailVerif']);
     Flight::route('POST /token', [EmailController::class, 'verifToken']);
+});
 
+Flight::group('/forgot', function () {
+    Flight::route('POST /credencial', [ForgotController::class, 'forgotCredencial']);
+    Flight::route('POST /token-verify', [ForgotController::class, 'tokenVerify']);
+    Flight::route('POST /change-password', [ForgotController::class, 'changePwd']);
 });
 
 // 404 route
