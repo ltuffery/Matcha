@@ -36,11 +36,12 @@ class AuthenticatedSessionController
         } elseif (password_verify($request->data->password, $user->password)) {
             if (!$user->email_verified)
             {
-                Flight::json([
+                Flight::jsonHalt([
                     'success' => false,
                     'error' => "Your email is not verified",
-                ]);
+                ], 401);
             }
+
             $time = time();
 
             $jwt = JWT::encode([

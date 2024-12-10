@@ -6,15 +6,20 @@ export const login = async (username, password) => {
       username: username,
       password: password,
     })
-    const data = await response.json()
-    const token = data.token
 
-    localStorage.setItem('jwt', token)
+    if (response.ok) {
+      const data = await response.json()
+      const token = data.token
 
-    return data
+      localStorage.setItem('jwt', token)
+
+      return data
+    }
+
+    return null
   } catch (error) {
     console.error('Erreur de connexion:', error)
-    throw error
+    return null
   }
 }
 

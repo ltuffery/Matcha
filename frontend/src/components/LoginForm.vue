@@ -1,4 +1,5 @@
 <script setup>
+import router from '@/router';
 import { login } from '@/services/auth';
 import { ref } from 'vue'
 
@@ -8,7 +9,11 @@ let username = ref(''),
 function loginUserAccount(e) {
   e.preventDefault()
 
-  login(username.value, password.value).then(console.log)
+  login(username.value, password.value).then((res) => {
+    if (res != null) {
+      router.push({ name: 'main' })
+    }
+  })
 }
 </script>
 
