@@ -32,14 +32,14 @@ class AuthenticatedSessionController
         if ($user == null) {
             Flight::json([
                 'success' => false,
-            ]);
+            ], 404);
         } elseif (password_verify($request->data->password, $user->password)) {
             if (!$user->email_verified)
             {
                 Flight::json([
                     'success' => false,
                     'error' => "Your email is not verified",
-                ]);
+                ], 401);
             }
             $time = time();
 
@@ -56,7 +56,8 @@ class AuthenticatedSessionController
         } else {
             Flight::json([
                 'success' => false,
-            ]);
+                'message' => 'wrong password',
+            ], 400);
         }
     }
 }

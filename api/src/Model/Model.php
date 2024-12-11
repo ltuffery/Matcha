@@ -6,7 +6,6 @@ use Exception;
 use Flight;
 use JsonSerializable;
 use PDO;
-use PDOException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
