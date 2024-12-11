@@ -16,11 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup MySQL
-        uses: mirromutth/mysql-action@v1.1
-        with:
-          mysql root password: rootpassword
-
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -44,6 +39,3 @@ jobs:
         env:
           XDEBUG_MODE: coverage
           TEST_NAME: Scarlett
-          MYSQL_DATABASE: matcha_db_test
-          MYSQL_USER: root
-          MYSQL_PASSWORD: rootpassword

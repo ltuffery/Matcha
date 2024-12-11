@@ -7,7 +7,6 @@ use Flight;
 use flight\util\Collection;
 use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
-use PDO;
 use PHPUnit\Framework\TestCase;
 
 class AuthenticatedSessionControllerTest extends TestCase
@@ -35,7 +34,7 @@ class AuthenticatedSessionControllerTest extends TestCase
             $this->controller->store();
 
             $this->fail();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $body = Flight::response()->getBody();
             $data = json_decode($body);
 
