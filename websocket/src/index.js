@@ -1,10 +1,19 @@
-const httpServer = require("http").createServer();
-const io = require("socket.io")(httpServer, {
-  // ...
+import { Server } from "socket.io";
+
+const io = new Server({
+  cors: {
+    origin: '*'
+  }
 });
 
 io.on("connection", (socket) => {
-  // ...
+  socket.on("test", () => {
+    console.log("test on : ", socket.handshake.auth.token)
+  })
+
+  socket.on("disconnect", (reason) => {
+    console.log("deco", reason)
+  });
 });
 
-httpServer.listen(3001);
+io.listen(3001);
