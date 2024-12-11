@@ -18,7 +18,7 @@
     <php>
         <ini name="error_reporting" value="-1"/>
         <env name="PHPUNIT_TEST" value="true" force="true" />
-        <env name="MYSQL_DATABASE" value="matcha_db_test" force="true" />
+        <env name="MYSQL_DATABASE" value="test" force="true" />
         <env name="MYSQL_USER" value="root" force="true" />
         <env name="MYSQL_PASSWORD" value="rootpassword" force="true" />
     </php>
