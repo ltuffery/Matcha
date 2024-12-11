@@ -1,14 +1,6 @@
 <?php
 
 $db = new PDO(
-    'mysql:host=mysql;',
-    getenv('MYSQL_USER'),
-    getenv('MYSQL_PASSWORD'),
-);
-
-$db->exec("CREATE DATABASE IF NOT EXISTS " . getenv('MYSQL_DATABASE') . ";");
-
-$db = new PDO(
     'mysql:host=mysql;dbname=' . getenv('MYSQL_DATABASE'),
     getenv('MYSQL_USER'),
     getenv('MYSQL_PASSWORD'),
