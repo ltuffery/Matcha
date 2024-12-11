@@ -12,6 +12,16 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_DATABASE: matcha_db_test
+          MYSQL_ROOT_PASSWORD: rootpassword
+        ports:
+          - 3005:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -34,7 +44,11 @@ jobs:
       - name: PHPUnit Tests
         run: |
           cd api
+          php database/migrate.php
           ./vendor/bin/phpunit --coverage-text
         env:
           XDEBUG_MODE: coverage
           TEST_NAME: Scarlett
+          MYSQL_DATABASE: matcha_db_test
+          MYSQL_USER: root
+          MYSQL_PASSWORD: rootpassword
