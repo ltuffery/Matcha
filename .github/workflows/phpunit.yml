@@ -34,7 +34,6 @@ jobs:
       - name: PHPUnit Tests
         run: |
           cd api
-          php database/migrate.php
           ./vendor/bin/phpunit --coverage-text
         env:
           XDEBUG_MODE: coverage
