@@ -1,9 +1,7 @@
 import { io } from 'socket.io-client' 
 
-const socket = io('localhost:3001', {
+export const socket = io('localhost:3001', {
   auth: {
-    token: "abc"
+    token: localStorage.getItem("token")
   }
 })
-
-socket.emit("test")
