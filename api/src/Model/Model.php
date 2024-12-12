@@ -43,7 +43,13 @@ abstract class Model implements JsonSerializable
             $propertyName = $property->getName();
 
             if ($propertyName != 'id') {
-                $propsToImplode[] = '`' . $propertyName . '` = "' . $this->{$propertyName} . '"';
+                $value = $this->{$propertyName};
+
+                if (is_bool($this->{$propertyName})) {
+                    $value = (int)$this->{$propertyName};
+                }
+
+                $propsToImplode[] = '`' . $propertyName . '` = "' . $value . '"';
             }
         }
 
