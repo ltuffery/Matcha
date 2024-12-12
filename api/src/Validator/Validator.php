@@ -7,10 +7,12 @@ use InvalidDataException;
 
 abstract class Validator
 {
+    protected static array $options;
     private static array $rules = [
         'required' => RequiredValidator::class,
         'email' => EmailValidator::class,
         'number' => NumberValidator::class,
+        'regex' => RegexValidator::class,
     ];
 
     public static function make(array $rules): void
@@ -19,21 +21,30 @@ abstract class Validator
             $split = explode("|", $value);
 
             foreach ($split as $rule) {
-                if (isset(self::$rules[$rule])) {
-                    /** @var Validator $class */
-                    $class = new self::$rules[$rule]();
-                    $code = array_search($rule, array_keys(self::$rules));
+                self::findRule($name, $rule);
+            }
+        }
+    }
 
-                    if (!$class->validate($name)) {
-                        Flight::response()->clearBody();
-                        Flight::json([
-                            'code' => $code,
-                            'message' => $class->getMessage(),
-                        ], 400);
+    private static function findRule(string $name, string $rule): void
+    {
+        $params = explode(":", $rule);
+        $rule = $params[0];
+        self::$options = array_slice($params, 1);
 
-                        throw new InvalidDataException($code, $class->getMessage());
-                    }
-                }
+        if (isset(self::$rules[$rule])) {
+            /** @var Validator $class */
+            $class = new self::$rules[$rule]();
+            $code = array_search($rule, array_keys(self::$rules));
+
+            if (!$class->validate($name)) {
+                Flight::response()->clearBody();
+                Flight::json([
+                    'code' => $code,
+                    'message' => $class->getMessage(),
+                ], 400);
+
+                throw new InvalidDataException($code, $class->getMessage());
             }
         }
     }

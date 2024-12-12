@@ -21,7 +21,11 @@ const props = defineProps({
       'alert-error': props.type == 'error',
     }"
   >
-    <img alt="Alert icon" src="../assets/icons/close-circle-svgrepo-com.svg" class="h-8 w-8 shrink-0 stroke-current"/>
+    <img
+      alt="Alert icon"
+      src="../assets/icons/close-circle-svgrepo-com.svg"
+      class="h-8 w-8 shrink-0 stroke-current"
+    />
     <div>
       <span>{{ props.title }}</span>
     </div>
