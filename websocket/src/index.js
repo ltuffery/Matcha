@@ -15,6 +15,11 @@ io.on("connection", (socket) => {
       .send({
         state: 1
       })
+      .then(res => {
+        if (res.status == 401) {
+          console.log(socket.handshake.auth.token)
+        }
+      })
   })
 
   socket.on("disconnect", (reason) => {
