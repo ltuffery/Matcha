@@ -1,6 +1,6 @@
 <script setup>
-import router from '@/router';
-import { login } from '@/services/auth';
+import router from '@/router'
+import { login } from '@/services/auth'
 import { ref } from 'vue'
 import { Api } from '@/utils/api'
 
@@ -8,32 +8,28 @@ let username = ref(''),
   password = ref('')
 
 const forgotPwd = ref(false),
-      email = ref(),
-      successed = ref(null)
+  email = ref(),
+  successed = ref(null)
 
-function forgotSwitch()
-{
-  forgotPwd.value = !forgotPwd.value;
+function forgotSwitch() {
+  forgotPwd.value = !forgotPwd.value
 }
 
-function printBack(state)
-{
+function printBack(state) {
   successed.value = state
-  setTimeout(function() {
+  setTimeout(function () {
     successed.value = null
-}, 2000);
+  }, 2000)
 }
 
-async function forgetPassword(e)
-{
-  const response = await Api.post('forgot/credencial').send({email: email.value})
-  email.value = ""
-  if (response.status == 200)
-  {
+async function forgetPassword(e) {
+  const response = await Api.post('forgot/credencial').send({
+    email: email.value,
+  })
+  email.value = ''
+  if (response.status == 200) {
     printBack(true)
-  }
-  else
-  {
+  } else {
     printBack(false)
   }
 }
@@ -41,7 +37,7 @@ async function forgetPassword(e)
 function loginUserAccount(e) {
   e.preventDefault()
 
-  login(username.value, password.value).then((res) => {
+  login(username.value, password.value).then(res => {
     if (res != null) {
       router.push({ name: 'main' })
     }
@@ -51,39 +47,53 @@ function loginUserAccount(e) {
 
 <template>
   <form v-if="forgotPwd" @submit.prevent="forgetPassword">
-
-  <div v-if="successed" class="toast toast-top toast-right">
-    <div class="alert alert-success">
-      <span>Email sended !</span>
+    <div v-if="successed" class="toast toast-top toast-right">
+      <div class="alert alert-success">
+        <span>Email sended !</span>
+      </div>
     </div>
-  </div>
-  <div v-if="successed == false" class="toast toast-top toast-right">
-    <div class="alert alert-error">
-      <span>Error !</span>
+    <div v-if="successed == false" class="toast toast-top toast-right">
+      <div class="alert alert-error">
+        <span>Error !</span>
+      </div>
     </div>
-  </div>
 
     <h3 class="text-3xl font-bold my-5">Forgot credencial</h3>
-    <span class="">Forgot your username or password ? 
-      <br />Recive and change it by mail :</span>
+    <span class=""
+      >Forgot your username or password ? <br />Recive and change it by mail
+      :</span
+    >
     <div class="form-control">
       <label class="input input-bordered flex items-center gap-2 mt-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            class="h-4 w-4 opacity-70">
-            <path
-              d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-            <path
-              d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-          </svg>
-          <input v-model="email" type="email" class="grow" placeholder="Email" required />
-        </label>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          class="h-4 w-4 opacity-70"
+        >
+          <path
+            d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z"
+          />
+          <path
+            d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z"
+          />
+        </svg>
+        <input
+          v-model="email"
+          type="email"
+          class="grow"
+          placeholder="Email"
+          required
+        />
+      </label>
     </div>
     <div class="flex justify-between mt-6">
-      <button class="btn btn-primary w-2/6" type="button" @click="forgotSwitch">Go back</button>
-      <button class="btn btn-outline btn-success ml-2 w-2/6	" type="submit">Send</button>
+      <button class="btn btn-primary w-2/6" type="button" @click="forgotSwitch">
+        Go back
+      </button>
+      <button class="btn btn-outline btn-success ml-2 w-2/6" type="submit">
+        Send
+      </button>
     </div>
   </form>
 
@@ -114,7 +124,9 @@ function loginUserAccount(e) {
       />
     </div>
     <div class="flex justify-end mt-3 w-full">
-        <span class="cursor-pointer hover:underline" @click="forgotSwitch">Forgot credencial ?</span>
+      <span class="cursor-pointer hover:underline" @click="forgotSwitch"
+        >Forgot credencial ?</span
+      >
     </div>
     <div class="form-control mt-6">
       <button class="btn btn-primary" type="submit">Login</button>

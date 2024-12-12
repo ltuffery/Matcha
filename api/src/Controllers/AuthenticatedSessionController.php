@@ -34,8 +34,7 @@ class AuthenticatedSessionController
                 'success' => false,
             ]);
         } elseif (password_verify($request->data->password, $user->password)) {
-            if (!$user->email_verified)
-            {
+            if (!$user->email_verified) {
                 Flight::jsonHalt([
                     'success' => false,
                     'error' => "Your email is not verified",

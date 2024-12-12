@@ -1,4 +1,4 @@
-import { Api } from "@/utils/api";
+import { Api } from '@/utils/api'
 
 export const login = async (username, password) => {
   try {

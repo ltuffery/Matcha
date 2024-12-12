@@ -12,13 +12,11 @@ use PHPMailer\PHPMailer\Exception;
 
 class ForgotController
 {
-
     private function emailForgotSend($userTarget): void
     {
         $mail = new PHPMailer(true);
-        
-        try
-        {
+
+        try {
             //Server settings
             $mail->isSMTP();
             $mail->Host       = $_ENV['SMTP_HOST'];
@@ -35,27 +33,26 @@ class ForgotController
             $userTarget->temporary_email_token = $temporaryToken;
             $userTarget->save();
             // get and replace body mail
-            $bodyMail = file_get_contents(__DIR__ . '/../template/forgot.html');
+            $bodyMail = file_get_contents(template('forgot.html'));
             $bodyMail = str_replace(
                 ['{{username}}', '{{url}}'],
                 [htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $url],
-                $bodyMail);
+                $bodyMail
+            );
 
             //Recipients
             $mail->setFrom('noreply@matcha.com', 'Matcha');
             $mail->addAddress($userTarget->email, $userTarget->username);
-    
+
             $mail->isHTML(true);
             $mail->Subject = 'Forgot credencial';
             $mail->Body    = $bodyMail;
             $mail->AltBody = 'your username is '. $userTarget->username .' and this is your link to change password : ' . $url;
-    
+
             $mail->CharSet = 'UTF-8';
             $mail->Encoding = 'base64';
             $mail->send();
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }
     }
@@ -76,22 +73,17 @@ class ForgotController
             'email' => $request->data->email,
         ]);
 
-        if ($user == null)
-        {
+        if ($user == null) {
             Flight::json([
                 'success' => false,
                 'error' => "this email doesn't exist",
             ], 404);
-        }
-        else if ($user->email_verified == true)
-        {
+        } elseif ($user->email_verified == true) {
             $this->emailForgotSend($user);
             Flight::json([
                 'success' => true,
             ], 200);
-        }
-        else
-        {
+        } else {
             Flight::json([
                 'success' => false,
                 'error' => "This email is not verified",
@@ -107,7 +99,7 @@ class ForgotController
     {
         Validator::make([
             'username' => 'required',
-            'token' =>'required',
+            'token' => 'required',
         ]);
 
         $request = Flight::request();
@@ -116,15 +108,12 @@ class ForgotController
             'username' => $request->data->username,
         ]);
 
-        if ($user == null)
-        {
+        if ($user == null) {
             Flight::json([
                 'success' => false,
                 'error' => "bad user",
             ], 404);
-        }
-        else if ($user->temporary_email_token == $request->data->token && $request->data->token != "")
-        {
+        } elseif ($user->temporary_email_token == $request->data->token && $request->data->token != "") {
             $changePwdToken = (string)rand();
             $user->temporary_email_token = $changePwdToken;
             $user->save();
@@ -132,9 +121,7 @@ class ForgotController
                 'success' => true,
                 'token' => $changePwdToken,
             ], 200);
-        }
-        else
-        {
+        } else {
             Flight::json([
                 'success' => false,
                 'error' => "Bad token, you don't have right",
@@ -152,7 +139,7 @@ class ForgotController
             'username' => 'required',
             'newPassword' => 'required',
             'confirmPassword' => 'required',
-            'token' =>'required',
+            'token' => 'required',
         ]);
 
         $request = Flight::request();
@@ -161,33 +148,24 @@ class ForgotController
             'username' => $request->data->username,
         ]);
 
-        if ($user == null)
-        {
+        if ($user == null) {
             Flight::json([
                 'success' => false,
                 'error' => "bad user",
             ], 404);
-        }
-        else if ($request->data->newPassword != $request->data->confirmPassword)
-        {
+        } elseif ($request->data->newPassword != $request->data->confirmPassword) {
             Flight::json([
                 'success' => false,
                 'error' => "2 password are not same",
             ], 400);
-        }
-
-        else if ($user->temporary_email_token == $request->data->token && $request->data->token != "")
-        {
+        } elseif ($user->temporary_email_token == $request->data->token && $request->data->token != "") {
             $user->temporary_email_token = "";
             $user->password = password_hash($request->data->newPassword, PASSWORD_DEFAULT);
             $user->save();
             Flight::json([
                 'success' => true,
             ], 200);
-        }
-
-        else
-        {
+        } else {
             Flight::json([
                 'success' => false,
                 'error' => "Bad token, you don't have right",
