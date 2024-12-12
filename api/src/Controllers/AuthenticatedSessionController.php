@@ -34,7 +34,7 @@ class AuthenticatedSessionController
                 'success' => false,
             ]);
         } elseif (password_verify($request->data->password, $user->password)) {
-            if ($user->email_verified == false)
+            if (!$user->email_verified)
             {
                 Flight::json([
                     'success' => false,
@@ -47,7 +47,7 @@ class AuthenticatedSessionController
                 'exp' => $time + 600,
                 'iat' => $time,
                 'username' => $user->username,
-            ], $_ENV['SECRET_KEY'], 'HS256');
+            ], getenv('SECRET_KEY'), 'HS256');
 
             Flight::json([
                 'success' => true,

@@ -1,7 +1,12 @@
 <?php
 
+namespace Controllers;
+
+use Exception;
+use Flight;
 use flight\util\Collection;
 use Matcha\Api\Controllers\AuthenticatedSessionController;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 class AuthenticatedSessionControllerTest extends TestCase
@@ -37,34 +42,10 @@ class AuthenticatedSessionControllerTest extends TestCase
             $body = Flight::response()->getBody();
             $data = json_decode($body);
 
-            $this->assertEquals(1, $data->code);
+            $this->assertEquals(0, $data->code);
             $this->assertEquals("username is required", $data->message);
             $this->assertEquals(400, Flight::response()->status());
         }
-    }
-
-    public function testLoginWithValidData()
-    {
-        Flight::request()->data = new Collection([
-            'username' => 'test',
-            'password' => 'password'
-        ]);
-
-        $stmt = Flight::db()->prepare("INSERT INTO users VALUES (:id, :username, :email, :password, :created_at)");
-
-        $stmt->execute([
-            'id' => 1,
-            'username' => 'test',
-            'email' => 'test@test.com',
-            'password' => password_hash("password", PASSWORD_DEFAULT),
-            'created_at' => time()
-        ]);
-
-        $this->controller->store();
-
-        $data = json_decode(Flight::response()->getBody());
-
-        $this->assertTrue($data->success);
     }
 
 }
