@@ -3,7 +3,7 @@ import router from '@/router'
 import { login } from '@/services/auth'
 import { ref } from 'vue'
 import { Api } from '@/utils/api'
-import { refreshSocket, socket } from '@/services/socket';
+import { refreshSocket, socket } from '@/services/socket'
 
 let username = ref(''),
   password = ref('')
@@ -42,7 +42,7 @@ function loginUserAccount(e) {
     if (res != null) {
       router.push({ name: 'main' })
       refreshSocket()
-      socket.emit("online")
+      socket.emit('online')
     }
   })
 }
