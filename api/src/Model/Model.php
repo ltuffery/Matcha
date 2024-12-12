@@ -7,7 +7,6 @@ use Flight;
 use JsonSerializable;
 use Matcha\Api\Factory\Factory;
 use PDO;
-use PDOException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
