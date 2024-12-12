@@ -8,52 +8,39 @@ function selfDestroy(index)
     toasts.value.splice(index, 1)
 }
 
-function addError(content, action = null, type = 1) {
-    const toast = { type: 'error', message: content, action: action, typebtn: type }
-    toasts.value.push(toast)
-
+function setTimeOutItem(toast, timeout = 3000)
+{
     setTimeout(() => {
         const index = toasts.value.indexOf(toast)
         if (index !== -1) {
             toasts.value.splice(index, 1)
         }
-    }, 3000)
+    }, timeout)
 }
 
-function addSuccess(content, action = null, type = 1) {
-    const toast = { type: 'success', message: content, action: action, typebtn: type }
-    toasts.value.push(toast)
+function createToast(content, type, data)
+{
+    let toast;
 
-    setTimeout(() => {
-        const index = toasts.value.indexOf(toast)
-        if (index !== -1) {
-            toasts.value.splice(index, 1)
-        }
-    }, 3000)
+    toast = { type: type, message: content, data }
+    toasts.value.push(toast);
+    setTimeOutItem(toast, data.timeout);
 }
 
-function addInfo(content, action = null, type = 1) {
-    const toast = { type: 'info', message: content, action: action, typebtn: type }
-    toasts.value.push(toast)
-
-    setTimeout(() => {
-        const index = toasts.value.indexOf(toast)
-        if (index !== -1) {
-            toasts.value.splice(index, 1)
-        }
-    }, 3000)
+function addError(content, data = null) {
+    createToast(content, 'error', data);
 }
 
-function addWarning(content, action = null, type = 1) {
-    const toast = { type: 'warning', message: content, action: action, typebtn: type }
-    toasts.value.push(toast)
+function addSuccess(content, data = null) {
+    createToast(content, 'success', data);
+}
 
-    setTimeout(() => {
-        const index = toasts.value.indexOf(toast)
-        if (index !== -1) {
-            toasts.value.splice(index, 1)
-        }
-    }, 3000)
+function addInfo(content, data = null) {
+    createToast(content, 'info', data);
+}
+
+function addWarning(content, data = null) {
+    createToast(content, 'warning', data);
 }
 
 defineExpose({
@@ -105,23 +92,27 @@ defineExpose({
                     stroke-width="2"
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <span class="text-wrap">{{ toast.message }}</span>
-            <div v-if="toast.action">
+            <div v-if="toast.data.title">
+                <h3 class="font-bold">{{toast.data.title}}</h3>
+                <div class="text-xs">{{ toast.message }}</div>
+            </div>
+            <span v-else class="text-wrap">{{ toast.message }}</span>
+            <div v-if="toast.data">
                 <button 
-                    v-if="toast.typebtn == 1" 
-                    @click="toast.action"
+                    v-if="toast.data.typebtn == 1 || !toast.data.typebtn" 
+                    @click="toast.data.action"
                     class="btn btn-sm">
                     See
                 </button>
                 <button 
-                    v-if="toast.typebtn == 2" 
+                    v-if="toast.data.typebtn == 2" 
                     @click="selfDestroy(index)"
                     class="btn btn-sm mr-1">
                     Deny
                 </button>
                 <button 
-                    v-if="toast.typebtn == 2" 
-                    @click="toast.action"
+                    v-if="toast.data.typebtn == 2" 
+                    @click="toast.data.action"
                     class="btn btn-sm btn-primary">
                     Accept
                 </button>
@@ -129,4 +120,3 @@ defineExpose({
         </div>
     </div>
 </template>
-
