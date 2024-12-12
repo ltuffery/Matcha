@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import { Api } from "./services/api.js";
 
 const io = new Server({
   cors: {
@@ -7,12 +8,22 @@ const io = new Server({
 });
 
 io.on("connection", (socket) => {
-  socket.on("test", () => {
-    console.log("test on : ", socket.handshake.auth.token)
+  socket.on("online", () => {
+    Api
+      .put('/users/me/status')
+      .header('Authorization', socket.handshake.auth.token)
+      .send({
+        state: 1
+      })
   })
 
   socket.on("disconnect", (reason) => {
-    console.log("deco", reason)
+    Api
+      .put('/users/me/status')
+      .header('Authorization', socket.handshake.auth.token)
+      .send({
+        state: 0
+      })
   });
 });
 

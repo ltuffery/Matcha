@@ -1,7 +1,11 @@
 <script setup>
 import { RouterView } from 'vue-router'
+import { isAuthenticated } from './services/auth';
+import { socket } from './services/socket';
 
-import '@/utils/socket.js'
+if (isAuthenticated()) {
+  socket.emit("online")
+}
 </script>
 
 <template>
