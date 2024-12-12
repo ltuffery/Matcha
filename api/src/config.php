@@ -30,7 +30,7 @@ Flight::map('error', function (Throwable $error) {
         header("Content-Type: application/json; charset=utf-8", response_code: 500);
 
         echo json_encode([
-            'message' => $error->getTraceAsString(),
+            'message' => $error->getMessage(),
         ]);
     }
 });

@@ -1,4 +1,6 @@
 <script setup>
+import router from '@/router';
+import { login } from '@/services/auth';
 import { ref } from 'vue'
 import { Api } from '@/utils/api'
 
@@ -39,18 +41,11 @@ async function forgetPassword(e)
 function loginUserAccount(e) {
   e.preventDefault()
 
-  fetch('http://localhost:3000/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      username: username.value,
-      password: password.value,
-    }),
+  login(username.value, password.value).then((res) => {
+    if (res != null) {
+      router.push({ name: 'main' })
+    }
   })
-    .then(res => res.json())
-    .then(console.log)
 }
 </script>
 

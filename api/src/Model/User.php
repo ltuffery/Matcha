@@ -20,7 +20,7 @@ class User extends Model
     public string $sexual_preferences;
     public string $biography;
     public string $created_at;
-    public bool $email_verified = false;
+    public bool $email_verified;
     public string $temporary_email_token;
 
     public function jsonSerialize(): array
