@@ -15,7 +15,7 @@ final class Factory
 
     public function create(array $data): void
     {
-        $model = new $this->model;
+        $model = new $this->model();
 
         try {
             foreach ($data as $key => $value) {
@@ -23,7 +23,7 @@ final class Factory
             }
 
             $model->save();
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             if (!getenv('PHPUNIT_TEST')) {
                 echo sprintf("\033[0;31m[%s] \033[0m%s", $this->model, $e->getMessage()) . PHP_EOL;
             }

@@ -7,7 +7,6 @@ use Matcha\Api\Testing\TestResponse;
 
 trait HttpTestCase
 {
-
     /**
      * Add header in request
      *

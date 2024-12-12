@@ -9,7 +9,6 @@ use Flight;
 
 class AuthMiddleware
 {
-
     public function before($params): void
     {
         $jwt = Flight::request()->header('Authorization');

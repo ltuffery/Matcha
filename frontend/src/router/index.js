@@ -19,7 +19,7 @@ const router = createRouter({
         } else {
           next()
         }
-      }
+      },
     },
     {
       path: '/main',
@@ -36,7 +36,7 @@ const router = createRouter({
       path: '/forgot',
       name: 'forgot',
       component: NewPasswordView,
-    }
+    },
   ],
 })
 

@@ -69,7 +69,9 @@
     <div class="absolute right-0 bottom-20 text-black m-2 z-20">
       <img
         :src="
-          isLiked ? '/src/assets/icons/heart-broken.svg' : '/src/assets/icons/heart.svg'
+          isLiked
+            ? '/src/assets/icons/heart-broken.svg'
+            : '/src/assets/icons/heart.svg'
         "
         @click="btnlike"
         alt="like btn"
