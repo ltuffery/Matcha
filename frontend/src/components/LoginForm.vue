@@ -68,8 +68,9 @@ function loginUserAccount(e) {
     </div>
   </div>
 
-    <h3 class="text-3xl font-bold my-5">Forgot !</h3>
-    <span class="">Forgot your username or password ? </br>Recive and change it by mail :</span>
+    <h3 class="text-3xl font-bold my-5">Forgot credencial</h3>
+    <span class="">Forgot your username or password ? 
+      <br />Recive and change it by mail :</span>
     <div class="form-control">
       <label class="input input-bordered flex items-center gap-2 mt-2">
           <svg
@@ -85,11 +86,9 @@ function loginUserAccount(e) {
           <input v-model="email" type="email" class="grow" placeholder="Email" required />
         </label>
     </div>
-    <div class="flex justify-end mt-3 w-full">
-        <button class="btn btn-outline btn-success ml-2" type="submit">Send</button>
-    </div>
-    <div class="form-control mt-6">
-      <button class="btn btn-primary" type="button" @click="forgotSwitch">Go back</button>
+    <div class="flex justify-between mt-6">
+      <button class="btn btn-primary w-2/6" type="button" @click="forgotSwitch">Go back</button>
+      <button class="btn btn-outline btn-success ml-2 w-2/6	" type="submit">Send</button>
     </div>
   </form>
 
@@ -120,7 +119,7 @@ function loginUserAccount(e) {
       />
     </div>
     <div class="flex justify-end mt-3 w-full">
-        <span class="cursor-pointer hover:underline" @click="forgotSwitch">Forgot credencial ? 🥲</span>
+        <span class="cursor-pointer hover:underline" @click="forgotSwitch">Forgot credencial ?</span>
     </div>
     <div class="form-control mt-6">
       <button class="btn btn-primary" type="submit">Login</button>

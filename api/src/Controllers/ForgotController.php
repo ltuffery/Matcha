@@ -46,9 +46,9 @@ class ForgotController
             $mail->addAddress($userTarget->email, $userTarget->username);
     
             $mail->isHTML(true);
-            $mail->Subject = 'Verify your email';
+            $mail->Subject = 'Forgot credencial';
             $mail->Body    = $bodyMail;
-            $mail->AltBody = 'This is your link to verify your mail : ' . $url;
+            $mail->AltBody = 'your username is '. $userTarget->username .' and this is your link to change password : ' . $url;
     
             $mail->CharSet = 'UTF-8';
             $mail->Encoding = 'base64';
