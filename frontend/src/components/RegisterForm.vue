@@ -2,7 +2,7 @@
 import MultiStepForm from '@/components/MultiStepForm.vue'
 import { Api } from '@/utils/api'
 import { ref } from 'vue'
-import Alert from './Alert.vue';
+import Alert from './Alert.vue'
 
 let formData = {
   username: '',
@@ -23,21 +23,19 @@ const titleAlert = ref('test')
 
 async function handleSubmit() {
   try {
-    const req = await Api.post('/auth/register').send(formData);
-    const data = await req.json();
+    const req = await Api.post('/auth/register').send(formData)
+    const data = await req.json()
 
     if (req.status == 400) {
-      hasError.value = true;
-      titleAlert.value = data.message;
-    }
-    else
-    {
-      Api.post('email/verif').send({email: formData.email})
+      hasError.value = true
+      titleAlert.value = data.message
+    } else {
+      Api.post('email/verif').send({ email: formData.email })
     }
   } catch (error) {
-    console.error("Error during API request:", error);
-    hasError.value = true;
-    titleAlert.value = "An unexpected error occurred.";
+    console.error('Error during API request:', error)
+    hasError.value = true
+    titleAlert.value = 'An unexpected error occurred.'
   }
 }
 

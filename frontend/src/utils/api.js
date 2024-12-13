@@ -11,7 +11,6 @@ export class Api {
   }
 
   async send(body) {
-
     let req = await fetch(`http://localhost:3000/${this.path}`, {
       method: this.method,
       headers: {
