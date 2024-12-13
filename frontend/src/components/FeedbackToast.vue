@@ -4,7 +4,21 @@ import { ref, watch } from 'vue'
 const toasts = ref([]),
     stack = ref([])
 
-const MAX_TOASTS = 3;
+const props = defineProps({
+    maxToasts: {
+        type: Number,
+        default: 3,
+    },
+    posX: {
+        type: String,
+        default: "center",
+    },
+    posY: {
+        type: String,
+        default: "top",
+    },
+});
+
 
 function selfDestroy(index)
 {
@@ -24,7 +38,7 @@ function setTimeOutItem(toast, timeout = 3000)
 watch(
     toasts,
     (newToasts, oldToasts) => {
-        if (newToasts.length < MAX_TOASTS && stack.value.length > 0) {
+        if (newToasts.length < props.maxToasts && stack.value.length > 0) {
             const nextToast = stack.value.shift();
             if (nextToast) {
                 toasts.value.push(nextToast);
@@ -39,7 +53,7 @@ function createToast(content, type, data)
 {
     const toast = { type: type, message: content, data };
 
-    if (toasts.value.length < MAX_TOASTS) {
+    if (toasts.value.length < props.maxToasts) {
         toasts.value.push(toast);
         setTimeOutItem(toast, data?.timeout || 3000);
     } else {
@@ -71,8 +85,9 @@ defineExpose({
 })
 </script>
 
+
 <template>
-    <div class="toast toast-top toast-end overflow-y-auto max-h-[30%]">
+    <div :class="['toast', `toast-${props.posY}`, `toast-${props.posX}`, 'overflow-y-auto', 'max-h-[30%]']">
         <div
             v-for="(toast, index) in toasts"
                 :key="index"
