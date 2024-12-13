@@ -24,7 +24,10 @@ function createToast(content, type, data)
 
     toast = { type: type, message: content, data }
     toasts.value.push(toast);
-    setTimeOutItem(toast, data.timeout);
+    if (data)
+        setTimeOutItem(toast, data.timeout);
+    else
+        setTimeOutItem(toast);
 }
 
 function addError(content, data = null) {
@@ -52,7 +55,7 @@ defineExpose({
 </script>
 
 <template>
-    <div class="toast toast-top toast-end overflow-y-auto max-h-[25%]">
+    <div class="toast toast-top toast-end overflow-y-auto max-h-[30%]">
         <!-- Parcourir les toasts dynamiques -->
         <div
             v-for="(toast, index) in toasts"
@@ -92,14 +95,14 @@ defineExpose({
                     stroke-width="2"
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <div v-if="toast.data.title">
+            <div v-if="toast.data && toast.data.title">
                 <h3 class="font-bold">{{toast.data.title}}</h3>
                 <div class="text-xs">{{ toast.message }}</div>
             </div>
             <span v-else class="text-wrap">{{ toast.message }}</span>
-            <div v-if="toast.data">
+            <div v-if="toast.data && toast.data.action">
                 <button 
-                    v-if="toast.data.typebtn == 1 || !toast.data.typebtn" 
+                    v-if="!toast.data.typebtn || toast.data.typebtn == 1" 
                     @click="toast.data.action"
                     class="btn btn-sm">
                     See
