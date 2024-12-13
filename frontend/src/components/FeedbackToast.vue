@@ -131,7 +131,7 @@ defineExpose({
                 <div class="text-xs">{{ toast.message }}</div>
             </div>
             <span v-else class="text-wrap">{{ toast.message }}</span>
-            <div v-if="toast.data && toast.data.action">
+            <div v-if="toast.data && toast.data.action" class="flex w-full justify-end">
                 <button 
                     v-if="!toast.data.typebtn || toast.data.typebtn == 1" 
                     @click="toast.data.action"
