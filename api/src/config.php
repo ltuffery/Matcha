@@ -1,5 +1,9 @@
 <?php
 
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use Matcha\Api\Model\User;
+
 include "Exceptions/InvalidDataException.php";
 
 Flight::register('db', PDO::class, [
@@ -7,6 +11,20 @@ Flight::register('db', PDO::class, [
     getenv('MYSQL_USER'),
     getenv('MYSQL_PASSWORD'),
 ]);
+
+Flight::map('user', function () {
+    $token = Flight::request()->header('Authorization');
+
+    if (!$token) {
+        return null;
+    }
+
+    $playload = JWT::decode($token, new Key(getenv('SECRET_KEY'), 'HS256'));
+
+    return User::find([
+        'username' => $playload->username,
+    ]);
+});
 
 Flight::map('error', function (Throwable $error) {
     $response = Flight::response();
