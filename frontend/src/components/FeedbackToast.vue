@@ -1,7 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
-const toasts = ref([])
+const toasts = ref([]),
+    stack = ref([])
+
+const MAX_TOASTS = 3;
 
 function selfDestroy(index)
 {
@@ -18,16 +21,30 @@ function setTimeOutItem(toast, timeout = 3000)
     }, timeout)
 }
 
+watch(
+    toasts,
+    (newToasts, oldToasts) => {
+        if (newToasts.length < MAX_TOASTS && stack.value.length > 0) {
+            const nextToast = stack.value.shift();
+            if (nextToast) {
+                toasts.value.push(nextToast);
+                setTimeOutItem(nextToast, nextToast.data?.timeout || 3000);
+            }
+        }
+    },
+    { deep: true }
+);
+
 function createToast(content, type, data)
 {
-    let toast;
+    const toast = { type: type, message: content, data };
 
-    toast = { type: type, message: content, data }
-    toasts.value.push(toast);
-    if (data)
-        setTimeOutItem(toast, data.timeout);
-    else
-        setTimeOutItem(toast);
+    if (toasts.value.length < MAX_TOASTS) {
+        toasts.value.push(toast);
+        setTimeOutItem(toast, data?.timeout || 3000);
+    } else {
+        stack.value.push(toast);
+    }
 }
 
 function addError(content, data = null) {
@@ -56,7 +73,6 @@ defineExpose({
 
 <template>
     <div class="toast toast-top toast-end overflow-y-auto max-h-[30%]">
-        <!-- Parcourir les toasts dynamiques -->
         <div
             v-for="(toast, index) in toasts"
                 :key="index"
