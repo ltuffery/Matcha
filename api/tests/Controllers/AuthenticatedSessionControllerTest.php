@@ -77,6 +77,11 @@ class AuthenticatedSessionControllerTest extends TestCase
 
     public function testLoginWithWrongPassword()
     {
+        // $stmt = Flight::db()->prepare("SELECT * FROM users");
+    
+        // $stmt->execute();
+        // var_dump($stmt->fetchAll());
+
         Flight::request()->data = new Collection([
             'username' => 'test',
             'password' => 'wrong',

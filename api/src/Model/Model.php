@@ -13,6 +13,7 @@ use ReflectionProperty;
 
 abstract class Model implements JsonSerializable
 {
+    public int $id = 0;
     protected string $table = '';
 
     protected static function db(): PDO
@@ -20,7 +21,7 @@ abstract class Model implements JsonSerializable
         return Flight::db();
     }
 
-    protected static function getTable(): string
+    public static function getTable(): string
     {
         $class = new ReflectionClass(get_called_class());
         $table = $class->getDefaultProperties()['table'];
@@ -31,84 +32,52 @@ abstract class Model implements JsonSerializable
     /**
      * @throws Exception
      */
-    public function save(): false|int
+    public function save(): Model
     {
-        if ($this->id == 0) {
-            return $this->create();
-        }
-
-        $class = new ReflectionClass($this);
-        $tableName = $this::getTable();
-
-        $propsToImplode = [];
-
-        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
-            if (!$property->isInitialized($this)) {
-                continue;
-            }
-
-            $propertyName = $property->getName();
-
-            if ($propertyName != 'id') {
-                $value = $this->{$propertyName};
-
-                if (is_bool($this->{$propertyName})) {
-                    $value = (int)$this->{$propertyName};
-                }
-
-                $propsToImplode[] = '`' . $propertyName . '` = "' . $value . '"';
-            }
-        }
-
-        $setClause = implode(',', $propsToImplode);
-
-        if ($this->id > 0) {
-            $sqlQuery = 'UPDATE `' . $tableName . '` SET ' . $setClause . ' WHERE id = ' . $this->id;
-        } else {
-            $sqlQuery = 'INSERT INTO `' . $tableName . '` VALUES (' . $setClause . ')';
-        }
-
-        $result = self::db()->exec($sqlQuery);
-
-        if ($result) {
-            $this->reload();
-        }
-
-        return $result;
+        return $this->id > 0 ? $this->update() : $this->create();
     }
 
-    public function create(): false|int
+    public function update(): Model
     {
-        $class = new ReflectionClass($this);
-        $columns = [];
-        $values = [];
+        $data = $this->getData();
+        $sqlQuery = "UPDATE " . $this->getTable() 
+        . " SET " . implode(
+            ", ",
+            array_map(
+                fn ($k, $v) => $k . ' = "' . $v . '"',
+                array_keys($data),
+                array_values($data)
+            )
+        )
+        . ' WHERE id = ' . $this->id;
 
-        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
-            if (!$property->isInitialized($this) || $property->getName() == 'id') {
-                continue;
-            }
+        self::db()->exec($sqlQuery);
+        $this->reload();
 
-            $columns[] = $property->getName();
+        return $this;
+    }
 
-            if (is_bool($this->{$property->getName()})) {
-                $values[] = (int)$this->{$property->getName()};
-            } else {
-                $values[] = '"' . $this->{$property->getName()} . '"';
-            }
-        }
+    public function create(): Model
+    {
+        $data = $this->getData();
+        $columns = array_keys($data);
+        $values = array_map(fn ($v) => '"' . $v . '"', array_values($data));
 
         $columnString = implode(", ", $columns);
         $valueString = implode(", ", $values);
 
         $sqlQuery = "INSERT INTO {$this::getTable()}({$columnString}) VALUES({$valueString})";
 
-        return self::db()->exec($sqlQuery);
+        self::db()->exec($sqlQuery);
+        $this->reload();
+
+        return $this;
     }
 
     /**
-     * Recharger l'objet avec les données les plus récentes de la base de données.
+     * Reload the object with the most recent data from the database
      */
-    public function reload(): void
+    private function reload(): void
     {
         $id = $this->db()->lastInsertId();
 
@@ -127,18 +96,21 @@ abstract class Model implements JsonSerializable
         }
     }
 
+    /**
+     * Fills the object with the values provided as parameters
+     * 
+     * @param array $data
+     * @return void
+     */
     public function fill(array $data): void
     {
         foreach ($data as $key => $value) {
-            if (!isset($this->{$key})) {
-                continue;
-            }
-
             $this->{$key} = $value;
         }
     }
 
     /**
+     * Transforms an associative array into the calling object
      *
      * @param array $object
      * @return Model
@@ -148,13 +120,10 @@ abstract class Model implements JsonSerializable
     {
         $class = new ReflectionClass(get_called_class());
 
+        /** @var Model $entity */
         $entity = $class->newInstance();
 
-        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
-            if (isset($object[$prop->getName()])) {
-                $entity->{$prop->getName()} = $object[$prop->getName()];
-            }
-        }
+        $entity->fill($object);
 
         return $entity;
     }
@@ -197,12 +166,37 @@ abstract class Model implements JsonSerializable
         $table = $class->getDefaultProperties()['table'];
 
         $stmt = self::db()->query("SELECT * FROM " . $table);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $users = array_map(fn ($item) => self::morph($item) , $stmt->fetchAll(PDO::FETCH_ASSOC));
+
+        return $users;
     }
 
     public static function factory(): Factory
     {
         return new Factory(get_called_class());
+    }
+
+    public function getData(): array
+    {
+        $class = new ReflectionClass($this);
+        $data = [];
+
+        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            if (!isset($this->{$property->getName()}) || $property->getName() == 'id') {
+                continue;
+            }
+
+            $propertyName = $property->getName();
+            $value = $this->{$propertyName};
+
+            if (is_bool($this->{$propertyName})) {
+                $value = (int)$this->{$propertyName};
+            }
+
+            $data[$propertyName] = $value;
+        }
+
+        return $data;
     }
 
 }
