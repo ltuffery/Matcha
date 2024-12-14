@@ -65,7 +65,7 @@ class AuthenticatedSessionControllerTest extends TestCase
 
         $this->controller->store();
 
-        $this->response->assertStatus(404);
+        $this->response->assertStatus(400);
         $this->response->assertJson([
             'success' => false,
         ]);
@@ -83,7 +83,6 @@ class AuthenticatedSessionControllerTest extends TestCase
         $this->response->assertStatus(400);
         $this->response->assertJson([
             'success' => false,
-            'message' => 'wrong password',
         ]);
     }
 

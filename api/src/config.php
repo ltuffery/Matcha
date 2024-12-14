@@ -2,6 +2,7 @@
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Matcha\Api\Managers\UserManager;
 use Matcha\Api\Model\User;
 
 include "Exceptions/InvalidDataException.php";
@@ -12,20 +13,22 @@ Flight::register('db', PDO::class, [
     getenv('MYSQL_PASSWORD'),
 ]);
 
-Flight::map('user', function () {
+Flight::map('user', function() {
     $token = Flight::request()->header('Authorization');
 
     if (!$token) {
-        return null;
+        return new UserManager();
     }
 
     $token = str_replace('Bearer ', '', $token);
 
     $playload = JWT::decode($token, new Key(getenv('SECRET_KEY'), 'HS256'));
 
-    return User::find([
+    $user = User::find([
         'username' => $playload->username,
     ]);
+
+    return new UserManager($user);
 });
 
 Flight::map('error', function (Throwable $error) {

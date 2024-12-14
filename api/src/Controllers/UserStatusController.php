@@ -14,7 +14,7 @@ class UserStatusController
         ]);
 
         /** @var \Matcha\Api\Model\User */
-        $user = Flight::user();
+        $user = Flight::user()->model();
 
         $user->online = Flight::request()->data->state;
         $user->save();
