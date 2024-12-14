@@ -14,9 +14,7 @@ use PHPUnit\Framework\TestCase;
 class AuthenticatedSessionControllerTest extends TestCase
 {
 
-    use DatabaseTestCase {
-        DatabaseTestCase::setUp as setUpDatabase;
-    }
+    use DatabaseTestCase;
     
     private TestResponse $response;
     private AuthenticatedSessionController $controller;
@@ -77,11 +75,6 @@ class AuthenticatedSessionControllerTest extends TestCase
 
     public function testLoginWithWrongPassword()
     {
-        // $stmt = Flight::db()->prepare("SELECT * FROM users");
-    
-        // $stmt->execute();
-        // var_dump($stmt->fetchAll());
-
         Flight::request()->data = new Collection([
             'username' => 'test',
             'password' => 'wrong',

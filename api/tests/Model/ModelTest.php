@@ -6,9 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class ModelTest extends TestCase
 {
-    use DatabaseTestCase {
-        DatabaseTestCase::setUp as setUpDatabase;
-    }
+    use DatabaseTestCase;
 
     private User $user;
 

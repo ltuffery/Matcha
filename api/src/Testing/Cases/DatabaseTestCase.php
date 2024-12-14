@@ -7,7 +7,7 @@ use PDO;
 
 trait DatabaseTestCase
 {
-    public function setUp(): void
+    public function setUpDatabase(): void
     {
         $migrationsFolder = dirname(__DIR__, 3) . '/database/migrations/';
 
