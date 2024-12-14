@@ -28,6 +28,19 @@ class AuthenticatedSessionControllerTest extends TestCase
 
         Flight::response()->clearBody();
         $this->setUpDatabase();
+
+        User::factory()->create([
+            'username' => 'test',
+            'email' => faker()->email,
+            'password' => password_hash('password', PASSWORD_DEFAULT),
+            'email_verified' => true,
+            'first_name' => faker()->firstName(),
+            'last_name' => faker()->lastName,
+            'age' => rand(18, 35),
+            'gender' => array_rand(['M', 'F', 'O']) + 1,
+            'sexual_preferences' => array_rand(['M', 'F', 'O', 'A']) + 1,
+            'biography' => faker()->sentence
+        ]);
     }
 
     public function testLoginWithNoData()
@@ -78,4 +91,15 @@ class AuthenticatedSessionControllerTest extends TestCase
         ]);
     }
 
+    public function testLoginWithValidData()
+    {
+        Flight::request()->data = new Collection([
+            'username' => 'test',
+            'password' => 'password',
+        ]);
+
+        $this->controller->store();
+
+        $this->response->assertStatus(200);
+    }
 }

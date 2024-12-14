@@ -20,17 +20,25 @@ abstract class Model implements JsonSerializable
         return Flight::db();
     }
 
+    protected static function getTable(): string
+    {
+        $class = new ReflectionClass(get_called_class());
+        $table = $class->getDefaultProperties()['table'];
+
+        return !empty($table) ? $table : strtolower($class->getShortName());
+    }
+
     /**
      * @throws Exception
      */
     public function save(): false|int
     {
-        $class = new ReflectionClass($this);
-        if ($this->table != '') {
-            $tableName = $this->table;
-        } else {
-            $tableName = strtolower($class->getShortName());
+        if ($this->id == 0) {
+            return $this->create();
         }
+
+        $class = new ReflectionClass($this);
+        $tableName = $this::getTable();
 
         $propsToImplode = [];
 
@@ -57,7 +65,7 @@ abstract class Model implements JsonSerializable
         if ($this->id > 0) {
             $sqlQuery = 'UPDATE `' . $tableName . '` SET ' . $setClause . ' WHERE id = ' . $this->id;
         } else {
-            $sqlQuery = 'INSERT INTO `' . $tableName . '` SET ' . $setClause;
+            $sqlQuery = 'INSERT INTO `' . $tableName . '` VALUES (' . $setClause . ')';
         }
 
         $result = self::db()->exec($sqlQuery);
@@ -67,6 +75,34 @@ abstract class Model implements JsonSerializable
         }
 
         return $result;
+    }
+
+    public function create(): false|int
+    {
+        $class = new ReflectionClass($this);
+        $columns = [];
+        $values = [];
+
+        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            if (!$property->isInitialized($this) || $property->getName() == 'id') {
+                continue;
+            }
+
+            $columns[] = $property->getName();
+
+            if (is_bool($this->{$property->getName()})) {
+                $values[] = (int)$this->{$property->getName()};
+            } else {
+                $values[] = '"' . $this->{$property->getName()} . '"';
+            }
+        }
+
+        $columnString = implode(", ", $columns);
+        $valueString = implode(", ", $values);
+
+        $sqlQuery = "INSERT INTO {$this::getTable()}({$columnString}) VALUES({$valueString})";
+
+        return self::db()->exec($sqlQuery);
     }
 
     /**
