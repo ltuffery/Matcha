@@ -5,6 +5,7 @@ namespace Matcha\Api\Model;
 use Exception;
 use Flight;
 use JsonSerializable;
+use Matcha\Api\Factory\Factory;
 use PDO;
 use ReflectionClass;
 use ReflectionException;
@@ -41,7 +42,13 @@ abstract class Model implements JsonSerializable
             $propertyName = $property->getName();
 
             if ($propertyName != 'id') {
-                $propsToImplode[] = '`' . $propertyName . '` = "' . $this->{$propertyName} . '"';
+                $value = $this->{$propertyName};
+
+                if (is_bool($this->{$propertyName})) {
+                    $value = (int)$this->{$propertyName};
+                }
+
+                $propsToImplode[] = '`' . $propertyName . '` = "' . $value . '"';
             }
         }
 
@@ -155,6 +162,11 @@ abstract class Model implements JsonSerializable
 
         $stmt = self::db()->query("SELECT * FROM " . $table);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function factory(): Factory
+    {
+        return new Factory(get_called_class());
     }
 
 }
