@@ -1,7 +1,5 @@
 <?php
 
-namespace Controllers;
-
 use Exception;
 use Flight;
 use flight\util\Collection;

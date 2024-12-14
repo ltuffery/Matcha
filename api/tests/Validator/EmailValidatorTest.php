@@ -1,8 +1,7 @@
 <?php
 
-namespace Matcha\Api\Validator;
-
 use Flight;
+use Matcha\Api\Validator\EmailValidator;
 use PHPUnit\Framework\TestCase;
 
 class EmailValidatorTest extends TestCase
