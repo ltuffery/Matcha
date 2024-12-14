@@ -19,6 +19,8 @@ Flight::map('user', function () {
         return null;
     }
 
+    $token = str_replace('Bearer ', '', $token);
+
     $playload = JWT::decode($token, new Key(getenv('SECRET_KEY'), 'HS256'));
 
     return User::find([
