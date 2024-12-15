@@ -4,14 +4,13 @@ namespace Matcha\Api\Model;
 
 use Exception;
 use Flight;
-use JsonSerializable;
 use Matcha\Api\Factory\Factory;
 use PDO;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 
-abstract class Model implements JsonSerializable
+abstract class Model
 {
     public int $id = 0;
     protected string $table = '';

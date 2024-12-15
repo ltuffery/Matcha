@@ -4,6 +4,7 @@ namespace Matcha\Api\Controllers;
 
 use Flight;
 use InvalidDataException;
+use Matcha\Api\Model\User;
 use Matcha\Api\Validator\Validator;
 use ReflectionException;
 
@@ -22,10 +23,10 @@ class AuthenticatedSessionController
 
         $request = Flight::request();
 
-        $authenticated = Flight::user()->authenticate($request->data->username, $request->data->password);
+        $user = User::authenticate($request->data->username, $request->data->password);
 
-        if ($authenticated) {
-            if (!Flight::user()->model()->email_verified) {
+        if (is_object($user)) {
+            if (!$user->email_verified) {
                 Flight::json([
                     'success' => false,
                     'error' => "Your email is not verified",
@@ -36,7 +37,7 @@ class AuthenticatedSessionController
 
             Flight::json([
                 'success' => true,
-                'token' => Flight::user()->generateJWT(),
+                'token' => $user->generateJWT(),
             ]);
         } else {
             Flight::json([

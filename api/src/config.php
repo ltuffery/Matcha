@@ -2,7 +2,6 @@
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use Matcha\Api\Managers\UserManager;
 use Matcha\Api\Model\User;
 
 include "Exceptions/InvalidDataException.php";
@@ -17,7 +16,7 @@ Flight::map('user', function() {
     $token = Flight::request()->header('Authorization');
 
     if (!$token) {
-        return new UserManager();
+        return null;
     }
 
     $token = str_replace('Bearer ', '', $token);
@@ -28,7 +27,7 @@ Flight::map('user', function() {
         'username' => $playload->username,
     ]);
 
-    return new UserManager($user);
+    return $user;
 });
 
 Flight::map('error', function (Throwable $error) {
