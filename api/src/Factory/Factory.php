@@ -26,6 +26,8 @@ final class Factory
         } catch (Exception $e) {
             if (!getenv('PHPUNIT_TEST')) {
                 echo sprintf("\033[0;31m[%s] \033[0m%s", $this->model, $e->getMessage()) . PHP_EOL;
+            } else {
+                throw $e;
             }
         }
     }

@@ -4,16 +4,15 @@ namespace Matcha\Api\Model;
 
 use Exception;
 use Flight;
-use JsonSerializable;
 use Matcha\Api\Factory\Factory;
 use PDO;
-use PDOException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 
-abstract class Model implements JsonSerializable
+abstract class Model
 {
+    public int $id = 0;
     protected string $table = '';
 
     protected static function db(): PDO
@@ -21,59 +20,63 @@ abstract class Model implements JsonSerializable
         return Flight::db();
     }
 
-    /**
-     * @throws Exception
-     */
-    public function save(): false|int
+    public static function getTable(): string
     {
-        $class = new ReflectionClass($this);
-        if ($this->table != '') {
-            $tableName = $this->table;
-        } else {
-            $tableName = strtolower($class->getShortName());
-        }
+        $class = new ReflectionClass(get_called_class());
+        $table = $class->getDefaultProperties()['table'];
 
-        $propsToImplode = [];
-
-        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
-            if (!$property->isInitialized($this)) {
-                continue;
-            }
-
-            $propertyName = $property->getName();
-
-            if ($propertyName != 'id') {
-                $value = $this->{$propertyName};
-
-                if (is_bool($this->{$propertyName})) {
-                    $value = (int)$this->{$propertyName};
-                }
-
-                $propsToImplode[] = '`' . $propertyName . '` = "' . $value . '"';
-            }
-        }
-
-        $setClause = implode(',', $propsToImplode);
-
-        if ($this->id > 0) {
-            $sqlQuery = 'UPDATE `' . $tableName . '` SET ' . $setClause . ' WHERE id = ' . $this->id;
-        } else {
-            $sqlQuery = 'INSERT INTO `' . $tableName . '` SET ' . $setClause;
-        }
-
-        $result = self::db()->exec($sqlQuery);
-
-        if ($result) {
-            $this->reload();
-        }
-
-        return $result;
+        return !empty($table) ? $table : strtolower($class->getShortName());
     }
 
     /**
-     * Recharger l'objet avec les données les plus récentes de la base de données.
+     * @throws Exception
      */
-    public function reload(): void
+    public function save(): Model
+    {
+        return $this->id > 0 ? $this->update() : $this->create();
+    }
+
+    public function update(): Model
+    {
+        $data = $this->getData();
+        $sqlQuery = "UPDATE " . $this->getTable() 
+        . " SET " . implode(
+            ", ",
+            array_map(
+                fn ($k, $v) => $k . ' = "' . $v . '"',
+                array_keys($data),
+                array_values($data)
+            )
+        )
+        . ' WHERE id = ' . $this->id;
+
+        self::db()->exec($sqlQuery);
+        $this->reload();
+
+        return $this;
+    }
+
+    public function create(): Model
+    {
+        $data = $this->getData();
+        $columns = array_keys($data);
+        $values = array_map(fn ($v) => '"' . $v . '"', array_values($data));
+
+        $columnString = implode(", ", $columns);
+        $valueString = implode(", ", $values);
+
+        $sqlQuery = "INSERT INTO {$this::getTable()}({$columnString}) VALUES({$valueString})";
+
+        self::db()->exec($sqlQuery);
+        $this->reload();
+
+        return $this;
+    }
+
+    /**
+     * Reload the object with the most recent data from the database
+     */
+    private function reload(): void
     {
         $id = $this->db()->lastInsertId();
 
@@ -92,18 +95,21 @@ abstract class Model implements JsonSerializable
         }
     }
 
+    /**
+     * Fills the object with the values provided as parameters
+     * 
+     * @param array $data
+     * @return void
+     */
     public function fill(array $data): void
     {
         foreach ($data as $key => $value) {
-            if (!isset($this->{$key})) {
-                continue;
-            }
-
             $this->{$key} = $value;
         }
     }
 
     /**
+     * Transforms an associative array into the calling object
      *
      * @param array $object
      * @return Model
@@ -113,13 +119,10 @@ abstract class Model implements JsonSerializable
     {
         $class = new ReflectionClass(get_called_class());
 
+        /** @var Model $entity */
         $entity = $class->newInstance();
 
-        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
-            if (isset($object[$prop->getName()])) {
-                $entity->{$prop->getName()} = $object[$prop->getName()];
-            }
-        }
+        $entity->fill($object);
 
         return $entity;
     }
@@ -162,12 +165,37 @@ abstract class Model implements JsonSerializable
         $table = $class->getDefaultProperties()['table'];
 
         $stmt = self::db()->query("SELECT * FROM " . $table);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $users = array_map(fn ($item) => self::morph($item) , $stmt->fetchAll(PDO::FETCH_ASSOC));
+
+        return $users;
     }
 
     public static function factory(): Factory
     {
         return new Factory(get_called_class());
+    }
+
+    public function getData(): array
+    {
+        $class = new ReflectionClass($this);
+        $data = [];
+
+        foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            if (!isset($this->{$property->getName()}) || $property->getName() == 'id') {
+                continue;
+            }
+
+            $propertyName = $property->getName();
+            $value = $this->{$propertyName};
+
+            if (is_bool($this->{$propertyName})) {
+                $value = (int)$this->{$propertyName};
+            }
+
+            $data[$propertyName] = $value;
+        }
+
+        return $data;
     }
 
 }

@@ -2,8 +2,6 @@
 
 namespace Matcha\Api\Controllers;
 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use Flight;
 use InvalidDataException;
 use Matcha\Api\Model\User;
@@ -25,38 +23,26 @@ class AuthenticatedSessionController
 
         $request = Flight::request();
 
-        $user = User::find([
-            'username' => $request->data->username,
-        ]);
+        $user = User::authenticate($request->data->username, $request->data->password);
 
-        if ($user == null) {
-            Flight::json([
-                'success' => false,
-            ]);
-        } elseif (password_verify($request->data->password, $user->password)) {
+        if (is_object($user)) {
             if (!$user->email_verified) {
-                Flight::jsonHalt([
+                Flight::json([
                     'success' => false,
                     'error' => "Your email is not verified",
                 ], 401);
+
+                return;
             }
-
-            $time = time();
-
-            $jwt = JWT::encode([
-                'exp' => $time + 600,
-                'iat' => $time,
-                'username' => $user->username,
-            ], getenv('SECRET_KEY'), 'HS256');
 
             Flight::json([
                 'success' => true,
-                'token' => $jwt,
+                'token' => $user->generateJWT(),
             ]);
         } else {
             Flight::json([
                 'success' => false,
-            ]);
+            ], 400);
         }
     }
 }
