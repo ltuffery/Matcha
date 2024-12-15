@@ -12,7 +12,7 @@ Flight::register('db', PDO::class, [
     getenv('MYSQL_PASSWORD'),
 ]);
 
-Flight::map('user', function() {
+Flight::map('user', function () {
     $token = Flight::request()->header('Authorization');
 
     if (!$token) {

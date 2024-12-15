@@ -51,7 +51,7 @@ trait DatabaseTestCase
 
         foreach ($lines as $key => $value) {
             if (!empty($value)) {
-                $lines[$key] = $alterSqlLine . ' ' . str_replace("ADD", "ADD COLUMN", $value);
+                $lines[$key] = $alterSqlLine . str_replace("ADD", " ADD COLUMN", $value);
             }
         }
 
