@@ -37,6 +37,7 @@ const checkToken = async () => {
     token: urlParams.get('token'),
   }
   let req = await Api.post('email/token').send(test)
+  req = await req.json()
   if (req.success) responseOK.value = true
   else responseOK.value = false
   skeleton.value = false

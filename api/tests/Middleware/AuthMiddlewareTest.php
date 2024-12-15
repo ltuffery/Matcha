@@ -1,7 +1,5 @@
 <?php
 
-namespace Middleware;
-
 use Firebase\JWT\JWT;
 use Flight;
 use Matcha\Api\Middleware\AuthMiddleware;
@@ -45,23 +43,23 @@ class AuthMiddlewareTest extends TestCase
 
         $this->middleware->before([]);
 
-        $this->response->assertStatus(400);
-        $this->response->assertJson(['message' => "Wrong number of segments"]);
+        $this->response->assertStatus(401);
+        $this->response->assertJson(['message' => "Unauthorized"]);
     }
 
-    public function testInvalidJWT(): void
+    public function testInvalidJWTSignatureVerificationFailed(): void
     {
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 
         $this->middleware->before([]);
 
-        $this->response->assertStatus(400);
-        $this->response->assertJson(['message' => "Signature verification failed"]);
+        $this->response->assertStatus(401);
+        $this->response->assertJson(['message' => "Unauthorized"]);
     }
 
     public function testValidJWT(): void
     {
-        $token = JWT::encode(['username' => 'John'], $_ENV['SECRET_KEY'], 'HS256');
+        $token = JWT::encode(['username' => 'John'], getenv('SECRET_KEY'), 'HS256');
         $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . $token;
 
         $this->middleware->before([]);

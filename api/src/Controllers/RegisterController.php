@@ -18,7 +18,7 @@ class RegisterController
     public function store(): void
     {
         Validator::make([
-            'username' => 'required',
+            'username' => 'required|regex:[a-zA-Z0-9\.]{5,25}',
             'email' => 'required|email',
             'password' => 'required',
             'age' => 'required|number',
