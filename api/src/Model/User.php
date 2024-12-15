@@ -2,35 +2,55 @@
 
 namespace Matcha\Api\Model;
 
+use Firebase\JWT\JWT;
+
 /**
  * @method static User find(array $data)
+ * @method static User morph(array $object)
+ * @method static User[] all()
+ * @method User save()
+ * @method User create()
+ * @method User update()
  */
 class User extends Model
 {
     protected string $table = 'users';
 
-    public int $id = 0;
     public string $username;
     public string $password;
     public string $email;
-    public int $age;
-    public string $first_name;
-    public string $last_name;
-    public string $gender;
-    public string $sexual_preferences;
-    public string $biography;
+    public int|null $age;
+    public string|null $first_name;
+    public string|null $last_name;
+    public string|null $gender;
+    public string|null $sexual_preferences;
+    public string|null $biography;
     public string $created_at;
     public bool $email_verified;
-    public string $temporary_email_token;
+    public string|null $temporary_email_token;
     public bool $online;
 
-    public function jsonSerialize(): array
+    public function generateJWT(): string
     {
-        return [
-//            'id' => $this->id,
+        $time = time();
+
+        return JWT::encode([
             'username' => $this->username,
-            'email' => $this->email,
-//            'created_at' => $this->created_at,
-        ];
+            'exp' => $time + 600,
+            'iat' => $time,
+        ], getenv('SECRET_KEY'), 'HS256');
+    }
+
+    public static function authenticate(string $username, string $password): User|false
+    {
+        $user = User::find([
+            'username' => $username,
+        ]);
+
+        if (!is_null($user) && password_verify($password, $user->password)) {
+            return $user;
+        }
+
+        return false;
     }
 }
