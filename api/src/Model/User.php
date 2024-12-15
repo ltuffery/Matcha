@@ -41,6 +41,46 @@ class User extends Model
         ], getenv('SECRET_KEY'), 'HS256');
     }
 
+    /**
+     * Create a like from the user to the user passed as a parameter
+     * 
+     * @param User $user
+     * @return void
+     */
+    public function like(User $user): void
+    {
+        $like = new Like();
+
+        $like->user_id = $this->id;
+        $like->liked_id = $user->id;
+
+        $like->save();
+    }
+
+    public function unlike(User $user): void
+    {
+        $like = Like::find([
+            'user_id' => $this->id,
+            'liked_id' => $user->id,
+        ]);
+
+        if (!is_null($like)) {
+            $like->delete();
+        }
+    }
+
+    /**
+     * Get all the likes that the user has made
+     * 
+     * @return Like[]
+     */
+    public function likes(): array
+    {
+        return Like::all([
+            'user_id' => $this->id,
+        ]);
+    }
+
     public static function authenticate(string $username, string $password): User|false
     {
         $user = User::find([

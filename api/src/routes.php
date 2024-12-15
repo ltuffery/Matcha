@@ -35,14 +35,18 @@ Flight::group('/forgot', function () {
     Flight::route('POST /change-password', [ForgotController::class, 'changePwd']);
 });
 
-Flight::group('/users/me', function () {
-    Flight::route('PUT|PATCH /status', [UserStatusController::class, 'update']);
-}, [AuthMiddleware::class]);
+Flight::group('/users', function () {
 
-Flight::group('/users/@username', function () {
-    Flight::route('POST /like', [LikeController::class, 'store']);
-    Flight::route('DELETE /unlike', [LikeController::class, 'destroy']);
-});
+    Flight::group('/me', function () {
+        Flight::route('PUT|PATCH /status', [UserStatusController::class, 'update']);
+    });
+    
+    Flight::group('/@username', function () {
+        Flight::route('POST /like', [LikeController::class, 'store']);
+        Flight::route('DELETE /unlike', [LikeController::class, 'destroy']);
+    });
+
+}, [AuthMiddleware::class]);
 
 // 404 route
 Flight::map('notFound', function () {
