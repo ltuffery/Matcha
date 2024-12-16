@@ -40,7 +40,7 @@ Flight::group('/users', function () {
     Flight::group('/me', function () {
         Flight::route('PUT|PATCH /status', [UserStatusController::class, 'update']);
     });
-    
+
     Flight::group('/@username', function () {
         Flight::route('POST /like', [LikeController::class, 'store']);
         Flight::route('DELETE /unlike', [LikeController::class, 'destroy']);

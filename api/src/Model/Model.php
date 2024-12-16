@@ -39,7 +39,7 @@ abstract class Model
     public function update(): Model
     {
         $data = $this->getData();
-        $sqlQuery = "UPDATE " . $this->getTable() 
+        $sqlQuery = "UPDATE " . $this->getTable()
         . " SET " . implode(
             ", ",
             array_map(
@@ -110,7 +110,7 @@ abstract class Model
 
     /**
      * Fills the object with the values provided as parameters
-     * 
+     *
      * @param array $data
      * @return void
      */
@@ -181,7 +181,7 @@ abstract class Model
         }
 
         $stmt = self::db()->query($query);
-        $users = array_map(fn ($item) => self::morph($item) , $stmt->fetchAll(PDO::FETCH_ASSOC));
+        $users = array_map(fn ($item) => self::morph($item), $stmt->fetchAll(PDO::FETCH_ASSOC));
 
         return $users;
     }

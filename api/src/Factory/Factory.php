@@ -49,5 +49,5 @@ abstract class Factory
         return $entities;
     }
 
-    protected abstract function define(): array;
+    abstract protected function define(): array;
 }

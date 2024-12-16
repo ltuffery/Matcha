@@ -43,7 +43,7 @@ class User extends Model
 
     /**
      * Create a like from the user to the user passed as a parameter
-     * 
+     *
      * @param User $user
      * @return void
      */
@@ -71,7 +71,7 @@ class User extends Model
 
     /**
      * Get all the likes that the user has made
-     * 
+     *
      * @return Like[]
      */
     public function likes(): array

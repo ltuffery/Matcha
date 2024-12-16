@@ -18,7 +18,7 @@ trait DatabaseTestCase
     private function loadAllMigrations(string $migrationsFolder): void
     {
         $files = preg_grep('/^([^.])/', scandir($migrationsFolder));
-        
+
         foreach ($files as $file) {
             $sql = file_get_contents($migrationsFolder . $file, true);
             $sql = $this->parseSQL($sql);
@@ -56,7 +56,7 @@ trait DatabaseTestCase
         }
 
         $sql = implode("\n", $lines);
-        
+
         return str_replace(',', ';', $sql);
     }
 }
