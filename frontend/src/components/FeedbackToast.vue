@@ -111,7 +111,7 @@ defineExpose({
         ></path>
 
         <path
-          v-if="toast.type === 'success'"
+          v-else-if="toast.type === 'success'"
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
@@ -119,7 +119,7 @@ defineExpose({
         />
 
         <path
-          v-if="toast.type === 'error'"
+          v-else-if="toast.type === 'error'"
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
@@ -127,7 +127,7 @@ defineExpose({
         />
 
         <path
-          v-if="toast.type === 'warning'"
+          v-else-if="toast.type === 'warning'"
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
