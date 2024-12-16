@@ -25,6 +25,7 @@ class AuthenticatedSessionController
 
         $user = User::authenticate($request->data->username, $request->data->password);
 
+
         if (is_object($user)) {
             if (!$user->email_verified) {
                 Flight::json([
