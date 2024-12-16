@@ -21,6 +21,11 @@ class RegisterControllerTest extends TestCase
         $this->setUpDatabase();
     }
 
+    public function tearDown(): void
+    {
+        Flight::response()->clear();
+    }
+
     public function testWithEmptyRequest(): void
     {
         Flight::request()->data = new Collection();

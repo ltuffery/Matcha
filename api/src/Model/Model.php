@@ -186,7 +186,11 @@ abstract class Model
 
     public static function factory(): Factory
     {
-        return new Factory(get_called_class());
+        $split = explode("\\", get_called_class());
+        $className = end($split);
+        $class = "Matcha\\Api\\Factory\\" . $className . "Factory";
+
+        return new $class(get_called_class());
     }
 
     public function getData(): array

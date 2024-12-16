@@ -16,27 +16,21 @@ class AuthenticatedSessionControllerTest extends TestCase
     
     private TestResponse $response;
     private AuthenticatedSessionController $controller;
+    private User $user;
 
-    protected function setUp(): void
+    public function setUp(): void
     {
         $this->response = new TestResponse();
         $this->controller = new AuthenticatedSessionController();
 
-        Flight::response()->clearBody();
         $this->setUpDatabase();
 
-        User::factory()->create([
-            'username' => 'test',
-            'email' => faker()->email,
-            'password' => password_hash('password', PASSWORD_DEFAULT),
-            'email_verified' => true,
-            'first_name' => faker()->firstName(),
-            'last_name' => faker()->lastName,
-            'age' => rand(18, 35),
-            'gender' => array_rand(['M', 'F', 'O']) + 1,
-            'sexual_preferences' => array_rand(['M', 'F', 'O', 'A']) + 1,
-            'biography' => faker()->sentence
-        ]);
+        $this->user = User::factory()->create()[0];
+    }
+
+    public function tearDown(): void
+    {
+        Flight::response()->clear();
     }
 
     public function testLoginWithNoData()
@@ -74,7 +68,7 @@ class AuthenticatedSessionControllerTest extends TestCase
     public function testLoginWithWrongPassword()
     {
         Flight::request()->data = new Collection([
-            'username' => 'test',
+            'username' => $this->user->username,
             'password' => 'wrong',
         ]);
 
@@ -89,7 +83,7 @@ class AuthenticatedSessionControllerTest extends TestCase
     public function testLoginWithValidData()
     {
         Flight::request()->data = new Collection([
-            'username' => 'test',
+            'username' => $this->user->username,
             'password' => 'password',
         ]);
 

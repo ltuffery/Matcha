@@ -3,7 +3,6 @@
 namespace Matcha\Api\Controllers;
 
 use Flight;
-use Matcha\Api\Model\Like;
 use Matcha\Api\Model\User;
 
 class LikeController
