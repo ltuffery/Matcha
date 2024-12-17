@@ -49,21 +49,21 @@ function submitForm() {
           v-if="currentStep > 0"
           @click="prevStep"
         >
-          <button class="btn btn-primary" type="submit">Précédent</button>
+          <button class="btn" type="submit">Previous</button>
         </div>
         <div
           class="form-control mt-6 w-full"
           v-if="currentStep < props.totalSteps - 1"
           @click="nextStep"
         >
-          <button class="btn btn-primary" type="submit">Suivant</button>
+          <button class="btn btn-primary" type="submit">Next</button>
         </div>
         <div
           class="form-control mt-6 w-full"
           v-if="currentStep === props.totalSteps - 1"
           @click="submitForm"
         >
-          <button class="btn btn-primary" type="submit">Soumettre</button>
+          <button class="btn btn-primary" type="submit">Submit</button>
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@ let formData = {
   email: '',
   password: '',
   age: 0,
+  dateAge: '',
   first_name: '',
   last_name: '',
   gender: '' as 'M' | 'F' | 'O',
@@ -20,6 +21,17 @@ const totalSteps = 4
 const step = ref(0)
 const hasError = ref(false)
 const titleAlert = ref('test')
+const maxAge = ref()
+
+function setMaxAge()
+{
+  const maxDate = new Date();
+  maxDate.setFullYear(new Date().getFullYear() - 18);
+
+  const formattedDate = maxDate.toISOString().split('T')[0];
+  maxAge.value = formattedDate
+}
+setMaxAge()
 
 async function handleSubmit() {
   try {
@@ -135,6 +147,9 @@ function handleChangeStep(n: number) {
             min="18"
             required
           />
+
+          <input v-model="formData.dateAge" class="input input-bordered" type="date" :max="maxAge"/>
+          
         </div>
       </form>
     </template>
@@ -149,9 +164,9 @@ function handleChangeStep(n: number) {
             v-model="formData.gender"
             class="select select-bordered w-full max-w-xs"
           >
-            <option>M</option>
-            <option>F</option>
-            <option>O</option>
+            <option value="M">Man</option>
+            <option value="F">Woman</option>
+            <option value="O">Other</option>
           </select>
         </div>
 
@@ -163,10 +178,10 @@ function handleChangeStep(n: number) {
             v-model="formData.sexual_preferences"
             class="select select-bordered w-full max-w-xs"
           >
-            <option>M</option>
-            <option>F</option>
-            <option>O</option>
-            <option>A</option>
+            <option value="M">Men</option>
+            <option value="F">women</option>
+            <option value="O">Other</option>
+            <option value="A">All</option>
           </select>
         </div>
       </form>
