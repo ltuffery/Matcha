@@ -173,4 +173,23 @@ class ModelTest extends TestCase
             $this->assertEquals($k + 1, $u->id);
         }
     }
+
+    public function testGetAllUsingParameters(): void
+    {
+        $this->createUsers(3);
+        $user = $this->createUser();
+
+        $this->assertCount(1, User::all(['username' => $user->username]));
+    }
+
+    public function testDelete(): void
+    {
+        $user = $this->createUser();
+
+        $this->assertCount(1, User::all());
+
+        $user->delete();
+
+        $this->assertCount(0, User::all());
+    }
 }

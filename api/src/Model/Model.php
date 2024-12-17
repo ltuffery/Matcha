@@ -39,7 +39,7 @@ abstract class Model
     public function update(): Model
     {
         $data = $this->getData();
-        $sqlQuery = "UPDATE " . $this->getTable() 
+        $sqlQuery = "UPDATE " . $this->getTable()
         . " SET " . implode(
             ", ",
             array_map(
@@ -74,6 +74,17 @@ abstract class Model
     }
 
     /**
+     * Delete
+     */
+    public function delete(): void
+    {
+        $data = $this->getData();
+        $where = array_map(fn ($k, $v) => $k . ' = "' . $v . '"', array_keys($data), array_values($data));
+
+        self::db()->exec("DELETE FROM " . $this::getTable() . " WHERE " . implode(" AND ", $where));
+    }
+
+    /**
      * Reload the object with the most recent data from the database
      */
     private function reload(): void
@@ -83,8 +94,10 @@ abstract class Model
         if ($id > 0) {
             $class = new ReflectionClass($this);
             $tableName = $this->table ?: strtolower($class->getShortName());
+            $data = $this->getData();
+            $where = array_map(fn ($k, $v) => $k . ' = "' . $v . '"', array_keys($data), array_values($data));
 
-            $sqlQuery = 'SELECT * FROM `' . $tableName . '` WHERE id = ' . $id;
+            $sqlQuery = 'SELECT * FROM `' . $tableName . '` WHERE ' . implode(" AND ", $where);
 
             $stmt = $this->db()->query($sqlQuery);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -97,7 +110,7 @@ abstract class Model
 
     /**
      * Fills the object with the values provided as parameters
-     * 
+     *
      * @param array $data
      * @return void
      */
@@ -135,13 +148,11 @@ abstract class Model
      */
     public static function find(array $options): Model|null
     {
-        $class = new ReflectionClass(get_called_class());
-        $table = $class->getDefaultProperties()['table'];
         $where = array_map(function ($k) {
             return $k . "=?";
         }, array_keys($options));
 
-        $stmt = self::db()->prepare("SELECT * FROM " . $table . " WHERE " . implode(" AND ", $where));
+        $stmt = self::db()->prepare("SELECT * FROM " . self::getTable() . " WHERE " . implode(" AND ", $where));
         $stmt->execute(array_values($options));
 
         $result = $stmt->fetch();
@@ -159,20 +170,29 @@ abstract class Model
      * @return Model[]
      * @throws ReflectionException
      */
-    public static function all(): array
+    public static function all(?array $options = []): array
     {
-        $class = new ReflectionClass(get_called_class());
-        $table = $class->getDefaultProperties()['table'];
+        $query = "SELECT * FROM " . self::getTable();
 
-        $stmt = self::db()->query("SELECT * FROM " . $table);
-        $users = array_map(fn ($item) => self::morph($item) , $stmt->fetchAll(PDO::FETCH_ASSOC));
+        if (!empty($options)) {
+            $where = array_map(fn ($k, $v) => $k . ' = "' . $v . '"', array_keys($options), array_values($options));
+
+            $query .= " WHERE " . implode(" AND ", $where);
+        }
+
+        $stmt = self::db()->query($query);
+        $users = array_map(fn ($item) => self::morph($item), $stmt->fetchAll(PDO::FETCH_ASSOC));
 
         return $users;
     }
 
     public static function factory(): Factory
     {
-        return new Factory(get_called_class());
+        $split = explode("\\", get_called_class());
+        $className = end($split);
+        $class = "Matcha\\Api\\Factory\\" . $className . "Factory";
+
+        return new $class(get_called_class());
     }
 
     public function getData(): array
