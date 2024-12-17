@@ -9,7 +9,7 @@ let formData = {
   email: '',
   password: '',
   age: 0,
-  dateAge: '',
+  birthday: '',
   first_name: '',
   last_name: '',
   gender: '' as 'M' | 'F' | 'O',
@@ -148,7 +148,7 @@ function handleChangeStep(n: number) {
             required
           />
 
-          <input v-model="formData.dateAge" class="input input-bordered" type="date" :max="maxAge"/>
+          <input v-model="formData.birthday" class="input input-bordered" type="date" :max="maxAge"/>
           
         </div>
       </form>
