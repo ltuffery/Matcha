@@ -6,15 +6,19 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  validatorByStep: {
+    type: Function,
+    required: true,
+  },
 })
 
-const emit = defineEmits(['submit', 'changeStep'])
+const emit = defineEmits(['submit', 'changeStep', 'test'])
 
 let currentStep = ref(0)
 emit('changeStep', currentStep)
 
 function nextStep() {
-  if (currentStep.value < props.totalSteps - 1) {
+  if (currentStep.value < props.totalSteps - 1 && props.validatorByStep(currentStep.value)) {
     currentStep.value++
     emit('changeStep', currentStep)
   }
@@ -39,7 +43,7 @@ function submitForm() {
     <div v-if="currentStep < props.totalSteps">
       <!-- Affichage de l'étape courante -->
       <div :key="currentStep">
-        <slot :name="'step-' + currentStep" />
+        <slot ref="reftest" :name="'step-' + currentStep" />
       </div>
 
       <!-- Navigation entre les étapes -->

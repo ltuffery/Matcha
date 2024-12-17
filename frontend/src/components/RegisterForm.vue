@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import MultiStepForm from '@/components/MultiStepForm.vue'
 import { Api } from '@/utils/api'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import Alert from './Alert.vue'
 
 let formData = {
@@ -51,6 +51,31 @@ async function handleSubmit() {
   }
 }
 
+function inputIsValidStep0()
+{
+  if (formData.username == '')
+    return false
+  return true
+}
+
+function inputIsValidStep1()
+{
+
+}
+
+function validatorByStep(currentStep)
+{
+  switch (currentStep) {
+    case 0:
+      return inputIsValidStep0()
+    case 0:
+      return inputIsValidStep1()
+    default:
+      break;
+  }
+  return (true)
+}
+
 function handleChangeStep(n: number) {
   step.value = n
 }
@@ -67,6 +92,7 @@ function handleChangeStep(n: number) {
     :totalSteps="totalSteps"
     @submit="handleSubmit"
     @change-step="handleChangeStep"
+    :validatorByStep="validatorByStep"
   >
     <template #step-0>
       <div class="form-control">
@@ -140,16 +166,10 @@ function handleChangeStep(n: number) {
             <span class="label-text">Age</span>
           </label>
           <input
-            v-model="formData.age"
-            type="number"
-            placeholder="Age"
+            v-model="formData.birthday"
             class="input input-bordered"
-            min="18"
-            required
+            type="date" :max="maxAge"
           />
-
-          <input v-model="formData.birthday" class="input input-bordered" type="date" :max="maxAge"/>
-          
         </div>
       </form>
     </template>

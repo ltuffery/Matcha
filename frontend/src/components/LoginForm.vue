@@ -39,12 +39,10 @@ function loginUserAccount(e) {
       if (res.status == 400)
       {
         toastsRef.value.addError("Bad credencials")
-        password.value = ""
       }
       else if (res.status == 401)
       {
         toastsRef.value.addWarning("Your email isn't verifyed", {title: "Temporary :"})
-        password.value = ""
       }
       else if (res.success == true)
       {
@@ -55,6 +53,7 @@ function loginUserAccount(e) {
       else {
         toastsRef.value.addError("Unexpected error occured")
       }
+      password.value = ""
     }
   })
 }
