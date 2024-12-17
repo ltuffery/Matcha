@@ -5,6 +5,7 @@ import VerifyEmailView from '../views/VerifyEmailView.vue'
 import NewPasswordView from '../views/NewPasswordView.vue'
 import { authGuard } from '@/middlewares/auth'
 import { isAuthenticated } from '@/services/auth'
+import SearchUsersView from '@/views/SearchUsersView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,6 +26,12 @@ const router = createRouter({
       path: '/main',
       name: 'main',
       component: MainView,
+      beforeEnter: [authGuard],
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: SearchUsersView,
       beforeEnter: [authGuard],
     },
     {
