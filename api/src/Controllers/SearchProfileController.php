@@ -18,7 +18,7 @@ class SearchProfileController
         }
 
         $users = User::all();
-        $result = array_filter($users, fn (string $v) => str_starts_with($v, $query['q']));
+        $result = array_filter($users, fn (User $v) => str_starts_with($v->username, $query['q']));
 
         Flight::json(
             array_slice($result, 0, 5)

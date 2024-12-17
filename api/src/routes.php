@@ -48,7 +48,9 @@ Flight::group('/users', function () {
 
 }, [AuthMiddleware::class]);
 
-Flight::route('GET /users/search', [SearchProfileController::class, 'index'])->addMiddleware([AuthMiddleware::class]);
+Flight::group('/search', function () {
+    Flight::route('GET /users', [SearchProfileController::class, 'index']);
+}, [AuthMiddleware::class]);
 
 // 404 route
 Flight::map('notFound', function () {
