@@ -27,6 +27,7 @@ class AuthMiddlewareTest extends TestCase
     public function tearDown(): void
     {
         ob_end_clean();
+        Flight::response()->clear();
     }
 
     public function testNoAuthorizationHeaderGiven(): void
