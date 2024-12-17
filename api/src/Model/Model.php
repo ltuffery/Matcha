@@ -189,7 +189,7 @@ abstract class Model
         $users = array_map(fn ($item) => self::morph($item), $stmt->fetchAll(PDO::FETCH_ASSOC));
 
         return $users;
-    } 
+    }
 
     /**
      * Get all model
