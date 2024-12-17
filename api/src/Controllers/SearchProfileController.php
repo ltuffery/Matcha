@@ -17,11 +17,10 @@ class SearchProfileController
             return;
         }
 
-        $users = User::all();
-        $result = array_filter($users, fn (User $v) => str_starts_with($v->username, $query['q']));
+        $users = User::where([
+            ['username', 'LIKE', $query['q']]
+        ], 5);
 
-        Flight::json(
-            array_slice($result, 0, 5)
-        );
+        Flight::json($users);
     }
 }
