@@ -31,6 +31,7 @@ class UserStatusControllerTest extends TestCase
     public function tearDown(): void
     {
         ob_get_clean();
+        Flight::response()->clear();
     }
 
     private function createUser(): string
