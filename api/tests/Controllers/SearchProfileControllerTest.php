@@ -42,7 +42,7 @@ class SearchProfileControllerTest extends TestCase
             $response = $this->withHeader([
                 'Authorization' => 'Bearer ' . $this->user->generateJWT(),
             ])->get('/search/users', [
-                'q' => substr($users[0]->username, $i),
+                'q' => substr($users[0]->username, 0, $i),
             ]);
 
             $response->assertStatus(200);
@@ -54,7 +54,7 @@ class SearchProfileControllerTest extends TestCase
     public function testQueryValidLength(): void
     {
         $users = User::factory()->count(10)->create();
-        $subUsername = substr($users[0]->username, 5);
+        $subUsername = substr($users[0]->username, 0, 5);
         $finds = array_filter($users, fn (User $user) => str_starts_with($user->username, $subUsername));
     
         $response = $this->withHeader([
