@@ -40,6 +40,18 @@ function loginUserAccount(e) {
 
   login(username.value, password.value).then(res => {
     if (res != null) {
+      navigator.geolocation.getCurrentPosition(
+        loc => {
+          Api.put("/users/me/localisation").send({
+            lat: loc.coords.latitude,
+            lon: loc.coords.longitude,
+          })
+        },
+        err => {
+          Api.put("/users/me/localisation").send()
+        }
+      )
+
       router.push({ name: 'main' })
       refreshSocket()
       socket.emit('online')
