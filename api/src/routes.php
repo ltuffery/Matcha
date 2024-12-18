@@ -38,14 +38,14 @@ Flight::group('/forgot', function () {
 
 Flight::group('/users', function () {
 
-    Flight::group('/me', function () {
-        Flight::route('PUT|PATCH /status', [UserStatusController::class, 'update']);
-        Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
-    });
-
     Flight::group('/@username', function () {
         Flight::route('POST /like', [LikeController::class, 'store']);
         Flight::route('DELETE /unlike', [LikeController::class, 'destroy']);
+    });
+
+    Flight::group('/me', function () {
+        Flight::route('PUT|PATCH /status', [UserStatusController::class, 'update']);
+        Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
     });
 
 }, [AuthMiddleware::class]);
