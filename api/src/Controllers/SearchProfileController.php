@@ -18,7 +18,7 @@ class SearchProfileController
         }
 
         $users = User::where([
-            ['username', 'LIKE', $query['q']]
+            ['username', 'LIKE', '%' . $query['q'] . '%']
         ], 5);
 
         Flight::json($users);
