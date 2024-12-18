@@ -192,4 +192,26 @@ class ModelTest extends TestCase
 
         $this->assertCount(0, User::all());
     }
+
+    public function testWhere(): void
+    {
+        $user = $this->createUser();
+
+        $users = User::where([
+            ['username', '=', $user->username]
+        ]);
+
+        $this->assertCount(1, $users);
+    }
+
+    public function testWhereWithLimit(): void
+    {
+        $this->createUsers(5);
+
+        $users = User::where([
+            ['id', '>', '1']
+        ], 2);
+
+        $this->assertCount(2, $users);
+    }
 }

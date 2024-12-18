@@ -8,6 +8,6 @@ class UserSeeder implements SeederInterface
 {
     public function run(): void
     {
-        User::factory()->create();
+        User::factory()->count(20)->create();
     }
 }

@@ -6,6 +6,7 @@ use Firebase\JWT\JWT;
 
 /**
  * @method static User find(array $data)
+ * @method static User[] where(array $object)
  * @method static User morph(array $object)
  * @method static User[] all()
  * @method User save()
