@@ -6,10 +6,6 @@ const props = defineProps({
     type: Number,
     required: true,
   },
-  validatorByStep: {
-    type: Function,
-    required: true,
-  },
 })
 
 const emit = defineEmits(['submit', 'changeStep', 'test'])
@@ -18,24 +14,28 @@ let currentStep = ref(0)
 emit('changeStep', currentStep)
 
 function nextStep() {
-  if (currentStep.value < props.totalSteps - 1 && props.validatorByStep(currentStep.value)) {
+  if (currentStep.value < props.totalSteps - 1) {
     currentStep.value++
-    emit('changeStep', currentStep)
+    // emit('changeStep', currentStep)
   }
 }
 
 function prevStep() {
   if (currentStep.value > 0) {
     currentStep.value--
-    emit('changeStep', currentStep)
+    // emit('changeStep', currentStep)
   }
 }
 
 function submitForm() {
-  // currentStep.value++
-  emit('changeStep', currentStep)
+  currentStep.value++
+  // emit('changeStep', currentStep)
   emit('submit')
 }
+
+defineExpose({
+  currentStep,
+})
 </script>
 
 <template>
