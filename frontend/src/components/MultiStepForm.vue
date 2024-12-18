@@ -39,7 +39,7 @@ function submitForm() {
 </script>
 
 <template>
-  <div class="multi-step-form">
+  <div class="multi-step-form" @keyup.enter="nextStep">
     <div v-if="currentStep < props.totalSteps">
       <!-- Affichage de l'étape courante -->
       <div :key="currentStep">

@@ -17,6 +17,19 @@ let formData = {
   biography: '',
 }
 
+const formError = ref({
+  username: false,
+  email: false,
+  password: false,
+  age: false,
+  birthday: false,
+  first_name: false,
+  last_name: false,
+  gender: false,
+  sexual_preferences: false,
+  biography: false,
+})
+
 const totalSteps = 4
 const step = ref(0)
 const hasError = ref(false)
@@ -53,14 +66,45 @@ async function handleSubmit() {
 
 function inputIsValidStep0()
 {
-  if (formData.username == '')
+  if (formData.username == '' || formData.email == '' || formData.password == '')
+  {
+    if (formData.username == '')
+      formError.value.username = true
+    if (formData.email == '')
+      formError.value.email = true
+    if (formData.password == '')
+      formError.value.password = true
     return false
+  }
   return true
 }
 
 function inputIsValidStep1()
 {
+  if (formData.first_name == '' || formData.last_name == '' || formData.birthday == '' || formData.birthday > maxAge.value)
+  {
+    if (formData.first_name == '')
+      formError.value.first_name = true
+    if (formData.last_name == '')
+      formError.value.last_name = true
+    if (formData.birthday == '' || formData.birthday > maxAge.value)
+      formError.value.birthday = true
+    return false
+  }
+  return true
+}
 
+function inputIsValidStep2()
+{
+  if (formData.gender == '' || formData.sexual_preferences == '')
+  {
+    if (formData.gender == '')
+      formError.value.gender = true
+    if (formData.sexual_preferences == '')
+      formError.value.sexual_preferences = true
+    return false
+  }
+  return true
 }
 
 function validatorByStep(currentStep)
@@ -68,8 +112,10 @@ function validatorByStep(currentStep)
   switch (currentStep) {
     case 0:
       return inputIsValidStep0()
-    case 0:
+    case 1:
       return inputIsValidStep1()
+    case 2:
+      return inputIsValidStep2()
     default:
       break;
   }
@@ -104,6 +150,8 @@ function handleChangeStep(n: number) {
           type="text"
           placeholder="username"
           class="input input-bordered"
+          :class="{ 'input-error': formError.username }"
+          @focus="formError.username = false"
           required
         />
       </div>
@@ -116,6 +164,8 @@ function handleChangeStep(n: number) {
           type="email"
           placeholder="email"
           class="input input-bordered"
+          :class="{ 'input-error': formError.email }"
+          @focus="formError.email = false"
           required
         />
       </div>
@@ -128,6 +178,8 @@ function handleChangeStep(n: number) {
           type="password"
           placeholder="password"
           class="input input-bordered"
+          :class="{ 'input-error': formError.password }"
+          @focus="formError.password = false"
           required
         />
       </div>
@@ -144,6 +196,8 @@ function handleChangeStep(n: number) {
             type="text"
             placeholder="First Name"
             class="input input-bordered"
+            :class="{ 'input-error': formError.first_name }"
+            @focus="formError.first_name = false"
             required
           />
         </div>
@@ -157,6 +211,8 @@ function handleChangeStep(n: number) {
             type="text"
             placeholder="last Name"
             class="input input-bordered"
+            :class="{ 'input-error': formError.last_name }"
+            @focus="formError.last_name = false"
             required
           />
         </div>
@@ -169,6 +225,8 @@ function handleChangeStep(n: number) {
             v-model="formData.birthday"
             class="input input-bordered"
             type="date" :max="maxAge"
+            :class="{ 'input-error': formError.birthday }"
+            @focus="formError.birthday = false"
           />
         </div>
       </form>
@@ -183,6 +241,8 @@ function handleChangeStep(n: number) {
           <select
             v-model="formData.gender"
             class="select select-bordered w-full max-w-xs"
+            :class="{ 'select-error': formError.gender }"
+            @focus="formError.gender = false"
           >
             <option value="M">Man</option>
             <option value="F">Woman</option>
@@ -197,6 +257,8 @@ function handleChangeStep(n: number) {
           <select
             v-model="formData.sexual_preferences"
             class="select select-bordered w-full max-w-xs"
+            :class="{ 'select-error': formError.sexual_preferences }"
+            @focus="formError.sexual_preferences = false"
           >
             <option value="M">Men</option>
             <option value="F">women</option>
