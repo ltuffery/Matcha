@@ -32,7 +32,7 @@ const router = createRouter({
       path: '/search',
       name: 'search',
       component: SearchUsersView,
-      // beforeEnter: [authGuard],
+      beforeEnter: [authGuard],
     },
     {
       path: '/verify',
