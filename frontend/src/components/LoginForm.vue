@@ -42,14 +42,14 @@ function loginUserAccount(e) {
     if (res != null) {
       navigator.geolocation.getCurrentPosition(
         loc => {
-          Api.put("/users/me/localisation").send({
+          Api.put('/users/me/localisation').send({
             lat: loc.coords.latitude,
             lon: loc.coords.longitude,
           })
         },
         err => {
-          Api.put("/users/me/localisation").send()
-        }
+          Api.put('/users/me/localisation').send()
+        },
       )
 
       router.push({ name: 'main' })
