@@ -29,6 +29,8 @@ class User extends Model
     public bool $email_verified;
     public string|null $temporary_email_token;
     public bool $online;
+    public float|null $lat;
+    public float|null $lon;
 
     public function generateJWT(): string
     {

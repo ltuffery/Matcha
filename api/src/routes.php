@@ -4,6 +4,7 @@ use Matcha\Api\Controllers\EmailController;
 use Matcha\Api\Controllers\ForgotController;
 use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Controllers\LikeController;
+use Matcha\Api\Controllers\LocalisationController;
 use Matcha\Api\Controllers\RegisterController;
 use Matcha\Api\Controllers\UserStatusController;
 use Matcha\Api\Middleware\AuthMiddleware;
@@ -39,6 +40,7 @@ Flight::group('/users', function () {
 
     Flight::group('/me', function () {
         Flight::route('PUT|PATCH /status', [UserStatusController::class, 'update']);
+        Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
     });
 
     Flight::group('/@username', function () {
