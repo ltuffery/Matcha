@@ -48,13 +48,22 @@ trait HttpTestCase
         return $this->request('DELETE', $url, $data);
     }
 
-    public function request(string $method, string $url, ?array $data = []): TestResponse
+    public function request(string $method, string $url, array $data = []): TestResponse
     {
+        $body = "";
+
+        if ($method == 'GET') {
+            $_GET = $data;
+        } else {
+            $body = json_encode($data);
+        }
+
+        Flight::response()->clear();
         Flight::request()->init([
             'url' => $url,
             'method' => $method,
             'type' => 'application/json',
-            'body' => json_encode($data),
+            'body' => $body,
         ]);
 
         Flight::start();

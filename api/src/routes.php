@@ -5,6 +5,7 @@ use Matcha\Api\Controllers\ForgotController;
 use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Controllers\RegisterController;
+use Matcha\Api\Controllers\SearchProfileController;
 use Matcha\Api\Controllers\UserStatusController;
 use Matcha\Api\Middleware\AuthMiddleware;
 
@@ -21,7 +22,6 @@ Flight::route('GET /', function () {
 Flight::group('/auth', function () {
     Flight::route('POST /register', [RegisterController::class, 'store']);
     Flight::route('POST /login', [AuthenticatedSessionController::class, 'store']);
-
 });
 
 Flight::group('/email', function () {
@@ -46,6 +46,10 @@ Flight::group('/users', function () {
         Flight::route('DELETE /unlike', [LikeController::class, 'destroy']);
     });
 
+}, [AuthMiddleware::class]);
+
+Flight::group('/search', function () {
+    Flight::route('GET /users', [SearchProfileController::class, 'index']);
 }, [AuthMiddleware::class]);
 
 // 404 route
