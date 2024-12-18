@@ -41,6 +41,7 @@ class UserStatusControllerTest extends TestCase
         $user->username = "test";
         $user->email = "test@test.com";
         $user->password = "pass";
+        $user->birthday = "2000-05-21";
 
         $user->create();
 

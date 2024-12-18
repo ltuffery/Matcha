@@ -1,22 +1,45 @@
 <script lang="ts" setup>
 import MultiStepForm from '@/components/MultiStepForm.vue'
 import { Api } from '@/utils/api'
-import { ref, watch, computed, reactive, onMounted } from 'vue'
+import { ref, watch, computed, reactive } from 'vue'
 import Alert from './Alert.vue'
 
-const tt = reactive({
-  username: null,
+let formData = {
+  username: '',
   email: '',
   password: '',
+  age: 0,
   birthday: '',
   first_name: '',
   last_name: '',
   gender: '' as 'M' | 'F' | 'O',
   sexual_preferences: '' as 'M' | 'F' | 'A' | 'O',
   biography: '',
+}
+const refs = reactive({
+  username: null,
+  email: null,
+  password: null,
+  birthday: null,
+  first_name: null,
+  last_name: null,
+  gender: null as 'M' | 'F' | 'O',
+  sexual_preferences: null as 'M' | 'F' | 'A' | 'O',
+  biography: null,
 });
 
-const refs = ref({})
+const formError = ref({
+  username: false,
+  email: false,
+  password: false,
+  age: false,
+  birthday: false,
+  first_name: false,
+  last_name: false,
+  gender: false,
+  sexual_preferences: false,
+  biography: false,
+})
 
 const totalSteps = 4
 const step = ref(0)
@@ -40,22 +63,8 @@ function setMaxAge()
 setMaxAge()
 
 async function handleSubmit() {
-  console.log(refs.value)
   try {
-    const req = await Api.post('/auth/register')
-    req.send(
-      {
-        'username': refs.username.value,
-        'email': refs.email.value,
-        'password': refs.password.value,
-        'birthday': refs.birthday.value,
-        'first_name': refs.first_name.value,
-        'last_name': refs.last_name.value,
-        'gender': refs.gender.value,
-        'sexual_preferences': refs.sexual_preferences.value,
-        'biography': refs.biography.value,
-      }
-    )
+    const req = await Api.post('/auth/register').send(formData)
     const data = await req.json()
 
     if (req.status == 400) {
@@ -71,13 +80,67 @@ async function handleSubmit() {
   }
 }
 
+function inputIsValidStep0()
+{
+  if (formData.username == '' || formData.email == '' || formData.password == '')
+  {
+    if (formData.username == '')
+      formError.value.username = true
+    if (formData.email == '')
+      formError.value.email = true
+    if (formData.password == '')
+      formError.value.password = true
+    return false
+  }
+  return true
+}
+
+function inputIsValidStep1()
+{
+  if (formData.first_name == '' || formData.last_name == '' || formData.birthday == '' || formData.birthday > maxAge.value)
+  {
+    if (formData.first_name == '')
+      formError.value.first_name = true
+    if (formData.last_name == '')
+      formError.value.last_name = true
+    if (formData.birthday == '' || formData.birthday > maxAge.value)
+      formError.value.birthday = true
+    return false
+  }
+  return true
+}
+
+function inputIsValidStep2()
+{
+  if (formData.gender == '' || formData.sexual_preferences == '')
+  {
+    if (formData.gender == '')
+      formError.value.gender = true
+    if (formData.sexual_preferences == '')
+      formError.value.sexual_preferences = true
+    return false
+  }
+  return true
+}
+
+function validatorByStep(currentStep)
+{
+  switch (currentStep) {
+    case 0:
+      return inputIsValidStep0()
+    case 1:
+      return inputIsValidStep1()
+    case 2:
+      return inputIsValidStep2()
+    default:
+      break;
+  }
+  return (true)
+}
 
 function handleChangeStep(n: number) {
   step.value = n
 }
-onMounted(() => {
-  refs.value.username.focus()
-})
 </script>
 
 <template>
@@ -91,6 +154,7 @@ onMounted(() => {
     :totalSteps="totalSteps"
     @submit="handleSubmit"
     @change-step="handleChangeStep"
+    :validatorByStep="validatorByStep"
     ref="stepet"
   >
     <template #step-0>
@@ -99,10 +163,12 @@ onMounted(() => {
           <span class="label-text">Username</span>
         </label>
         <input
-          :ref="el => (refs.username = el)"
+          v-model="formData.username"
           type="text"
           placeholder="username"
           class="input input-bordered"
+          :class="{ 'input-error': formError.username }"
+          @focus="formError.username = false"
           required
         />
       </div>
@@ -111,10 +177,12 @@ onMounted(() => {
           <span class="label-text">Email</span>
         </label>
         <input
-          :ref="refs.email"
+          v-model="formData.email"
           type="email"
           placeholder="email"
           class="input input-bordered"
+          :class="{ 'input-error': formError.email }"
+          @focus="formError.email = false"
           required
         />
       </div>
@@ -123,10 +191,12 @@ onMounted(() => {
           <span class="label-text">Password</span>
         </label>
         <input
-          :ref="refs.password"
+          v-model="formData.password"
           type="password"
           placeholder="password"
           class="input input-bordered"
+          :class="{ 'input-error': formError.password }"
+          @focus="formError.password = false"
           required
         />
       </div>
@@ -139,10 +209,12 @@ onMounted(() => {
             <span class="label-text">First Name</span>
           </label>
           <input
-            :ref="refs.first_name"
+            v-model="formData.first_name"
             type="text"
             placeholder="First Name"
             class="input input-bordered"
+            :class="{ 'input-error': formError.first_name }"
+            @focus="formError.first_name = false"
             required
           />
         </div>
@@ -152,10 +224,12 @@ onMounted(() => {
             <span class="label-text">Last Name</span>
           </label>
           <input
-            :ref="refs.last_name"
+            v-model="formData.last_name"
             type="text"
             placeholder="last Name"
             class="input input-bordered"
+            :class="{ 'input-error': formError.last_name }"
+            @focus="formError.last_name = false"
             required
           />
         </div>
@@ -165,9 +239,11 @@ onMounted(() => {
             <span class="label-text">Age</span>
           </label>
           <input
-            :ref="refs.birthday"
+            v-model="formData.birthday"
             class="input input-bordered"
             type="date" :max="maxAge"
+            :class="{ 'input-error': formError.birthday }"
+            @focus="formError.birthday = false"
           />
         </div>
       </form>
@@ -180,10 +256,11 @@ onMounted(() => {
             <span class="label-text">Gender</span>
           </label>
           <select
-            :ref="refs.gender"
+            v-model="formData.gender"
             class="select select-bordered w-full max-w-xs"
+            :class="{ 'select-error': formError.gender }"
+            @focus="formError.gender = false"
           >
-            <option disabled selected>Choose one</option>
             <option value="M">Man</option>
             <option value="F">Woman</option>
             <option value="O">Other</option>
@@ -195,10 +272,11 @@ onMounted(() => {
             <span class="label-text">Sexual Preferences</span>
           </label>
           <select
-            :ref="refs.sexual_preferences"
+            v-model="formData.sexual_preferences"
             class="select select-bordered w-full max-w-xs"
+            :class="{ 'select-error': formError.sexual_preferences }"
+            @focus="formError.sexual_preferences = false"
           >
-            <option disabled selected>Choose one</option>
             <option value="M">Men</option>
             <option value="F">Women</option>
             <option value="O">Other</option>
@@ -215,7 +293,7 @@ onMounted(() => {
             <span class="label-text">Bio</span>
           </label>
           <textarea
-            :ref="refs.biography"
+            v-model="formData.biography"
             class="textarea textarea-bordered"
             placeholder="Bio"
           ></textarea>
