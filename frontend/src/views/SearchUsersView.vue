@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import UserSearchCard from '@/components/UserSearchCard.vue'
-import { Api } from '@/utils/api';
+import { Api } from '@/utils/api'
 import { ref, watch } from 'vue'
 
 const search = ref('')
@@ -11,7 +11,7 @@ const input = () => {
     Api.get(`search/users?q=${search.value}`)
       .send()
       .then(res => res.json())
-      .then(data => users.value = data)
+      .then(data => (users.value = data))
   } else {
     users.value = []
   }
@@ -34,7 +34,7 @@ const input = () => {
         fill="none"
         class="h-4 w-4 opacity-70"
       >
-      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
         <g
           id="SVGRepo_tracerCarrier"
           stroke-linecap="round"
@@ -60,7 +60,11 @@ const input = () => {
       class="p-6 flex flex-col gap-5 border-2 rounded-box border-neutral-content mt-2"
       v-if="users.length"
     >
-      <UserSearchCard v-for="user in users" :key="user" :username="user.username" />
+      <UserSearchCard
+        v-for="user in users"
+        :key="user"
+        :username="user.username"
+      />
     </div>
   </div>
 </template>

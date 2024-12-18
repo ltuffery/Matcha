@@ -9,7 +9,7 @@ export class Api {
   static get(path) {
     return this.request('GET', path)
   }
-  
+
   static post(path) {
     return this.request('POST', path)
   }
@@ -34,7 +34,7 @@ export class Api {
   }
 
   async send(body = null) {
-    const jwt = localStorage.getItem("jwt")
+    const jwt = localStorage.getItem('jwt')
 
     if (jwt != null) {
       this.header('Authorization', `Bearer ${jwt}`)

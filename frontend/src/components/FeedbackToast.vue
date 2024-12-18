@@ -87,7 +87,7 @@ defineExpose({
       'toast',
       `toast-${props.posY}`,
       `toast-${props.posX}`,
-      'overflow-y-auto'
+      'overflow-y-auto',
     ]"
   >
     <div
