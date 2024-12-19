@@ -1,33 +1,31 @@
 <script lang="ts" setup>
 import MultiStepForm from '@/components/MultiStepForm.vue'
 import { Api } from '@/utils/api'
-import { ref, watch, computed, reactive, onMounted } from 'vue'
-import Alert from './Alert.vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
+import FeedbackToast from '@/components/FeedbackToast.vue'
 
-const tt = reactive({
+const formData = {
   username: null,
-  email: '',
-  password: '',
-  birthday: '',
-  first_name: '',
-  last_name: '',
-  gender: '' as 'M' | 'F' | 'O',
-  sexual_preferences: '' as 'M' | 'F' | 'A' | 'O',
-  biography: '',
-});
+  email: null,
+  password: null,
+  birthday: null,
+  first_name: null,
+  last_name: null,
+  gender: null as 'M' | 'F' | 'O',
+  sexual_preferences: null as 'M' | 'F' | 'A' | 'O',
+  biography: null,
+};
 
 const refs = ref({})
+const step = ref()
+const currentStep = computed(() => {
+  return step?.value?.currentStep || 0;
+});
 
 const totalSteps = 4
-const step = ref(0)
-const hasError = ref(false)
-const titleAlert = ref('test')
+const feedbackRef = ref()
 const maxAge = ref()
-const stepet = ref()
 
-const currentStep = computed(() => {
-  return stepet?.value?.currentStep || 0;
-});
 
 function setMaxAge()
 {
@@ -40,44 +38,86 @@ function setMaxAge()
 setMaxAge()
 
 async function handleSubmit() {
-  console.log(refs.value)
+  console.log(formData)
   try {
-    const req = await Api.post('/auth/register')
-    req.send(
-      {
-        'username': refs.username.value,
-        'email': refs.email.value,
-        'password': refs.password.value,
-        'birthday': refs.birthday.value,
-        'first_name': refs.first_name.value,
-        'last_name': refs.last_name.value,
-        'gender': refs.gender.value,
-        'sexual_preferences': refs.sexual_preferences.value,
-        'biography': refs.biography.value,
-      }
-    )
+    const req = await Api.post('/auth/register').send(formData)
     const data = await req.json()
 
     if (req.status == 400) {
-      hasError.value = true
-      titleAlert.value = data.message
+      feedbackRef.value.addError(data.message)
+      focusInput(0)
     } else {
       Api.post('email/verif').send({ email: formData.email })
+      step.value.nextStep()
     }
   } catch (error) {
     console.error('Error during API request:', error)
-    hasError.value = true
-    titleAlert.value = 'An unexpected error occurred.'
+    feedbackRef.value.addError('An unexpected error occurred.')
   }
 }
 
+function focusInput(code)
+{
+  if (code < 3)
+    step.value.setStep(0)
+  else if (code >= 3 && code < 6)
+    step.value.setStep(1)
+  else if (code >= 6 && code < 8)
+    step.value.setStep(2)
+  else
+    step.value.setStep(3)
 
-function handleChangeStep(n: number) {
-  step.value = n
+  nextTick (() => {
+    switch (code) {
+      case 0:
+        refs.value.username.focus()
+        refs.value.username.classList.add("input-error")
+        break;
+      case 1:
+        refs.value.email.focus()
+        refs.value.email.classList.add("input-error")
+        break;
+      case 2:
+        refs.value.password.focus()
+        refs.value.password.classList.add("input-error")
+        break;
+      case 3:
+        refs.value.first_name.focus()
+        refs.value.first_name.classList.add("input-error")
+        break;
+      case 4:
+        refs.value.last_name.focus()
+        refs.value.last_name.classList.add("input-error")
+        break;
+      case 5:
+        refs.value.birthday.focus()
+        refs.value.birthday.classList.add("input-error")
+        break;
+      case 6:
+        refs.value.gender.focus()
+        refs.value.gender.classList.add("select-error")
+        break;
+      case 7:
+        refs.value.sexual_preferences.focus()
+        refs.value.sexual_preferences.classList.add("select-error")
+        break;
+      case 8:
+        refs.value.biography.focus()
+        refs.value.biography.classList.add("textarea-error")
+        break;
+    
+      default:
+        break;
+    }
+  })
 }
-onMounted(() => {
-  refs.value.username.focus()
-})
+
+function eraseErrorStyle(el)
+{
+  el.target.classList.remove("input-error")
+  el.target.classList.remove("select-error")
+  el.target.classList.remove("textarea-error")
+}
 </script>
 
 <template>
@@ -86,12 +126,13 @@ onMounted(() => {
     :value="currentStep"
     :max="totalSteps"
   ></progress>
-  <Alert v-if="hasError" type="error" :title="titleAlert" />
+  <FeedbackToast ref="feedbackRef" class="w-full" />
+
+  <form @submit.prevent="handleSubmit">
   <MultiStepForm
     :totalSteps="totalSteps"
     @submit="handleSubmit"
-    @change-step="handleChangeStep"
-    ref="stepet"
+    ref="step"
   >
     <template #step-0>
       <div class="form-control">
@@ -99,10 +140,12 @@ onMounted(() => {
           <span class="label-text">Username</span>
         </label>
         <input
+          v-model="formData.username"
           :ref="el => (refs.username = el)"
           type="text"
           placeholder="username"
           class="input input-bordered"
+          @input="eraseErrorStyle"
           required
         />
       </div>
@@ -111,10 +154,12 @@ onMounted(() => {
           <span class="label-text">Email</span>
         </label>
         <input
-          :ref="refs.email"
+          v-model="formData.email"
+          :ref="el => (refs.email = el)"
           type="email"
           placeholder="email"
           class="input input-bordered"
+          @input="eraseErrorStyle"
           required
         />
       </div>
@@ -123,10 +168,12 @@ onMounted(() => {
           <span class="label-text">Password</span>
         </label>
         <input
-          :ref="refs.password"
+          v-model="formData.password"
+          :ref="el => (refs.password = el)"
           type="password"
           placeholder="password"
           class="input input-bordered"
+          @input="eraseErrorStyle"
           required
         />
       </div>
@@ -139,10 +186,12 @@ onMounted(() => {
             <span class="label-text">First Name</span>
           </label>
           <input
-            :ref="refs.first_name"
+            v-model="formData.first_name"
+            :ref="el => (refs.first_name = el)"
             type="text"
             placeholder="First Name"
             class="input input-bordered"
+            @input="eraseErrorStyle"
             required
           />
         </div>
@@ -152,22 +201,27 @@ onMounted(() => {
             <span class="label-text">Last Name</span>
           </label>
           <input
-            :ref="refs.last_name"
+            v-model="formData.last_name"
+            :ref="el => (refs.last_name = el)"
             type="text"
             placeholder="last Name"
             class="input input-bordered"
+            @input="eraseErrorStyle"
             required
           />
         </div>
 
         <div class="form-control">
           <label class="label">
-            <span class="label-text">Age</span>
+            <span class="label-text">Birthday</span>
           </label>
           <input
-            :ref="refs.birthday"
+            v-model="formData.birthday"
+            :ref="el => (refs.birthday = el)"
             class="input input-bordered"
-            type="date" :max="maxAge"
+            type="date"
+            :max="maxAge"
+            @input="eraseErrorStyle"
           />
         </div>
       </form>
@@ -180,8 +234,10 @@ onMounted(() => {
             <span class="label-text">Gender</span>
           </label>
           <select
-            :ref="refs.gender"
+            v-model="formData.gender"
+            :ref="el => (refs.gender = el)"
             class="select select-bordered w-full max-w-xs"
+            @input="eraseErrorStyle"
           >
             <option disabled selected>Choose one</option>
             <option value="M">Man</option>
@@ -195,8 +251,10 @@ onMounted(() => {
             <span class="label-text">Sexual Preferences</span>
           </label>
           <select
-            :ref="refs.sexual_preferences"
+            v-model="formData.sexual_preferences"
+            :ref="el => (refs.sexual_preferences = el)"
             class="select select-bordered w-full max-w-xs"
+            @input="eraseErrorStyle"
           >
             <option disabled selected>Choose one</option>
             <option value="M">Men</option>
@@ -215,8 +273,10 @@ onMounted(() => {
             <span class="label-text">Bio</span>
           </label>
           <textarea
-            :ref="refs.biography"
+            v-model="formData.biography"
+            :ref="el => (refs.biography = el)"
             class="textarea textarea-bordered"
+            @input="eraseErrorStyle"
             placeholder="Bio"
           ></textarea>
         </div>
@@ -227,4 +287,5 @@ onMounted(() => {
       <p>Account created successfully, check your email before you connect.</p>
     </template>
   </MultiStepForm>
+  </form>
 </template>
