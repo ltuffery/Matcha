@@ -39,6 +39,7 @@ class AuthenticatedSessionController
             Flight::json([
                 'success' => true,
                 'token' => $user->generateJWT(),
+                'refresh' => $user->generateRefreshJWT($request->ip),
             ]);
         } else {
             Flight::json([
