@@ -19,9 +19,6 @@ class LikeControllerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->controller = new LikeController();
-        $this->response = new TestResponse();
-
         $this->setUpDatabase();
 
         $this->user = User::factory()->create()[0];
