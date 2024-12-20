@@ -10,6 +10,7 @@ use Throwable;
  * @method void assertStatus(int $status, ?string $message = '')
  * @method void assertJson(?array $data, ?string $message = '')
  * @method void assertCount(int $n, ?string $message = '')
+ * @method void assertJsonKeys(array $keys, ?string $message = '')
  */
 class TestResponse
 {
@@ -60,5 +61,17 @@ class TestResponse
         $data = json_decode($body, true);
 
         Assert::assertCount($n, $data, $message);
+    }
+
+    public static function assertJsonKeys(array $keys, ?string $message = ''): void
+    {
+        $body = Flight::response()->getBody();
+        Assert::assertJson($body, $message);
+
+        $data = json_decode($body, true);
+
+        foreach ($keys as $key) {
+            Assert::assertArrayHasKey($key, $data, $message);
+        }
     }
 }

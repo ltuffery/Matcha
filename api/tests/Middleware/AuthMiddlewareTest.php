@@ -21,12 +21,12 @@ class AuthMiddlewareTest extends TestCase
         $this->response = new TestResponse();
 
         Flight::response()->clear();
-        ob_start();
+        // ob_start();
     }
 
     public function tearDown(): void
     {
-        ob_end_clean();
+        // ob_end_clean();
         Flight::response()->clear();
     }
 
