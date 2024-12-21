@@ -21,6 +21,12 @@ Flight::route('GET /', function () {
     ]);
 });
 
+Flight::group('/auth', function () {
+    Flight::route('POST /register', [RegisterController::class, 'store']);
+    Flight::route('POST /login', [AuthenticatedSessionController::class, 'store']);
+    Flight::route('POST /refresh', [RefreshTokenController::class, 'store']);
+});
+
 Flight::group('/email', function () {
     Flight::route('POST /verif', [EmailController::class, 'emailVerif']);
     Flight::route('POST /token', [EmailController::class, 'verifToken']);
@@ -46,12 +52,6 @@ Flight::group('/users', function () {
 
 }, [AuthMiddleware::class]);
 
-Flight::group('/auth', function () {
-    Flight::route('POST /register', [RegisterController::class, 'store']);
-    Flight::route('POST /login', [AuthenticatedSessionController::class, 'store']);
-    Flight::route('POST /refresh', [RefreshTokenController::class, 'store']);
-});
-
 Flight::group('/search', function () {
     Flight::route('GET /users', [SearchProfileController::class, 'index']);
 }, [AuthMiddleware::class]);
@@ -61,4 +61,16 @@ Flight::map('notFound', function () {
     Flight::json([
         "message" => "Not found"
     ], 404);
+
+    ob_end_clean();
+
+    $r = Flight::request();
+
+    var_dump(array_filter(Flight::router()->getRoutes(), function ($route) use ($r) {
+            return $route->pattern === $r->url;
+        }) != null, $r->url);
+
+    if ($r->url === '/auth/refresh') {
+        var_dump(Flight::router()->route($r));
+    }
 });

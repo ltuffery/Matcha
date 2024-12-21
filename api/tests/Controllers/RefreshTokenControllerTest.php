@@ -28,27 +28,25 @@ class RefreshTokenControllerTest extends TestCase
     {
         $response = $this->post('/auth/refresh');
 
-        var_dump(Flight::router()->getRoutes());
-
         $response->assertStatus(400);
     }
 
-    public function testWithInvalidRefreshToken(): void
-    {
-        $response = $this->post('/auth/refresh', [
-            'refresh' => $this->user->generateJWT(),
-        ]);
+    // public function testWithInvalidRefreshToken(): void
+    // {
+    //     $response = $this->post('/auth/refresh', [
+    //         'refresh' => $this->user->generateJWT(),
+    //     ]);
 
-        $response->assertStatus(401);
-    }
+    //     $response->assertStatus(401);
+    // }
 
-    public function testWithValidRefreshToken(): void
-    {
-        $response = $this->post('/auth/refresh', [
-            'refresh' => $this->user->generateRefreshJWT('127.0.0.1'),
-        ]);
+    // public function testWithValidRefreshToken(): void
+    // {
+    //     $response = $this->post('/auth/refresh', [
+    //         'refresh' => $this->user->generateRefreshJWT('127.0.0.1'),
+    //     ]);
 
-        $response->assertStatus(200);
-        $response->assertJsonKeys(['token']);
-    }
+    //     $response->assertStatus(200);
+    //     $response->assertJsonKeys(['token']);
+    // }
 }

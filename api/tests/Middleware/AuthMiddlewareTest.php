@@ -20,7 +20,6 @@ class AuthMiddlewareTest extends TestCase
         $this->middleware = new AuthMiddleware();
         $this->response = new TestResponse();
 
-        Flight::response()->clear();
         // ob_start();
     }
 
