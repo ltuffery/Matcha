@@ -3,6 +3,8 @@
 namespace Matcha\Api\Model;
 
 use Firebase\JWT\JWT;
+use Flight;
+use PDO;
 
 /**
  * @method static User find(array $data)
@@ -82,6 +84,25 @@ class User extends Model
         return Like::all([
             'user_id' => $this->id,
         ]);
+    }
+
+    /**
+     * Get all user matches
+     * 
+     * @return User[]
+     */
+    public function matches(): array
+    {
+        $stmt = Flight::db()->prepare("
+            SELECT *
+            FROM users u
+            JOIN likes l1 ON u.id = l1.liked_id
+            JOIN likes l2 ON l1.user_id = l2.liked_id AND l2.user_id = u.id
+            WHERE l1.user_id = :user_id
+        ");
+
+        $stmt->execute(['user_id' => $this->id]);
+        return array_map(fn (array $obj) => User::morph($obj), $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
     public static function authenticate(string $username, string $password): User|false
