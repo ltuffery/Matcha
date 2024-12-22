@@ -43,7 +43,7 @@ class User extends Model
 
     public function generateRefreshJWT(string $ip): string
     {
-        // 2629743 equals ~1 month 
+        // 2629743 equals ~1 month
         return $this->encodeJWT([
             'username' => $this->username,
             'ip' => $ip,

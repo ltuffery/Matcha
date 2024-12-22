@@ -35,11 +35,13 @@ export const isAuthenticated = async () => {
   try {
     const decoded = JSON.parse(atob(token.split('.')[1]))
     const exp = decoded.exp
-    const hasExp = exp > Date.now() / 1000;
+    const hasExp = exp > Date.now() / 1000
 
     if (!hasExp) return true
 
-    const res = await Api.post('/auth/token').send({ refresh: localStorage.getItem('refresh') })
+    const res = await Api.post('/auth/token').send({
+      refresh: localStorage.getItem('refresh'),
+    })
 
     if (res.status == 401) return false
 
