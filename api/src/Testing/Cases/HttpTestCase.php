@@ -59,7 +59,7 @@ trait HttpTestCase
         }
 
         Flight::response()->clear();
-        $r = Flight::request()->init([
+        Flight::request()->init([
             'url' => $url,
             'method' => $method,
             'type' => 'application/json',
@@ -67,13 +67,8 @@ trait HttpTestCase
             'ip' => '127.0.0.1',
         ]);
 
-        // ob_end_clean();
-
-        // var_dump(array_filter(Flight::router()->getRoutes(), function ($route) use ($r) {
-        //     return $route->pattern == $r->url;
-        // }) != null, $r->url);
-
         Flight::start();
+        Flight::router()->reset();
 
         return new TestResponse();
     }

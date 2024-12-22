@@ -61,16 +61,4 @@ Flight::map('notFound', function () {
     Flight::json([
         "message" => "Not found"
     ], 404);
-
-    ob_end_clean();
-
-    $r = Flight::request();
-
-    var_dump(array_filter(Flight::router()->getRoutes(), function ($route) use ($r) {
-            return $route->pattern === $r->url;
-        }) != null, $r->url);
-
-    if ($r->url === '/auth/refresh') {
-        var_dump(Flight::router()->route($r));
-    }
 });
