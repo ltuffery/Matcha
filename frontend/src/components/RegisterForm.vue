@@ -45,7 +45,7 @@ async function handleSubmit() {
 
     if (req.status == 400) {
       feedbackRef.value.addError(data.message)
-      focusInput(0)
+      focusInput(getErrorCode(data.message))
     } else {
       Api.post('email/verif').send({ email: formData.email })
       step.value.nextStep()
@@ -54,6 +54,28 @@ async function handleSubmit() {
     console.error('Error during API request:', error)
     feedbackRef.value.addError('An unexpected error occurred.')
   }
+}
+
+function getErrorCode(message)
+{
+  if (message.search("username") != -1)
+    return 0
+  else if (message.search("email") != -1)
+    return 1
+  else if (message.search("password") != -1)
+    return 2
+  else if (message.search("first_name") != -1)
+    return 3
+  else if (message.search("last_name") != -1)
+    return 4
+  else if (message.search("birthday") != -1)
+    return 5
+  else if (message.search("gender") != -1)
+    return 6
+  else if (message.search("sexual_preferences") != -1)
+    return 7
+  else if (message.search("biography") != -1)
+    return 8
 }
 
 function focusInput(code)
