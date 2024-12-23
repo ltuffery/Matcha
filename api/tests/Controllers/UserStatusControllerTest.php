@@ -25,12 +25,12 @@ class UserStatusControllerTest extends TestCase
 
         $_SERVER['HTTP_AUTHORIZATION'] = "Bearer " . $jwt;
 
-        ob_start();
+        // ob_start();
     }
 
     public function tearDown(): void
     {
-        ob_get_clean();
+        // ob_get_clean();
         Flight::response()->clear();
     }
 

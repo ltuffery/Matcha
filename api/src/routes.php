@@ -5,6 +5,7 @@ use Matcha\Api\Controllers\ForgotController;
 use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Controllers\LocalisationController;
+use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
 use Matcha\Api\Controllers\SearchProfileController;
 use Matcha\Api\Controllers\UserStatusController;
@@ -23,6 +24,7 @@ Flight::route('GET /', function () {
 Flight::group('/auth', function () {
     Flight::route('POST /register', [RegisterController::class, 'store']);
     Flight::route('POST /login', [AuthenticatedSessionController::class, 'store']);
+    Flight::route('POST /refresh', [RefreshTokenController::class, 'store']);
 });
 
 Flight::group('/email', function () {
@@ -38,7 +40,7 @@ Flight::group('/forgot', function () {
 
 Flight::group('/users', function () {
 
-    Flight::group('/@username', function () {
+    Flight::group('/@username:[a-zA-Z0-9\.]{5,25}', function () {
         Flight::route('POST /like', [LikeController::class, 'store']);
         Flight::route('DELETE /unlike', [LikeController::class, 'destroy']);
     });

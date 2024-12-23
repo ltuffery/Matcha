@@ -64,9 +64,11 @@ trait HttpTestCase
             'method' => $method,
             'type' => 'application/json',
             'body' => $body,
+            'ip' => '127.0.0.1',
         ]);
 
         Flight::start();
+        Flight::router()->reset();
 
         return new TestResponse();
     }

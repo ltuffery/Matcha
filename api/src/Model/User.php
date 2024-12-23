@@ -37,13 +37,30 @@ class User extends Model
 
     public function generateJWT(): string
     {
-        $time = time();
-
-        return JWT::encode([
+        // 600 equals 10 minutes
+        return $this->encodeJWT([
             'username' => $this->username,
-            'exp' => $time + 600,
+        ], 600);
+    }
+
+    public function generateRefreshJWT(string $ip): string
+    {
+        // 2629743 equals ~1 month
+        return $this->encodeJWT([
+            'username' => $this->username,
+            'ip' => $ip,
+        ], 2629743);
+    }
+
+    private function encodeJWT(array $data, int $exp): string
+    {
+        $time = time();
+        $merge = array_merge($data, [
+            'exp' => $time + $exp,
             'iat' => $time,
-        ], getenv('SECRET_KEY'), 'HS256');
+        ]);
+
+        return JWT::encode($merge, getenv('SECRET_KEY'), 'HS256');
     }
 
     /**
