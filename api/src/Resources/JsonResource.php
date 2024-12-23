@@ -23,7 +23,7 @@ abstract class JsonResource implements JsonSerializable
         $resources = [];
 
         foreach ($collection as $m) {
-            $resources[] = new self($m);
+            $resources[] = new (get_called_class())($m);
         }
 
         return $resources;
