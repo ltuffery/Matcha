@@ -240,7 +240,7 @@ function eraseErrorStyle(el)
           <input
             v-model="formData.birthday"
             :ref="el => (refs.birthday = el)"
-            class="input input-bordered"
+            class="input w-full input-bordered"
             type="date"
             :max="maxAge"
             @input="eraseErrorStyle"

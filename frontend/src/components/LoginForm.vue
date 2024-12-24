@@ -34,7 +34,6 @@ function loginUserAccount(e) {
   e.preventDefault()
 
   login(username.value, password.value).then(res => {
-    console.log(res)
     if (res != null) {
       if (res.status == 400)
       {
