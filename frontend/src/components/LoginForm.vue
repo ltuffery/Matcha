@@ -43,7 +43,7 @@ function loginUserAccount(e) {
       {
         toastsRef.value.addWarning("Your email isn't verifyed", {title: "Temporary :"})
       }
-      else if (res.success == true)
+      else if (res.status == 200)
       {
         router.push({ name: 'main' })
         refreshSocket()
