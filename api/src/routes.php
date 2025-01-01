@@ -50,7 +50,7 @@ Flight::group('/users', function () {
         Flight::route('PUT|PATCH /status', [UserStatusController::class, 'update']);
         Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
         
-        Flight::group('/dm', function () {
+        Flight::group('/matches', function () {
             Flight::route('GET /', [ChatController::class, 'index']);
             Flight::route('GET /@username', [ChatController::class, 'show']);
             Flight::route('POST /@username', [ChatController::class, 'store']);

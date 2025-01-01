@@ -46,7 +46,7 @@ export class Api {
       body: body != null ? JSON.stringify(body) : null,
     })
 
-    if (res.status == 401) {
+    if (res.status === 401) {
       logout()
     }
 
