@@ -1,27 +1,17 @@
 <template>
-  <div class="flex max-w-4xl m-auto pt-8 rounded-box border-1 border-neutral-content">
-    <div class="flex flex-col min-w-60 m-auto border-r-1">
-      <div class="flex gap-4 items-center">
-        <div class="avatar">
-          <div class="mask mask-squircle w-16">
-            <img
-              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-            />
-          </div>
-        </div>
-        <div class="flex flex-col relative">
-          <span class="font-bold">Username</span>
-          <p class="truncate whitespace-nowrap overflow-hidden text-ellipsis text-sm">
-            Last message of user
-          </p>
-        </div>
-      </div>
-      
+  <div class="flex max-w-4xl m-auto pt-8 rounded-box border-1 border-neutral-content relative">
+    <div class="flex flex-col p-4 border-r-1">
+      <UserMatch last-message="Last message..." username="Teste" />
     </div>
 
     <!-- Conversation box -->
-    <div class="hidden md:block p-8">
-      <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quisquam sit quaerat doloribus ullam aliquid provident minus esse nulla maiores exercitationem nesciunt quos optio beatae debitis tenetur earum, eligendi obcaecati? Suscipit.</p>
+    <div class="p-8 flex flex-col relative w-full">
+      <Message is-me message="disjosfghofdijgoifdjgoifdjgoidjfgoijdfoigjdfoijgiofdjgiofdjgodijfgoidjfgoijfdigo" />
+      <Message message="Lorem" />
     </div>
   </div>
 </template>
+<script setup lang="ts">
+import UserMatch from "@/components/chat/UserMatch.vue";
+import Message from "@/components/chat/Message.vue";
+</script>
