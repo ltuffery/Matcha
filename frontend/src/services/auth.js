@@ -36,13 +36,14 @@ export const refreshSession = async () => {
     const data = await res.json()
 
     localStorage.setItem('jwt', data.token)
-    return
+    return true
   }
 
   logout()
+  return false
 }
 
-export const isAuthenticated = () => {
+export const isAuthenticated = async () => {
   const token = getToken()
 
   if (!token) return false
@@ -54,9 +55,13 @@ export const isAuthenticated = () => {
 
     if (!hasExp) return true
 
-    refreshSession().then(r => { console.log("New session") })
+    const refreshed = await refreshSession()
 
-    return true // TODO: isAuthenticated ?
+    if (!refreshed) return false
+
+    console.log("New session")
+
+    return true
 
     /* eslint-disable */
   } catch (error) {
