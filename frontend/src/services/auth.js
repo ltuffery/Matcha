@@ -59,7 +59,7 @@ export const isAuthenticated = async () => {
 
     if (!refreshed) return false
 
-    console.log("New session")
+    console.log('New session')
 
     return true
 
