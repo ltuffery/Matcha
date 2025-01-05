@@ -4,6 +4,7 @@ namespace Matcha\Api\Controllers;
 
 use Flight;
 use Matcha\Api\Model\User;
+use Matcha\Api\Resources\SearchableUserResource;
 
 class SearchProfileController
 {
@@ -21,6 +22,8 @@ class SearchProfileController
             ['username', 'LIKE', '%' . $query['q'] . '%']
         ], 5);
 
-        Flight::json($users);
+        Flight::json(
+            SearchableUserResource::collection($users)
+        );
     }
 }
