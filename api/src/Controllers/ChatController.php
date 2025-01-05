@@ -19,7 +19,7 @@ class ChatController
 
     public function show(string $username): void
     {
-        $reveiver = User::find([
+        $receiver = User::find([
             'username' => $username,
         ]);
         $stmt = Flight::db()->prepare("
@@ -32,7 +32,7 @@ class ChatController
 
         $stmt->execute([
             'sender_id' => Flight::user()->id,
-            'receiver_id' => $reveiver->id,
+            'receiver_id' => $receiver->id,
         ]);
 
         $messages = array_map(
@@ -49,15 +49,17 @@ class ChatController
             'content' => 'required',
         ]);
 
-        $reveiver = User::find([
+        $receiver = User::find([
             'username' => $username,
         ]);
         $message = new Message();
 
         $message->sender_id = Flight::user()->id;
-        $message->receiver_id = $reveiver->id;
-        $message->content = Flight::request()->data->content;
+        $message->receiver_id = $receiver->id;
+        $message->content = htmlspecialchars(Flight::request()->data->content);
 
         $message->save();
+
+        Flight::json([], 201);
     }
 }

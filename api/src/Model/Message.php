@@ -7,10 +7,12 @@ use PDO;
 
 class Message extends Model
 {
+    protected string $table = 'messages';
+
     public int $sender_id;
     public int $receiver_id;
     public string $content;
-    public int $created_at;
+    public string $created_at;
 
     /**
      * Get last message of user1 and user2
