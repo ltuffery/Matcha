@@ -15,8 +15,8 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       beforeEnter: (to, from, next) => {
-        isAuthenticated().then(v => {
-          if (v) {
+        isAuthenticated().then(value => {
+          if (value) {
             next({ name: 'main' })
           } else {
             next()

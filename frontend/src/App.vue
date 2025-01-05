@@ -4,8 +4,8 @@ import { isAuthenticated } from './services/auth'
 import { socket } from './services/socket'
 import { Api } from './utils/api'
 
-isAuthenticated().then(v => {
-  if (v) {
+isAuthenticated().then(value => {
+  if (value) {
     navigator.geolocation.getCurrentPosition(
       loc => {
         Api.put('/users/me/localisation').send({
