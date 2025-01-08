@@ -16,7 +16,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="flex gap-4 items-center">
+  <div class="flex gap-4 items-center p-2 cursor-pointer">
     <div class="avatar">
       <div class="mask mask-squircle w-16">
         <img

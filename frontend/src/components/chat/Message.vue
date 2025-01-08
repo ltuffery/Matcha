@@ -6,8 +6,6 @@ const props = defineProps({
   },
   'is-me': [Boolean]
 })
-
-console.log(props["isMe"])
 </script>
 
 <template>
