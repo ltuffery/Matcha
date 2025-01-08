@@ -85,4 +85,32 @@ class LikeControllerTest extends TestCase
 
         $response->assertStatus(203);
     }
+
+    public function testDoubleLikeUser(): void
+    {
+        $liked = User::factory()->create()[0];
+
+        for ($i = 0; $i < 2; $i++) {
+            $response = $this->withHeader([
+                'Authorization' => 'Bearer ' . $this->user->generateJWT(),
+            ])->post('/users/' . $liked->username . '/like');
+        }
+
+        $response->assertStatus(203);
+    }
+
+    public function testLikeMultipleUser(): void
+    {
+        $users = User::factory()->count(5)->create();
+
+        foreach ($users as $user) {
+            $response = $this->withHeader([
+                'Authorization' => 'Bearer ' . $this->user->generateJWT(),
+            ])->post('/users/' . $user->username . '/like');
+
+            $response->assertStatus(203);
+        }
+
+        $this->assertCount(5, $this->user->likes());
+    }
 }
