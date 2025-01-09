@@ -22,10 +22,8 @@ function prevStep() {
   }
 }
 
-function setStep(step)
-{
-  if (step >= 0 && step < props.totalSteps)
-  {
+function setStep(step) {
+  if (step >= 0 && step < props.totalSteps) {
     currentStep.value = step
   }
 }
@@ -33,7 +31,7 @@ function setStep(step)
 defineExpose({
   currentStep,
   nextStep,
-  setStep
+  setStep,
 })
 </script>
 

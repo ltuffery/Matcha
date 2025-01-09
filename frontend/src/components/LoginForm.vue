@@ -24,9 +24,9 @@ async function forgetPassword(e) {
   })
   email.value = ''
   if (response.status == 200) {
-    toastsRef.value.addSuccess("Email sended !")
+    toastsRef.value.addSuccess('Email sended !')
   } else {
-    toastsRef.value.addError("Error !")
+    toastsRef.value.addError('Error !')
   }
 }
 
@@ -35,24 +35,20 @@ function loginUserAccount(e) {
 
   login(username.value, password.value).then(res => {
     if (res != null) {
-      if (res.status == 400)
-      {
-        toastsRef.value.addError("Bad credencials")
-      }
-      else if (res.status == 401)
-      {
-        toastsRef.value.addWarning("Your email isn't verifyed", {title: "Temporary :"})
-      }
-      else if (res.status == 200)
-      {
+      if (res.status == 400) {
+        toastsRef.value.addError('Bad credencials')
+      } else if (res.status == 401) {
+        toastsRef.value.addWarning("Your email isn't verifyed", {
+          title: 'Temporary :',
+        })
+      } else if (res.status == 200) {
         router.push({ name: 'main' })
         refreshSocket()
         socket.emit('online')
+      } else {
+        toastsRef.value.addError('Unexpected error occured')
       }
-      else {
-        toastsRef.value.addError("Unexpected error occured")
-      }
-      password.value = ""
+      password.value = ''
     }
   })
 }
@@ -61,7 +57,6 @@ function loginUserAccount(e) {
 <template>
   <FeedbackToast posX="end" ref="toastsRef" class="h-2/6" />
   <form v-if="forgotPwd" @submit.prevent="forgetPassword">
-
     <h3 class="text-3xl font-bold my-5">Forgot credencial</h3>
     <span class=""
       >Forgot your username or password ? <br />Recive and change it by mail
