@@ -18,6 +18,9 @@ use PDO;
 class User extends Model
 {
     protected string $table = 'users';
+    protected array $uniques = [
+        'username', 'email'
+    ];
 
     public string $username;
     public string $password;

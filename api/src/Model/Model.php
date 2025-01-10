@@ -14,6 +14,7 @@ abstract class Model
 {
     public int $id = 0;
     protected string $table = '';
+    protected array $uniques = [];
 
     protected static function db(): PDO
     {
@@ -58,6 +59,10 @@ abstract class Model
 
     public function create(): Model
     {
+        if (!$this->canCreate()) {
+            return null;
+        }
+
         $data = $this->getData();
         $columns = array_keys($data);
         $values = array_map(fn ($v) => '"' . $v . '"', array_values($data));
@@ -71,6 +76,22 @@ abstract class Model
         $this->reload();
 
         return $this;
+    }
+
+    private function canCreate(): bool
+    {
+        $props = array_filter($this->getData(), function (mixed $value, string $key) {
+            return array_key_exists($key, $this->uniques);
+        }, ARRAY_FILTER_USE_BOTH);
+        $where = array_map(fn ($v, $k) => '`' . $k . '`="' . $v . '"', array_values($props), array_keys($props));
+
+        $sqlQuery = "SELECT * FROM " . $this->table . " WHERE " . implode(", ", $where);
+
+        $stmt = self::db()->prepare($sqlQuery);
+
+        $stmt->execute();
+
+        return $stmt->fetch() == null;
     }
 
     /**
