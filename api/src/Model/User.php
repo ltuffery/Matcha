@@ -25,7 +25,7 @@ class User extends Model
     public string $username;
     public string $password;
     public string $email;
-    public int|null $age;
+    public string|null $birthday;
     public string|null $first_name;
     public string|null $last_name;
     public string|null $gender;

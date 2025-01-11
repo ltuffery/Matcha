@@ -22,6 +22,7 @@ class ModelTest extends TestCase
         $this->user->username = "test";
         $this->user->email = "test@test.com";
         $this->user->password = "pass";
+        $this->user->birthday = "2000-05-21";
 
         return $this->user->create();
     }
@@ -32,6 +33,7 @@ class ModelTest extends TestCase
             $this->user->username = faker()->userName;
             $this->user->email = faker()->email;
             $this->user->password = "pass";
+            $this->user->birthday = "2000-05-21";
 
             $this->user->create();
         }
@@ -62,6 +64,7 @@ class ModelTest extends TestCase
         $this->user->username = "test";
         $this->user->email = "test@test.com";
         $this->user->password = "pass";
+        $this->user->birthday = "2000-05-21";
 
         $user = $this->user->save();
 

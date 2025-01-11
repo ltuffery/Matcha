@@ -61,7 +61,7 @@ class RegisterControllerTest extends TestCase
             'username' => "teste",
             'email' => "test@test.com",
             'password' => "password",
-            'age' => 19,
+            'birthday' => "2004-12-04",
             'first_name' => 'John',
             'last_name' => 'Doe',
             'gender' => 'M',
