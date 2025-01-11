@@ -21,9 +21,9 @@ class RegisterController
             'username' => 'required|regex:[a-zA-Z0-9\.]{5,25}',
             'email' => 'required|email',
             'password' => 'required',
-            'age' => 'required|number',
             'first_name' => 'required',
             'last_name' => 'required',
+            'birthday' => 'required',
             'gender' => 'required',
             'sexual_preferences' => 'required',
             'biography' => 'required',
@@ -35,7 +35,7 @@ class RegisterController
         $user->username = $request->data->username;
         $user->email = $request->data->email;
         $user->password = password_hash($request->data->password, PASSWORD_DEFAULT);
-        $user->age = $request->data->age;
+        $user->birthday = $request->data->birthday;
         $user->first_name = $request->data->first_name;
         $user->last_name = $request->data->last_name;
         $user->gender = $request->data->gender;
