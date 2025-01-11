@@ -3,9 +3,12 @@
 namespace Matcha\Api\Model;
 
 use Firebase\JWT\JWT;
+use Flight;
+use PDO;
 
 /**
  * @method static User find(array $data)
+ * @method static User[] where(array $object)
  * @method static User morph(array $object)
  * @method static User[] all()
  * @method User save()
@@ -29,16 +32,35 @@ class User extends Model
     public bool $email_verified;
     public string|null $temporary_email_token;
     public bool $online;
+    public float|null $lat;
+    public float|null $lon;
 
     public function generateJWT(): string
     {
-        $time = time();
-
-        return JWT::encode([
+        // 600 equals 10 minutes
+        return $this->encodeJWT([
             'username' => $this->username,
-            'exp' => $time + 600,
+        ], 600);
+    }
+
+    public function generateRefreshJWT(string $ip): string
+    {
+        // 2629743 equals ~1 month
+        return $this->encodeJWT([
+            'username' => $this->username,
+            'ip' => $ip,
+        ], 2629743);
+    }
+
+    private function encodeJWT(array $data, int $exp): string
+    {
+        $time = time();
+        $merge = array_merge($data, [
+            'exp' => $time + $exp,
             'iat' => $time,
-        ], getenv('SECRET_KEY'), 'HS256');
+        ]);
+
+        return JWT::encode($merge, getenv('SECRET_KEY'), 'HS256');
     }
 
     /**
@@ -79,6 +101,25 @@ class User extends Model
         return Like::all([
             'user_id' => $this->id,
         ]);
+    }
+
+    /**
+     * Get all user matches
+     * 
+     * @return User[]
+     */
+    public function matches(): array
+    {
+        $stmt = Flight::db()->prepare("
+            SELECT *
+            FROM users u
+            JOIN likes l1 ON u.id = l1.liked_id
+            JOIN likes l2 ON l1.user_id = l2.liked_id AND l2.user_id = u.id
+            WHERE l1.user_id = :user_id
+        ");
+
+        $stmt->execute(['user_id' => $this->id]);
+        return array_map(fn (array $obj) => User::morph($obj), $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
     public static function authenticate(string $username, string $password): User|false

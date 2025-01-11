@@ -7,7 +7,8 @@
         "phpmailer/phpmailer": "^6.9",
         "firebase/php-jwt": "^6.10",
         "fakerphp/faker": "^1.24",
-        "php": "^8.0"
+        "php": "^8.0",
+        "chrisullyott/php-ip-api": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "*",

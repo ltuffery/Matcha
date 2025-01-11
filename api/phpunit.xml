@@ -5,6 +5,7 @@
     beStrictAboutOutputDuringTests="true"
     beStrictAboutTodoAnnotatedTests="true"
     convertDeprecationsToExceptions="true"
+    bootstrap="tests/autoload.php"
     stopOnError="false"
     stopOnFailure="false"
     verbose="true"

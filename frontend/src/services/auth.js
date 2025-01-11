@@ -9,9 +9,9 @@ export const login = async (username, password) => {
 
     if (response.ok) {
       const data = await response.json()
-      const token = data.token
 
-      localStorage.setItem('jwt', token)
+      localStorage.setItem('jwt', data.token)
+      localStorage.setItem('refresh', data.refresh)
 
       return data
     }
@@ -27,7 +27,23 @@ export const getToken = () => {
   return localStorage.getItem('jwt')
 }
 
-export const isAuthenticated = () => {
+export const refreshSession = async () => {
+  const res = await Api.post('/auth/refresh').send({
+    refresh: localStorage.getItem('refresh'),
+  })
+
+  if (res.status === 200) {
+    const data = await res.json()
+
+    localStorage.setItem('jwt', data.token)
+    return true
+  }
+
+  logout()
+  return false
+}
+
+export const isAuthenticated = async () => {
   const token = getToken()
 
   if (!token) return false
@@ -35,15 +51,26 @@ export const isAuthenticated = () => {
   try {
     const decoded = JSON.parse(atob(token.split('.')[1]))
     const exp = decoded.exp
+    const hasExp = exp < Date.now() / 1000
 
-    return exp > Date.now() / 1000
+    if (!hasExp) return true
+
+    const refreshed = await refreshSession()
+
+    if (!refreshed) return false
+
+    console.log('New session')
+
+    return true
 
     /* eslint-disable */
   } catch (error) {
+    logout()
     return false
   }
 }
 
 export const logout = () => {
   localStorage.removeItem('jwt')
+  localStorage.removeItem('refresh')
 }

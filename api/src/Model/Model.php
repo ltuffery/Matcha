@@ -165,6 +165,33 @@ abstract class Model
     }
 
     /**
+     * @return Model[]
+     */
+    public static function where(array $params, ?int $limit = null): array
+    {
+        $where = [];
+
+        foreach ($params as $param) {
+            if (is_array($param)) {
+                $where[] = $param[0] . ' ' . $param[1] . ' "' . $param[2] . '"';
+            }
+        }
+
+        $query = "SELECT * FROM " . self::getTable() . " WHERE " . implode(" AND ", $where);
+
+        if (!is_null($limit)) {
+            $query .= " LIMIT " . $limit;
+        }
+
+        $stmt = self::db()->prepare($query);
+        $stmt->execute();
+
+        $users = array_map(fn ($item) => self::morph($item), $stmt->fetchAll(PDO::FETCH_ASSOC));
+
+        return $users;
+    }
+
+    /**
      * Get all model
      *
      * @return Model[]
