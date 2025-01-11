@@ -101,6 +101,9 @@ function convClick(username)
 
 					<Message message="coucou" is-me />
 					<Message message="okey" />
+					<Message message="okey" />
+					<Message message="okey" />
+					<Message message="okey" />
 
 
 				</div>

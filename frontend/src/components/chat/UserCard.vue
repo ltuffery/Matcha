@@ -21,9 +21,9 @@ const props = defineProps({
 </script>
 
 <template>
-	<div class="flex bg-base-100 rounded-lg cursor-pointer select-none hover:bg-base-300">
-		<div class="flex-none w-[20%]">
-		<img class="object-cover rounded-lg" :src="props.avatar" />
+	<div class="flex rounded-lg cursor-pointer select-none hover:bg-base-300">
+		<div class="flex-none mask mask-squircle w-[20%]">
+			<img class="object-cover rounded-lg" :src="props.avatar" />
 		</div>
 		
 		<div class="grow flex flex-col gap-2 justify-center p-2 w-[80%]">
@@ -41,4 +41,5 @@ const props = defineProps({
 		</div>
 		</div>
 	</div>
+	<div class="divider my-0 pl-[20%]"></div>
 </template>
