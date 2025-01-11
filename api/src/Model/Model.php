@@ -5,6 +5,7 @@ namespace Matcha\Api\Model;
 use Exception;
 use Flight;
 use Matcha\Api\Factory\Factory;
+use Matcha\Api\Exceptions\UniqueConstraindException;
 use PDO;
 use ReflectionClass;
 use ReflectionException;
@@ -80,18 +81,26 @@ abstract class Model
 
     private function canCreate(): bool
     {
-        $props = array_filter($this->getData(), function (mixed $value, string $key) {
-            return array_key_exists($key, $this->uniques);
-        }, ARRAY_FILTER_USE_BOTH);
-        $where = array_map(fn ($v, $k) => '`' . $k . '`="' . $v . '"', array_values($props), array_keys($props));
+        if (empty($this->uniques)) {
+            return true;
+        }
 
-        $sqlQuery = "SELECT * FROM " . $this->table . " WHERE " . implode(", ", $where);
+        $props = array_filter($this->getData(), function (mixed $value, string $key) {
+            return array_search($key, $this->uniques);
+        }, ARRAY_FILTER_USE_BOTH);
+        $where = array_map(fn ($k, $v) => '`' . $k . '`="' . $v . '"', array_keys($props), array_values($props));
+
+        $sqlQuery = "SELECT * FROM " . $this->getTable() . " WHERE " . implode(", ", $where);
 
         $stmt = self::db()->prepare($sqlQuery);
 
         $stmt->execute();
 
-        return $stmt->fetch() == null;
+        if ($stmt->fetch() != null) {
+            throw new UniqueConstraindException("Unique"); // TODO: messages
+        }
+
+        return true;
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 use Matcha\Api\Controllers\LikeController;
+use Matcha\Api\Exceptions\UniqueConstraindException;
 use Matcha\Api\Model\Like;
 use Matcha\Api\Model\User;
 use PHPUnit\Framework\TestCase;
@@ -91,6 +92,10 @@ class LikeControllerTest extends TestCase
         $liked = User::factory()->create()[0];
 
         for ($i = 0; $i < 2; $i++) {
+            if ($i == 1) {
+                $this->expectException(UniqueConstraindException::class);
+            }
+
             $response = $this->withHeader([
                 'Authorization' => 'Bearer ' . $this->user->generateJWT(),
             ])->post('/users/' . $liked->username . '/like');
