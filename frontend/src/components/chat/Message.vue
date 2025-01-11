@@ -1,15 +1,15 @@
 <script setup>
 const props = defineProps({
-  message: {
-    type: String,
-    required: true,
-  },
-  'is-me': [Boolean]
+	message: {
+		type: String,
+		required: true,
+	},
+	'is-me': [Boolean]
 })
 </script>
 
 <template>
-  <div :class="{ 'justify-start': !props['isMe'], 'justify-end': props['isMe'], 'bg-primary': props['isMe'] }" class="flex p-3 rounded max-w-[40%] text-ellipsis overflow-auto overflow-wrap break-word">
-    {{ props.message }}
-  </div>
+	<div class="chat" :class="props['isMe'] ? 'chat-end' : 'chat-start' ">
+		<div class="chat-bubble break-all" :class="props['isMe'] ? 'chat-bubble-info' : 'chat-bubble-primary' ">{{ props.message }}</div>
+	</div>
 </template>
