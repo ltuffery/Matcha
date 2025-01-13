@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import UserMatch from "@/components/chat/UserMatch.vue";
 import Message from "@/components/chat/Message.vue";
 import UserCard from "@/components/chat/UserCard.vue";
 import { Api } from "@/utils/api";
@@ -7,7 +6,6 @@ import {ref} from "vue";
 import router from '@/router'
 
 const matches = ref([1,1,1,1,1,1,1,1,1,1,1,1,1,1])
-let isGoodConv = ref(false)
 
 Api.get('/users/me/matches').send()
 	.then(res => {
@@ -23,8 +21,9 @@ Api.get('/users/me/matches').send()
 
 function convClick(username)
 {
-	isGoodConv.value = true
-	router.push({ name: `chat/${username}` })
+	console.log("Boo : ", username);
+	
+	router.push({ name: `conversation`, params: { username }})
 }
 
 </script>
@@ -35,7 +34,7 @@ function convClick(username)
 
 		<!-- ########## List of users ########## -->
 
-			<div v-if="!isGoodConv" class="flex flex-col h-full">
+			<div class="flex flex-col h-full">
 
 				<div class="pt-5">
 					<label class="input input-bordered flex items-center gap-2">
@@ -60,66 +59,17 @@ function convClick(username)
 					<div
 						v-for="(content, index) in matches"
 						:key="index"
+						@click="convClick('test'+index)"
 					>
 
-						<UserCard @click="convClick('test')" :label="index%3" first_name="sssssssssssssssssssssssssssssssssssssssss" />
+						<UserCard :label="index%3" first_name="sssssssssssssssssssssssssssssssssssssssss" />
 					
 
 
 					</div>
+
 				</div>
 			</div>
-
-		<!-- ########## Conversation view ########## -->
-
-			<div v-else class="flex flex-col h-full">
-				<!-- Head -->
-				<div class="flex items-center justify-between pt-4">
-					<div class="rounded-lg cursor-pointer">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							fill="none"
-							class="h-12 w-12"
-						>
-						<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-						<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-						<g id="SVGRepo_iconCarrier">
-							<path d="M15 19L9 12L10.5 10.25M15 5L13 7.33333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-						</g>
-						</svg>
-					</div>
-
-					<div class="text-3xl px-4 truncate">Name</div>
-					<div></div>
-				</div>
-
-				<div class="divider"></div>
-
-				<div class="h-full ">
-					
-
-					<Message message="coucou" is-me />
-					<Message message="okey" />
-					<Message message="okey" />
-					<Message message="okey" />
-					<Message message="okey" />
-
-
-				</div>
-
-				<!-- Input -->
-				<div class="py-4">
-					<textarea
-						placeholder="Your message"
-						class="textarea w-full p-4"
-						style="resize:none"></textarea>
-				</div>
-
-			</div>
-		
-
-
 
 
 		</div>
