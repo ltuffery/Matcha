@@ -74,4 +74,9 @@ class TestResponse
             Assert::assertArrayHasKey($key, $data, $message);
         }
     }
+
+    public function getData(): array
+    {
+        return json_decode(Flight::response()->getBody(), true);
+    }
 }

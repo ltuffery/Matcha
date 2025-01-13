@@ -12,12 +12,13 @@ class Message extends Model
     public int $sender_id;
     public int $receiver_id;
     public string $content;
+    public bool $view = false;
     public string $created_at;
 
     /**
      * Get last message of user1 and user2
      */
-    public static function lastOf(User $user1, User $user2): Message
+    public static function lastOf(User $user1, User $user2): Message|null
     {
         $stmt = Flight::db()->prepare("
             SELECT * 
@@ -29,12 +30,16 @@ class Message extends Model
         ");
 
         $stmt->execute([
-            'sender_id' => $user1,
-            'receiver_id' => $user2
+            'sender_id' => $user1->id,
+            'receiver_id' => $user2->id,
         ]);
 
-        return Message::morph(
-            $stmt->fetch(PDO::FETCH_ASSOC)
-        );
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($data == null) {
+            return null;
+        }
+
+        return Message::morph($data);
     }
 }
