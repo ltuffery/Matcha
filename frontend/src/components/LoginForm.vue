@@ -4,23 +4,18 @@ import { login } from '@/services/auth'
 import { ref } from 'vue'
 import { Api } from '@/utils/api'
 import { refreshSocket, socket } from '@/services/socket'
+import FeedbackToast from '@/components/FeedbackToast.vue'
 
 let username = ref(''),
   password = ref('')
 
 const forgotPwd = ref(false),
-  email = ref(),
-  successed = ref(null)
+  email = ref()
+
+const toastsRef = ref()
 
 function forgotSwitch() {
   forgotPwd.value = !forgotPwd.value
-}
-
-function printBack(state) {
-  successed.value = state
-  setTimeout(function () {
-    successed.value = null
-  }, 2000)
 }
 
 async function forgetPassword(e) {
@@ -29,9 +24,9 @@ async function forgetPassword(e) {
   })
   email.value = ''
   if (response.status == 200) {
-    printBack(true)
+    toastsRef.value.addSuccess('Email sended !')
   } else {
-    printBack(false)
+    toastsRef.value.addError('Error !')
   }
 }
 
@@ -40,39 +35,39 @@ function loginUserAccount(e) {
 
   login(username.value, password.value).then(res => {
     if (res != null) {
-      navigator.geolocation.getCurrentPosition(
-        loc => {
-          Api.put('/users/me/localisation').send({
-            lat: loc.coords.latitude,
-            lon: loc.coords.longitude,
-          })
-        },
-        err => {
-          Api.put('/users/me/localisation').send()
-        },
-      )
-
-      router.push({ name: 'main' })
-      refreshSocket()
-      socket.emit('online')
+      if (res.status == 400) {
+        toastsRef.value.addError('Bad credencials')
+      } else if (res.status == 401) {
+        toastsRef.value.addWarning("Your email isn't verifyed", {
+          title: 'Temporary :',
+        })
+      } else if (res.status == 200) {
+        navigator.geolocation.getCurrentPosition(
+          loc => {
+            Api.put('/users/me/localisation').send({
+              lat: loc.coords.latitude,
+              lon: loc.coords.longitude,
+            })
+          },
+          err => {
+            Api.put('/users/me/localisation').send()
+          },
+        )
+        router.push({ name: 'main' })
+        refreshSocket()
+        socket.emit('online')
+      } else {
+        toastsRef.value.addError('Unexpected error occured')
+      }
+      password.value = ''
     }
   })
 }
 </script>
 
 <template>
+  <FeedbackToast posX="end" ref="toastsRef" class="h-2/6" />
   <form v-if="forgotPwd" @submit.prevent="forgetPassword">
-    <div v-if="successed" class="toast toast-top toast-right">
-      <div class="alert alert-success">
-        <span>Email sended !</span>
-      </div>
-    </div>
-    <div v-if="successed == false" class="toast toast-top toast-right">
-      <div class="alert alert-error">
-        <span>Error !</span>
-      </div>
-    </div>
-
     <h3 class="text-3xl font-bold my-5">Forgot credencial</h3>
     <span class=""
       >Forgot your username or password ? <br />Recive and change it by mail

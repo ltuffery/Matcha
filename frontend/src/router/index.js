@@ -16,11 +16,13 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       beforeEnter: (to, from, next) => {
-        if (isAuthenticated()) {
-          next({ name: 'main' })
-        } else {
-          next()
-        }
+        isAuthenticated().then(value => {
+          if (value) {
+            next({ name: 'main' })
+          } else {
+            next()
+          }
+        })
       },
     },
     {

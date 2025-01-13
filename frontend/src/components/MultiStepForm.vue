@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue'
+import { defineProps, ref } from 'vue'
 
 const props = defineProps({
   totalSteps: {
@@ -8,30 +8,31 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['submit', 'changeStep'])
-
 let currentStep = ref(0)
-emit('changeStep', currentStep)
 
 function nextStep() {
-  if (currentStep.value < props.totalSteps - 1) {
+  if (currentStep.value < props.totalSteps) {
     currentStep.value++
-    emit('changeStep', currentStep)
   }
 }
 
 function prevStep() {
   if (currentStep.value > 0) {
     currentStep.value--
-    emit('changeStep', currentStep)
   }
 }
 
-function submitForm() {
-  // currentStep.value++
-  emit('changeStep', currentStep)
-  emit('submit')
+function setStep(step) {
+  if (step >= 0 && step < props.totalSteps) {
+    currentStep.value = step
+  }
 }
+
+defineExpose({
+  currentStep,
+  nextStep,
+  setStep,
+})
 </script>
 
 <template>
@@ -49,21 +50,20 @@ function submitForm() {
           v-if="currentStep > 0"
           @click="prevStep"
         >
-          <button class="btn btn-primary" type="submit">Précédent</button>
+          <button class="btn" type="button">Previous</button>
         </div>
         <div
           class="form-control mt-6 w-full"
           v-if="currentStep < props.totalSteps - 1"
           @click="nextStep"
         >
-          <button class="btn btn-primary" type="submit">Suivant</button>
+          <button class="btn btn-primary" type="button">Next</button>
         </div>
         <div
           class="form-control mt-6 w-full"
           v-if="currentStep === props.totalSteps - 1"
-          @click="submitForm"
         >
-          <button class="btn btn-primary" type="submit">Soumettre</button>
+          <button class="btn btn-primary" type="submit">Submit</button>
         </div>
       </div>
     </div>
