@@ -1,6 +1,7 @@
 <?php
 
 use Matcha\Api\Controllers\LikeController;
+use Matcha\Api\Exceptions\UniqueConstraindException;
 use Matcha\Api\Model\Like;
 use Matcha\Api\Model\User;
 use PHPUnit\Framework\TestCase;
@@ -84,5 +85,37 @@ class LikeControllerTest extends TestCase
         ])->delete('/users/' . $liked->username . '/unlike');
 
         $response->assertStatus(203);
+    }
+
+    public function testDoubleLikeUser(): void
+    {
+        $liked = User::factory()->create()[0];
+
+        for ($i = 0; $i < 2; $i++) {
+            if ($i == 1) {
+                $this->expectException(UniqueConstraindException::class);
+            }
+
+            $response = $this->withHeader([
+                'Authorization' => 'Bearer ' . $this->user->generateJWT(),
+            ])->post('/users/' . $liked->username . '/like');
+        }
+
+        $response->assertStatus(203);
+    }
+
+    public function testLikeMultipleUser(): void
+    {
+        $users = User::factory()->count(5)->create();
+
+        foreach ($users as $user) {
+            $response = $this->withHeader([
+                'Authorization' => 'Bearer ' . $this->user->generateJWT(),
+            ])->post('/users/' . $user->username . '/like');
+
+            $response->assertStatus(203);
+        }
+
+        $this->assertCount(5, $this->user->likes());
     }
 }

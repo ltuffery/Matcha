@@ -3,7 +3,7 @@
 namespace Matcha\Api\Validator;
 
 use Flight;
-use InvalidDataException;
+use Matcha\Api\Exceptions\InvalidDataException;
 
 abstract class Validator
 {
