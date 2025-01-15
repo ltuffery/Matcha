@@ -1,0 +1,34 @@
+<?php
+
+namespace Matcha\Database\Seeders;
+
+use Matcha\Api\Model\User;
+
+class MessageSeeder implements SeederInterface
+{
+    public function run(): void
+    {
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $matches = $user->matches();
+
+            $elements = faker()->randomElements($matches, rand(0, count($matches)));
+
+            foreach ($elements as $el) {
+                $isMe = rand(0, 1);
+                $sender = $user->id;
+                $receiver = $el->id;
+
+                if (!$isMe) {
+                    $sender = $el->id;
+                    $receiver = $user->id;
+                }
+
+                for ($i = 0; $i < rand(0, 1000); $i++) {
+                    $message = new Message();
+                }
+            }
+        }
+    }
+}
