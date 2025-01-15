@@ -60,7 +60,7 @@ export class Api {
       this.header('Authorization', `Bearer ${jwt}`)
     }
 
-    let res = await fetch(`http://localhost:3000/${this.path}`, {
+    let res = await fetch(`http://${location.hostname}:3000/${this.path}`, {
       method: this.method,
       headers: this.headers,
       body: body != null ? JSON.stringify(body) : null,
