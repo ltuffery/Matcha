@@ -8,6 +8,8 @@ class DatabaseSeeder implements SeederInterface
     {
         $this->call([
             UserSeeder::class,
+            MatchesSeeder::class,
+            MessageSeeder::class,
         ]);
     }
 
