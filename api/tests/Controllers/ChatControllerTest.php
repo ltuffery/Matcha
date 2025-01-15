@@ -105,4 +105,35 @@ class ChatControllerTest extends TestCase
             $this->assertTrue($data['view']);
         }
     }
+
+    public function testDeleteNotFoundMessage(): void
+    {
+        $response = $this->withHeader([
+            'Authorization' => 'Bearer ' . $this->me->generateJWT(),
+        ])->delete('/users/me/matches/' . $this->other->username . '/1');
+
+        $response->assertStatus(404);
+    }
+
+    public function testDeleteMessageSuccess(): void
+    {
+        $message = $this->createMessage($this->me, $this->other);
+
+        $response = $this->withHeader([
+            'Authorization' => 'Bearer ' . $this->me->generateJWT(),
+        ])->delete('/users/me/matches/' . $this->other->username . '/' . $message->id);
+
+        $response->assertStatus(203);
+    }
+
+    public function testDeleteMessageOfOtherUser(): void
+    {
+        $message = $this->createMessage($this->other, $this->me);
+
+        $response = $this->withHeader([
+            'Authorization' => 'Bearer ' . $this->me->generateJWT(),
+        ])->delete('/users/me/matches/' . $this->other->username . '/' . $message->id);
+
+        $response->assertStatus(403);
+    }
 }

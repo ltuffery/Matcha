@@ -5,6 +5,9 @@ namespace Matcha\Api\Model;
 use Flight;
 use PDO;
 
+/**
+ * @method static Message find(array $where)
+ */
 class Message extends Model
 {
     protected string $table = 'messages';

@@ -54,6 +54,7 @@ Flight::group('/users', function () {
             Flight::route('GET /', [ChatController::class, 'index']);
             Flight::route('GET /@username', [ChatController::class, 'show']);
             Flight::route('POST /@username', [ChatController::class, 'store']);
+            Flight::route('DELETE /@username/@id', [ChatController::class, 'delete']);
         });
     });
 

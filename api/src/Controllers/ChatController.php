@@ -92,4 +92,29 @@ class ChatController
 
         Flight::json([], 201);
     }
+
+    public function delete(string $username, int $id): void
+    {
+        $message = Message::find([
+            'id' => $id,
+        ]);
+
+        if (is_null($message)) {
+            Flight::json([
+                'message' => 'Not Found',
+            ], 404);
+            return;
+        }
+
+        if (Flight::user()->id != $message->sender_id) {
+            Flight::json([
+                'message' => 'Forbiden',
+            ], 403);
+            return;
+        }
+
+        $message->delete();
+
+        Flight::json([], 203);
+    }
 }
