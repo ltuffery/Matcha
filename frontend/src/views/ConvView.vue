@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import Message from "@/components/chat/Message.vue";
 import { Api } from "@/utils/api";
 import {ref} from "vue";
@@ -52,7 +52,7 @@ const messages = ref ()
 
 
                     <div v-if="!messages" class="absolute bottom-0 left-0 w-full h-full flex flex-col justify-between">
-						<div>cc</div>
+						<div></div>
 						<div class="flex flex-col items-center">
                             <div><img src="../assets/img/mopper.png" ></div>
                             <div class="text-2xl">No message yet</div>
