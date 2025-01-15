@@ -1,11 +1,10 @@
-<script setup lang="ts">
-import Message from "@/components/chat/Message.vue";
+<script setup>
 import UserCard from "@/components/chat/UserCard.vue";
 import { Api } from "@/utils/api";
 import {ref} from "vue";
 import router from '@/router'
 
-const matches = ref([1,1,1,1,1,1,1,1,1,1,1,1,1,1])
+const matches = ref([])
 
 Api.get('/users/me/matches').send()
 	.then(res => {
@@ -21,8 +20,6 @@ Api.get('/users/me/matches').send()
 
 function convClick(username)
 {
-	console.log("Boo : ", username);
-	
 	router.push({ name: `conversation`, params: { username }})
 }
 
@@ -55,7 +52,12 @@ function convClick(username)
 
 				<div class="divider"></div>
 
-				<div class="flex flex-col gap-2 overflow-y-auto h-[90%]">
+				<div v-if="!matches.length" class="flex flex-col gap-7 w-full h-full justify-center items-center">
+					<span class="text-2xl">You don't have a match yet</span>
+					<button @click="router.push({name:'main'})" class="btn btn-outline btn-primary">On your matchs</button>
+				</div>
+
+				<div v-else class="flex flex-col gap-2 overflow-y-auto h-[90%]">
 					<div
 						v-for="(content, index) in matches"
 						:key="index"

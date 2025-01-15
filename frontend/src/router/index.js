@@ -52,6 +52,7 @@ const router = createRouter({
       path: '/chat',
       name: 'chat',
       component: ChatView,
+      beforeEnter: [authGuard],
     },
     {
       path: '/chat/:username',
