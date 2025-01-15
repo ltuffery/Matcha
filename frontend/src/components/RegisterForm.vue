@@ -14,10 +14,12 @@ const formData = {
   gender: null as 'M' | 'F' | 'O',
   sexual_preferences: null as 'M' | 'F' | 'A' | 'O',
   biography: null,
+  images: []
 }
 
 const refs = ref({})
 const step = ref()
+const images = ref([])
 const currentStep = computed(() => {
   return step?.value?.currentStep || 0
 })
@@ -25,6 +27,18 @@ const currentStep = computed(() => {
 const totalSteps = 5
 const feedbackRef = ref()
 const maxAge = ref()
+
+const handleFileUpload = (e) => {
+  for (let index = 0; index < e.target.files.length; index++) {
+    if (index == 5) {
+      break
+    }
+
+    const element = URL.createObjectURL(e.target.files[index]);
+
+    images.value[index] = element
+  }
+}
 
 function setMaxAge() {
   const maxDate = new Date()
@@ -292,16 +306,10 @@ function eraseErrorStyle(el) {
             <div class="flex gap-3 flex-wrap">
               <div class="relative w-24 h-40 border-2 border-primary rounded flex justify-center items-center cursor-pointer">
                 <svg class="w-9 stroke-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><g> <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke-width="1.5" stroke-linecap="round"></path> <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
-                <input type="file" class="w-full h-full opacity-0 absolute cursor-pointer" />
+                <input @change="handleFileUpload" type="file" class="w-full h-full opacity-0 absolute cursor-pointer" multiple v-if="images.length < 5" />
               </div>
-              <div class="w-24 h-40 border-2 border-primary rounded flex justify-center items-center cursor-pointer">
-                <svg class="w-9 stroke-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><g> <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke-width="1.5" stroke-linecap="round"></path> <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
-              </div>
-              <div class="w-24 h-40 border-2 border-primary rounded flex justify-center items-center cursor-pointer">
-                <svg class="w-9 stroke-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><g> <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke-width="1.5" stroke-linecap="round"></path> <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
-              </div>
-              <div class="w-24 h-40 border-2 border-primary rounded flex justify-center items-center cursor-pointer">
-                <svg class="w-9 stroke-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g stroke-width="0"></g><g stroke-linecap="round" stroke-linejoin="round"></g><g> <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke-width="1.5" stroke-linecap="round"></path> <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
+              <div class="w-24 h-40 border-2 border-primary rounded flex justify-center items-center cursor-pointer" v-for="item in images">
+                <img class="object-cover w-full h-full" alt="Image" :src="item" />
               </div>
             </div>
           </div>
