@@ -5,6 +5,8 @@ namespace Matcha\Api\Controllers;
 use Flight;
 use Matcha\Api\Model\Message;
 use Matcha\Api\Model\User;
+use Matcha\Api\Resources\MatchUserResource;
+use Matcha\Api\Resources\MessageResource;
 use Matcha\Api\Validator\Validator;
 use PDO;
 
@@ -14,7 +16,9 @@ class ChatController
     {
         $matches = Flight::user()->matches();
 
-        Flight::json($matches);
+        Flight::json(
+            MatchUserResource::collection($matches)
+        );
     }
 
     public function show(string $username): void
@@ -36,11 +40,37 @@ class ChatController
         ]);
 
         $messages = array_map(
-            fn (array $data) => Message::morph($data)->getData(),
+            fn (array $data) => Message::morph($data),
             $stmt->fetchAll(PDO::FETCH_ASSOC)
         );
 
-        Flight::json($messages);
+        $this->updateMessageViews($messages);
+
+        Flight::json(
+            MessageResource::collection($messages)
+        );
+    }
+
+    /**
+     * @param Message[] $messages
+     */
+    private function updateMessageViews(array &$messages): void
+    {
+        $updates = [];
+
+        foreach ($messages as $message) {
+            if ($message->receiver_id == Flight::user()->id && !$message->view) {
+                $updates[] = $message->id;
+                $message->view = true;
+            }
+        }
+
+        if (!empty($updates)) {
+            $sql = "UPDATE messages SET view=1 WHERE id IN (" . implode(",", $updates) . ")";
+
+            $stmt = Flight::db()->prepare($sql);
+            $stmt->execute();
+        }
     }
 
     public function store(string $username): void

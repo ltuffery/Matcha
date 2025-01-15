@@ -6,18 +6,38 @@ export class Api {
     'Content-Type': 'application/json',
   }
 
+  /**
+   *
+   * @param path
+   * @returns {Api}
+   */
   static get(path) {
     return this.request('GET', path)
   }
 
+  /**
+   *
+   * @param path
+   * @returns {Api}
+   */
   static post(path) {
     return this.request('POST', path)
   }
 
+  /**
+   *
+   * @param path
+   * @returns {Api}
+   */
   static put(path) {
     return this.request('PUT', path)
   }
 
+  /**
+   *
+   * @param path
+   * @returns {Api}
+   */
   static request(method, path) {
     let self = new this()
 

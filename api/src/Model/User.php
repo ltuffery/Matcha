@@ -18,11 +18,14 @@ use PDO;
 class User extends Model
 {
     protected string $table = 'users';
+    protected array $uniques = [
+        'username', 'email'
+    ];
 
     public string $username;
     public string $password;
     public string $email;
-    public int|null $age;
+    public string|null $birthday;
     public string|null $first_name;
     public string|null $last_name;
     public string|null $gender;
@@ -105,7 +108,7 @@ class User extends Model
 
     /**
      * Get all user matches
-     * 
+     *
      * @return User[]
      */
     public function matches(): array

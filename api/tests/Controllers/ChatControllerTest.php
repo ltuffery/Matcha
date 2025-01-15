@@ -82,4 +82,27 @@ class ChatControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertCount(5);
     }
+
+    public function testViewAllMessage(): void
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $this->createMessage($this->me, $this->other);
+        }
+
+        $response = $this->withHeader([
+            'Authorization' => 'Bearer ' . $this->me->generateJWT(),
+        ])->get('/users/me/matches/' . $this->other->username);
+
+        foreach ($response->getData() as $data) {
+            $this->assertFalse($data['view']);
+        }
+
+        $response = $this->withHeader([
+            'Authorization' => 'Bearer ' . $this->other->generateJWT(),
+        ])->get('/users/me/matches/' . $this->me->username);
+
+        foreach ($response->getData() as $data) {
+            $this->assertTrue($data['view']);
+        }
+    }
 }
