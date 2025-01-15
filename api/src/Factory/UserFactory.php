@@ -13,7 +13,7 @@ class UserFactory extends Factory
             'email_verified' => true,
             'first_name' => faker()->firstName(),
             'last_name' => faker()->lastName(),
-            'birthday' => faker()->dateTimeBetween('-50 years', '-18 years'),
+            'birthday' => faker()->dateTimeBetween('-50 years', '-18 years')->format('Y-m-d'),
             'gender' => array_rand(['M', 'F', 'O']) + 1,
             'sexual_preferences' => array_rand(['M', 'F', 'O', 'A']) + 1,
             'biography' => faker()->sentence(),
