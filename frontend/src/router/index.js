@@ -58,6 +58,7 @@ const router = createRouter({
       path: '/chat/:username',
       name: 'conversation',
       component: ConvView,
+      beforeEnter: [authGuard],
     },
   ],
 })

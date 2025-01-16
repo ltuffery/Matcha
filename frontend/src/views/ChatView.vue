@@ -15,9 +15,12 @@ Api.get('/users/me/matches').send()
 		return res.json()
 	})
 	.then(data => {
+		data.sort((a,b) => b.lastMessage?.created_at - a.lastMessage?.created_at)
 		matches.value = data
 	})
 
+
+// matches.value.sort((a,b) => b.lastMessage?.created_at - a.lastMessage?.created_at)
 function convClick(username)
 {
 	router.push({ name: `conversation`, params: { username }})
@@ -61,10 +64,10 @@ function convClick(username)
 					<div
 						v-for="(content, index) in matches"
 						:key="index"
-						@click="convClick('test'+index)"
+						@click="convClick(content.username)"
 					>
 
-						<UserCard :label="index%3" first_name="sssssssssssssssssssssssssssssssssssssssss" />
+						<UserCard :label="index%3" :lastMessage="content.last_message?.content" :first_name="content.first_name" />
 					
 
 

@@ -1,14 +1,52 @@
 <script setup>
 import Message from "@/components/chat/Message.vue";
 import { Api } from "@/utils/api";
-import {ref} from "vue";
+import {ref,onMounted} from "vue";
 import router from '@/router'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const messages = ref ()
+const messages = ref ([])
 
+const newMessageContent = ref()
+
+const temporaryMsg = ref([])
+
+const scrollableDiv = ref()
+
+async function getMatchs(){
+	let response = await Api.get(`/users/me/matches/${route.params.username}`).send()
+	messages.value = await response.json()
+	console.log(messages.value)
+}
+
+
+function sendMessage()
+{
+	temporaryMsg.value.push(newMessageContent.value)
+	Api.post(`/users/me/matches/${route.params.username}`).send({content: newMessageContent.value})
+	newMessageContent.value = ""
+	scrollbarToEnd()
+}
+
+function scrollbarToEnd()
+{
+	if (scrollableDiv.value) {
+        scrollableDiv.value.scrollTop = scrollableDiv.value.scrollHeight;
+      }
+}
+
+function test(value)
+{
+	Api.post(`/users/me/matches/${route.params.username}`).send({content: value.target.innerText})
+	scrollbarToEnd()
+}
+
+onMounted(async () => {
+	await getMatchs()
+	scrollbarToEnd()
+    });
 </script>
 
 <template>
@@ -41,24 +79,27 @@ const messages = ref ()
 
 				<div class="divider"></div>
 
-				<div class="h-full relative">
+				<div class="h-full overflow-auto relative" ref="scrollableDiv">
 					
+					<div v-for="(content, index) in messages"
+						:key="index">
+						<Message :message="content.content" :is-me="content.sender.username != route.params.username" />
+					</div>
 
-					<Message message="coucou" is-me />
-					<Message message="okey" />
-					<Message message="okey" />
-					<Message message="okey" />
-					<Message message="okey" />
+					<div v-for="(content, index) in temporaryMsg"
+						:key="index">
+						<Message :message="content" is-me tempo />
+					</div>
 
 
-                    <div v-if="!messages" class="absolute bottom-0 left-0 w-full h-full flex flex-col justify-between">
+                    <div v-if="!messages.length" class="absolute bottom-0 left-0 w-full h-full flex flex-col justify-between">
 						<div></div>
 						<div class="flex flex-col items-center">
                             <div><img src="../assets/img/mopper.png" ></div>
                             <div class="text-2xl">No message yet</div>
                         </div>
 						<div class="flex gap-2 w-full overflow-x-auto">
-                            <div class="badge badge-outline text-nowrap hover:bg-base-300 select-none cursor-pointer badge-lg">Hey salut toi</div>
+                            <div @click="test" class="badge badge-outline text-nowrap hover:bg-base-300 select-none cursor-pointer badge-lg">Hey salut toi</div>
                             <div class="badge badge-outline text-nowrap hover:bg-base-300 select-none cursor-pointer badge-lg">Coucou</div>
                             <div class="badge badge-outline text-nowrap hover:bg-base-300 select-none cursor-pointer badge-lg">hola</div>
                         </div>
@@ -70,11 +111,12 @@ const messages = ref ()
 				<!-- Input -->
 				<div class="flex items-center py-4">
 					<textarea
+						v-model="newMessageContent"
 						placeholder="Your message"
 						class="textarea rounded-r-[0] focus:outline-none border-none textarea-xs w-full p-4"
 						style="resize:none"></textarea>
                     
-                    <div class="flex items-center h-full rounded-r-badge bg-base-100 bg-opacity-60 cursor-pointer hover:bg-base-300 p-4">
+                    <div class="flex items-center h-full rounded-r-badge bg-base-100 bg-opacity-60 cursor-pointer hover:bg-base-300 p-4" @click="sendMessage">
                         <svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 24 24"
