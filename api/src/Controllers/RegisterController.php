@@ -4,7 +4,8 @@ namespace Matcha\Api\Controllers;
 
 use Exception;
 use Flight;
-use InvalidDataException;
+use Matcha\Api\Exceptions\InvalidDataException;
+use Matcha\Api\Model\Photo;
 use Matcha\Api\Model\User;
 use Matcha\Api\Validator\Validator;
 
@@ -31,6 +32,10 @@ class RegisterController
 
         $request = Flight::request();
 
+        if (count($request->getUploadedFiles()) == 0) {
+            throw new InvalidDataException(0, "Photos is required.");
+        }
+
         $user = new User();
         $user->username = $request->data->username;
         $user->email = $request->data->email;
@@ -45,10 +50,33 @@ class RegisterController
         $saved = $user->save();
 
         if ($saved) {
+            $this->saveUploadPhotos($saved);
+
             Flight::json([
                 'user' => json_encode($user),
             ], 201);
         }
+    }
+
+    private function saveUploadPhotos(User $user): void
+    {
+        if (!is_dir(BASE_PATH . "/storage/photos")) {
+            mkdir(BASE_PATH . "/storage/photos");
+        }
+
+        foreach (Flight::request()->getUploadedFiles()['photos'] as $file) {
+            $name = bin2hex(random_bytes(15));
+
+            $file->moveTo(BASE_PATH . "/storage/photos/" . $name . ".png");
+
+            $photo = new Photo();
+
+            $photo->name = $name;
+            $photo->user_id = $user->id;
+
+            $photo->create();
+        }
+
     }
 
 }

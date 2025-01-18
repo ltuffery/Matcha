@@ -125,6 +125,15 @@ class User extends Model
         return array_map(fn (array $obj) => User::morph($obj), $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
+    public function getPhotosUrl(): array
+    {
+        $photos = Photo::all([
+            'user_id' => $this->id,
+        ]);
+
+        return array_map(fn (Photo $photo) => "http://localhost:3000/medias/p/" . $photo->name, $photos);
+    }
+
     public static function authenticate(string $username, string $password): User|false
     {
         $user = User::find([

@@ -3,6 +3,8 @@
 use Faker\Factory;
 use Faker\Generator;
 
+define("BASE_PATH", dirname(__DIR__));
+
 if (!function_exists('faker')) {
     function faker(): Generator
     {
