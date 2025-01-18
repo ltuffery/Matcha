@@ -18,7 +18,6 @@ const scrollableDiv = ref()
 async function getMatchs(){
 	let response = await Api.get(`/users/me/matches/${route.params.username}`).send()
 	messages.value = await response.json()
-	console.log(messages.value)
 }
 
 

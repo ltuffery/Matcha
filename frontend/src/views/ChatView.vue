@@ -5,6 +5,7 @@ import {ref} from "vue";
 import router from '@/router'
 
 const matches = ref([])
+const conversations = ref([])
 
 Api.get('/users/me/matches').send()
 	.then(res => {
@@ -15,8 +16,14 @@ Api.get('/users/me/matches').send()
 		return res.json()
 	})
 	.then(data => {
-		data.sort((a,b) => b.lastMessage?.created_at - a.lastMessage?.created_at)
-		matches.value = data
+		for (const user of data)
+		{
+			if (!user.last_message)
+				matches.value.push(user)
+			else
+				conversations.value.push(user)
+		}
+		conversations.value.sort((a,b) => new Date(b.last_message.created_at) - new Date(a.last_message.created_at));
 	})
 
 
@@ -52,22 +59,41 @@ function convClick(username)
 					</label>
 				</div>
 
+				<div v-if="matches.length" class="flex gap-2 overflow-x-auto mt-3 h-36 items-center">
+					<div
+						v-for="(content, index) in matches"
+						:key="index"
+						@click="convClick(content.username)"
+						class="select-none cursor-pointer"
+					>
+
+						<!-- <UserCard :label="index%3" :lastMessage="content.last_message?.content" :first_name="content.first_name" /> -->
+					
+						<div class="flex-none mask mask-squircle w-20">
+							<img class="object-cover rounded-lg" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+						</div>
+						{{content.first_name}}
+
+
+					</div>
+
+				</div>
 
 				<div class="divider"></div>
 
-				<div v-if="!matches.length" class="flex flex-col gap-7 w-full h-full justify-center items-center">
+				<div v-if="!conversations.length" class="flex flex-col gap-7 w-full h-full justify-center items-center">
 					<span class="text-2xl">You don't have a match yet</span>
 					<button @click="router.push({name:'main'})" class="btn btn-outline btn-primary">On your matchs</button>
 				</div>
 
 				<div v-else class="flex flex-col gap-2 overflow-y-auto h-[90%]">
 					<div
-						v-for="(content, index) in matches"
+						v-for="(content, index) in conversations"
 						:key="index"
 						@click="convClick(content.username)"
 					>
 
-						<UserCard :label="index%3" :lastMessage="content.last_message?.content" :first_name="content.first_name" />
+						<UserCard :label="index%2" :lastMessage="content.last_message?.content" :first_name="content.first_name" />
 					
 
 

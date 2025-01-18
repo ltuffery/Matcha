@@ -32,8 +32,7 @@ const props = defineProps({
 				{{ props.first_name }}
 			</div>
 			<div>
-				<div v-if="label == 1" class="badge badge-neutral">New Match</div>
-				<div v-else-if="label == 2" class="badge badge-accent">Message</div>
+				<div v-if="label == 1" class="badge badge-accent">Message</div>
 			</div>
 		</div>
 		<div class="truncate text-sm">
