@@ -61,7 +61,7 @@ class RegisterController
     private function saveUploadPhotos(User $user): void
     {
         if (!is_dir(BASE_PATH . "/storage/photos")) {
-            mkdir(BASE_PATH . "/storage/photos");
+            mkdir(BASE_PATH . "/storage/photos", recursive: true);
         }
 
         foreach (Flight::request()->getUploadedFiles()['photos'] as $file) {
