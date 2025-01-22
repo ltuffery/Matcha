@@ -1,9 +1,11 @@
 <script setup>
 import Message from '@/components/chat/Message.vue'
+import RapidMessage from '@/components/chat/RapidMessage.vue'
 import { Api } from '@/utils/api'
 import { ref, onMounted } from 'vue'
 import router from '@/router'
 import { useRoute } from 'vue-router'
+import suggestMsg from '@/assets/suggestedMessage.json'
 
 const route = useRoute()
 
@@ -37,7 +39,7 @@ function scrollbarToEnd() {
   }
 }
 
-function test(value) {
+function rapidMessageSend(value) {
   Api.post(`/users/me/matches/${route.params.username}`).send({
     content: value.target.innerText,
   })
@@ -118,22 +120,9 @@ onMounted(async () => {
               <div class="text-2xl">No message yet</div>
             </div>
             <div class="flex gap-2 w-full overflow-x-auto">
-              <div
-                @click="test"
-                class="badge badge-outline text-nowrap hover:bg-base-300 select-none cursor-pointer badge-lg"
-              >
-                Hey salut toi
-              </div>
-              <div
-                class="badge badge-outline text-nowrap hover:bg-base-300 select-none cursor-pointer badge-lg"
-              >
-                Coucou
-              </div>
-              <div
-                class="badge badge-outline text-nowrap hover:bg-base-300 select-none cursor-pointer badge-lg"
-              >
-                hola
-              </div>
+				<div @click="rapidMessageSend" v-for="(content, index) in suggestMsg" :key="index">
+					<RapidMessage :content="content" />
+				</div>
             </div>
           </div>
         </div>
