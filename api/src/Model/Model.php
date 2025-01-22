@@ -86,11 +86,11 @@ abstract class Model
         }
 
         $props = array_filter($this->getData(), function (mixed $value, string $key) {
-            return array_search($key, $this->uniques);
+            return is_int(array_search($key, $this->uniques));
         }, ARRAY_FILTER_USE_BOTH);
         $where = array_map(fn ($k, $v) => '`' . $k . '`="' . $v . '"', array_keys($props), array_values($props));
 
-        $sqlQuery = "SELECT * FROM " . $this->getTable() . " WHERE " . implode(", ", $where);
+        $sqlQuery = "SELECT * FROM " . $this->getTable() . " WHERE " . implode(" AND ", $where);
 
         $stmt = self::db()->prepare($sqlQuery);
 

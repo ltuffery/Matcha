@@ -8,6 +8,7 @@ class DatabaseSeeder implements SeederInterface
     {
         $this->call([
             UserSeeder::class,
+            PhotoSeeder::class,
         ]);
     }
 

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import MultiStepForm from '@/components/MultiStepForm.vue'
 import { Api } from '@/utils/api'
 import { ref, computed, onMounted, nextTick } from 'vue'
@@ -11,8 +11,8 @@ const formData = {
   birthday: null,
   first_name: null,
   last_name: null,
-  gender: null as 'M' | 'F' | 'O',
-  sexual_preferences: null as 'M' | 'F' | 'A' | 'O',
+  gender: null,
+  sexual_preferences: null,
   biography: null,
   images: []
 }
@@ -44,7 +44,6 @@ const handleFileUpload = (e) => {
 }
 
 const handleRemoveFileUpload = (e) => {
-  console.log(e.target.getAttribute('data-index'))
   images.value.splice(
     e.target.getAttribute('data-index'),
     1
@@ -62,7 +61,20 @@ setMaxAge()
 
 async function handleSubmit() {
   try {
-    const req = await Api.post('/auth/register').send(formData)
+    const form = new FormData()
+
+    for (const name in formData) {
+      form.append(name, formData[name])
+    }
+
+    for (const i in images.value) {
+      form.append('photos[]', images.value[i].file)
+    }
+
+    const req = await fetch(`http://${location.hostname}:3000/auth/register`, {
+      method: "POST",
+      body: form
+    })
     const data = await req.json()
 
     if (req.status == 400) {
@@ -88,13 +100,15 @@ function getErrorCode(message) {
   else if (message.search('gender') != -1) return 6
   else if (message.search('sexual_preferences') != -1) return 7
   else if (message.search('biography') != -1) return 8
+  else if (message.search('photos') != -1) return 9
 }
 
 function focusInput(code) {
   if (code < 3) step.value.setStep(0)
   else if (code >= 3 && code < 6) step.value.setStep(1)
   else if (code >= 6 && code < 8) step.value.setStep(2)
-  else step.value.setStep(3)
+  else if (code == 8) step.value.setStep(3) 
+  else step.value.setStep(4)
 
   nextTick(() => {
     switch (code) {
@@ -134,7 +148,6 @@ function focusInput(code) {
         refs.value.biography.focus()
         refs.value.biography.classList.add('textarea-error')
         break
-
       default:
         break
     }

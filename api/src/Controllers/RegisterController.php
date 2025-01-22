@@ -33,7 +33,12 @@ class RegisterController
         $request = Flight::request();
 
         if (count($request->getUploadedFiles()) == 0) {
-            throw new InvalidDataException(0, "Photos is required.");
+            Flight::json([
+                'code' => 0,
+                'message' => "Photos is required.",
+            ], 400);
+
+            throw new InvalidDataException(0, 'Photos is required.');
         }
 
         $user = new User();
@@ -67,14 +72,13 @@ class RegisterController
         foreach (Flight::request()->getUploadedFiles()['photos'] as $file) {
             $name = bin2hex(random_bytes(15));
 
-            $file->moveTo(BASE_PATH . "/storage/photos/" . $name . ".png");
-
             $photo = new Photo();
 
             $photo->name = $name;
             $photo->user_id = $user->id;
 
             $photo->create();
+            $file->moveTo(BASE_PATH . "/storage/photos/" . $name . ".png");
         }
 
     }
