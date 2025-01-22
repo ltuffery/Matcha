@@ -6,6 +6,7 @@ import router from '@/router'
 
 const matches = ref([])
 const conversations = ref([])
+const searchInput = ref()
 
 Api.get('/users/me/matches').send()
 	.then(res => {
@@ -33,6 +34,17 @@ function convClick(username)
 	router.push({ name: `conversation`, params: { username }})
 }
 
+function containSearch(user)
+{
+	if (!searchInput.value || searchInput.value.length < 1)
+		return true;
+	user = user.toLowerCase()
+	console.log(user);
+	if (user.includes(searchInput.value.toLowerCase()))
+		return	true;
+	return false;
+}
+
 </script>
 
 <template>
@@ -45,7 +57,7 @@ function convClick(username)
 
 				<div class="pt-5">
 					<label class="input input-bordered flex items-center gap-2">
-						<input type="text" class="grow" placeholder="Search" />
+						<input v-model="searchInput" type="text" class="grow" placeholder="Search" />
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							viewBox="0 0 16 16"
@@ -93,7 +105,7 @@ function convClick(username)
 						@click="convClick(content.username)"
 					>
 
-						<UserCard :label="index%2" :lastMessage="content.last_message?.content" :first_name="content.first_name" />
+						<UserCard v-if="containSearch(content.first_name)" :label="index%2" :lastMessage="content.last_message?.content" :first_name="content.first_name" />
 					
 
 
