@@ -58,7 +58,7 @@ onMounted(async () => {
 
 <template>
 	<div class="flex bg-base-300 h-dvh w-full justify-center items-center">
-		<div class="bg-base-200 lg:h-[95%] h-full w-full max-w-3xl px-4">
+		<div class="bg-base-200 h-full w-full max-w-3xl px-4">
 
 		<!-- ########## Conversation view ########## -->
 
