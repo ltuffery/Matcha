@@ -43,9 +43,9 @@ const handleFileUpload = (e) => {
   }
 }
 
-const handleRemoveFileUpload = (e) => {
+const handleRemoveFileUpload = (index) => {
   images.value.splice(
-    e.target.getAttribute('data-index'),
+    index,
     1
   )
 }
@@ -333,8 +333,8 @@ function eraseErrorStyle(el) {
               </div>
               <div class="relative w-full h-40 border-2 border-primary rounded flex justify-center items-center cursor-pointer" v-for="(item, index) in images">
                 <img class="object-cover w-full h-full" alt="Image" :src="item.url" />
-                <div @click="handleRemoveFileUpload" :data-index="index" class="absolute opacity-0 w-full h-full bg-primary hover:opacity-55 flex items-center justify-center">
-                  <svg :data-index="index" class="w-9 stroke-white hover:opacity-100" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g> <path d="M15 12H9" stroke-width="1.5" stroke-linecap="round"></path> <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
+                <div @click="handleRemoveFileUpload(index)" class="absolute opacity-0 w-full h-full bg-primary hover:opacity-55 flex items-center justify-center">
+                  <svg class="w-9 stroke-white hover:opacity-100" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g> <path d="M15 12H9" stroke-width="1.5" stroke-linecap="round"></path> <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
                 </div>
               </div>
             </div>
