@@ -12,7 +12,7 @@ Api.get('/users/me/matches')
   .send()
   .then(res => {
     if (res.status === 401) {
-      return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      return []
     }
 
     return res.json()
@@ -82,8 +82,6 @@ function containSearch(user) {
             @click="convClick(content.username)"
             class="select-none cursor-pointer"
           >
-            <!-- <UserCard :label="index%3" :lastMessage="content.last_message?.content" :first_name="content.first_name" /> -->
-
             <div class="flex-none mask mask-squircle w-20">
               <img
                 class="object-cover rounded-lg"
@@ -119,7 +117,7 @@ function containSearch(user) {
               v-if="containSearch(content.first_name)"
               :label="index % 2"
               :lastMessage="content.last_message?.content"
-              :first_name="content.first_name"
+              :firstName="content.first_name"
             />
           </div>
         </div>

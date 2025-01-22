@@ -5,7 +5,7 @@ const props = defineProps({
     default:
       'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp',
   },
-  first_name: {
+  firstName: {
     type: String,
     required: true,
     default: 'Profile deleted',
@@ -30,7 +30,7 @@ const props = defineProps({
     <div class="grow flex flex-col gap-2 justify-center p-2 w-[80%]">
       <div class="flex justify-between w-full">
         <div class="truncate max-w-[60%] text-xl">
-          {{ props.first_name }}
+          {{ props.firstName }}
         </div>
         <div>
           <div v-if="label == 1" class="badge badge-accent">Message</div>
