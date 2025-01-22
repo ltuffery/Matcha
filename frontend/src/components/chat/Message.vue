@@ -4,12 +4,37 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  'is-me': [Boolean]
+  'is-me': [Boolean],
+  tempo: [Boolean],
 })
 </script>
 
+<style scoped>
+.formatted-text {
+  white-space: pre-line;
+}
+</style>
+
 <template>
-  <div :class="{ 'justify-start': !props['isMe'], 'justify-end': props['isMe'], 'bg-primary': props['isMe'] }" class="flex p-3 rounded max-w-[40%] text-ellipsis overflow-auto overflow-wrap break-word">
-    {{ props.message }}
+  <div
+    v-if="!props['tempo']"
+    class="chat"
+    :class="props['isMe'] ? 'chat-end' : 'chat-start'"
+  >
+    <div
+      class="chat-bubble break-all formatted-text"
+      :class="props['isMe'] ? 'chat-bubble-info' : 'chat-bubble-primary'"
+    >
+      {{ props.message }}
+    </div>
+  </div>
+  <div
+    v-else
+    class="chat opacity-50"
+    :class="props['isMe'] ? 'chat-end' : 'chat-start'"
+  >
+    <div class="chat-bubble break-all formatted-text chat-bubble-info">
+      {{ props.message }}
+    </div>
   </div>
 </template>
