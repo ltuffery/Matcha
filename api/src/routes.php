@@ -56,6 +56,18 @@ Flight::group('/search', function () {
     Flight::route('GET /users', [SearchProfileController::class, 'index']);
 }, [AuthMiddleware::class]);
 
+Flight::group('/media', function () {
+    Flight::route('GET /p/@name', function (string $name) {
+        header ('Content-Type: image/png');
+
+        if (!is_dir(BASE_PATH . "/storage/photos")) {
+            mkdir(BASE_PATH . "/storage/photos", true);
+        }
+
+        echo file_get_contents(BASE_PATH . "/storage/photos/" . $name . ".png");
+    });
+});
+
 // 404 route
 Flight::map('notFound', function () {
     Flight::json([

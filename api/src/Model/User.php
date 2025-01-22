@@ -67,6 +67,19 @@ class User extends Model
     }
 
     /**
+     * Get user avatar (first image upload)
+     */
+    public function getAvatar(): string
+    {
+        /** @var Photo $photo */
+        $photo = Photo::where([
+            ['user_id', '=', $this->id],
+        ], 1)[0];
+
+        return "http://localhost:3000/media/p/" . $photo->name;
+    }
+
+    /**
      * Create a like from the user to the user passed as a parameter
      *
      * @param User $user

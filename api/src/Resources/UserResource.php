@@ -29,6 +29,8 @@ class UserResource extends JsonResource
             unset($data[$field]);
         }
 
+        $data['avatar'] = $this->model->getAvatar();
+
         return $data;
     }
 }

@@ -7,7 +7,7 @@ const search = ref('')
 const users = ref([])
 
 const input = () => {
-  if (search.value.length >= 5) {
+  if (search.value.length >= 2) {
     Api.get(`search/users?q=${search.value}`)
       .send()
       .then(res => res.json())
@@ -64,6 +64,7 @@ const input = () => {
         v-for="user in users"
         :key="user"
         :username="user.username"
+        :avatar="user.avatar"
       />
     </div>
   </div>
