@@ -21,10 +21,10 @@ async function getMatchs(){
 }
 
 
-function sendMessage()
+async function sendMessage()
 {
 	temporaryMsg.value.push(newMessageContent.value)
-	Api.post(`/users/me/matches/${route.params.username}`).send({content: newMessageContent.value})
+	await Api.post(`/users/me/matches/${route.params.username}`).send({content: newMessageContent.value})
 	newMessageContent.value = ""
 	scrollbarToEnd()
 }
