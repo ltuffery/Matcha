@@ -90,17 +90,24 @@ abstract class Model
         }, ARRAY_FILTER_USE_BOTH);
         $where = array_map(fn ($k, $v) => '`' . $k . '`="' . $v . '"', array_keys($props), array_values($props));
 
-        $sqlQuery = "SELECT * FROM " . $this->getTable() . " WHERE " . implode(" AND ", $where);
+        $sqlQuery = "SELECT * FROM " . $this->getTable() . " WHERE " . implode($this->isAllPrimaryKey($where) ? " AND " : " OR ", $where);
 
         $stmt = self::db()->prepare($sqlQuery);
 
         $stmt->execute();
 
         if ($stmt->fetch() != null) {
+            if (getenv("PHPUNIT_TEST"))
+                ob_end_clean();
             throw new UniqueConstraindException("Unique"); // TODO: messages
         }
 
         return true;
+    }
+
+    private function isAllPrimaryKey(array $array): bool
+    {
+        return count(array_filter($array, fn ($value) => str_contains($value, "_id"))) > 0;
     }
 
     /**
