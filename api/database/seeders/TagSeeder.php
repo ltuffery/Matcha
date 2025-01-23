@@ -10,7 +10,7 @@ class TagSeeder implements SeederInterface
 {
     private function fillTagsTable(): void
     {
-        $tags = ["Netflix", "Bike", "Car", "cooking", "travel", "photography", "reading", "yoga", "gaming", "gardening", "fishing", "music", "podcasts", "anime", "running"];
+        $tags = json_decode(file_get_contents(dirname(__DIR__)."/data_preset/tags.json"));
 
         foreach ($tags as $tag){
             $newTag = new Tag();
@@ -24,8 +24,10 @@ class TagSeeder implements SeederInterface
         $users = User::all();
         $tags = Tag::all();
 
-        if (count($tags) == 0)
+        if (count($tags) == 0){
             $this->fillTagsTable();
+            $tags = Tag::all();
+        }
 
         for ($i = 0; $i < count($users); $i++) {
             $elements = faker()->randomElements($tags, rand(0, count($tags)));
