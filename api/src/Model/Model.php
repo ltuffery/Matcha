@@ -97,7 +97,8 @@ abstract class Model
         $stmt->execute();
 
         if ($stmt->fetch() != null) {
-            ob_end_clean();
+            if (getenv("PHPUNIT_TEST"))
+                ob_end_clean();
             throw new UniqueConstraindException("Unique"); // TODO: messages
         }
 

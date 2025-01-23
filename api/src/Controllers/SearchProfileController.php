@@ -12,7 +12,7 @@ class SearchProfileController
     {
         $query = Flight::request()->query;
 
-        if (!isset($query['q']) || strlen($query['q']) < 5) {
+        if (!isset($query['q']) || strlen($query['q']) < 2) {
             Flight::json([]);
 
             return;

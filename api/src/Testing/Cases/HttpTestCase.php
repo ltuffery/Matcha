@@ -3,6 +3,7 @@
 namespace Matcha\Api\Testing\Cases;
 
 use Flight;
+use flight\util\Collection;
 use Matcha\Api\Testing\TestResponse;
 
 trait HttpTestCase
@@ -65,6 +66,7 @@ trait HttpTestCase
             'type' => 'application/json',
             'body' => $body,
             'ip' => '127.0.0.1',
+            'files' => new Collection($_FILES),
         ]);
 
         Flight::start();

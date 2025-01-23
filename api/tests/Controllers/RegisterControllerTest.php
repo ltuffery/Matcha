@@ -13,11 +13,21 @@ class RegisterControllerTest extends TestCase
 
     public function setUp(): void
     {
+        $_FILES['photos'] = [
+            'name' => 'test.png',
+            'type' => 'image/png',
+            'size' => 123,
+            'tmp_name' => '/tmp/php123',
+            'error' => 0
+        ];
+
         $this->setUpDatabase();
     }
 
     public function tearDown(): void
     {
+        $_FILES = [];
+
         Flight::response()->clear();
     }
 
