@@ -68,7 +68,7 @@ async function handleSubmit() {
     }
 
     for (const i in images.value) {
-      form.append('photos[]', images.value[i].file)
+      form.append(`photos${images.value.length > 1 ? "[]" : ""}`, images.value[i].file, images.value[i].file.name)
     }
 
     const req = await fetch(`http://${location.hostname}:3000/auth/register`, {

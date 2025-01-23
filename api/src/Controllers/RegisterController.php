@@ -4,6 +4,7 @@ namespace Matcha\Api\Controllers;
 
 use Exception;
 use Flight;
+use flight\net\UploadedFile;
 use Matcha\Api\Exceptions\InvalidDataException;
 use Matcha\Api\Model\Photo;
 use Matcha\Api\Model\User;
@@ -55,7 +56,7 @@ class RegisterController
         $saved = $user->save();
 
         if ($saved) {
-            $this->saveUploadPhotos($saved);
+            $this->uploadPhotos($saved);
 
             Flight::json([
                 'user' => json_encode($user),
@@ -63,24 +64,34 @@ class RegisterController
         }
     }
 
-    private function saveUploadPhotos(User $user): void
+    private function uploadPhotos(User $user): void
     {
         if (!is_dir(BASE_PATH . "/storage/photos")) {
             mkdir(BASE_PATH . "/storage/photos", recursive: true);
         }
 
-        foreach (Flight::request()->getUploadedFiles()['photos'] as $file) {
-            $name = bin2hex(random_bytes(15));
+        $photos = Flight::request()->getUploadedFiles()['photos'];
 
-            $photo = new Photo();
-
-            $photo->name = $name;
-            $photo->user_id = $user->id;
-
-            $photo->create();
-            $file->moveTo(BASE_PATH . "/storage/photos/" . $name . ".png");
+        if (is_array($photos)) {
+            foreach (Flight::request()->getUploadedFiles()['photos'] as $file) {
+                $this->savePhotos($file, $user);
+            }
+        } else {
+            $this->savePhotos($photos, $user);
         }
+    }
 
+    private function savePhotos(UploadedFile $file, User $user): void
+    {
+        $name = bin2hex(random_bytes(15));
+
+        $photo = new Photo();
+
+        $photo->name = $name;
+        $photo->user_id = $user->id;
+
+        $photo->create();
+        $file->moveTo(BASE_PATH . "/storage/photos/" . $name . ".png");
     }
 
 }
