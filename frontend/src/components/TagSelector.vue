@@ -36,7 +36,7 @@ onMounted(async () => {
 				</div>
 			</div>
 		</div>
-		<div class="flex overflow-y-auto select-none flex-wrap gap-2 mt-3">
+		<div class="flex select-none flex-wrap gap-2 mt-3">
 			<div @click="addTagSelected(tag)" v-for="tag in tags.filter(tag => !tag.selected)" :key="tag" class="badge badge-outline badge-lg hover:bg-base-200 cursor-pointer">
 				{{tag.name}}
 			</div>
