@@ -16,10 +16,10 @@ onMounted(async () => {
 </script>
 
 <template>
-	<div class="">
+	<div>
 		<div class="w-full">
 			<label>Tags Selected :</label>
-			<div class="flex flex-wrap bg-base-200 p-2 mt-1 gap-1 w-full min-h-10 rounded-box">
+			<div class="flex flex-wrap bg-base-200 select-none p-2 mt-1 gap-1 w-full min-h-10 max-h-24 overflow-y-auto rounded-box">
 				<div @click="addTagSelected(tag)" v-for="tag in tags.filter(tag => tag.selected)" :key="tag" class="badge badge-outline badge-lg gap-1 cursor-pointer bg-base-100 hover:bg-base-100 hover:badge-outline hover:badge-error">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +36,7 @@ onMounted(async () => {
 				</div>
 			</div>
 		</div>
-		<div class="flex flex-wrap gap-2 mt-3">
+		<div class="flex overflow-y-auto select-none flex-wrap gap-2 mt-3">
 			<div @click="addTagSelected(tag)" v-for="tag in tags.filter(tag => !tag.selected)" :key="tag" class="badge badge-outline badge-lg hover:bg-base-200 cursor-pointer">
 				{{tag.name}}
 			</div>
