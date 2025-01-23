@@ -69,14 +69,18 @@ class User extends Model
     /**
      * Get user avatar (first image upload)
      */
-    public function getAvatar(): string
+    public function getAvatar(): string|null
     {
         /** @var Photo $photo */
         $photo = Photo::where([
             ['user_id', '=', $this->id],
-        ], 1)[0];
+        ], 1);
 
-        return "http://localhost:3000/media/p/" . $photo->name;
+        if ($photo == null) {
+            return null;
+        }
+
+        return "http://localhost:3000/media/p/" . $photo[0]->name;
     }
 
     /**

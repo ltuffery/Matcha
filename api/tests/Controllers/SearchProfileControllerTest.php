@@ -34,11 +34,11 @@ class SearchProfileControllerTest extends TestCase
         $response->assertJson([]);
     }
 
-    public function testQueryLengthLessThanFive(): void
+    public function testQueryLengthLessThanTwo(): void
     {
         $users = User::factory()->count(10)->create();
     
-        for ($i = 1; $i < 5; $i++) {
+        for ($i = 1; $i < 2; $i++) {
             $response = $this->withHeader([
                 'Authorization' => 'Bearer ' . $this->user->generateJWT(),
             ])->get('/search/users', [

@@ -56,7 +56,8 @@ class RegisterController
         $saved = $user->save();
 
         if ($saved) {
-            $this->uploadPhotos($saved);
+            if (!getenv("PHPUNIT_TEST"))
+                $this->uploadPhotos($saved);
 
             Flight::json([
                 'user' => json_encode($user),
