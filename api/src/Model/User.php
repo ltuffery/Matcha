@@ -108,7 +108,7 @@ class User extends Model
 
     /**
      * Get all user matches
-     * 
+     *
      * @return User[]
      */
     public function matches(): array

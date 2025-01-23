@@ -91,9 +91,9 @@ abstract class Model
         $where = array_map(fn ($k, $v) => '`' . $k . '`="' . $v . '"', array_keys($props), array_values($props));
 
         $sqlQuery = "SELECT * FROM " . $this->getTable() . " WHERE " . implode($this->isAllPrimaryKey($where) ? " AND " : " OR ", $where);
-        
+
         $stmt = self::db()->prepare($sqlQuery);
-        
+
         $stmt->execute();
 
         if ($stmt->fetch() != null) {
