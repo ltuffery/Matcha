@@ -9,6 +9,7 @@ use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
 use Matcha\Api\Controllers\SearchProfileController;
 use Matcha\Api\Controllers\UserStatusController;
+use Matcha\Api\Controllers\TagsController;
 use Matcha\Api\Middleware\AuthMiddleware;
 
 Flight::route('GET /', function () {
@@ -51,6 +52,8 @@ Flight::group('/users', function () {
     });
 
 }, [AuthMiddleware::class]);
+
+Flight::route('GET /tags', [TagsController::class, 'index']);
 
 Flight::group('/search', function () {
     Flight::route('GET /users', [SearchProfileController::class, 'index']);
