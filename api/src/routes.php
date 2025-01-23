@@ -10,6 +10,7 @@ use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
 use Matcha\Api\Controllers\SearchProfileController;
 use Matcha\Api\Controllers\UserStatusController;
+use Matcha\Api\Controllers\TagsController;
 use Matcha\Api\Middleware\AuthMiddleware;
 
 Flight::route('GET /', function () {
@@ -60,9 +61,23 @@ Flight::group('/users', function () {
 
 }, [AuthMiddleware::class]);
 
+Flight::route('GET /tags', [TagsController::class, 'index']);
+
 Flight::group('/search', function () {
     Flight::route('GET /users', [SearchProfileController::class, 'index']);
 }, [AuthMiddleware::class]);
+
+Flight::group('/media', function () {
+    Flight::route('GET /p/@name', function (string $name) {
+        header ('Content-Type: image/png');
+
+        if (!is_dir(BASE_PATH . "/storage/photos")) {
+            mkdir(BASE_PATH . "/storage/photos", true);
+        }
+
+        echo file_get_contents(BASE_PATH . "/storage/photos/" . $name . ".png");
+    });
+});
 
 // 404 route
 Flight::map('notFound', function () {

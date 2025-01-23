@@ -67,6 +67,23 @@ class User extends Model
     }
 
     /**
+     * Get user avatar (first image upload)
+     */
+    public function getAvatar(): string|null
+    {
+        /** @var Photo $photo */
+        $photo = Photo::where([
+            ['user_id', '=', $this->id],
+        ], 1);
+
+        if ($photo == null) {
+            return null;
+        }
+
+        return "http://localhost:3000/media/p/" . $photo[0]->name;
+    }
+
+    /**
      * Create a like from the user to the user passed as a parameter
      *
      * @param User $user
@@ -123,6 +140,15 @@ class User extends Model
 
         $stmt->execute(['user_id' => $this->id]);
         return array_map(fn (array $obj) => User::morph($obj), $stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    public function getPhotosUrl(): array
+    {
+        $photos = Photo::all([
+            'user_id' => $this->id,
+        ]);
+
+        return array_map(fn (Photo $photo) => "http://localhost:3000/medias/p/" . $photo->name, $photos);
     }
 
     public static function authenticate(string $username, string $password): User|false

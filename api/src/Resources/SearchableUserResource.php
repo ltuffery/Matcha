@@ -18,6 +18,7 @@ class SearchableUserResource extends JsonResource
     {
         return [
             'username' => $this->model->username,
+            'avatar' => $this->model->getAvatar(),
             'first_name' => $this->model->first_name,
             'last_name' => $this->model->last_name,
             'online' => $this->model->online,

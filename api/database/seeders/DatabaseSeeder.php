@@ -10,6 +10,8 @@ class DatabaseSeeder implements SeederInterface
             UserSeeder::class,
             MatchesSeeder::class,
             MessageSeeder::class,
+            PhotoSeeder::class,
+            TagSeeder::class,
         ]);
     }
 

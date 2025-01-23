@@ -2,9 +2,8 @@
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Matcha\Api\Exceptions\InvalidDataException;
 use Matcha\Api\Model\User;
-
-include "Exceptions/InvalidDataException.php";
 
 Flight::register('db', PDO::class, [
     'mysql:host=mysql;dbname=' . getenv('MYSQL_DATABASE'),
@@ -35,12 +34,16 @@ Flight::map('error', function (Throwable $error) {
 
     foreach ($response->headers() as $header => $value) {
         if (is_string($value)) {
-            header($header . ": " . $value);
+            try {
+                header($header . ": " . $value);
+            } catch (Exception) {}
         }
     }
 
     if ($error instanceof InvalidDataException) {
-        header("Content-Type: application/json; charset=utf-8", response_code: 400);
+        try {
+            header("Content-Type: application/json; charset=utf-8", response_code: 400);
+        } catch (Exception) {}
 
         $data = json_decode($response->getBody());
 
