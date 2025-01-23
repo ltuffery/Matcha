@@ -2,15 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { Api } from '@/utils/api'
 
-const tags = ref([
-  { name: 'velo', selected: false },
-  { name: 'je sais pas', selected: false },
-  { name: 'test', selected: false },
-  { name: 'Restoration', selected: false },
-  { name: 'Lancée de poid', selected: false },
-  { name: 'test', selected: false },
-  { name: 'icule', selected: false },
-])
+const tags = ref([])
 
 function addTagSelected(tag) {
   tag.selected = !tag.selected
