@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const tags = ref([{"name":"velo", "selected":false},{"name":"je sais pas", "selected":false}, {"name":"test", "selected":false}, {"name":"Restoration", "selected":false}, {"name":"Lancée de poid", "selected":false}, {"name":"test", "selected":false}, {"name":"icule", "selected":false}])
 
@@ -7,6 +7,10 @@ function addTagSelected(tag)
 {
 	tag.selected = !tag.selected
 }
+
+onMounted(() => {
+	
+})
 </script>
 
 <template>
