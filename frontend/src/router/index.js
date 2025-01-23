@@ -6,6 +6,7 @@ import NewPasswordView from '../views/NewPasswordView.vue'
 import { authGuard } from '@/middlewares/auth'
 import { isAuthenticated } from '@/services/auth'
 import SearchUsersView from '@/views/SearchUsersView.vue'
+import SettingsView from '@/views/SettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +46,12 @@ const router = createRouter({
       path: '/forgot',
       name: 'forgot',
       component: NewPasswordView,
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView,
+      beforeEnter: [authGuard],
     },
   ],
 })
