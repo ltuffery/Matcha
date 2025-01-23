@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import {Api} from '@/utils/api'
 
 const tags = ref([{"name":"velo", "selected":false},{"name":"je sais pas", "selected":false}, {"name":"test", "selected":false}, {"name":"Restoration", "selected":false}, {"name":"Lancée de poid", "selected":false}, {"name":"test", "selected":false}, {"name":"icule", "selected":false}])
 
@@ -8,8 +9,9 @@ function addTagSelected(tag)
 	tag.selected = !tag.selected
 }
 
-onMounted(() => {
-	
+onMounted(async () => {
+	const response = await Api.get("/tags").send();
+	tags.value = (await response.json()).map((item)=> {return {"name": item, "selected": false}});
 })
 </script>
 
