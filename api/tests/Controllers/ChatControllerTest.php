@@ -97,6 +97,8 @@ class ChatControllerTest extends TestCase
             $this->assertFalse($data['view']);
         }
 
+        $response->assertStatus(200);
+
         $response = $this->withHeader([
             'Authorization' => 'Bearer ' . $this->other->generateJWT(),
         ])->get('/users/me/matches/' . $this->me->username);
@@ -104,6 +106,8 @@ class ChatControllerTest extends TestCase
         foreach ($response->getData() as $data) {
             $this->assertTrue($data['view']);
         }
+
+        $response->assertStatus(200);
     }
 
     public function testDeleteNotFoundMessage(): void

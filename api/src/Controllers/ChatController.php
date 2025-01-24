@@ -23,7 +23,7 @@ class ChatController
 
     public function show(string $username): void
     {
-        if (Flight::user()->hasMatche($username)) {
+        if (!Flight::user()->hasMatche($username)) {
             Flight::json([
                 "message" => "Forbidden.",
             ], 403);
