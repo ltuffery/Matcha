@@ -18,7 +18,7 @@ class MessageResource extends JsonResource
     public function jsonSerialize(): mixed
     {
         return [
-            'sender' => new UserResource(User::find(['id' => $this->model->sender_id])),
+            'sender' => User::find(['id' => $this->model->sender_id])->username,
             'content' => htmlspecialchars_decode($this->model->content),
             'view' => $this->model->view,
             'created_at' => $this->model->created_at,
