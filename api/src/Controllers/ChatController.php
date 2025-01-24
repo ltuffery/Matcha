@@ -34,24 +34,7 @@ class ChatController
             'username' => $username,
         ]);
 
-        $stmt = Flight::db()->prepare("
-            SELECT * 
-            FROM messages 
-            WHERE (sender_id = :sender_id AND receiver_id = :receiver_id)
-            OR (sender_id = :receiver_id AND receiver_id = :sender_id)
-            ORDER BY created_at
-            LIMIT 50;
-        ");
-
-        $stmt->execute([
-            'sender_id' => Flight::user()->id,
-            'receiver_id' => $receiver->id,
-        ]);
-
-        $messages = array_map(
-            fn (array $data) => Message::morph($data),
-            $stmt->fetchAll(PDO::FETCH_ASSOC)
-        );
+        $messages = Message::allOf(Flight::user(), $receiver);
 
         $this->updateMessageViews($messages);
 

@@ -110,6 +110,19 @@ class ChatControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function testUnreadNumberOfMessages(): void
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $this->createMessage($this->other, $this->me);
+        }
+
+        $response = $this->withHeader([
+            'Authorization' => 'Bearer ' . $this->me->generateJWT(),
+        ])->get('/users/me/matches');
+
+        $this->assertEquals(5, $response->getData()[0]['unread']);
+    }
+
     public function testDeleteNotFoundMessage(): void
     {
         $response = $this->withHeader([
