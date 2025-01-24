@@ -119,7 +119,7 @@ function containSearch(user) {
               :lastMessage="content.last_message?.content"
               :firstName="content.first_name"
               :avatar="content.avatar"
-              online="false"
+              :online="content.online"
             />
           </div>
         </div>
