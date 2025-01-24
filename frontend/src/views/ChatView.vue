@@ -80,12 +80,12 @@ function containSearch(user) {
             v-for="(content, index) in matches"
             :key="index"
             @click="convClick(content.username)"
-            class="select-none cursor-pointer"
+            class="select-none cursor-pointer flex flex-col items-center"
           >
             <div class="flex-none mask mask-squircle w-20">
               <img
                 class="object-cover rounded-lg"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                :src="content.avatar"
               />
             </div>
             {{ content.first_name }}
@@ -115,9 +115,11 @@ function containSearch(user) {
           >
             <UserCard
               v-if="containSearch(content.first_name)"
-              :label="index % 2"
+              :label="content.unread"
               :lastMessage="content.last_message?.content"
               :firstName="content.first_name"
+              :avatar="content.avatar"
+              online="false"
             />
           </div>
         </div>

@@ -64,7 +64,7 @@ class Message extends Model
             FROM messages 
             WHERE (sender_id = :sender_id AND receiver_id = :receiver_id)
             OR (sender_id = :receiver_id AND receiver_id = :sender_id)
-            ORDER BY created_at
+            ORDER BY created_at DESC
             LIMIT " . $limit . ";");
 
         $stmt->execute([

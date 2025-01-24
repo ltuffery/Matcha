@@ -9,7 +9,7 @@ import suggestMsg from '@/assets/suggestedMessage.json'
 
 const route = useRoute()
 
-const messages = ref([])
+const messages = ref({messages: []})
 
 const newMessageContent = ref()
 
@@ -17,11 +17,16 @@ const temporaryMsg = ref([])
 
 const scrollableDiv = ref()
 
-async function getMatchs() {
-  let response = await Api.get(
+async function getMatches() {
+  const response = await Api.get(
     `/users/me/matches/${route.params.username}`,
   ).send()
-  messages.value = await response.json()
+
+  if (response.status !== 200) {
+    router.back()
+  } else {
+    messages.value = await response.json()
+  }
 }
 
 async function sendMessage() {
@@ -54,7 +59,7 @@ function handleKeydown(event) {
 }
 
 onMounted(async () => {
-  await getMatchs()
+  await getMatches()
   scrollbarToEnd()
 })
 </script>
@@ -99,19 +104,8 @@ onMounted(async () => {
         <div class="divider"></div>
 
         <div class="h-full overflow-auto relative" ref="scrollableDiv">
-          <div v-for="(content, index) in messages" :key="index">
-            <Message
-              :message="content.content"
-              :is-me="content.sender.username != route.params.username"
-            />
-          </div>
-
-          <div v-for="(content, index) in temporaryMsg" :key="index">
-            <Message :message="content" is-me tempo />
-          </div>
-
           <div
-            v-if="!messages.length"
+            v-if="messages.messages.length === 0"
             class="absolute bottom-0 left-0 w-full h-full flex flex-col justify-between"
           >
             <div></div>
@@ -120,10 +114,21 @@ onMounted(async () => {
               <div class="text-2xl">No message yet</div>
             </div>
             <div class="flex gap-2 w-full overflow-x-auto">
-				<div @click="rapidMessageSend" v-for="(content, index) in suggestMsg" :key="index">
-					<RapidMessage :content="content" />
-				</div>
+              <div @click="rapidMessageSend" v-for="(content, index) in suggestMsg" :key="index">
+                <RapidMessage :content="content" />
+              </div>
             </div>
+          </div>
+
+          <div v-else v-for="(content, index) in messages.messages.reverse()" :key="index">
+            <Message
+              :message="content.content"
+              :is-me="content.sender !== route.params.username"
+            />
+          </div>
+
+          <div v-for="(content, index) in temporaryMsg" :key="index">
+            <Message :message="content" is-me tempo />
           </div>
         </div>
 

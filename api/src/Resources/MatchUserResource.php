@@ -19,9 +19,9 @@ class MatchUserResource extends JsonResource
     public function jsonSerialize(): mixed
     {
         $resource = [
+            'avatar' => $this->model->getAvatar(),
             'username' => $this->model->username,
             'first_name' => $this->model->first_name,
-            'last_name' => $this->model->last_name,
             'online' => $this->model->online,
         ];
         $last_message = Message::lastOf($this->model, Flight::user());

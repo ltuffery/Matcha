@@ -1,7 +1,7 @@
 <script setup>
 const props = defineProps({
   content: {
-    type: Number,
+    type: String,
     required: true,
   },
 })

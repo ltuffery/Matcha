@@ -26,7 +26,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <template v-if="type == 'squircle'">
+  <template v-if="props.type === 'squircle'">
     <div :class="['avatar', online ? 'online' : 'offline']">
       <div :class="[`mask mask-squircle w-${width}`, addedCss]">
         <img :src="src" />

@@ -38,9 +38,14 @@ class ChatController
 
         $this->updateMessageViews($messages);
 
-        Flight::json(
-            MessageResource::collection($messages)
-        );
+        Flight::json([
+            "avatar" => $receiver->getAvatar(),
+            "username" => $username,
+            "first_name" => $receiver->first_name,
+            "last_name" => $receiver->last_name,
+            "online" => $receiver->online,
+            "messages" => MessageResource::collection($messages),
+        ]);
     }
 
     /**
