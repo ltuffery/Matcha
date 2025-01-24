@@ -3,7 +3,7 @@ import UserCard from '@/components/chat/UserCard.vue'
 import { Api } from '@/utils/api'
 import { ref } from 'vue'
 import router from '@/router'
-import Avatar from "@/components/Avatar.vue";
+import Avatar from '@/components/Avatar.vue'
 
 const matches = ref([])
 const conversations = ref([])
@@ -37,7 +37,7 @@ function convClick(username) {
 function containSearch(user) {
   if (!searchInput.value || searchInput.value.length < 1) return true
 
-  return user.toLowerCase().includes(searchInput.value.toLowerCase());
+  return user.toLowerCase().includes(searchInput.value.toLowerCase())
 }
 </script>
 
@@ -80,7 +80,11 @@ function containSearch(user) {
             @click="convClick(content.username)"
             class="select-none cursor-pointer flex flex-col items-center"
           >
-            <Avatar type="squircle" :src="content.avatar" :online="content.online" />
+            <Avatar
+              type="squircle"
+              :src="content.avatar"
+              :online="content.online"
+            />
             {{ content.first_name }}
           </div>
         </div>

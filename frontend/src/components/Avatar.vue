@@ -29,7 +29,7 @@ const props = defineProps({
   <template v-if="props.type === 'squircle'">
     <div :class="['avatar', online ? 'online' : 'offline']">
       <div :class="[`mask mask-squircle w-${width}`, addedCss]">
-        <img :src="src"  alt="User avatar"/>
+        <img :src="src" alt="User avatar" />
       </div>
     </div>
   </template>

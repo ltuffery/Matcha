@@ -144,7 +144,7 @@ class User extends Model
 
     /**
      * Has a correspondence with another user
-     * 
+     *
      * @param string username
      * @return bool
      */

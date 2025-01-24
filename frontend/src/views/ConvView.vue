@@ -116,13 +116,21 @@ onMounted(async () => {
               <div class="text-2xl">No message yet</div>
             </div>
             <div class="flex gap-2 w-full overflow-x-auto">
-              <div @click="rapidMessageSend" v-for="(content, index) in suggestMsg" :key="index">
+              <div
+                @click="rapidMessageSend"
+                v-for="(content, index) in suggestMsg"
+                :key="index"
+              >
                 <RapidMessage :content="content" />
               </div>
             </div>
           </div>
 
-          <div v-else v-for="(content, index) in messages.messages" :key="index">
+          <div
+            v-else
+            v-for="(content, index) in messages.messages"
+            :key="index"
+          >
             <Message
               :message="content.content"
               :is-me="content.sender !== route.params.username"

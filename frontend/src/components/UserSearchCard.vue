@@ -5,8 +5,8 @@ const props = defineProps({
     required: true,
   },
   avatar: {
-    type: String
-  }
+    type: String,
+  },
 })
 </script>
 

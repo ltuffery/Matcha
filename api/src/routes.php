@@ -69,7 +69,7 @@ Flight::group('/search', function () {
 
 Flight::group('/media', function () {
     Flight::route('GET /p/@name', function (string $name) {
-        header ('Content-Type: image/png');
+        header('Content-Type: image/png');
 
         if (!is_dir(BASE_PATH . "/storage/photos")) {
             mkdir(BASE_PATH . "/storage/photos", true);

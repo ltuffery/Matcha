@@ -1,5 +1,5 @@
 <script setup>
-import Avatar from "@/components/Avatar.vue";
+import Avatar from '@/components/Avatar.vue'
 
 const props = defineProps({
   avatar: {
@@ -30,9 +30,9 @@ const props = defineProps({
 <template>
   <div class="flex rounded-lg cursor-pointer select-none hover:bg-base-300">
     <Avatar type="squircle" :src="props.avatar" :online="props.online" />
-<!--    <div class="flex-none mask mask-squircle w-[20%]">-->
-<!--      <img class="object-cover rounded-lg" :src="props.avatar" />-->
-<!--    </div>-->
+    <!--    <div class="flex-none mask mask-squircle w-[20%]">-->
+    <!--      <img class="object-cover rounded-lg" :src="props.avatar" />-->
+    <!--    </div>-->
 
     <div class="grow flex flex-col gap-2 justify-center p-2 w-[80%]">
       <div class="flex justify-between w-full">
@@ -41,7 +41,9 @@ const props = defineProps({
         </div>
         <div>
           <div v-if="props.label > 99" class="badge badge-primary">99+</div>
-          <div v-else-if="props.label > 0" class="badge badge-primary">{{ props.label }}</div>
+          <div v-else-if="props.label > 0" class="badge badge-primary">
+            {{ props.label }}
+          </div>
         </div>
       </div>
       <div class="truncate text-sm">
