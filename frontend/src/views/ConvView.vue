@@ -9,7 +9,7 @@ import suggestMsg from '@/assets/suggestedMessage.json'
 
 const route = useRoute()
 
-const messages = ref({messages: []})
+const messages = ref({ messages: [] })
 
 const newMessageContent = ref()
 
@@ -17,7 +17,7 @@ const temporaryMsg = ref([])
 
 const scrollableDiv = ref()
 
-async function getMatches() {
+async function getConversation() {
   const response = await Api.get(
     `/users/me/matches/${route.params.username}`,
   ).send()
@@ -26,6 +26,8 @@ async function getMatches() {
     router.back()
   } else {
     messages.value = await response.json()
+
+    messages.value.messages = messages.value.messages.reverse()
   }
 }
 
@@ -59,7 +61,7 @@ function handleKeydown(event) {
 }
 
 onMounted(async () => {
-  await getMatches()
+  await getConversation()
   scrollbarToEnd()
 })
 </script>
@@ -120,7 +122,7 @@ onMounted(async () => {
             </div>
           </div>
 
-          <div v-else v-for="(content, index) in messages.messages.reverse()" :key="index">
+          <div v-else v-for="(content, index) in messages.messages" :key="index">
             <Message
               :message="content.content"
               :is-me="content.sender !== route.params.username"
