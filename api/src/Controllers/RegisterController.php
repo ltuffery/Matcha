@@ -29,6 +29,7 @@ class RegisterController
             'gender' => 'required',
             'sexual_preferences' => 'required',
             'biography' => 'required',
+            'tags' => 'required',
         ]);
 
         $request = Flight::request();
@@ -56,6 +57,10 @@ class RegisterController
         $saved = $user->save();
 
         if ($saved) {
+            foreach ($request->data->tags as $tag) {
+                $saved->addTag($tag);
+            }
+
             if (!getenv("PHPUNIT_TEST"))
                 $this->uploadPhotos($saved);
 

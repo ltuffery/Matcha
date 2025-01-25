@@ -1,6 +1,7 @@
 <?php
 
 use Matcha\Api\Exceptions\UniqueConstraindException;
+use Matcha\Api\Model\Tag;
 use Matcha\Api\Model\User;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
 use Matcha\Api\Testing\Cases\HttpTestCase;
@@ -22,6 +23,7 @@ class RegisterControllerTest extends TestCase
         ];
 
         $this->setUpDatabase();
+        $this->fillTagsTable();
     }
 
     public function tearDown(): void
@@ -29,6 +31,17 @@ class RegisterControllerTest extends TestCase
         $_FILES = [];
 
         Flight::response()->clear();
+    }
+
+    private function fillTagsTable(): void
+    {
+        $tags = json_decode(file_get_contents(BASE_PATH."/database/data_preset/tags.json"));
+
+        foreach ($tags as $tag){
+            $newTag = new Tag();
+            $newTag->name = $tag;
+            $newTag->save();
+        }
     }
 
     public function testWithEmptyRequest(): void
@@ -77,6 +90,7 @@ class RegisterControllerTest extends TestCase
             'gender' => 'M',
             'sexual_preferences' => 'F',
             'biography' => 'Lorem lorem',
+            'tags' => ['Netflix', 'Bike'],
         ]);
 
         $response->assertStatus(201);
@@ -99,6 +113,7 @@ class RegisterControllerTest extends TestCase
             'gender' => 'M',
             'sexual_preferences' => 'F',
             'biography' => 'Lorem lorem',
+            'tags' => ['Netflix', 'Bike'],
         ]);
 
         $response->assertStatus(400);
