@@ -1,5 +1,8 @@
 <?php
 
+use Matcha\Api\Controllers\AuthenticatedSessionController;
+use Matcha\Api\Controllers\EmailController;
+use Matcha\Api\Controllers\ForgotController;
 use Matcha\Api\Controllers\History\LikesHistoryController;
 use Matcha\Api\Controllers\ChatController;
 use Matcha\Api\Controllers\LikeController;

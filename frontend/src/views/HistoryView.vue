@@ -13,7 +13,10 @@ Api
   .then(res => res.json())
   .then(data => likes.value = data)
 
-const heartClickHandler = username => {
+const validDeleteLikeHandler = username => {
+  Api
+    .delete(`/users/${username}/unlike`)
+    .send()
 }
 </script>
 
@@ -21,11 +24,23 @@ const heartClickHandler = username => {
   <Tabs class="max-w-3xl m-auto pt-8">
     <Tab name="Likes">
       <div v-for="u in likes" class="flex items-center justify-between p-4">
+        <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
+          <div class="modal-box">
+            <h3 class="text-lg font-bold">Are you sure ?</h3>
+            <p class="py-4">Are you sure you want to delete this like?</p>
+            <div class="modal-action">
+              <form method="dialog" class="flex gap-2">
+                <button class="btn">No</button>
+                <button @click="validDeleteLikeHandler(u.username)" class="btn btn-primary">Yes</button>
+              </form>
+            </div>
+          </div>
+        </dialog>
         <div class="flex items-center gap-2">
           <Avatar type="squircle" :src="u.avatar" :online="false"/>
           {{ u.first_name }}
         </div>
-        <svg @click="heartClickHandler(u.username)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-12 cursor-pointer">
+        <svg onclick="my_modal_5.showModal()" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-12 cursor-pointer">
           <g stroke-width="0"></g>
           <g stroke-linecap="round" stroke-linejoin="round"></g>
           <g>
