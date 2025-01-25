@@ -1,9 +1,7 @@
 <?php
 
-use Matcha\Api\Controllers\EmailController;
-use Matcha\Api\Controllers\ForgotController;
-use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Controllers\History\LikesHistoryController;
+use Matcha\Api\Controllers\ChatController;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Controllers\LocalisationController;
 use Matcha\Api\Controllers\RefreshTokenController;
@@ -51,6 +49,14 @@ Flight::group('/users', function () {
         Flight::route('PUT|PATCH /status', [UserStatusController::class, 'update']);
         Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
         Flight::route('GET /likes', [LikesHistoryController::class, 'index']);
+
+
+        Flight::group('/matches', function () {
+            Flight::route('GET /', [ChatController::class, 'index']);
+            Flight::route('GET /@username', [ChatController::class, 'show']);
+            Flight::route('POST /@username', [ChatController::class, 'store']);
+            Flight::route('DELETE /@username/@id', [ChatController::class, 'delete']);
+        });
     });
 
 }, [AuthMiddleware::class]);
@@ -63,7 +69,7 @@ Flight::group('/search', function () {
 
 Flight::group('/media', function () {
     Flight::route('GET /p/@name', function (string $name) {
-        header ('Content-Type: image/png');
+        header('Content-Type: image/png');
 
         if (!is_dir(BASE_PATH . "/storage/photos")) {
             mkdir(BASE_PATH . "/storage/photos", true);

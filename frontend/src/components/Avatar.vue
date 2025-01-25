@@ -26,26 +26,26 @@ const props = defineProps({
 </script>
 
 <template>
-  <template v-if="type == 'squircle'">
+  <template v-if="props.type === 'squircle'">
     <div :class="['avatar', online ? 'online' : 'offline']">
       <div :class="[`mask mask-squircle w-${width}`, addedCss]">
-        <img :src="src" />
+        <img :src="src" alt="User avatar" />
       </div>
     </div>
   </template>
 
-  <template v-else-if="type == 'r-full'">
-    <div :class="['avatar', online ? 'online' : 'offline']">
+  <template v-else-if="props.type === 'r-full'">
+    <div :class="['avatar', props.online ? 'online' : 'offline']">
       <div :class="[`rounded-full w-${width}`, addedCss]">
-        <img :src="src" />
+        <img :src="src" alt="User avatar" />
       </div>
     </div>
   </template>
 
   <template v-else>
-    <div :class="['avatar', online ? 'online' : 'offline']">
+    <div :class="['avatar', props.online ? 'online' : 'offline']">
       <div :class="[`w-${width}`, addedCss]">
-        <img :src="src" />
+        <img :src="src" alt="User avatar" />
       </div>
     </div>
   </template>
