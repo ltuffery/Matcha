@@ -12,6 +12,9 @@ Api
   .send()
   .then(res => res.json())
   .then(data => likes.value = data)
+
+const heartClickHandler = username => {
+}
 </script>
 
 <template>
@@ -20,9 +23,9 @@ Api
       <div v-for="u in likes" class="flex items-center justify-between p-4">
         <div class="flex items-center gap-2">
           <Avatar type="squircle" :src="u.avatar" :online="false"/>
-          {{ u.username }}
+          {{ u.first_name }}
         </div>
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-12">
+        <svg @click="heartClickHandler(u.username)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="w-12 cursor-pointer">
           <g stroke-width="0"></g>
           <g stroke-linecap="round" stroke-linejoin="round"></g>
           <g>
