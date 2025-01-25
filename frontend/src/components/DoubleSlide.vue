@@ -4,8 +4,8 @@
     <input ref="endValue" type="range" @input="handleInput" id="endValue" :min="props.min" :max="props.max" :value="props.end">
     <div ref="tooltipStart" class="tooltip" id="tooltipStart"></div>
     <div ref="tooltipEnd" class="tooltip" id="tooltipEnd"></div>
-    <div ref="sliderTrack" class="slider-track"></div>
-    <div class="baseTrack range"></div>
+    <div ref="sliderTrack" @click="handleClick" class="slider-track"></div>
+    <div ref="baseTrack" @click="handleClick" class="baseTrack"></div>
   </div>
 </template>
 
@@ -36,6 +36,39 @@ const endValue = ref()
 const tooltipStart = ref()
 const tooltipEnd = ref()
 const sliderTrack = ref()
+const baseTrack = ref()
+
+function getThumbPosition(range) {
+  const rect = range.getBoundingClientRect();
+  const min = parseFloat(range.min);
+  const max = parseFloat(range.max);
+  const value = parseFloat(range.value);
+
+  const percent = (value - min) / (max - min);
+  return rect.left + percent * rect.width;
+}
+
+const getClickedPosOf = (div, posClickX) => {
+  const rect = div.value.getBoundingClientRect();
+  const startPos = rect.left;
+  const endPos = rect.left + rect.width;
+  return props.min + ((posClickX - startPos) / (endPos - startPos)) * (props.max - props.min);
+}
+
+const handleClick = (e) => {
+  const thumb1X = getThumbPosition(startValue.value);
+  const thumb2X = getThumbPosition(endValue.value);
+  const distance1 = Math.abs(thumb1X - e.x);
+  const distance2 = Math.abs(thumb2X - e.x);
+
+  const value = getClickedPosOf(baseTrack, e.x)
+
+  if (distance1 < distance2)
+    startValue.value.value = value;
+  else
+    endValue.value.value = value
+  updateValues()
+}
 
 const handleInput = (e) => {
   if (startValue.value.value > endValue.value.value) {

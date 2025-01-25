@@ -16,7 +16,7 @@ onMounted(()=>{console.log(ageSlide.value.endValue.value)})
 <template>
 	<div class="flex bg-base-300 h-dvh w-full justify-center items-center">
 		<div class="bg-base-200 h-full w-full max-w-3xl px-4">
-      <div class="flex w-full h-full flex-col">
+      <div class="flex w-full h-full flex-col gap-3">
 
         <div class="flex self-center items-center flex-col gap-6">
           <div class="pt-14">
@@ -25,10 +25,11 @@ onMounted(()=>{console.log(ageSlide.value.endValue.value)})
           <div class="text-xl">First Name</div>
         </div>
 
-        <div>Temporary</div>
-        <div class="flex">
+        <div class="flex flex-col gap-6">
+          <label>Select age gap :</label>
           <DoubleSlide ref="ageSlide" :min="18" :max="80" :start="18" :end="30" />
         </div>
+        <div>Temporary</div>
       </div>
 		</div>
 	</div>
