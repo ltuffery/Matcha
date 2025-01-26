@@ -24,7 +24,6 @@ export function connectSocket() {
 
       socket.on('user_online', ({ username }) => {
         onlineUsersStore.addOnlineUser(username)
-        console.log('new user online')
       })
 
       socket.on('user_offline', ({ username }) => {
