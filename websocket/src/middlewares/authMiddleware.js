@@ -3,7 +3,7 @@ import {Api} from "../services/api.js";
 export default async function authMiddleware(socket, next) {
   const token = socket.handshake.auth.token; // Récupère le token envoyé par le client
   if (!token) {
-    return next(new Error("Token manquant"));
+    return next(new Error("Token required"));
   }
 
   try {
