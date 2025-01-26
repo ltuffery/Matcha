@@ -2,7 +2,7 @@
 import { RouterView } from 'vue-router'
 import { isAuthenticated } from './services/auth'
 import { Api } from './utils/api'
-import {connectSocket, getSocket} from "@/plugins/socket.js";
+import { connectSocket, getSocket } from '@/plugins/socket.js'
 
 isAuthenticated().then(value => {
   if (value) {

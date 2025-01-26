@@ -1,6 +1,6 @@
 <script setup>
-import {computed, ref} from "vue";
-import {useOnlineUsersStore} from "@/store/onlineUsers.js";
+import { computed, ref } from 'vue'
+import { useOnlineUsersStore } from '@/store/onlineUsers.js'
 
 const props = defineProps({
   type: {
@@ -24,12 +24,12 @@ const props = defineProps({
   addedCss: {
     type: String,
     default: '',
-  }
+  },
 })
 
 const isOnline = computed(() =>
-  useOnlineUsersStore().isOnlineUser(props.username)
-);
+  useOnlineUsersStore().isOnlineUser(props.username),
+)
 </script>
 
 <template>

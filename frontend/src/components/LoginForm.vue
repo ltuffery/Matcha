@@ -4,7 +4,7 @@ import { login } from '@/services/auth'
 import { ref } from 'vue'
 import { Api } from '@/utils/api'
 import FeedbackToast from '@/components/FeedbackToast.vue'
-import {connectSocket, getSocket} from "@/plugins/socket.js";
+import { connectSocket, getSocket } from '@/plugins/socket.js'
 
 let username = ref(''),
   password = ref('')

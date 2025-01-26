@@ -36,14 +36,16 @@ Flight::map('error', function (Throwable $error) {
         if (is_string($value)) {
             try {
                 header($header . ": " . $value);
-            } catch (Exception) {}
+            } catch (Exception) {
+            }
         }
     }
 
     if ($error instanceof InvalidDataException) {
         try {
             header("Content-Type: application/json; charset=utf-8", response_code: 400);
-        } catch (Exception) {}
+        } catch (Exception) {
+        }
 
         $data = json_decode($response->getBody());
 

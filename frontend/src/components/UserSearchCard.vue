@@ -1,5 +1,5 @@
 <script setup>
-import Avatar from "@/components/Avatar.vue";
+import Avatar from '@/components/Avatar.vue'
 
 const props = defineProps({
   username: {
@@ -7,8 +7,8 @@ const props = defineProps({
     required: true,
   },
   avatar: {
-    type: String
-  }
+    type: String,
+  },
 })
 </script>
 

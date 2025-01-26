@@ -1,8 +1,8 @@
-import {getToken, isAuthenticated} from "@/services/auth.js";
-import {io} from "socket.io-client";
-import {useOnlineUsersStore} from "@/store/onlineUsers.js";
+import { getToken, isAuthenticated } from '@/services/auth.js'
+import { io } from 'socket.io-client'
+import { useOnlineUsersStore } from '@/store/onlineUsers.js'
 
-let socket = null;
+let socket = null
 
 export function connectSocket() {
   if (!socket && isAuthenticated()) {
@@ -15,38 +15,37 @@ export function connectSocket() {
       },
     })
 
-    socket.on("connect", () => {
+    socket.on('connect', () => {
       const onlineUsersStore = useOnlineUsersStore()
 
-      socket.on("online_users", (users) => {
-        onlineUsersStore.setOnlineUsers(users);
-      });
+      socket.on('online_users', users => {
+        onlineUsersStore.setOnlineUsers(users)
+      })
 
-      socket.on("user_online", ({ username }) => {
-        onlineUsersStore.addOnlineUser(username);
-        console.log("new user online")
-      });
+      socket.on('user_online', ({ username }) => {
+        onlineUsersStore.addOnlineUser(username)
+        console.log('new user online')
+      })
 
-      socket.on("user_offline", ({ username }) => {
-        onlineUsersStore.removeOnlineUser(username);
-      });
-    });
+      socket.on('user_offline', ({ username }) => {
+        onlineUsersStore.removeOnlineUser(username)
+      })
+    })
 
-    socket.on("disconnect", () => {
-    });
+    socket.on('disconnect', () => {})
   }
 }
 
 export function getSocket() {
   if (!socket) {
-    console.error("Socket non initialisé. Appelez connectSocket d'abord.");
+    console.error("Socket non initialisé. Appelez connectSocket d'abord.")
   }
-  return socket;
+  return socket
 }
 
 export function disconnectSocket() {
   if (socket) {
-    socket.disconnect();
-    socket = null;
+    socket.disconnect()
+    socket = null
   }
 }
