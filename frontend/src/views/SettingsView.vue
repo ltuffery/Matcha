@@ -1,36 +1,61 @@
 <script setup>
 import ProfileView from '@/components/ProfileView.vue'
 import DoubleSlide from '@/components/DoubleSlide.vue'
-import {onMounted, ref} from "vue";
+import { ref, watchEffect} from 'vue'
 
-  const temporaryImage = [
-    "https://as1.ftcdn.net/v2/jpg/06/12/64/52/1000_F_612645270_KBcBTf5CToMDyGr1hDpqSNyMK6eaXrPq.jpg",
-    "http://as1.ftcdn.net/v2/jpg/09/25/29/78/1000_F_925297895_12R4VyhRAEmvMGHEdGSXXj3B9PTHVYUa.jpg",
-    "https://as1.ftcdn.net/v2/jpg/02/44/38/08/1000_F_244380850_H3xd2rrb9CfCIcTyFcepVL670vvuTA0b.jpg"
-  ]
+const temporaryImage = [
+  'https://as1.ftcdn.net/v2/jpg/06/12/64/52/1000_F_612645270_KBcBTf5CToMDyGr1hDpqSNyMK6eaXrPq.jpg',
+  'http://as1.ftcdn.net/v2/jpg/09/25/29/78/1000_F_925297895_12R4VyhRAEmvMGHEdGSXXj3B9PTHVYUa.jpg',
+  'https://as1.ftcdn.net/v2/jpg/02/44/38/08/1000_F_244380850_H3xd2rrb9CfCIcTyFcepVL670vvuTA0b.jpg',
+]
 
-const ageSlide = ref()
-onMounted(()=>{console.log(ageSlide.value.endValue.value)})
+const ageValues = ref({
+  start: 18,
+  end: 30,
+});
+const ageRange = ref();
+watchEffect(() => {
+  if (ageRange.value) {
+    ageValues.value = {
+      start: ageRange.value.t1,
+      end: ageRange.value.t2
+    };
+  }
+});
+
 </script>
 
 <template>
-	<div class="flex bg-base-300 h-dvh w-full justify-center items-center">
-		<div class="bg-base-200 h-full w-full max-w-3xl px-4">
+  <div class="flex bg-base-300 h-dvh w-full justify-center items-center">
+    <div class="bg-base-200 h-full w-full max-w-3xl px-4">
       <div class="flex w-full h-full flex-col gap-3">
-
         <div class="flex self-center items-center flex-col gap-6">
           <div class="pt-14">
-            <ProfileView class="w-20 h-36 cursor-pointer" :images="temporaryImage"/>
+            <ProfileView
+              class="w-20 h-36 cursor-pointer"
+              :images="temporaryImage"
+            />
           </div>
           <div class="text-xl">First Name</div>
         </div>
 
-        <div class="flex flex-col gap-6">
-          <label>Select age gap :</label>
-          <DoubleSlide ref="ageSlide" :min="18" :max="80" :start="18" :end="30" />
+        <div class="flex flex-col">
+          <div class="card bg-base-300 gap-3 w-[90%] p-5">
+            <div class="flex justify-between">
+              <label>Age range :</label>
+              <label>{{ ageValues.start }} - {{ ageValues.end }}</label>
+            </div>
+            <DoubleSlide
+              v-model="ageRange"
+              :min="18"
+              :max="80"
+              :start="ageValues.start"
+              :end="ageValues.end"
+            />
+          </div>
         </div>
         <div>Temporary</div>
       </div>
-		</div>
-	</div>
+    </div>
+  </div>
 </template>

@@ -1,16 +1,42 @@
 <template>
-  <div class="range-container">
-    <input ref="startValue" type="range" @input="handleInput" id="startValue" :min="props.min" :max="props.max" :value="props.start">
-    <input ref="endValue" type="range" @input="handleInput" id="endValue" :min="props.min" :max="props.max" :value="props.end">
-    <div ref="tooltipStart" class="tooltip" id="tooltipStart"></div>
-    <div ref="tooltipEnd" class="tooltip" id="tooltipEnd"></div>
-    <div ref="sliderTrack" @click="handleClick" class="slider-track"></div>
-    <div ref="baseTrack" @click="handleClick" class="baseTrack"></div>
-  </div>
+    <div class="range-container">
+        <input
+            ref="startValue"
+            type="range"
+            @input="handleInput"
+            id="startValue"
+            :min="props.min"
+            :max="props.max"
+            value=""
+        />
+        <input
+            ref="endValue"
+            type="range"
+            @input="handleInput"
+            id="endValue"
+            :min="props.min"
+            :max="props.max"
+            value=""
+        />
+        <div
+            ref="tooltipStart"
+            :style="props.tooltip ? '' : 'opacity: 0;'"
+            class="tooltip"
+            id="tooltipStart"
+        ></div>
+        <div
+            ref="tooltipEnd"
+            :style="props.tooltip ? '' : 'opacity: 0;'"
+            class="tooltip"
+            id="tooltipEnd"
+        ></div>
+        <div ref="sliderTrack" @click="handleClick" class="slider-track"></div>
+        <div ref="baseTrack" @click="handleClick" class="baseTrack"></div>
+    </div>
 </template>
 
 <script setup>
-import {onMounted, ref} from "vue";
+import {onMounted, ref, defineEmits} from "vue";
 
 const props = defineProps({
   min: {
@@ -28,6 +54,10 @@ const props = defineProps({
   end: {
     type: Number,
     default: 0
+  },
+  tooltip: {
+      type: Boolean,
+      default: false
   }
 })
 
@@ -37,6 +67,8 @@ const tooltipStart = ref()
 const tooltipEnd = ref()
 const sliderTrack = ref()
 const baseTrack = ref()
+
+const emit = defineEmits(['update:modelValue']);
 
 function getThumbPosition(range) {
   const rect = range.getBoundingClientRect();
@@ -68,6 +100,8 @@ const handleClick = (e) => {
   else
     endValue.value.value = value
   updateValues()
+  const temporary = {'t1': parseInt(startValue.value.value), 't2': parseInt(endValue.value.value)};
+  emit('update:modelValue', temporary);
 }
 
 const handleInput = (e) => {
@@ -78,6 +112,8 @@ const handleInput = (e) => {
       endValue.value.value = startValue.value.value;
   }
   updateValues();
+  const temporary = {'t1': parseInt(startValue.value.value), 't2': parseInt(endValue.value.value)};
+  emit('update:modelValue', temporary);
 }
 
 function updateValues() {
@@ -97,6 +133,8 @@ function updateValues() {
 }
 
 onMounted(() => {
+  startValue.value.value = props.start
+  endValue.value.value = props.end
   updateValues();
 })
 
@@ -104,77 +142,74 @@ defineExpose({
   startValue,
   endValue
 })
-
 </script>
-
 
 <style lang="scss" scoped>
 .range-container {
-  position: relative;
-  width: 100%;
-  height: 1.5em;
+    position: relative;
+    width: 100%;
+    height: 1.5em;
 }
 
-input[type="range"] {
-  position: absolute;
-  width: 100%;
-  pointer-events: none;  /* Disable direct interaction */
-  appearance: none;
-  height: 0.5em;
-  background: transparent;
-  outline: none;
+input[type='range'] {
+    position: absolute;
+    width: 100%;
+    pointer-events: none; /* Disable direct interaction */
+    appearance: none;
+    height: 0.5em;
+    background: transparent;
+    outline: none;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-  pointer-events: auto;
-  appearance: none;
-  width: 1.5em;
-  height: 1.5em;
-  background: var(--fallback-b1,oklch(var(--b1)/1));
-  border: 0.3rem solid var(--fallback-bc,oklch(var(--bc)/1));
-  border-radius: 50%;
-  cursor: pointer;
-  position: relative;
-  margin-top: 1em; // mouais
-  z-index: 3;
+input[type='range']::-webkit-slider-thumb {
+    pointer-events: auto;
+    appearance: none;
+    width: 1.5em;
+    height: 1.5em;
+    background: var(--fallback-b1, oklch(var(--b1) / 1));
+    border: 0.3rem solid var(--fallback-bc, oklch(var(--bc) / 1));
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    margin-top: 1em; // mouais
+    z-index: 3;
 }
 
 .slider-track {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 0.9em;
-  background: var(--fallback-bc,oklch(var(--bc)/1));
-  border-radius: 0.31em;
-  transform: translateY(-50%);
-  z-index: 2;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 0.9em;
+    background: var(--fallback-bc, oklch(var(--bc) / 1));
+    border-radius: 0.31em;
+    transform: translateY(-50%);
+    z-index: 2;
 }
 
-.baseTrack{
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
-  height: 0.5em;
-  background: var(--fallback-bc,oklch(var(--bc)/0.1));
-  border-radius: 0.31em;
-  transform: translateY(-50%);
-  z-index: 1;
+.baseTrack {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 0.5em;
+    background: var(--fallback-bc, oklch(var(--bc) / 0.1));
+    border-radius: 0.31em;
+    transform: translateY(-50%);
+    z-index: 1;
 }
 
 .tooltip {
-  position: absolute;
-  background: var(--fallback-bc,oklch(var(--bc)/0.8));
-  color: var(--fallback-b1,oklch(var(--b1)/1));
-  padding: 0.31em 0.63em;
-  border-radius: 0.31em;
-  font-size: 0.75em;
-  transform: translateY(-2.19em);
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 1;
-  transition: opacity 0.3s ease;
+    position: absolute;
+    background: var(--fallback-bc, oklch(var(--bc) / 0.8));
+    color: var(--fallback-b1, oklch(var(--b1) / 1));
+    padding: 0.31em 0.63em;
+    border-radius: 0.31em;
+    font-size: 0.75em;
+    transform: translateY(-2.19em);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.3s ease;
 }
-
 </style>
