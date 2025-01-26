@@ -36,7 +36,7 @@ const isOnline = computed(() =>
   <template v-if="props.type === 'squircle'">
     <div :class="['avatar', isOnline ? 'online' : 'offline']">
       <div :class="[`mask mask-squircle w-${width}`, addedCss]">
-        <img :src="src" />
+        <img :src="src" alt="User avatar" />
       </div>
     </div>
   </template>
@@ -44,7 +44,7 @@ const isOnline = computed(() =>
   <template v-else-if="props.type === 'r-full'">
     <div :class="['avatar', isOnline ? 'online' : 'offline']">
       <div :class="[`rounded-full w-${width}`, addedCss]">
-        <img :src="src" />
+        <img :src="src" alt="User avatar" />
       </div>
     </div>
   </template>
@@ -52,7 +52,7 @@ const isOnline = computed(() =>
   <template v-else>
     <div :class="['avatar', isOnline ? 'online' : 'offline']">
       <div :class="[`w-${width}`, addedCss]">
-        <img :src="src" />
+        <img :src="src" alt="User avatar" />
       </div>
     </div>
   </template>
