@@ -9,7 +9,6 @@ use Matcha\Api\Controllers\LocalisationController;
 use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
 use Matcha\Api\Controllers\SearchProfileController;
-use Matcha\Api\Controllers\UserStatusController;
 use Matcha\Api\Controllers\TagsController;
 use Matcha\Api\Middleware\AuthMiddleware;
 
@@ -49,7 +48,6 @@ Flight::group('/users', function () {
     });
 
     Flight::group('/me', function () {
-        Flight::route('PUT|PATCH /status', [UserStatusController::class, 'update']);
         Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
     });
 
