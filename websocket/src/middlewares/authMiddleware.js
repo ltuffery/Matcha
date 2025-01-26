@@ -12,7 +12,7 @@ export default async function authMiddleware(socket, next) {
     if (response.ok) {
       next();
     } else {
-      next(new Error("Token invalide"));
+      next(new Error("Token wrong"));
     }
   } catch (error) {
     next(new Error("Erreur lors de la vérification du token"));
