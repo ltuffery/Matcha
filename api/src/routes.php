@@ -4,6 +4,7 @@ use Matcha\Api\Controllers\Auth\VerifyTokenController;
 use Matcha\Api\Controllers\EmailController;
 use Matcha\Api\Controllers\ForgotController;
 use Matcha\Api\Controllers\AuthenticatedSessionController;
+use Matcha\Api\Controllers\ChatController;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Controllers\LocalisationController;
 use Matcha\Api\Controllers\RefreshTokenController;
@@ -49,6 +50,13 @@ Flight::group('/users', function () {
 
     Flight::group('/me', function () {
         Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
+
+        Flight::group('/matches', function () {
+            Flight::route('GET /', [ChatController::class, 'index']);
+            Flight::route('GET /@username', [ChatController::class, 'show']);
+            Flight::route('POST /@username', [ChatController::class, 'store']);
+            Flight::route('DELETE /@username/@id', [ChatController::class, 'delete']);
+        });
     });
 
 }, [AuthMiddleware::class]);

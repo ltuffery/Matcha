@@ -141,6 +141,21 @@ class User extends Model
         return array_map(fn (array $obj) => User::morph($obj), $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
+    /**
+     * Has a correspondence with another user
+     *
+     * @param string username
+     * @return bool
+     */
+    public function hasMatche(string $username): bool
+    {
+        $matches = $this->matches();
+
+        $filter = array_filter($matches, fn (User $value) => $value->username == $username);
+
+        return count($filter) > 0;
+    }
+
     public function getPhotosUrl(): array
     {
         $photos = Photo::all([
