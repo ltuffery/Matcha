@@ -15,6 +15,6 @@ export default async function authMiddleware(socket, next) {
       next(new Error("Token wrong"));
     }
   } catch (error) {
-    next(new Error("Erreur lors de la vérification du token"));
+    next(new Error("Error while verification token"));
   }
 }
