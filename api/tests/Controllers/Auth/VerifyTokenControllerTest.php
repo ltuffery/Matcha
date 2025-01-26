@@ -43,7 +43,7 @@ class VerifyTokenControllerTest extends TestCase
         $user = User::factory()->create()[0];
 
         $response = $this->post('/auth/verify-token', [
-            'token' => str_replace('a', 'o', $user->generateJWT()),
+            'token' => 'test.test.test',
         ]);
 
         $response->assertStatus(200);
