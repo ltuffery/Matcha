@@ -18,7 +18,6 @@ isAuthenticated().then(value => {
       },
     )
     connectSocket()
-    getSocket().emit('online')
   }
 })
 </script>
