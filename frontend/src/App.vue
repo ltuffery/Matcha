@@ -1,8 +1,8 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import { isAuthenticated } from './services/auth'
-import { socket } from './services/socket'
 import { Api } from './utils/api'
+import {connectSocket, getSocket} from "@/plugins/socket.js";
 
 isAuthenticated().then(value => {
   if (value) {
@@ -17,7 +17,8 @@ isAuthenticated().then(value => {
         Api.put('/users/me/localisation').send()
       },
     )
-    socket.emit('online')
+    connectSocket()
+    getSocket().emit('online')
   }
 })
 </script>

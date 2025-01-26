@@ -1,34 +1,34 @@
 import { Server } from "socket.io";
 import { Api } from "./services/api.js";
+import authMiddleware from "./middlewares/authMiddleware.js";
 
+const onlineUsers = new Map()
 const io = new Server({
   cors: {
     origin: '*'
   }
 });
 
+io.use(authMiddleware)
+
 io.on("connection", (socket) => {
-  socket.on("online", () => {
-    Api
-      .put('/users/me/status')
-      .header('Authorization', socket.handshake.auth.token)
-      .send({
-        state: 1
-      })
-      .then(res => {
-        if (res.status == 401) {
-          console.log(socket.handshake.auth.token)
-        }
-      })
-  })
+  const username = socket.handshake.auth.username;
+
+  if (!username) {
+    socket.disconnect()
+    return;
+  }
+
+  onlineUsers.set(username, { socketId: socket.id })
+
+  socket.emit("online_users", Array.from(onlineUsers.keys()))
+
+  socket.broadcast.emit("user_online", { username })
 
   socket.on("disconnect", (reason) => {
-    Api
-      .put('/users/me/status')
-      .header('Authorization', socket.handshake.auth.token)
-      .send({
-        state: 0
-      })
+    onlineUsers.delete(username)
+
+    socket.broadcast.emit("user_offline", { username })
   });
 });
 

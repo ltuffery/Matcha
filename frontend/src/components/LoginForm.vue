@@ -3,8 +3,8 @@ import router from '@/router'
 import { login } from '@/services/auth'
 import { ref } from 'vue'
 import { Api } from '@/utils/api'
-import { refreshSocket, socket } from '@/services/socket'
 import FeedbackToast from '@/components/FeedbackToast.vue'
+import {connectSocket, getSocket} from "@/plugins/socket.js";
 
 let username = ref(''),
   password = ref('')
@@ -54,8 +54,8 @@ function loginUserAccount(e) {
           },
         )
         router.push({ name: 'main' })
-        refreshSocket()
-        socket.emit('online')
+        connectSocket()
+        getSocket().emit('online')
       } else {
         toastsRef.value.addError('Unexpected error occured')
       }
