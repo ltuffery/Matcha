@@ -34,7 +34,6 @@ class User extends Model
     public string $created_at;
     public bool $email_verified;
     public string|null $temporary_email_token;
-    public bool $online;
     public float|null $lat;
     public float|null $lon;
 
