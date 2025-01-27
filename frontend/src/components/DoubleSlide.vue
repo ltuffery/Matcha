@@ -80,11 +80,27 @@ function getThumbPosition(range) {
   return rect.left + percent * rect.width;
 }
 
-const getClickedPosOf = (div, posClickX) => {
+const getValueOfClick = (div, posClickX) => {
   const rect = div.value.getBoundingClientRect();
   const startPos = rect.left;
   const endPos = rect.left + rect.width;
   return props.min + ((posClickX - startPos) / (endPos - startPos)) * (props.max - props.min);
+}
+
+function updateValues() {
+  tooltipStart.value.textContent = startValue.value.value;
+  tooltipEnd.value.textContent = endValue.value.value;
+
+  // Position tooltips above range sliders
+  const startPercent = ((startValue.value.value - props.min) / (props.max - props.min)) * 100;
+  const endPercent = ((endValue.value.value - props.min) / (props.max - props.min)) * 100;
+
+  tooltipStart.value.style.left = `calc(${startPercent}% - 0.94em)`;
+  tooltipEnd.value.style.left = `calc(${endPercent}% - 0.94em)`;
+
+  // Update track background color range
+  sliderTrack.value.style.left = `${startPercent}%`;
+  sliderTrack.value.style.width = `${endPercent - startPercent}%`;
 }
 
 const handleClick = (e) => {
@@ -93,7 +109,7 @@ const handleClick = (e) => {
   const distance1 = Math.abs(thumb1X - e.x);
   const distance2 = Math.abs(thumb2X - e.x);
 
-  const value = getClickedPosOf(baseTrack, e.x)
+  const value = getValueOfClick(baseTrack, e.x)
 
   if (distance1 === distance2)
   {
@@ -123,52 +139,30 @@ const handleInput = (e) => {
   emit('update:modelValue', temporary);
 }
 
-function updateValues() {
-  tooltipStart.value.textContent = startValue.value.value;
-  tooltipEnd.value.textContent = endValue.value.value;
-
-  // Position tooltips above range sliders
-  const startPercent = ((startValue.value.value - props.min) / (props.max - props.min)) * 100;
-  const endPercent = ((endValue.value.value - props.min) / (props.max - props.min)) * 100;
-
-  tooltipStart.value.style.left = `calc(${startPercent}% - 0.94em)`;
-  tooltipEnd.value.style.left = `calc(${endPercent}% - 0.94em)`;
-
-  // Update track background color range
-  sliderTrack.value.style.left = `${startPercent}%`;
-  sliderTrack.value.style.width = `${endPercent - startPercent}%`;
-}
-
 onMounted(() => {
   startValue.value.value = props.start
   endValue.value.value = props.end
   updateValues();
 })
-
-defineExpose({
-  startValue,
-  endValue
-})
 </script>
 
 <style lang="scss" scoped>
 .range-container {
-    position: relative;
-    width: 100%;
-    height: 1.5em;
-}
+  position: relative;
+  width: 100%;
+  height: 1.5em;
 
-input[type='range'] {
+  input[type='range'] {
     position: absolute;
     width: 100%;
-    pointer-events: none; /* Disable direct interaction */
+    pointer-events: none;
     appearance: none;
     height: 0.5em;
     background: transparent;
     outline: none;
-}
+  }
 
-input[type='range']::-webkit-slider-thumb {
+  input[type='range']::-webkit-slider-thumb {
     pointer-events: auto;
     appearance: none;
     width: 1.5em;
@@ -178,11 +172,11 @@ input[type='range']::-webkit-slider-thumb {
     border-radius: 50%;
     cursor: pointer;
     position: relative;
-    margin-top: 1em; // mouais
+    margin-top: 1em;
     z-index: 3;
-}
+  }
 
-.slider-track {
+  .slider-track {
     position: absolute;
     top: 50%;
     left: 0;
@@ -192,9 +186,9 @@ input[type='range']::-webkit-slider-thumb {
     border-radius: 0.31em;
     transform: translateY(-50%);
     z-index: 2;
-}
+  }
 
-.baseTrack {
+  .baseTrack {
     position: absolute;
     top: 50%;
     left: 0;
@@ -204,9 +198,9 @@ input[type='range']::-webkit-slider-thumb {
     border-radius: 0.31em;
     transform: translateY(-50%);
     z-index: 1;
-}
+  }
 
-.tooltip {
+  .tooltip {
     position: absolute;
     background: var(--fallback-bc, oklch(var(--bc) / 0.8));
     color: var(--fallback-b1, oklch(var(--b1) / 1));
@@ -218,5 +212,6 @@ input[type='range']::-webkit-slider-thumb {
     pointer-events: none;
     opacity: 1;
     transition: opacity 0.3s ease;
+  }
 }
 </style>
