@@ -1,5 +1,7 @@
 <script setup>
 import ProfileView from '@/components/ProfileView.vue'
+import PreferencesSettings from "@/components/settings/PreferencesSettings.vue";
+import AccountSettings from "@/components/settings/AccountSettings.vue";
 import DoubleSlide from '@/components/DoubleSlide.vue'
 import { ref, watchEffect} from 'vue'
 import TagSelector from "@/components/TagSelector.vue";
@@ -10,24 +12,39 @@ const temporaryImage = [
   'https://as1.ftcdn.net/v2/jpg/02/44/38/08/1000_F_244380850_H3xd2rrb9CfCIcTyFcepVL670vvuTA0b.jpg',
 ]
 
-const preferences = ref({
-  age: {
-    start: 18,
-    end: 30,
-  },
-  distance: 20,
-  sexual_preference: 'F',
-});
+// const preferences = ref({
+//   age: {
+//     start: 18,
+//     end: 30,
+//   },
+//   distance: 20,
+//   sexual_preference: 'F',
+// });
+//
+// const ageRange = ref();
+// watchEffect(() => {
+//   if (ageRange.value) {
+//     preferences.value.age = {
+//       start: ageRange.value.t1,
+//       end: ageRange.value.t2
+//     };
+//   }
+// });
 
-const ageRange = ref();
-watchEffect(() => {
-  if (ageRange.value) {
-    preferences.value.age = {
-      start: ageRange.value.t1,
-      end: ageRange.value.t2
-    };
+let settingsCategory = ref(1)
+
+const changeSettings = e => {
+  if (e.target.id === 'ac') {
+    settingsCategory.value = 2
+    e.target.id = 'pr'
+    e.target.innerHTML = "Preferences Settings"
   }
-});
+  else {
+    settingsCategory.value = 1
+    e.target.id = 'ac'
+    e.target.innerHTML = "Account Settings"
+  }
+}
 
 </script>
 
@@ -47,65 +64,69 @@ watchEffect(() => {
 
         <div>
           <div class="card bg-base-300 gap-3 w-full p-5">
-            <button class="btn">Account settings</button>
+            <button @click="changeSettings" id="ac" class="btn">Account Settings</button>
           </div>
         </div>
 
-        <div class="w-full flex items-center flex-col">
-          <div class="card bg-base-300 gap-3 w-full p-5">
-            <div class="flex justify-between">
-              <label>Age range :</label>
-              <label>{{ preferences.age.start }} - {{ preferences.age.end }} years</label>
-            </div>
-            <DoubleSlide
-              v-model="ageRange"
-              :min="18"
-              :max="80"
-              :start="preferences.age.start"
-              :end="preferences.age.end"
-            />
-          </div>
-        </div>
+        <PreferencesSettings v-if="settingsCategory === 1" />
 
-        <div>
-          <div class="card bg-base-300 gap-3 w-full p-5">
-            <div class="flex justify-between">
-              <label>Maximum distance :</label>
-              <label>{{ preferences.distance }} Km</label>
-            </div>
-            <input v-model="preferences.distance" type="range" min="5" max="100" value="preferences.distance" class="range" />
-          </div>
-        </div>
+        <AccountSettings v-else />
 
-        <div>
-          <div class="card bg-base-300 gap-3 w-full p-5">
-            <div class="flex justify-between">
-              <label>Interested by :</label>
-            </div>
-            <select class="select select-bordered w-full max-w-xs">
-              <option :selected="preferences.sexual_preference === 'F'" value="F" >Women</option>
-              <option :selected="preferences.sexual_preference === 'M'" value="M" >Man</option>
-              <option :selected="preferences.sexual_preference === 'O'" value="O" >Other</option>
-              <option :selected="preferences.sexual_preference === 'A'" value="A" >All</option>
-            </select>
-          </div>
-        </div>
+<!--        <div class="w-full flex items-center flex-col">-->
+<!--          <div class="card bg-base-300 gap-3 w-full p-5">-->
+<!--            <div class="flex justify-between">-->
+<!--              <label>Age range :</label>-->
+<!--              <label>{{ preferences.age.start }} - {{ preferences.age.end }} years</label>-->
+<!--            </div>-->
+<!--            <DoubleSlide-->
+<!--              v-model="ageRange"-->
+<!--              :min="18"-->
+<!--              :max="80"-->
+<!--              :start="preferences.age.start"-->
+<!--              :end="preferences.age.end"-->
+<!--            />-->
+<!--          </div>-->
+<!--        </div>-->
 
-        <div>
-          <div class="card bg-base-300 gap-3 w-full p-5">
-            <div class="flex justify-between">
-              <label>Research by same tags :</label>
-              <input type="checkbox" class="toggle" checked="checked" />
-            </div>
-<!--            <TagSelector class="max-h-72 overflow-y-auto" />-->
-          </div>
-        </div>
+<!--        <div>-->
+<!--          <div class="card bg-base-300 gap-3 w-full p-5">-->
+<!--            <div class="flex justify-between">-->
+<!--              <label>Maximum distance :</label>-->
+<!--              <label>{{ preferences.distance }} Km</label>-->
+<!--            </div>-->
+<!--            <input v-model="preferences.distance" type="range" min="5" max="100" value="preferences.distance" class="range" />-->
+<!--          </div>-->
+<!--        </div>-->
 
-        <div>
-          <div class="card bg-base-300 w-full p-5 mt-10">
-            <button class="btn btn-outline">Disconect</button>
-          </div>
-        </div>
+<!--        <div>-->
+<!--          <div class="card bg-base-300 gap-3 w-full p-5">-->
+<!--            <div class="flex justify-between">-->
+<!--              <label>Interested by :</label>-->
+<!--            </div>-->
+<!--            <select class="select select-bordered w-full max-w-xs">-->
+<!--              <option :selected="preferences.sexual_preference === 'F'" value="F" >Women</option>-->
+<!--              <option :selected="preferences.sexual_preference === 'M'" value="M" >Man</option>-->
+<!--              <option :selected="preferences.sexual_preference === 'O'" value="O" >Other</option>-->
+<!--              <option :selected="preferences.sexual_preference === 'A'" value="A" >All</option>-->
+<!--            </select>-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div>-->
+<!--          <div class="card bg-base-300 gap-3 w-full p-5">-->
+<!--            <div class="flex justify-between">-->
+<!--              <label>Research by same tags :</label>-->
+<!--              <input type="checkbox" class="toggle" checked="checked" />-->
+<!--            </div>-->
+<!--&lt;!&ndash;            <TagSelector class="max-h-72 overflow-y-auto" />&ndash;&gt;-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div>-->
+<!--          <div class="card w-full p-5 mt-10">-->
+<!--            <button class="btn btn-outline">Disconect</button>-->
+<!--          </div>-->
+<!--        </div>-->
 
       </div>
     </div>
