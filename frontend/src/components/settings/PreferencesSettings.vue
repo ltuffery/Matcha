@@ -1,6 +1,6 @@
 <script setup>
 import DoubleSlide from "@/components/DoubleSlide.vue";
-import {ref, watchEffect} from "vue";
+import {onUnmounted, ref, watchEffect} from "vue";
 
 const preferences = ref({
   age: {
@@ -20,6 +20,10 @@ watchEffect(() => {
     };
   }
 });
+
+onUnmounted(() => {
+  console.log("Save in DB ? (check if modif)")
+})
 </script>
 
 <template>
