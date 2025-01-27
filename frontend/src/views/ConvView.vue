@@ -2,12 +2,12 @@
 import Message from '@/components/chat/Message.vue'
 import RapidMessage from '@/components/chat/RapidMessage.vue'
 import { Api } from '@/utils/api'
-import {ref, onMounted, computed} from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import suggestMsg from '@/assets/suggestedMessage.json'
-import {getSocket} from "@/plugins/socket.js";
-import {useMessagesStore} from "@/store/messages.js";
+import { getSocket } from '@/plugins/socket.js'
+import { useMessagesStore } from '@/store/messages.js'
 
 const route = useRoute()
 
@@ -30,7 +30,7 @@ async function getConversation() {
 }
 
 async function sendMessage(message) {
-  getSocket().emit("send_message", route.params.username, message)
+  getSocket().emit('send_message', route.params.username, message)
   scrollbarToEnd()
 }
 
@@ -52,9 +52,9 @@ function handleKeydown(event) {
   }
 }
 
-getSocket().on("receive_message", async message => {
+getSocket().on('receive_message', async message => {
   if (route.params.username !== message.sender && !message.isMe) {
-    return;
+    return
   }
 
   await (() => useMessagesStore().add(message))()
@@ -139,9 +139,9 @@ onMounted(async () => {
             />
           </div>
 
-<!--          <div v-for="(content, index) in temporaryMsg" :key="index">-->
-<!--            <Message :message="content" is-me tempo />-->
-<!--          </div>-->
+          <!--          <div v-for="(content, index) in temporaryMsg" :key="index">-->
+          <!--            <Message :message="content" is-me tempo />-->
+          <!--          </div>-->
         </div>
 
         <!-- Input -->

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useMessagesStore = defineStore('messagesStore', {
   state: () => ({
-    messages: {messages: []}
+    messages: { messages: [] },
   }),
   actions: {
     set(messages) {
@@ -12,6 +12,6 @@ export const useMessagesStore = defineStore('messagesStore', {
     },
     add(message) {
       this.messages.messages.push(message)
-    }
+    },
   },
 })
