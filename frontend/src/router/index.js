@@ -7,6 +7,7 @@ import HomeView from '@/views/HomeView.vue'
 import MainView from '@/views/MainView.vue'
 import { authGuard } from '@/middlewares/auth.js'
 import SearchUsersView from '@/views/SearchUsersView.vue'
+import SettingsView from '@/views/SettingsView.vue'
 import VerifyEmailView from '@/views/VerifyEmailView.vue'
 import NewPasswordView from '@/views/NewPasswordView.vue'
 
@@ -48,6 +49,12 @@ const router = createRouter({
       path: '/forgot',
       name: 'forgot',
       component: NewPasswordView,
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView,
+      beforeEnter: [authGuard],
     },
     {
       path: '/history',
