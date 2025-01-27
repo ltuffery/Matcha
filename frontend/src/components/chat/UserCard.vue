@@ -12,8 +12,8 @@ const props = defineProps({
     required: true,
     default: 'Profile deleted',
   },
-  online: {
-    type: Boolean,
+  username: {
+    type: String,
     default: false,
   },
   lastMessage: {
@@ -29,7 +29,7 @@ const props = defineProps({
 
 <template>
   <div class="flex rounded-lg cursor-pointer select-none hover:bg-base-300">
-    <Avatar type="squircle" :src="props.avatar" :online="props.online" />
+    <Avatar type="squircle" :src="props.avatar" :username="props.username" />
     <!--    <div class="flex-none mask mask-squircle w-[20%]">-->
     <!--      <img class="object-cover rounded-lg" :src="props.avatar" />-->
     <!--    </div>-->

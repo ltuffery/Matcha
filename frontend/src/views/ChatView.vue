@@ -84,7 +84,7 @@ function containSearch(user) {
             <Avatar
               type="squircle"
               :src="content.avatar"
-              :online="content.online"
+              :username="content.username"
             />
             {{ content.first_name }}
           </div>
@@ -106,7 +106,7 @@ function containSearch(user) {
               :lastMessage="content.last_message?.content"
               :firstName="content.first_name"
               :avatar="content.avatar"
-              :online="content.online"
+              :username="content.username"
             />
           </div>
         </div>
