@@ -1,11 +1,14 @@
 <script setup>
-import MainUser from '../components/MainUser.vue'
-import { ref } from 'vue'
-import { Swiper, SwiperSlide } from 'swiper/vue'
+import MainUser from '@/components/MainUser.vue'
+import {onMounted, ref} from 'vue'
+import {Swiper, SwiperSlide} from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
+import {Api} from "@/utils/api.js";
 
 const swiperRef = ref(null)
 const swiperInstance = ref(null)
+const sections = ref([])
+const skeleton = ref(false)
 
 const onSwiperInit = swiper => {
   swiperInstance.value = swiper
@@ -18,6 +21,12 @@ const goToNextSlide = () => {
     console.log("Swiper instance n'est pas encore prête.")
   }
 }
+
+onMounted(async () => {
+  const res = await Api.get('/users/me/suggestions').send()
+
+  sections.value = (await res.json()).reverse()
+})
 </script>
 
 <template>
@@ -49,7 +58,7 @@ const goToNextSlide = () => {
 
   <!-- ### main part part ### -->
   <main
-    v-if="skeleton == false"
+    v-if="skeleton === false"
     class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200"
   >
     <div class="card bg-base-100 w-full max-w-lg shrink-0 shadow-2xl">
@@ -71,11 +80,7 @@ const goToNextSlide = () => {
             class="flex items-center justify-center h-full bg-gray-100"
           >
             <div class="bg-base-200 shadow-lg text-center max-w-lg">
-              <component
-                :is="MainUser"
-                @nextSlide="goToNextSlide"
-                :name="content"
-              />
+              <MainUser @nextSlide="goToNextSlide" :user="content" />
             </div>
           </swiper-slide>
 
@@ -85,22 +90,6 @@ const goToNextSlide = () => {
     </div>
   </main>
 </template>
-
-<script>
-export default {
-  components: {
-    Swiper,
-    SwiperSlide,
-  },
-  data() {
-    return {
-      sections: ['userID1', 'userID2', 'userID3'],
-
-      skeleton: false,
-    }
-  },
-}
-</script>
 <style>
 .carousel {
   height: 100vh;

@@ -8,6 +8,7 @@ use Matcha\Api\Controllers\History\LikesHistoryController;
 use Matcha\Api\Controllers\ChatController;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Controllers\LocalisationController;
+use Matcha\Api\Controllers\Profile\ProfileSuggestionController;
 use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
 use Matcha\Api\Controllers\SearchProfileController;
@@ -52,6 +53,7 @@ Flight::group('/users', function () {
     Flight::group('/me', function () {
         Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
         Flight::route('GET /likes', [LikesHistoryController::class, 'index']);
+        Flight::route('GET /suggestions', [ProfileSuggestionController::class, 'index']);
 
 
         Flight::group('/matches', function () {
@@ -70,7 +72,7 @@ Flight::group('/search', function () {
     Flight::route('GET /users', [SearchProfileController::class, 'index']);
 }, [AuthMiddleware::class]);
 
-Flight::group('/media', function () {
+Flight::group('/medias', function () {
     Flight::route('GET /p/@name', function (string $name) {
         header('Content-Type: image/png');
 

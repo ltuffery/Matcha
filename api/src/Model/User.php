@@ -79,7 +79,7 @@ class User extends Model
             return null;
         }
 
-        return "http://localhost:3000/media/p/" . $photo[0]->name;
+        return "http://" . $_SERVER["SERVER_NAME"] . ":3000/medias/p/" . $photo[0]->name;
     }
 
     /**
@@ -162,7 +162,20 @@ class User extends Model
             'user_id' => $this->id,
         ]);
 
-        return array_map(fn (Photo $photo) => "http://localhost:3000/medias/p/" . $photo->name, $photos);
+        return array_map(fn (Photo $photo) => "http://" . $_SERVER['HTTP_HOST'] .  "/medias/p/" . $photo->name, $photos);
+    }
+
+    public function getAge(): int|null
+    {
+        if (is_null($this->birthday)) {
+            return null;
+        }
+
+        $birthDate = explode("-", $this->birthday);
+
+        return (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md")
+            ? ((date("Y") - $birthDate[2]) - 1)
+            : (date("Y") - $birthDate[2]));
     }
 
     public static function authenticate(string $username, string $password): User|false
