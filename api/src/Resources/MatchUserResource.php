@@ -22,7 +22,6 @@ class MatchUserResource extends JsonResource
             'avatar' => $this->model->getAvatar(),
             'username' => $this->model->username,
             'first_name' => $this->model->first_name,
-            'online' => $this->model->online,
         ];
         $last_message = Message::lastOf($this->model, Flight::user());
 
