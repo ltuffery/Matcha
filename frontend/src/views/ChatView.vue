@@ -4,7 +4,7 @@ import { Api } from '@/utils/api'
 import { ref } from 'vue'
 import router from '@/router'
 import Avatar from '@/components/Avatar.vue'
-import Empty from "@/components/Empty.vue";
+import Empty from '@/components/Empty.vue'
 
 const matches = ref([])
 const conversations = ref([])
