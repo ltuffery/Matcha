@@ -52,12 +52,13 @@ function handleKeydown(event) {
   }
 }
 
-getSocket().on("receive_message", message => {
+getSocket().on("receive_message", async message => {
   if (route.params.username !== message.sender && !message.isMe) {
     return;
   }
 
-  useMessagesStore().add(message)
+  await (() => useMessagesStore().add(message))()
+
   scrollbarToEnd()
 })
 
