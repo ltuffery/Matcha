@@ -24,7 +24,6 @@ export function connectSocket() {
 
       socket.on('user_online', ({ username }) => {
         onlineUsersStore.addOnlineUser(username)
-        console.log('new user online')
       })
 
       socket.on('user_offline', ({ username }) => {
@@ -38,7 +37,7 @@ export function connectSocket() {
 
 export function getSocket() {
   if (!socket) {
-    console.error("Socket non initialisé. Appelez connectSocket d'abord.")
+    console.error("Uninitialized socket, call 'connectedSocket' first")
   }
   return socket
 }
