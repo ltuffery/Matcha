@@ -1,51 +1,57 @@
 <script setup>
-import {onUnmounted, ref} from "vue";
+import { ref } from "vue";
 import BirthdaySelector from "@/components/userForm/BirthdaySelector.vue";
 
 const email = ref()
 const firstName = ref()
 const lastName = ref()
-const birthDay = ref()
 
 const changeEntity = e => {
-  if (e === 'email')
-  {
-    email.value.disabled = false
-    email.value.focus()
-  }
-
-  else if (e === 'fname')
-  {
-    firstName.value.disabled = false
-    firstName.value.focus()
-  }
-
-  else if (e === 'lname')
-  {
-    lastName.value.disabled = false
-    lastName.value.focus()
+  switch (e){
+    case 'email' :
+      email.value.disabled = false
+      email.value.focus()
+      break
+    case 'fname' :
+      firstName.value.disabled = false
+      firstName.value.focus()
+      break;
+    case 'lname' :
+      lastName.value.disabled = false
+      lastName.value.focus()
+      break;
+    default:
+      break;
   }
 }
 
 const sendChangement = e => {
-  console.log(e.target.id)
-  if (e.target.id === 'email') {
-    console.log("I send ", e.target.value)
-    email.value.disabled = true
+  if (e.key === 'Enter')
+  {
+    e.target.blur()
+    return;
   }
-  else if (e.target.id === 'fname') {
-    console.log("I send ", e.target.value)
-    firstName.value.disabled = true
-  }
-  else if (e.target.id === 'lname') {
-    console.log("I send ", e.target.value)
-    lastName.value.disabled = true
-  }
-  else if (e.target.id === 'gender') {
-    console.log("I send ", e.target.value)
-  }
-  else if (e.target.id === 'birthday') {
-    console.log("I send ", e.target.value)
+  switch (e.target.id){
+    case 'email':
+      console.log("I send ", e.target.value)
+      email.value.disabled = true
+      break;
+    case 'fname':
+      console.log("I send ", e.target.value)
+      firstName.value.disabled = true
+      break;
+    case 'lname':
+      console.log("I send ", e.target.value)
+      lastName.value.disabled = true
+      break;
+    case 'gender':
+      console.log("I send ", e.target.value)
+      break;
+    case 'birthday':
+      console.log("I send ", e.target.value)
+      break;
+    default:
+      break;
   }
 }
 </script>
