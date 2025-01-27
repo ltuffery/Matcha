@@ -2,18 +2,18 @@
 import Message from '@/components/chat/Message.vue'
 import RapidMessage from '@/components/chat/RapidMessage.vue'
 import { Api } from '@/utils/api'
-import { ref, onMounted } from 'vue'
+import {ref, onMounted, computed} from 'vue'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import suggestMsg from '@/assets/suggestedMessage.json'
+import {getSocket} from "@/plugins/socket.js";
+import {useMessagesStore} from "@/store/messages.js";
 
 const route = useRoute()
 
-const messages = ref({ messages: [] })
+const messages = computed(() => useMessagesStore().messages)
 
 const newMessageContent = ref()
-
-const temporaryMsg = ref([])
 
 const scrollableDiv = ref()
 
@@ -25,18 +25,12 @@ async function getConversation() {
   if (response.status !== 200) {
     router.back()
   } else {
-    messages.value = await response.json()
-
-    messages.value.messages = messages.value.messages.reverse()
+    useMessagesStore().set(await response.json())
   }
 }
 
-async function sendMessage() {
-  temporaryMsg.value.push(newMessageContent.value)
-  await Api.post(`/users/me/matches/${route.params.username}`).send({
-    content: newMessageContent.value,
-  })
-  newMessageContent.value = ''
+async function sendMessage(message) {
+  getSocket().emit("send_message", route.params.username, message)
   scrollbarToEnd()
 }
 
@@ -46,19 +40,26 @@ function scrollbarToEnd() {
   }
 }
 
-function rapidMessageSend(value) {
-  Api.post(`/users/me/matches/${route.params.username}`).send({
-    content: value.target.innerText,
-  })
-  scrollbarToEnd()
+function rapidMessageSend(element) {
+  sendMessage(element.target.innerText)
 }
 
 function handleKeydown(event) {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault()
-    sendMessage()
+    sendMessage(newMessageContent.value)
+    newMessageContent.value = ''
   }
 }
+
+getSocket().on("receive_message", message => {
+  if (route.params.username !== message.sender && !message.isMe) {
+    return;
+  }
+
+  useMessagesStore().add(message)
+  scrollbarToEnd()
+})
 
 onMounted(async () => {
   await getConversation()
@@ -137,9 +138,9 @@ onMounted(async () => {
             />
           </div>
 
-          <div v-for="(content, index) in temporaryMsg" :key="index">
-            <Message :message="content" is-me tempo />
-          </div>
+<!--          <div v-for="(content, index) in temporaryMsg" :key="index">-->
+<!--            <Message :message="content" is-me tempo />-->
+<!--          </div>-->
         </div>
 
         <!-- Input -->

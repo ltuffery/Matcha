@@ -1,8 +1,8 @@
 import { Server } from "socket.io";
-import { Api } from "./services/api.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
+import {sendMessage} from "./handlers/chat.js";
 
-const onlineUsers = new Map()
+export const onlineUsers = new Map()
 const io = new Server({
   cors: {
     origin: '*'
@@ -24,6 +24,9 @@ io.on("connection", (socket) => {
   socket.emit("online_users", Array.from(onlineUsers.keys()))
 
   socket.broadcast.emit("user_online", { username })
+
+  /** Handlers */
+  socket.on("send_message", sendMessage(username, socket))
 
   socket.on("disconnect", (reason) => {
     onlineUsers.delete(username)

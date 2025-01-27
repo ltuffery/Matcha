@@ -84,9 +84,9 @@ class ChatController
         $message->receiver_id = $receiver->id;
         $message->content = htmlspecialchars(Flight::request()->data->content);
 
-        $message->save();
+        $saved = $message->save();
 
-        Flight::json([], 201);
+        Flight::json(new MessageResource($saved), 201);
     }
 
     public function delete(string $username, int $id): void

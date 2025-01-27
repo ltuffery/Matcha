@@ -8,10 +8,10 @@ module.exports = {
         'alert-warning',
         'alert-error',
         'alert-info',
+        'w-16',
       ],
     plugins: [daisyui],
     daisyui: {
         themes: ["dark", "valentine", "sunset"]
     }
 };
-  
