@@ -12,7 +12,6 @@ const props = defineProps({
   }
 })
 
-const images = ref(props.user.photos)
 const isLiked = ref(false)
 const animated = ref(false)
 const skeleton = ref(false)
@@ -76,7 +75,7 @@ function btnLike(event) {
       :watchOverflow="true"
       class="w-full h-full bg-gray-200 shadow-md absolute left-0 start-0 z-10"
     >
-      <swiper-slide v-for="(image, index) in images" :key="index">
+      <swiper-slide v-for="(image, index) in props.user.photos" :key="index">
         <img
           :src="image"
           alt="Slide image"
