@@ -1,19 +1,26 @@
 <script setup>
 import Tabs from "@/components/tabs/Tabs.vue";
 import Tab from "@/components/tabs/Tab.vue";
-import {ref} from "vue";
+import {computed, onMounted} from "vue";
 import {Api} from "@/utils/api.js";
 import Avatar from "@/components/Avatar.vue";
+import {likesStore} from "@/store/likes.js";
+import Empty from "@/components/Empty.vue";
 
-const likes = ref([])
+onMounted(async () => {
+  const res = await Api
+    .get('/users/me/likes')
+    .send()
+  const data = await res.json()
 
-Api
-  .get('/users/me/likes')
-  .send()
-  .then(res => res.json())
-  .then(data => likes.value = data)
+  likesStore().set(data)
+})
+
+const likes = computed(() => likesStore().users)
 
 const validDeleteLikeHandler = username => {
+  likesStore().remove(username)
+
   Api
     .delete(`/users/${username}/unlike`)
     .send()
@@ -23,7 +30,9 @@ const validDeleteLikeHandler = username => {
 <template>
   <Tabs class="max-w-3xl m-auto pt-8">
     <Tab name="Likes">
-      <ul>
+      <Empty v-if="likesStore().users.length === 0" text="No likes" class="mt-12" />
+
+      <ul v-else>
         <li v-for="u in likes" class="flex items-center justify-between p-4">
           <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
             <div class="modal-box">
@@ -38,7 +47,7 @@ const validDeleteLikeHandler = username => {
             </div>
           </dialog>
           <div class="flex items-center gap-4 font-medium text-xl">
-            <Avatar type="squircle" :src="u.avatar" :online="false"/>
+            <Avatar type="squircle" :src="u.avatar" :username="u.username"/>
             {{ u.first_name }}
           </div>
           <svg onclick="my_modal_5.showModal()" class="w-12 cursor-pointer" viewBox="0 0 24 24" fill="none"
@@ -57,7 +66,7 @@ const validDeleteLikeHandler = username => {
       </ul>
     </Tab>
     <Tab name="Views">
-      <p>views</p>
+      <Empty text="No views" class="mt-12" />
     </Tab>
   </Tabs>
 </template>
