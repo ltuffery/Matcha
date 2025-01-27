@@ -21,7 +21,6 @@ class SearchableUserResource extends JsonResource
             'avatar' => $this->model->getAvatar(),
             'first_name' => $this->model->first_name,
             'last_name' => $this->model->last_name,
-            'online' => $this->model->online,
         ];
     }
 }

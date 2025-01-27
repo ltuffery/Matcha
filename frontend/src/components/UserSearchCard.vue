@@ -1,23 +1,21 @@
 <script setup>
+import Avatar from '@/components/Avatar.vue'
+
 const props = defineProps({
   username: {
     type: String,
     required: true,
   },
   avatar: {
-    type: String
-  }
+    type: String,
+  },
 })
 </script>
 
 <template>
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-6">
-      <div class="avatar">
-        <div class="mask mask-squircle w-16">
-          <img :src="props.avatar" />
-        </div>
-      </div>
+      <Avatar type="squircle" :username="props.username" :src="props.avatar" />
       <span class="text-2xl">{{ props.username }}</span>
     </div>
     <button class="btn">Profile</button>
