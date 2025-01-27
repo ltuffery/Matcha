@@ -58,9 +58,7 @@ function loginUserAccount(e) {
           toastsRef.value.addError('Bad credencials')
           break
         case 401:
-          toastsRef.value.addWarning("Your email isn't verifyed", {
-            title: 'Temporary :',
-          })
+          toastsRef.value.addWarning("Your email isn't verifyed")
           break
         default:
           toastsRef.value.addError('Unexpected error occured')
