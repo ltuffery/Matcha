@@ -55,7 +55,6 @@ function loginUserAccount(e) {
         )
         router.push({ name: 'main' })
         connectSocket()
-        getSocket().emit('online')
       } else {
         toastsRef.value.addError('Unexpected error occured')
       }

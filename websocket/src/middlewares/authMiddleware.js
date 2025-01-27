@@ -3,7 +3,7 @@ import {Api} from "../services/api.js";
 export default async function authMiddleware(socket, next) {
   const token = socket.handshake.auth.token; // Récupère le token envoyé par le client
   if (!token) {
-    return next(new Error("Token manquant"));
+    return next(new Error("Token required"));
   }
 
   try {
@@ -12,9 +12,9 @@ export default async function authMiddleware(socket, next) {
     if (response.ok) {
       next();
     } else {
-      next(new Error("Token invalide"));
+      next(new Error("Token wrong"));
     }
   } catch (error) {
-    next(new Error("Erreur lors de la vérification du token"));
+    next(new Error("Error while verification token"));
   }
 }
