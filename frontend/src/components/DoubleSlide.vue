@@ -95,7 +95,14 @@ const handleClick = (e) => {
 
   const value = getClickedPosOf(baseTrack, e.x)
 
-  if (distance1 < distance2)
+  if (distance1 === distance2)
+  {
+    if (value < startValue.value.value)
+      startValue.value.value = value
+    else
+      endValue.value.value = value
+  }
+  else if (distance1 < distance2)
     startValue.value.value = value;
   else
     endValue.value.value = value
