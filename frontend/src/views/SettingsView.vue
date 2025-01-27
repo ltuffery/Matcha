@@ -1,8 +1,8 @@
 <script setup>
 import ProfileView from '@/components/ProfileView.vue'
-import PreferencesSettings from "@/components/settings/PreferencesSettings.vue";
-import AccountSettings from "@/components/settings/AccountSettings.vue";
-import { ref} from 'vue'
+import PreferencesSettings from '@/components/settings/PreferencesSettings.vue'
+import AccountSettings from '@/components/settings/AccountSettings.vue'
+import { ref } from 'vue'
 
 const temporaryImage = [
   'https://as1.ftcdn.net/v2/jpg/06/12/64/52/1000_F_612645270_KBcBTf5CToMDyGr1hDpqSNyMK6eaXrPq.jpg',
@@ -16,15 +16,13 @@ const changeSettings = e => {
   if (e.target.id === 'ac') {
     settingsCategory.value = 2
     e.target.id = 'pr'
-    e.target.innerHTML = "Preferences Settings"
-  }
-  else {
+    e.target.innerHTML = 'Preferences Settings'
+  } else {
     settingsCategory.value = 1
     e.target.id = 'ac'
-    e.target.innerHTML = "Account Settings"
+    e.target.innerHTML = 'Account Settings'
   }
 }
-
 </script>
 
 <template>
@@ -43,7 +41,9 @@ const changeSettings = e => {
 
         <div>
           <div class="card bg-base-300 gap-3 w-full p-5">
-            <button @click="changeSettings" id="ac" class="btn">Account Settings</button>
+            <button @click="changeSettings" id="ac" class="btn">
+              Account Settings
+            </button>
           </div>
         </div>
         <PreferencesSettings v-if="settingsCategory === 1" />

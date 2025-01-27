@@ -1,64 +1,64 @@
 <template>
-    <div class="range-container">
-        <input
-            ref="startValue"
-            type="range"
-            @input="handleInput"
-            id="startValue"
-            :min="props.min"
-            :max="props.max"
-            value=""
-        />
-        <input
-            ref="endValue"
-            type="range"
-            @input="handleInput"
-            id="endValue"
-            :min="props.min"
-            :max="props.max"
-            value=""
-        />
-        <div
-            ref="tooltipStart"
-            :style="props.tooltip ? '' : 'opacity: 0;'"
-            class="tooltip"
-            id="tooltipStart"
-        ></div>
-        <div
-            ref="tooltipEnd"
-            :style="props.tooltip ? '' : 'opacity: 0;'"
-            class="tooltip"
-            id="tooltipEnd"
-        ></div>
-        <div ref="sliderTrack" @click="handleClick" class="slider-track"></div>
-        <div ref="baseTrack" @click="handleClick" class="baseTrack"></div>
-    </div>
+  <div class="range-container">
+    <input
+      ref="startValue"
+      type="range"
+      @input="handleInput"
+      id="startValue"
+      :min="props.min"
+      :max="props.max"
+      value=""
+    />
+    <input
+      ref="endValue"
+      type="range"
+      @input="handleInput"
+      id="endValue"
+      :min="props.min"
+      :max="props.max"
+      value=""
+    />
+    <div
+      ref="tooltipStart"
+      :style="props.tooltip ? '' : 'opacity: 0;'"
+      class="tooltip"
+      id="tooltipStart"
+    ></div>
+    <div
+      ref="tooltipEnd"
+      :style="props.tooltip ? '' : 'opacity: 0;'"
+      class="tooltip"
+      id="tooltipEnd"
+    ></div>
+    <div ref="sliderTrack" @click="handleClick" class="slider-track"></div>
+    <div ref="baseTrack" @click="handleClick" class="baseTrack"></div>
+  </div>
 </template>
 
 <script setup>
-import {onMounted, ref, defineEmits} from "vue";
+import { onMounted, ref, defineEmits } from 'vue'
 
 const props = defineProps({
   min: {
     type: Number,
-    default: 0
+    default: 0,
   },
   max: {
     type: Number,
-    default: 100
+    default: 100,
   },
   start: {
     type: Number,
-    default: 0
+    default: 0,
   },
   end: {
     type: Number,
-    default: 0
+    default: 0,
   },
   tooltip: {
-      type: Boolean,
-      default: false
-  }
+    type: Boolean,
+    default: false,
+  },
 })
 
 const startValue = ref()
@@ -68,81 +68,85 @@ const tooltipEnd = ref()
 const sliderTrack = ref()
 const baseTrack = ref()
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue'])
 
 function getThumbPosition(range) {
-  const rect = range.getBoundingClientRect();
-  const min = parseFloat(range.min);
-  const max = parseFloat(range.max);
-  const value = parseFloat(range.value);
+  const rect = range.getBoundingClientRect()
+  const min = parseFloat(range.min)
+  const max = parseFloat(range.max)
+  const value = parseFloat(range.value)
 
-  const percent = (value - min) / (max - min);
-  return rect.left + percent * rect.width;
+  const percent = (value - min) / (max - min)
+  return rect.left + percent * rect.width
 }
 
 const getValueOfClick = (div, posClickX) => {
-  const rect = div.value.getBoundingClientRect();
-  const startPos = rect.left;
-  const endPos = rect.left + rect.width;
-  return props.min + ((posClickX - startPos) / (endPos - startPos)) * (props.max - props.min);
+  const rect = div.value.getBoundingClientRect()
+  const startPos = rect.left
+  const endPos = rect.left + rect.width
+  return (
+    props.min +
+    ((posClickX - startPos) / (endPos - startPos)) * (props.max - props.min)
+  )
 }
 
 function updateValues() {
-  tooltipStart.value.textContent = startValue.value.value;
-  tooltipEnd.value.textContent = endValue.value.value;
+  tooltipStart.value.textContent = startValue.value.value
+  tooltipEnd.value.textContent = endValue.value.value
 
   // Position tooltips above range sliders
-  const startPercent = ((startValue.value.value - props.min) / (props.max - props.min)) * 100;
-  const endPercent = ((endValue.value.value - props.min) / (props.max - props.min)) * 100;
+  const startPercent =
+    ((startValue.value.value - props.min) / (props.max - props.min)) * 100
+  const endPercent =
+    ((endValue.value.value - props.min) / (props.max - props.min)) * 100
 
-  tooltipStart.value.style.left = `calc(${startPercent}% - 0.94em)`;
-  tooltipEnd.value.style.left = `calc(${endPercent}% - 0.94em)`;
+  tooltipStart.value.style.left = `calc(${startPercent}% - 0.94em)`
+  tooltipEnd.value.style.left = `calc(${endPercent}% - 0.94em)`
 
   // Update track background color range
-  sliderTrack.value.style.left = `${startPercent}%`;
-  sliderTrack.value.style.width = `${endPercent - startPercent}%`;
+  sliderTrack.value.style.left = `${startPercent}%`
+  sliderTrack.value.style.width = `${endPercent - startPercent}%`
 }
 
-const handleClick = (e) => {
-  const thumb1X = getThumbPosition(startValue.value);
-  const thumb2X = getThumbPosition(endValue.value);
-  const distance1 = Math.abs(thumb1X - e.x);
-  const distance2 = Math.abs(thumb2X - e.x);
+const handleClick = e => {
+  const thumb1X = getThumbPosition(startValue.value)
+  const thumb2X = getThumbPosition(endValue.value)
+  const distance1 = Math.abs(thumb1X - e.x)
+  const distance2 = Math.abs(thumb2X - e.x)
 
   const value = getValueOfClick(baseTrack, e.x)
 
-  if (distance1 === distance2)
-  {
-    if (value < startValue.value.value)
-      startValue.value.value = value
-    else
-      endValue.value.value = value
-  }
-  else if (distance1 < distance2)
-    startValue.value.value = value;
-  else
-    endValue.value.value = value
+  if (distance1 === distance2) {
+    if (value < startValue.value.value) startValue.value.value = value
+    else endValue.value.value = value
+  } else if (distance1 < distance2) startValue.value.value = value
+  else endValue.value.value = value
   updateValues()
-  const temporary = {'t1': parseInt(startValue.value.value), 't2': parseInt(endValue.value.value)};
-  emit('update:modelValue', temporary);
+  const temporary = {
+    t1: parseInt(startValue.value.value),
+    t2: parseInt(endValue.value.value),
+  }
+  emit('update:modelValue', temporary)
 }
 
-const handleInput = (e) => {
+const handleInput = e => {
   if (startValue.value.value > endValue.value.value) {
     if (e.target.id === 'startValue')
-      startValue.value.value = endValue.value.value;
-    else
-      endValue.value.value = startValue.value.value;
+      startValue.value.value = endValue.value.value
+    else endValue.value.value = startValue.value.value
   }
-  updateValues();
-  const temporary = {'t1': parseInt(startValue.value.value), 't2': parseInt(endValue.value.value)};
-  emit('update:modelValue', temporary);
+  updateValues()
+  const temporary = {
+    t1: parseInt(startValue.value.value),
+    t2: parseInt(endValue.value.value),
+  }
+  emit('update:modelValue', temporary)
 }
 
 onMounted(() => {
   startValue.value.value = props.start
   endValue.value.value = props.end
-  updateValues();
+  updateValues()
 })
 </script>
 

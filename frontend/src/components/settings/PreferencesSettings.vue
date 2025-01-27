@@ -1,6 +1,6 @@
 <script setup>
-import DoubleSlide from "@/components/DoubleSlide.vue";
-import {onUnmounted, ref, watchEffect} from "vue";
+import DoubleSlide from '@/components/DoubleSlide.vue'
+import { onUnmounted, ref, watchEffect } from 'vue'
 
 const preferences = ref({
   age: {
@@ -9,20 +9,20 @@ const preferences = ref({
   },
   distance: 20,
   sexual_preference: 'F',
-});
+})
 
-const ageRange = ref();
+const ageRange = ref()
 watchEffect(() => {
   if (ageRange.value) {
     preferences.value.age = {
       start: ageRange.value.t1,
-      end: ageRange.value.t2
-    };
+      end: ageRange.value.t2,
+    }
   }
-});
+})
 
 onUnmounted(() => {
-  console.log("Save in DB ? (check if modif)")
+  console.log('Save in DB ? (check if modif)')
 })
 </script>
 
@@ -31,7 +31,9 @@ onUnmounted(() => {
     <div class="card bg-base-300 gap-3 w-full p-5">
       <div class="flex justify-between">
         <label>Age range :</label>
-        <label>{{ preferences.age.start }} - {{ preferences.age.end }} years</label>
+        <label
+          >{{ preferences.age.start }} - {{ preferences.age.end }} years</label
+        >
       </div>
       <DoubleSlide
         v-model="ageRange"
@@ -49,7 +51,14 @@ onUnmounted(() => {
         <label>Maximum distance :</label>
         <label>{{ preferences.distance }} Km</label>
       </div>
-      <input v-model="preferences.distance" type="range" min="5" max="100" value="preferences.distance" class="range" />
+      <input
+        v-model="preferences.distance"
+        type="range"
+        min="5"
+        max="100"
+        value="preferences.distance"
+        class="range"
+      />
     </div>
   </div>
 
@@ -59,10 +68,18 @@ onUnmounted(() => {
         <label>Interested by :</label>
       </div>
       <select class="select select-bordered w-full max-w-xs">
-        <option :selected="preferences.sexual_preference === 'F'" value="F" >Women</option>
-        <option :selected="preferences.sexual_preference === 'M'" value="M" >Man</option>
-        <option :selected="preferences.sexual_preference === 'O'" value="O" >Other</option>
-        <option :selected="preferences.sexual_preference === 'A'" value="A" >All</option>
+        <option :selected="preferences.sexual_preference === 'F'" value="F">
+          Women
+        </option>
+        <option :selected="preferences.sexual_preference === 'M'" value="M">
+          Man
+        </option>
+        <option :selected="preferences.sexual_preference === 'O'" value="O">
+          Other
+        </option>
+        <option :selected="preferences.sexual_preference === 'A'" value="A">
+          All
+        </option>
       </select>
     </div>
   </div>

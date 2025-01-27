@@ -1,5 +1,4 @@
 <script setup>
-
 const emit = defineEmits(['input', 'update:modelValue'])
 const maxDate = setMaxDate()
 
@@ -9,9 +8,9 @@ function setMaxDate() {
 
   const formattedDate = maxDate.toISOString().split('T')[0]
   return formattedDate
-}// setMaxAge()
+} // setMaxAge()
 
-const emitChange = (e) => {
+const emitChange = e => {
   emit('input', e)
   emit('update:modelValue', e.target.value)
 }
