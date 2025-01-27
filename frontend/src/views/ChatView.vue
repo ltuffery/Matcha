@@ -4,6 +4,7 @@ import { Api } from '@/utils/api'
 import { ref } from 'vue'
 import router from '@/router'
 import Avatar from '@/components/Avatar.vue'
+import Empty from '@/components/Empty.vue'
 
 const matches = ref([])
 const conversations = ref([])
@@ -91,18 +92,7 @@ function containSearch(user) {
 
         <div class="divider"></div>
 
-        <div
-          v-if="!conversations.length"
-          class="flex flex-col gap-7 w-full h-full justify-center items-center"
-        >
-          <span class="text-2xl">You don't have a match yet</span>
-          <button
-            @click="router.push({ name: 'main' })"
-            class="btn btn-outline btn-primary"
-          >
-            On your matchs
-          </button>
-        </div>
+        <Empty v-if="!conversations.length" text="You don't have a match yet" />
 
         <div v-else class="flex flex-col gap-2 overflow-y-auto h-[90%]">
           <div

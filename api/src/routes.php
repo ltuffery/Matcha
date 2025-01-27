@@ -1,9 +1,10 @@
 <?php
 
+use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Controllers\Auth\VerifyTokenController;
 use Matcha\Api\Controllers\EmailController;
 use Matcha\Api\Controllers\ForgotController;
-use Matcha\Api\Controllers\AuthenticatedSessionController;
+use Matcha\Api\Controllers\History\LikesHistoryController;
 use Matcha\Api\Controllers\ChatController;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Controllers\LocalisationController;
@@ -50,6 +51,8 @@ Flight::group('/users', function () {
 
     Flight::group('/me', function () {
         Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
+        Flight::route('GET /likes', [LikesHistoryController::class, 'index']);
+
 
         Flight::group('/matches', function () {
             Flight::route('GET /', [ChatController::class, 'index']);

@@ -1,13 +1,14 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import MainView from '../views/MainView.vue'
-import VerifyEmailView from '../views/VerifyEmailView.vue'
-import NewPasswordView from '../views/NewPasswordView.vue'
-import { authGuard } from '@/middlewares/auth'
-import { isAuthenticated } from '@/services/auth'
-import SearchUsersView from '@/views/SearchUsersView.vue'
+import HistoryView from '@/views/HistoryView.vue'
 import ChatView from '@/views/ChatView.vue'
 import ConvView from '@/views/ConvView.vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import { isAuthenticated } from '@/services/auth.js'
+import HomeView from '@/views/HomeView.vue'
+import MainView from '@/views/MainView.vue'
+import { authGuard } from '@/middlewares/auth.js'
+import SearchUsersView from '@/views/SearchUsersView.vue'
+import VerifyEmailView from '@/views/VerifyEmailView.vue'
+import NewPasswordView from '@/views/NewPasswordView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +48,12 @@ const router = createRouter({
       path: '/forgot',
       name: 'forgot',
       component: NewPasswordView,
+    },
+    {
+      path: '/history',
+      name: 'history',
+      component: HistoryView,
+      beforeEnter: [authGuard],
     },
     {
       path: '/chat',
