@@ -4,7 +4,7 @@ import { login } from '@/services/auth'
 import { ref } from 'vue'
 import { Api } from '@/utils/api'
 import FeedbackToast from '@/components/FeedbackToast.vue'
-import { connectSocket, getSocket } from '@/plugins/socket.js'
+import { connectSocket } from '@/plugins/socket.js'
 
 let username = ref(''),
   password = ref('')
@@ -23,7 +23,7 @@ async function forgetPassword(e) {
     email: email.value,
   })
   email.value = ''
-  if (response.status == 200) {
+  if (response.status === 200) {
     toastsRef.value.addSuccess('Email sended !')
   } else {
     toastsRef.value.addError('Error !')
@@ -34,32 +34,41 @@ function loginUserAccount(e) {
   e.preventDefault()
 
   login(username.value, password.value).then(res => {
-    if (res != null) {
-      if (res.status == 400) {
-        toastsRef.value.addError('Bad credencials')
-      } else if (res.status == 401) {
-        toastsRef.value.addWarning("Your email isn't verifyed", {
-          title: 'Temporary :',
-        })
-      } else if (res.status == 200) {
-        navigator.geolocation.getCurrentPosition(
-          loc => {
-            Api.put('/users/me/localisation').send({
-              lat: loc.coords.latitude,
-              lon: loc.coords.longitude,
-            })
-          },
-          err => {
-            Api.put('/users/me/localisation').send()
-          },
-        )
-        router.push({ name: 'main' })
-        connectSocket()
-      } else {
-        toastsRef.value.addError('Unexpected error occured')
-      }
-      password.value = ''
+    if (res == null) {
+      return
     }
+
+    if (res.status === undefined) {
+      navigator.geolocation.getCurrentPosition(
+        loc => {
+          Api.put('/users/me/localisation').send({
+            lat: loc.coords.latitude,
+            lon: loc.coords.longitude,
+          })
+        },
+        err => {
+          Api.put('/users/me/localisation').send()
+        },
+      )
+      router.push({ name: 'main' })
+      connectSocket()
+    } else {
+      switch (res.status) {
+        case 400:
+          toastsRef.value.addError('Bad credencials')
+          break
+        case 401:
+          toastsRef.value.addWarning("Your email isn't verifyed", {
+            title: 'Temporary :',
+          })
+          break
+        default:
+          toastsRef.value.addError('Unexpected error occured')
+          break
+      }
+    }
+
+    password.value = ''
   })
 }
 </script>
