@@ -15,7 +15,7 @@ class MessageResource extends JsonResource
         parent::__construct($message);
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return [
             'sender' => User::find(['id' => $this->model->sender_id])->username,
