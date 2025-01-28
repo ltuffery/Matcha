@@ -3,6 +3,7 @@ import MultiStepForm from '@/components/MultiStepForm.vue'
 import { Api } from '@/utils/api'
 import { ref, computed, onMounted, nextTick } from 'vue'
 import FeedbackToast from '@/components/FeedbackToast.vue'
+import TagSelector from "@/components/TagSelector.vue";
 
 const formData = {
   username: null,
@@ -14,6 +15,7 @@ const formData = {
   gender: null,
   sexual_preferences: null,
   biography: null,
+  tags: [],
   images: []
 }
 
@@ -107,7 +109,7 @@ function focusInput(code) {
   if (code < 3) step.value.setStep(0)
   else if (code >= 3 && code < 6) step.value.setStep(1)
   else if (code >= 6 && code < 8) step.value.setStep(2)
-  else if (code == 8) step.value.setStep(3) 
+  else if (code == 8) step.value.setStep(3)
   else step.value.setStep(4)
 
   nextTick(() => {
@@ -316,6 +318,9 @@ function eraseErrorStyle(el) {
               @input="eraseErrorStyle"
               placeholder="Bio"
             ></textarea>
+          </div>
+          <div class="form-control mt-4">
+            <TagSelector v-model="formData.tags" class="overflow-y-auto max-h-72" />
           </div>
         </form>
       </template>

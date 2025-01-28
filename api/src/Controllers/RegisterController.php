@@ -57,7 +57,7 @@ class RegisterController
         $saved = $user->save();
 
         if ($saved) {
-            foreach ($request->data->tags as $tag) {
+            foreach (explode(",", $request->data->tags) as $tag) {
                 $saved->addTag($tag);
             }
 
