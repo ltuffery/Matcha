@@ -3,17 +3,11 @@
 namespace Matcha\Api\Controllers;
 
 use Flight;
-use InvalidDataException;
 use Matcha\Api\Model\User;
 use Matcha\Api\Validator\Validator;
-use ReflectionException;
 
 class AuthenticatedSessionController
 {
-    /**
-     * @throws InvalidDataException
-     * @throws ReflectionException
-     */
     public function store(): void
     {
         Validator::make([

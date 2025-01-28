@@ -1,5 +1,8 @@
 <?php
 
+namespace Tests\Controllers;
+
+use Flight;
 use Matcha\Api\Model\User;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
 use Matcha\Api\Testing\Cases\HttpTestCase;
@@ -22,6 +25,9 @@ class RefreshTokenControllerTest extends TestCase
     public function tearDown(): void
     {
         Flight::response()->clear();
+
+        restore_error_handler();
+        restore_exception_handler();
     }
 
     public function testWithInvalidRefreshToken(): void

@@ -7,7 +7,7 @@
         "phpmailer/phpmailer": "^6.9",
         "firebase/php-jwt": "^6.10",
         "fakerphp/faker": "^1.24",
-        "php": "^8.0",
+        "php": "^8.4",
         "chrisullyott/php-ip-api": "^1.0",
         "bluemmb/faker-picsum-photos-provider": "^2.0"
     },
@@ -19,7 +19,8 @@
     "autoload": {
         "psr-4": {
             "Matcha\\Api\\": "src/",
-            "Matcha\\Database\\Seeders\\": "database/seeders"
+            "Matcha\\Database\\Seeders\\": "database/seeders",
+            "Tests\\": "tests/"
         },
         "files": [
             "src/config.php",

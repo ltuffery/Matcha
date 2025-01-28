@@ -1,6 +1,6 @@
 <?php
 
-namespace Controllers\Auth;
+namespace Tests\Controllers\Auth;
 
 use Flight;
 use Matcha\Api\Model\User;
@@ -21,6 +21,9 @@ class VerifyTokenControllerTest extends TestCase
     protected function tearDown(): void
     {
         Flight::response()->clear();
+
+        restore_error_handler();
+        restore_exception_handler();
     }
 
     public function testVerifyTokenSuccess(): void
@@ -40,8 +43,6 @@ class VerifyTokenControllerTest extends TestCase
 
     public function testVerifyTokenFail(): void
     {
-        $user = User::factory()->create()[0];
-
         $response = $this->post('/auth/verify-token', [
             'token' => 'test.test.test',
         ]);

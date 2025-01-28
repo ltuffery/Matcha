@@ -1,5 +1,8 @@
 <?php
 
+namespace Tests\Controllers;
+
+use Flight;
 use Matcha\Api\Model\Message;
 use Matcha\Api\Model\User;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
@@ -30,11 +33,11 @@ class ChatControllerTest extends TestCase
     public function tearDown(): void
     {
         Flight::response()->clear();
+
+        restore_error_handler();
+        restore_exception_handler();
     }
 
-    /**
-     * @throws Exception
-     */
     private function createMessage(User $from, User $to): Message
     {
         $message = new Message();

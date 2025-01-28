@@ -1,5 +1,9 @@
 <?php
 
+namespace Tests\Controllers;
+
+use Exception;
+use Flight;
 use Matcha\Api\Exceptions\UniqueConstraindException;
 use Matcha\Api\Model\User;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
@@ -29,6 +33,9 @@ class RegisterControllerTest extends TestCase
         $_FILES = [];
 
         Flight::response()->clear();
+
+        restore_error_handler();
+        restore_exception_handler();
     }
 
     public function testWithEmptyRequest(): void

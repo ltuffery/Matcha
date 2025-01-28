@@ -1,5 +1,7 @@
 <?php
 
+namespace  Tests\Validator;
+
 use Matcha\Api\Validator\Validator;
 use PHPUnit\Framework\TestCase;
 

@@ -1,5 +1,7 @@
 <?php
 
+namespace  Tests\Validator;
+
 use Flight;
 use Matcha\Api\Validator\EmailValidator;
 use PHPUnit\Framework\TestCase;

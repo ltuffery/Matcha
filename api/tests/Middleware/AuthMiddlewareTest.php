@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\Middleware;
+
 use Firebase\JWT\JWT;
 use Flight;
 use Matcha\Api\Middleware\AuthMiddleware;

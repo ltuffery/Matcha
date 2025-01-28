@@ -1,5 +1,8 @@
 <?php
 
+namespace Tests\Controllers;
+
+use Flight;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Exceptions\UniqueConstraindException;
 use Matcha\Api\Model\Like;
@@ -28,6 +31,9 @@ class LikeControllerTest extends TestCase
     public function tearDown(): void
     {
         Flight::response()->clear();
+
+        restore_error_handler();
+        restore_exception_handler();
     }
 
     public function testLikeUserNotFound(): void

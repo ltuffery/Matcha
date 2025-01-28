@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\Model;
+
 use Matcha\Api\Model\User;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
 use PHPUnit\Framework\TestCase;
