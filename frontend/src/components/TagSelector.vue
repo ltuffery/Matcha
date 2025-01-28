@@ -7,7 +7,10 @@ const emit = defineEmits(['update:modelValue'])
 
 function addTagSelected(tag) {
   tag.selected = !tag.selected
-  emit('update:modelValue', tags.value.filter(item => item.selected).map(item => item.name))
+  emit(
+    'update:modelValue',
+    tags.value.filter(item => item.selected).map(item => item.name),
+  )
 }
 
 onMounted(async () => {
