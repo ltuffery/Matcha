@@ -61,8 +61,9 @@ class RegisterController
                 $saved->addTag($tag);
             }
 
-            if (!getenv("PHPUNIT_TEST"))
+            if (!getenv("PHPUNIT_TEST")) {
                 $this->uploadPhotos($saved);
+            }
 
             Flight::json([
                 'user' => json_encode($user),

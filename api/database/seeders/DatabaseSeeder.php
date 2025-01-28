@@ -8,6 +8,8 @@ class DatabaseSeeder implements SeederInterface
     {
         $this->call([
             UserSeeder::class,
+            MatchesSeeder::class,
+            MessageSeeder::class,
             PhotoSeeder::class,
             TagSeeder::class,
         ]);
@@ -15,8 +17,10 @@ class DatabaseSeeder implements SeederInterface
 
     private function call(array $seeders)
     {
-        foreach ($seeders as $seeder) {
+        foreach ($seeders as $index => $seeder) {
             $instance = new $seeder;
+
+            echo "[\033[1;33m" . $index . "\033[0m] " . $seeder . PHP_EOL;
 
             $instance->run();
         }

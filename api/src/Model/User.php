@@ -34,7 +34,6 @@ class User extends Model
     public string $created_at;
     public bool $email_verified;
     public string|null $temporary_email_token;
-    public bool $online;
     public float|null $lat;
     public float|null $lon;
 
@@ -140,6 +139,21 @@ class User extends Model
 
         $stmt->execute(['user_id' => $this->id]);
         return array_map(fn (array $obj) => User::morph($obj), $stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    /**
+     * Has a correspondence with another user
+     *
+     * @param string username
+     * @return bool
+     */
+    public function hasMatche(string $username): bool
+    {
+        $matches = $this->matches();
+
+        $filter = array_filter($matches, fn (User $value) => $value->username == $username);
+
+        return count($filter) > 0;
     }
 
     public function getPhotosUrl(): array

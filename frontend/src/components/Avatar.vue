@@ -1,8 +1,15 @@
 <script setup>
+import { computed, ref } from 'vue'
+import { useOnlineUsersStore } from '@/store/onlineUsers.js'
+
 const props = defineProps({
   type: {
     type: String,
     default: '',
+  },
+  username: {
+    type: String,
+    required: true,
   },
   src: {
     type: String,
@@ -18,34 +25,34 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  online: {
-    type: Boolean,
-    require: true,
-  },
 })
+
+const isOnline = computed(() =>
+  useOnlineUsersStore().isOnlineUser(props.username),
+)
 </script>
 
 <template>
-  <template v-if="type == 'squircle'">
-    <div :class="['avatar', online ? 'online' : 'offline']">
+  <template v-if="props.type === 'squircle'">
+    <div :class="['avatar', isOnline ? 'online' : 'offline']">
       <div :class="[`mask mask-squircle w-${width}`, addedCss]">
-        <img :src="src" />
+        <img :src="src" alt="User avatar" />
       </div>
     </div>
   </template>
 
-  <template v-else-if="type == 'r-full'">
-    <div :class="['avatar', online ? 'online' : 'offline']">
+  <template v-else-if="props.type === 'r-full'">
+    <div :class="['avatar', isOnline ? 'online' : 'offline']">
       <div :class="[`rounded-full w-${width}`, addedCss]">
-        <img :src="src" />
+        <img :src="src" alt="User avatar" />
       </div>
     </div>
   </template>
 
   <template v-else>
-    <div :class="['avatar', online ? 'online' : 'offline']">
+    <div :class="['avatar', isOnline ? 'online' : 'offline']">
       <div :class="[`w-${width}`, addedCss]">
-        <img :src="src" />
+        <img :src="src" alt="User avatar" />
       </div>
     </div>
   </template>

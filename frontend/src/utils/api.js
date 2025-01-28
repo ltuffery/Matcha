@@ -20,6 +20,15 @@ export class Api {
    * @param path
    * @returns {Api}
    */
+  static delete(path) {
+    return this.request('DELETE', path)
+  }
+
+  /**
+   *
+   * @param path
+   * @returns {Api}
+   */
   static post(path) {
     return this.request('POST', path)
   }
