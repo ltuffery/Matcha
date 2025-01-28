@@ -90,7 +90,7 @@ class RegisterControllerTest extends TestCase
             'gender' => 'M',
             'sexual_preferences' => 'F',
             'biography' => 'Lorem lorem',
-            'tags' => ['Netflix', 'Bike'],
+            'tags' => 'Netflix,Bike',
         ]);
 
         $response->assertStatus(201);
@@ -113,7 +113,7 @@ class RegisterControllerTest extends TestCase
             'gender' => 'M',
             'sexual_preferences' => 'F',
             'biography' => 'Lorem lorem',
-            'tags' => ['Netflix', 'Bike'],
+            'tags' => 'Netflix,Bike',
         ]);
 
         $response->assertStatus(400);
