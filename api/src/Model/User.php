@@ -36,6 +36,7 @@ class User extends Model
     public string|null $temporary_email_token;
     public float|null $lat;
     public float|null $lon;
+    public int $fame_rating = 0;
 
     public function generateJWT(): string
     {
@@ -79,7 +80,7 @@ class User extends Model
             return null;
         }
 
-        return "http://localhost:3000/media/p/" . $photo[0]->name;
+        return "http://" . (getenv('APP_HOST') ?? 'localhost') . ":3000/medias/p/" . $photo[0]->name;
     }
 
     /**
@@ -162,7 +163,22 @@ class User extends Model
             'user_id' => $this->id,
         ]);
 
-        return array_map(fn (Photo $photo) => "http://localhost:3000/medias/p/" . $photo->name, $photos);
+        $host = getenv('APP_HOST') ?? "localhost";
+
+        return array_map(fn (Photo $photo) => "http://" . $host .  ":3000/medias/p/" . $photo->name, $photos);
+    }
+
+    public function getAge(): int|null
+    {
+        if (is_null($this->birthday)) {
+            return null;
+        }
+
+        $birthDate = explode("-", $this->birthday);
+
+        return (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md")
+            ? ((date("Y") - $birthDate[2]) - 1)
+            : (date("Y") - $birthDate[2]));
     }
 
     /**

@@ -1,14 +1,23 @@
 <script setup>
-import MainUser from '../components/MainUser.vue'
-import { ref } from 'vue'
+import MainUser from '@/components/MainUser.vue'
+import { onMounted, ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
+import { getSocket } from '@/plugins/socket.js'
 
 const swiperRef = ref(null)
 const swiperInstance = ref(null)
+const sections = ref([])
+const skeleton = ref(true)
 
 const onSwiperInit = swiper => {
   swiperInstance.value = swiper
+}
+
+const onSlideChange = () => {
+  getSocket().emit('browsing')
+
+  console.log('oui ?')
 }
 
 const goToNextSlide = () => {
@@ -18,11 +27,23 @@ const goToNextSlide = () => {
     console.log("Swiper instance n'est pas encore prête.")
   }
 }
+
+getSocket().on('browsing', user => {
+  if (user !== null) {
+    sections.value.push(user)
+    skeleton.value = false
+  }
+})
+
+onMounted(() => {
+  getSocket().emit('browsing')
+  getSocket().emit('browsing')
+})
 </script>
 
 <template>
   <!-- ### Skeleton part ### -->
-  <skeleton v-if="skeleton">
+  <div v-if="skeleton">
     <main
       class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200"
     >
@@ -45,11 +66,11 @@ const goToNextSlide = () => {
         </div>
       </div>
     </main>
-  </skeleton>
+  </div>
 
   <!-- ### main part part ### -->
   <main
-    v-if="skeleton == false"
+    v-if="skeleton === false"
     class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200"
   >
     <div class="card bg-base-100 w-full max-w-lg shrink-0 shadow-2xl">
@@ -64,6 +85,7 @@ const goToNextSlide = () => {
           :watchOverflow="true"
           class="w-full h-full"
           @swiper="onSwiperInit"
+          @slideChange="onSlideChange"
         >
           <swiper-slide
             v-for="(content, index) in sections"
@@ -71,11 +93,7 @@ const goToNextSlide = () => {
             class="flex items-center justify-center h-full bg-gray-100"
           >
             <div class="bg-base-200 shadow-lg text-center max-w-lg">
-              <component
-                :is="MainUser"
-                @nextSlide="goToNextSlide"
-                :name="content"
-              />
+              <MainUser @nextSlide="goToNextSlide" :user="content" />
             </div>
           </swiper-slide>
 
@@ -85,22 +103,6 @@ const goToNextSlide = () => {
     </div>
   </main>
 </template>
-
-<script>
-export default {
-  components: {
-    Swiper,
-    SwiperSlide,
-  },
-  data() {
-    return {
-      sections: ['userID1', 'userID2', 'userID3'],
-
-      skeleton: false,
-    }
-  },
-}
-</script>
 <style>
 .carousel {
   height: 100vh;

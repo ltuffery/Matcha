@@ -58,7 +58,7 @@ abstract class Model
         return $this;
     }
 
-    public function create(): Model
+    public function create(): Model|null
     {
         if (!$this->canCreate()) {
             return null;
@@ -211,7 +211,15 @@ abstract class Model
 
         foreach ($params as $param) {
             if (is_array($param)) {
-                $where[] = $param[0] . ' ' . $param[1] . ' "' . $param[2] . '"';
+                $line = '`' .$param[0] . '` ' . $param[1];
+
+                if (is_string($param[2]) && $param[2][0] == '(') {
+                    $line .= ' ' . $param[2];
+                } else {
+                    $line .= ' "' . $param[2] . '"';
+                }
+
+                $where[] = $line;
             }
         }
 

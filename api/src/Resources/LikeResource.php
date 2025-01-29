@@ -9,7 +9,6 @@ use Matcha\Api\Model\Like;
  */
 class LikeResource extends JsonResource
 {
-
     public function __construct(Like $model)
     {
         parent::__construct($model);

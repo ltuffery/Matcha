@@ -36,7 +36,7 @@ class TagSeeder implements SeederInterface
                 $newTag->user_id = $users[$i]->id;
                 $newTag->tag_id = $el->id;
                 try{
-                $newTag->save();
+                    $newTag->save();
                 }catch(\Exception){}
             }
         }
