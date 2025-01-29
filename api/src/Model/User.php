@@ -79,7 +79,7 @@ class User extends Model
             return null;
         }
 
-        return "http://" . $_SERVER["SERVER_NAME"] . ":3000/medias/p/" . $photo[0]->name;
+        return "http://" . getenv('APP_HOST') ?? 'localhost' . ":3000/medias/p/" . $photo[0]->name;
     }
 
     /**
@@ -162,9 +162,9 @@ class User extends Model
             'user_id' => $this->id,
         ]);
 
-        $host = $_SERVER['HTTP_HOST'] ?? "localhost";
+        $host = getenv('APP_HOST') ?? "localhost";
 
-        return array_map(fn (Photo $photo) => "http://" . $host .  "/medias/p/" . $photo->name, $photos);
+        return array_map(fn (Photo $photo) => "http://" . $host .  ":3000/medias/p/" . $photo->name, $photos);
     }
 
     public function getAge(): int|null
