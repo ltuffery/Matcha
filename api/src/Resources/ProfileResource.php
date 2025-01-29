@@ -9,7 +9,6 @@ use Matcha\Api\Model\User;
  */
 class ProfileResource extends JsonResource
 {
-
     public function __construct(User $model)
     {
         parent::__construct($model);

@@ -1,9 +1,9 @@
 <script setup>
 import MainUser from '@/components/MainUser.vue'
-import {onMounted, ref} from 'vue'
-import {Swiper, SwiperSlide} from 'swiper/vue'
+import { onMounted, ref } from 'vue'
+import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
-import {getSocket} from "@/plugins/socket.js";
+import { getSocket } from '@/plugins/socket.js'
 
 const swiperRef = ref(null)
 const swiperInstance = ref(null)
@@ -15,9 +15,9 @@ const onSwiperInit = swiper => {
 }
 
 const onSlideChange = () => {
-  getSocket().emit("browsing")
+  getSocket().emit('browsing')
 
-  console.log("oui ?")
+  console.log('oui ?')
 }
 
 const goToNextSlide = () => {
@@ -28,7 +28,7 @@ const goToNextSlide = () => {
   }
 }
 
-getSocket().on("browsing", user => {
+getSocket().on('browsing', user => {
   if (user !== null) {
     sections.value.push(user)
     skeleton.value = false
@@ -36,8 +36,8 @@ getSocket().on("browsing", user => {
 })
 
 onMounted(() => {
-  getSocket().emit("browsing")
-  getSocket().emit("browsing")
+  getSocket().emit('browsing')
+  getSocket().emit('browsing')
 })
 </script>
 

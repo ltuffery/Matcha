@@ -1,24 +1,22 @@
 <script setup>
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import vDoubleTap from '@/directives/doubleTap.js'
-import {ref} from "vue";
+import { ref } from 'vue'
 import 'swiper/swiper-bundle.css'
-import {Api} from "@/utils/api.js";
+import { Api } from '@/utils/api.js'
 
 const props = defineProps({
   user: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 })
 
 const isLiked = ref(false)
 const animated = ref(false)
 const skeleton = ref(false)
 
-const emit = defineEmits([
-  'nextSlide'
-])
+const emit = defineEmits(['nextSlide'])
 
 function likeUser(event) {
   isLiked.value = true
@@ -128,6 +126,7 @@ function btnLike(event) {
       src="../assets/icons/heart.svg"
       class="absolute inset-x-1/2 inset-y-1/2 z-20 size-10 transition-transform duration-500"
       :class="[animated ? 'scale-[15] opacity-100' : 'scale-100 opacity-0']"
-      alt=""/>
+      alt=""
+    />
   </div>
 </template>

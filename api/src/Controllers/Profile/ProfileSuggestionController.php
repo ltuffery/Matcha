@@ -8,7 +8,6 @@ use Matcha\Api\Resources\ProfileResource;
 
 class ProfileSuggestionController
 {
-
     /**
      * Earth radius
      */
