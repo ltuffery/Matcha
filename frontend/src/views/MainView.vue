@@ -3,15 +3,21 @@ import MainUser from '@/components/MainUser.vue'
 import {onMounted, ref} from 'vue'
 import {Swiper, SwiperSlide} from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
-import {Api} from "@/utils/api.js";
+import {getSocket} from "@/plugins/socket.js";
 
 const swiperRef = ref(null)
 const swiperInstance = ref(null)
 const sections = ref([])
-const skeleton = ref(false)
+const skeleton = ref(true)
 
 const onSwiperInit = swiper => {
   swiperInstance.value = swiper
+}
+
+const onSlideChange = () => {
+  getSocket().emit("browsing")
+
+  console.log("oui ?")
 }
 
 const goToNextSlide = () => {
@@ -22,16 +28,22 @@ const goToNextSlide = () => {
   }
 }
 
-onMounted(async () => {
-  const res = await Api.get('/users/me/suggestions').send()
+getSocket().on("browsing", user => {
+  if (user !== null) {
+    sections.value.push(user)
+    skeleton.value = false
+  }
+})
 
-  sections.value = (await res.json()).reverse()
+onMounted(async () => {
+  getSocket().emit("browsing")
+  getSocket().emit("browsing")
 })
 </script>
 
 <template>
   <!-- ### Skeleton part ### -->
-  <skeleton v-if="skeleton">
+  <div v-if="skeleton">
     <main
       class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200"
     >
@@ -54,7 +66,7 @@ onMounted(async () => {
         </div>
       </div>
     </main>
-  </skeleton>
+  </div>
 
   <!-- ### main part part ### -->
   <main
@@ -73,6 +85,7 @@ onMounted(async () => {
           :watchOverflow="true"
           class="w-full h-full"
           @swiper="onSwiperInit"
+          @slideChange="onSlideChange"
         >
           <swiper-slide
             v-for="(content, index) in sections"
