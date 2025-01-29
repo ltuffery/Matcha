@@ -181,6 +181,51 @@ class User extends Model
             : (date("Y") - $birthDate[2]));
     }
 
+    /**
+     * Add new tag
+     * @param string $name
+     * @return void
+     */
+    public function addTag(string $name): void
+    {
+        $stmt = Flight::db()->prepare("
+            INSERT INTO user_tags(`user_id`, `tag_id`)
+            VALUES (:user_id, (SELECT tags.id FROM tags WHERE tags.name = :name));
+        ");
+
+        $stmt->execute(['user_id' => $this->id, 'name' => $name]);
+    }
+
+    public function removeTag(string $name): void
+    {
+        $stmt = Flight::db()->prepare("
+            DELETE FROM user_tags
+            WHERE `user_id` = :user_id 
+              AND `tag_id` = (SELECT tags.id FROM tags WHERE tags.name = :name);
+        ");
+
+        $stmt->execute(['user_id' => $this->id, 'name' => $name]);
+    }
+
+    public function getTags(): array
+    {
+        $stmt = Flight::db()->prepare("
+            SELECT ut.tag_id, t.name
+            FROM user_tags ut
+            JOIN tags t ON ut.tag_id = t.id
+            WHERE ut.user_id = :user_id;
+        ");
+
+        $stmt->execute(['user_id' => $this->id]);
+
+        $tags = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $tag) {
+            $tags[] = $tag['name'];
+        }
+
+        return $tags;
+    }
+
     public static function authenticate(string $username, string $password): User|false
     {
         $user = User::find([

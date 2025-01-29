@@ -3,6 +3,7 @@ import MultiStepForm from '@/components/MultiStepForm.vue'
 import { Api } from '@/utils/api'
 import { ref, computed, onMounted, nextTick } from 'vue'
 import FeedbackToast from '@/components/FeedbackToast.vue'
+import TagSelector from '@/components/TagSelector.vue'
 
 const formData = {
   username: null,
@@ -14,6 +15,7 @@ const formData = {
   gender: null,
   sexual_preferences: null,
   biography: null,
+  tags: [],
   images: [],
 }
 
@@ -317,6 +319,12 @@ function eraseErrorStyle(el) {
               @input="eraseErrorStyle"
               placeholder="Bio"
             ></textarea>
+          </div>
+          <div class="form-control mt-4">
+            <TagSelector
+              v-model="formData.tags"
+              class="overflow-y-auto max-h-72"
+            />
           </div>
         </form>
       </template>

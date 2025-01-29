@@ -3,9 +3,14 @@ import { ref, onMounted } from 'vue'
 import { Api } from '@/utils/api'
 
 const tags = ref([])
+const emit = defineEmits(['update:modelValue'])
 
 function addTagSelected(tag) {
   tag.selected = !tag.selected
+  emit(
+    'update:modelValue',
+    tags.value.filter(item => item.selected).map(item => item.name),
+  )
 }
 
 onMounted(async () => {
