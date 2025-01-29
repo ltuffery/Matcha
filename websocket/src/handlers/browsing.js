@@ -22,7 +22,8 @@ export const browse = (username, socket) => {
 
       const data = await res.json()
 
-      cacheBrowsing.set(username, data)
+      if (!cacheBrowsing.has(username))
+        cacheBrowsing.set(username, data)
     }
 
     if (cacheBrowsing.has(username) && cacheBrowsing.get(username).length > 0) {
