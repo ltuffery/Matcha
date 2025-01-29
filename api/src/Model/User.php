@@ -162,7 +162,9 @@ class User extends Model
             'user_id' => $this->id,
         ]);
 
-        return array_map(fn (Photo $photo) => "http://" . $_SERVER['HTTP_HOST'] .  "/medias/p/" . $photo->name, $photos);
+        $host = $_SERVER['HTTP_HOST'] ?? "localhost";
+
+        return array_map(fn (Photo $photo) => "http://" . $host .  "/medias/p/" . $photo->name, $photos);
     }
 
     public function getAge(): int|null
