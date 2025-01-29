@@ -79,7 +79,7 @@ class User extends Model
             return null;
         }
 
-        return "http://" . getenv('APP_HOST') ?? 'localhost' . ":3000/medias/p/" . $photo[0]->name;
+        return "http://" . (getenv('APP_HOST') ?? 'localhost') . ":3000/medias/p/" . $photo[0]->name;
     }
 
     /**
