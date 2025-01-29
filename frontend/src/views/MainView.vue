@@ -35,7 +35,7 @@ getSocket().on("browsing", user => {
   }
 })
 
-onMounted(async () => {
+onMounted(() => {
   getSocket().emit("browsing")
   getSocket().emit("browsing")
 })
