@@ -35,6 +35,12 @@ class ProfileSuggestionController
                 && $this->inLocation($user->lat, $user->lon, $value->lat, $value->lon, 20);
         });
 
+        $tags = $user->getTags();
+
+        usort($users, function (User $a, User $b) use ($tags) {
+            return count(array_diff($tags, $b->getTags())) - count(array_diff($tags, $a->getTags()));
+        });
+
         usort($users, function (User $a, User $b) {
             return $b->fame_rating - $a->fame_rating;
         });
