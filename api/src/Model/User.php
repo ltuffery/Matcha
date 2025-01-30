@@ -36,6 +36,7 @@ class User extends Model
     public string|null $temporary_email_token;
     public float|null $lat;
     public float|null $lon;
+    public int $fame_rating = 0;
 
     public function generateJWT(): string
     {
@@ -79,7 +80,7 @@ class User extends Model
             return null;
         }
 
-        return "http://localhost:3000/media/p/" . $photo[0]->name;
+        return "http://" . (getenv('APP_HOST') ?? 'localhost') . ":3000/medias/p/" . $photo[0]->name;
     }
 
     /**
@@ -162,7 +163,67 @@ class User extends Model
             'user_id' => $this->id,
         ]);
 
-        return array_map(fn (Photo $photo) => "http://localhost:3000/medias/p/" . $photo->name, $photos);
+        $host = getenv('APP_HOST') ?? "localhost";
+
+        return array_map(fn (Photo $photo) => "http://" . $host .  ":3000/medias/p/" . $photo->name, $photos);
+    }
+
+    public function getAge(): int|null
+    {
+        if (is_null($this->birthday)) {
+            return null;
+        }
+
+        $birthDate = explode("-", $this->birthday);
+
+        return (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md")
+            ? ((date("Y") - $birthDate[2]) - 1)
+            : (date("Y") - $birthDate[2]));
+    }
+
+    /**
+     * Add new tag
+     * @param string $name
+     * @return void
+     */
+    public function addTag(string $name): void
+    {
+        $stmt = Flight::db()->prepare("
+            INSERT INTO user_tags(`user_id`, `tag_id`)
+            VALUES (:user_id, (SELECT tags.id FROM tags WHERE tags.name = :name));
+        ");
+
+        $stmt->execute(['user_id' => $this->id, 'name' => $name]);
+    }
+
+    public function removeTag(string $name): void
+    {
+        $stmt = Flight::db()->prepare("
+            DELETE FROM user_tags
+            WHERE `user_id` = :user_id 
+              AND `tag_id` = (SELECT tags.id FROM tags WHERE tags.name = :name);
+        ");
+
+        $stmt->execute(['user_id' => $this->id, 'name' => $name]);
+    }
+
+    public function getTags(): array
+    {
+        $stmt = Flight::db()->prepare("
+            SELECT ut.tag_id, t.name
+            FROM user_tags ut
+            JOIN tags t ON ut.tag_id = t.id
+            WHERE ut.user_id = :user_id;
+        ");
+
+        $stmt->execute(['user_id' => $this->id]);
+
+        $tags = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $tag) {
+            $tags[] = $tag['name'];
+        }
+
+        return $tags;
     }
 
     public static function authenticate(string $username, string $password): User|false

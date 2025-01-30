@@ -12,7 +12,11 @@ class PhotoSeeder implements SeederInterface
         $users = User::all();
 
         foreach ($users as $user) {
-            for ($i = 0; $i < rand(1, 5); $i++) {
+            if (count($user->getPhotosUrl()) >= 5) {
+                continue;
+            }
+
+            for ($i = 0; $i < rand(1, (5 - count($user->getPhotosUrl()))); $i++) {
                 $name = $this->savePhoto($user->id);
 
                 file_put_contents(BASE_PATH . "/storage/photos/" . $name . ".png", file_get_contents(faker()->imageUrl()));

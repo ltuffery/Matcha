@@ -1,6 +1,50 @@
+<script setup>
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import vDoubleTap from '@/directives/doubleTap.js'
+import { ref } from 'vue'
+import 'swiper/swiper-bundle.css'
+import { Api } from '@/utils/api.js'
+
+const props = defineProps({
+  user: {
+    type: Object,
+    required: true,
+  },
+})
+
+const isLiked = ref(false)
+const animated = ref(false)
+const skeleton = ref(false)
+
+const emit = defineEmits(['nextSlide'])
+
+function likeUser(event) {
+  isLiked.value = true
+  animated.value = true
+
+  Api.post(`/users/${props.user.username}/like`).send()
+
+  setTimeout(() => {
+    animated.value = false
+    emit('nextSlide')
+  }, 300)
+}
+
+function btnLike(event) {
+  isLiked.value = !isLiked.value
+
+  if (isLiked.value) {
+    Api.post(`/users/${props.user.username}/like`).send()
+    emit('nextSlide')
+  } else {
+    Api.delete(`/users/${props.user.username}/unlike`).send()
+  }
+}
+</script>
+
 <template>
   <!-- ### Skeleton part ### -->
-  <skeleton v-if="skeleton == true">
+  <skeleton v-if="skeleton === true">
     <div class="carousel w-full rounded-lg static">
       <div
         class="skeleton w-full h-full shadow-md absolute left-0 start-0 z-10"
@@ -20,7 +64,7 @@
   </skeleton>
 
   <!-- ### main part part ### -->
-  <div v-if="skeleton == false" class="carousel w-full rounded-lg static">
+  <div v-if="skeleton === false" class="carousel w-full rounded-lg static">
     <swiper
       :slides-per-view="1"
       :space-between="10"
@@ -29,7 +73,7 @@
       :watchOverflow="true"
       class="w-full h-full bg-gray-200 shadow-md absolute left-0 start-0 z-10"
     >
-      <swiper-slide v-for="(image, index) in images" :key="index">
+      <swiper-slide v-for="(image, index) in props.user.photos" :key="index">
         <img
           :src="image"
           alt="Slide image"
@@ -50,19 +94,14 @@
         <div class="flex items-center">
           <span
             class="text-4xl whitespace-nowrap overflow-hidden text-zinc-100"
-            >{{ name }}</span
           >
-          <img
-            src="../assets/checked.png"
-            alt="profile verified"
-            class="size-7 mx-2"
-          />
+            {{ props.user.username }}
+          </span>
         </div>
         <p
           class="truncate whitespace-nowrap overflow-hidden text-ellipsis text-sm text-zinc-100 mt-1"
         >
-          Mini bio en non wrap
-          sdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfdssdfsdfsdfsdfsdfsdfsdfsdfdsfsdfsdfsdfsdfsdfdsf
+          {{ props.user.biography }}
         </p>
       </div>
     </div>
@@ -73,7 +112,7 @@
             ? '/src/assets/icons/heart-broken.svg'
             : '/src/assets/icons/heart.svg'
         "
-        @click="btnlike"
+        @click="btnLike"
         alt="like btn"
         class="size-10 my-2 cursor-pointer"
       />
@@ -87,52 +126,7 @@
       src="../assets/icons/heart.svg"
       class="absolute inset-x-1/2 inset-y-1/2 z-20 size-10 transition-transform duration-500"
       :class="[animated ? 'scale-[15] opacity-100' : 'scale-100 opacity-0']"
+      alt=""
     />
   </div>
 </template>
-
-<script>
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import 'swiper/swiper-bundle.css'
-import doubleTap from '../directives/doubleTap.js'
-
-export default {
-  props: {
-    name: String,
-  },
-  components: {
-    Swiper,
-    SwiperSlide,
-  },
-  directives: {
-    doubleTap,
-  },
-  data() {
-    return {
-      images: [
-        'src/assets/cat.gif',
-        'https://via.placeholder.com/600x400?text=Image+2',
-        'https://via.placeholder.com/600x400?text=Image+3',
-      ],
-      isLiked: false,
-      animated: false,
-      skeleton: false,
-    }
-  },
-  methods: {
-    likeUser(event) {
-      console.log('This user is liked: ', this.name)
-      this.isLiked = true
-      this.animated = true
-      setTimeout(() => {
-        this.animated = false
-        this.$emit('nextSlide')
-      }, 300)
-    },
-    btnlike(event) {
-      this.isLiked = !this.isLiked
-      if (this.isLiked) this.$emit('nextSlide')
-    },
-  },
-}
-</script>

@@ -3,7 +3,11 @@ export class Api {
   headers = {
     'Content-Type': 'application/json',
   }
-  
+
+  static get(path) {
+    return this.request('GET', path)
+  }
+
   static post(path) {
     return this.request('POST', path)
   }
