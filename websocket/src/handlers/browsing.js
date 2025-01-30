@@ -23,14 +23,20 @@ export const browse = (username, socket) => {
       const data = await res.json()
 
       if (!cacheBrowsing.has(username))
-        cacheBrowsing.set(username, data)
+        cacheBrowsing.set(username, {
+          sortBy: [],
+          profiles: data
+        })
     }
 
     if (cacheBrowsing.has(username) && cacheBrowsing.get(username).length > 0) {
       const users = cacheBrowsing.get(username)
-      const suggest = users[0]
+      const suggest = users.profiles[0]
 
-      cacheBrowsing.set(username, users.slice(1, users.length))
+      cacheBrowsing.set(username, {
+        sortBy: users.sortBy,
+        profiles: users.profiles.slice(1, users.length)
+      })
 
       socket.emit("browsing", suggest)
 
