@@ -8,7 +8,7 @@ const sortedRules = ref([
     checked: false,
   },
   {
-    title: "Location",
+    title: "Distance",
     checked: false,
   },
   {
