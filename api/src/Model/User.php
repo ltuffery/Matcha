@@ -163,7 +163,7 @@ class User extends Model
             'user_id' => $this->id,
         ]);
 
-        $host = getenv('APP_HOST') ?? "localhost";
+        $host = getenv('APP_HOST') ?: "localhost";
 
         return array_map(fn (Photo $photo) => "http://" . $host .  ":3000/medias/p/" . $photo->name, $photos);
     }
