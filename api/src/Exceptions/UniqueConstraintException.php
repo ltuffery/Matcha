@@ -2,7 +2,7 @@
 
 namespace Matcha\Api\Exceptions;
 
-class UniqueConstraindException extends \Exception
+class UniqueConstraintException extends \Exception
 {
     public function __construct(string $message)
     {

@@ -5,7 +5,7 @@ namespace Matcha\Api\Model;
 use Exception;
 use Flight;
 use Matcha\Api\Factory\Factory;
-use Matcha\Api\Exceptions\UniqueConstraindException;
+use Matcha\Api\Exceptions\UniqueConstraintException;
 use PDO;
 use ReflectionClass;
 use ReflectionException;
@@ -79,13 +79,17 @@ abstract class Model
         return $this;
     }
 
+    /**
+     * @throws UniqueConstraintException
+     */
     private function canCreate(): bool
     {
         if (empty($this->uniques)) {
             return true;
         }
 
-        $props = array_filter($this->getData(), function (mixed $value, string $key) {
+        $data = $this->getData();
+        $props = array_filter($data, function (mixed $value, string $key) {
             return is_int(array_search($key, $this->uniques));
         }, ARRAY_FILTER_USE_BOTH);
         $where = array_map(fn ($k, $v) => '`' . $k . '`="' . $v . '"', array_keys($props), array_values($props));
@@ -95,12 +99,18 @@ abstract class Model
         $stmt = self::db()->prepare($sqlQuery);
 
         $stmt->execute();
+        $fetch = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($stmt->fetch() != null) {
+        if ($fetch != null) {
             if (getenv("PHPUNIT_TEST")) {
                 ob_end_clean();
             }
-            throw new UniqueConstraindException("Unique"); // TODO: messages
+
+            $fields = array_filter($fetch, function (mixed $value, string $key) use ($data) {
+                return in_array($key, $this->uniques) && $value == $data[$key];
+            }, ARRAY_FILTER_USE_BOTH);
+
+            throw new UniqueConstraintException(implode(", ", $fields) . " : Already exists!");
         }
 
         return true;
