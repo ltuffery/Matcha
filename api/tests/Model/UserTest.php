@@ -24,4 +24,14 @@ class UserTest extends TestCase
         $this->assertCount(1, $users[0]->matches());
         $this->assertCount(1, $users[1]->matches());
     }
+
+    public function testGetAge(): void
+    {
+        /** @var User $users */
+        $users = User::factory()->create()[0];
+
+        $users->birthday = "2000-01-01";
+
+        $this->assertEquals(25, $users->getAge());
+    }
 }

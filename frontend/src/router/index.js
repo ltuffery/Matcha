@@ -10,6 +10,7 @@ import SearchUsersView from '@/views/SearchUsersView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import VerifyEmailView from '@/views/VerifyEmailView.vue'
 import NewPasswordView from '@/views/NewPasswordView.vue'
+import ProfileView from '@/views/UserProfile.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -72,6 +73,12 @@ const router = createRouter({
       path: '/chat/:username',
       name: 'conversation',
       component: ConvView,
+      beforeEnter: [authGuard],
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
       beforeEnter: [authGuard],
     },
   ],
