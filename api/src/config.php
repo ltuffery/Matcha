@@ -56,7 +56,7 @@ Flight::map('error', function (Throwable $error) {
             'message' => $data->message,
             'code' => $data->code,
         ]);
-    } else if ($error instanceof UniqueConstraintException) {
+    } elseif ($error instanceof UniqueConstraintException) {
         header("Content-Type: application/json; charset=utf-8", response_code: 400);
 
         echo json_encode([

@@ -4,7 +4,7 @@ import { onMounted, ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
 import { getSocket } from '@/plugins/socket.js'
-import Filter from "@/components/main/Filter.vue";
+import Filter from '@/components/main/Filter.vue'
 
 const swiperRef = ref(null)
 const swiperInstance = ref(null)
