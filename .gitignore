@@ -155,4 +155,5 @@ __pycache__
 # Composer
 vendor
 .phpunit*
+.php-cs-fixer.cache
 /api/storage/photos

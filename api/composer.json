@@ -38,6 +38,9 @@
         }
     ],
     "scripts": {
-        "test": "phpunit"
+        "tests": "phpunit",
+        "migrate": "php database/migrate.php",
+        "format": "vendor/bin/php-cs-fixer fix src",
+        "seeder": "php database/seeder.php"
     }
 }

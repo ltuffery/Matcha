@@ -12,4 +12,6 @@ done
 
 cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 
+composer migrate
+
 php -S 0.0.0.0:3000 -t public/ public/index.php
