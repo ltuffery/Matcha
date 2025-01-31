@@ -49,6 +49,8 @@ class ProfileResource extends JsonResource
             'distance' => $this->getDistance(),
             'me' => $this->user->username == $this->model->username,
             'common_tags' => $this->countCommonTags(),
+            'gender' => $this->model->gender,
+            'tags' => $this->model->getTags(),
         ];
     }
 }
