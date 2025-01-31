@@ -14,7 +14,7 @@ export const browse = (username, socket) => {
       }
     }
 
-    if (!cacheBrowsing.has(username) || cacheBrowsing.get(username).length === 0) {
+    if (!cacheBrowsing.has(username) || cacheBrowsing.get(username).profiles.length === 0) {
       const res = await Api
         .get('/users/me/suggestions')
         .header('Authorization', socket.handshake.auth.token)
@@ -29,7 +29,7 @@ export const browse = (username, socket) => {
         })
     }
 
-    if (cacheBrowsing.has(username) && cacheBrowsing.get(username).length > 0) {
+    if (cacheBrowsing.has(username) && cacheBrowsing.get(username).profiles.length > 0) {
       const users = cacheBrowsing.get(username)
       const suggest = users.profiles[0]
 
@@ -40,7 +40,7 @@ export const browse = (username, socket) => {
 
       socket.emit("browsing", suggest)
 
-      if (cacheBrowsing.get(username).length === 0) {
+      if (cacheBrowsing.get(username).profiles.length === 0) {
         finished.push(username)
       }
     }

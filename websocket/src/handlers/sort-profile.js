@@ -15,8 +15,13 @@ export const sortProfile = (username, socket) => {
       return (user.sortBy.includes('age') ?? b.age - a.age)
         + (user.sortBy.includes('location') ?? b.location - a.location)
         + (user.sortBy.includes('fame_rating') ?? b.fame_rating - a.fame_rating)
-        + (user.sortBy.includes('tags') ?? b.common_tag - a.common_tag)
+        + (user.sortBy.includes('common_tags') ?? b.common_tag - a.common_tag)
     })
+
+    console.log("Last : \n")
+    console.log(user.profiles)
+    console.log("New : \n")
+    console.log(profileSorted)
 
     cacheBrowsing.set(username, {
       sortBy: user.sortBy,

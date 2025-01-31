@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import authMiddleware from "./middlewares/authMiddleware.js";
 import {sendMessage} from "./handlers/chat.js";
 import {browse} from "./handlers/browsing.js";
+import {sortProfile} from "./handlers/sort-profile.js";
 
 export const onlineUsers = new Map()
 export const cacheBrowsing = new Map()
@@ -31,6 +32,7 @@ io.on("connection", (socket) => {
   /** Handlers */
   socket.on("send_message", sendMessage(username, socket))
   socket.on("browsing", browse(username, socket))
+  socket.on("filter", sortProfile(username, socket))
 
   socket.on("disconnect", (reason) => {
     onlineUsers.delete(username)

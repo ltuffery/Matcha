@@ -1,5 +1,6 @@
 <script setup>
 import {ref} from "vue";
+import {getSocket} from "@/plugins/socket.js";
 
 const sortedRules = ref([
   {
@@ -19,6 +20,14 @@ const sortedRules = ref([
     checked: false,
   }
 ])
+
+const handlerChange = e => {
+  const rules = sortedRules.value.filter(rule => rule.checked)
+
+  getSocket().emit("filter", rules.map(
+    rule => rule.title.toLowerCase().replace(" ", '_')
+  ))
+}
 </script>
 
 <template>
@@ -46,7 +55,7 @@ const sortedRules = ref([
     <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
       <li v-for="(rule, index) in sortedRules" :key="index">
         <label class="cursor-pointer">
-          <input v-model="rule.checked" type="checkbox" :checked="rule.checked" class="checkbox checkbox-primary"/>
+          <input @change="handlerChange" v-model="rule.checked" type="checkbox" :checked="rule.checked" class="checkbox checkbox-primary"/>
           <span>{{ rule.title }}</span>
         </label>
       </li>
