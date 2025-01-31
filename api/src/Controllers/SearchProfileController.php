@@ -8,6 +8,8 @@ use Matcha\Api\Resources\SearchableUserResource;
 
 class SearchProfileController
 {
+    public const NUMBER_USERS_SEARCHABLE = 5;
+
     public function index(): void
     {
         $query = Flight::request()->query;
@@ -20,7 +22,11 @@ class SearchProfileController
 
         $users = User::where([
             ['username', 'LIKE', '%' . $query['q'] . '%']
-        ], 5);
+        ], self::NUMBER_USERS_SEARCHABLE);
+
+        /** @var User $me */
+        $me = Flight::user();
+        $users = array_filter($users, fn ($user) => !$me->isBlocking($user));
 
         Flight::json(
             SearchableUserResource::collection($users)

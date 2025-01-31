@@ -31,7 +31,8 @@ class ProfileSuggestionController
 
         $users = array_filter($users, function ($value) use ($likes, $user) {
             return !in_array($value->id, $likes)
-                && $this->inLocation($user->lat, $user->lon, $value->lat, $value->lon, 20);
+                && $this->inLocation($user->lat, $user->lon, $value->lat, $value->lon, 20)
+                && !$user->isBlocking($value);
         });
 
         $tags = $user->getTags();
