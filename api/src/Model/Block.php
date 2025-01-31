@@ -7,7 +7,6 @@ namespace Matcha\Api\Model;
  */
 class Block extends Model
 {
-
     protected string $table = 'user_blocked';
     protected array $uniques = ['user_id', 'blocked_id'];
 
