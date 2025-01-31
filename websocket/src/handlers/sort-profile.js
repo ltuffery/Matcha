@@ -18,11 +18,6 @@ export const sortProfile = (username, socket) => {
         + (user.sortBy.includes('common_tags') ? b.common_tags - a.common_tags : 0)
     })
 
-    console.log("Last : \n")
-    console.log(user.profiles)
-    console.log("New : \n")
-    console.log(profileSorted)
-
     cacheBrowsing.set(username, {
       sortBy: user.sortBy,
       profiles: profileSorted,
