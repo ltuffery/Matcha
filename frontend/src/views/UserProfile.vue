@@ -10,6 +10,17 @@
             :loop="false"
             :pagination="{ clickable: true }"
             :watchOverflow="true"
+            :effect="'creative'"
+            :creativeEffect="{
+              prev: {
+                shadow: true,
+                translate: [0, 0, -400],
+              },
+              next: {
+                translate: ['100%', 0, 0],
+              },
+            }"
+            :modules="modules"
             class="w-full h-full shadow-md rounded-box z-10"
           >
             <swiper-slide v-for="(image, index) in images" :key="index">
@@ -76,6 +87,7 @@
 <script>
 import { Swiper, SwiperSlide } from "swiper/vue";
 import "swiper/swiper-bundle.css"; // Import Swiper styles
+import { EffectCreative } from 'swiper/modules';
 
 export default {
   components: {
@@ -89,6 +101,11 @@ export default {
         'http://as1.ftcdn.net/v2/jpg/09/25/29/78/1000_F_925297895_12R4VyhRAEmvMGHEdGSXXj3B9PTHVYUa.jpg',
         'https://as1.ftcdn.net/v2/jpg/02/44/38/08/1000_F_244380850_H3xd2rrb9CfCIcTyFcepVL670vvuTA0b.jpg',
       ],
+    };
+  },
+  setup() {
+    return {
+      modules: [EffectCreative],
     };
   },
 };
