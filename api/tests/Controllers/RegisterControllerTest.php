@@ -1,6 +1,6 @@
 <?php
 
-use Matcha\Api\Exceptions\UniqueConstraindException;
+use Matcha\Api\Exceptions\UniqueConstraintException;
 use Matcha\Api\Model\Tag;
 use Matcha\Api\Model\User;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
@@ -101,7 +101,7 @@ class RegisterControllerTest extends TestCase
         /** @var User */
         $user = User::factory()->create()[0];
 
-        $this->expectException(UniqueConstraindException::class);
+        $this->expectException(UniqueConstraintException::class);
 
         $response = $this->post('/auth/register', [
             'username' => "teste",

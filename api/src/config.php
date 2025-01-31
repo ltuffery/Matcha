@@ -3,7 +3,10 @@
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Matcha\Api\Exceptions\InvalidDataException;
+use Matcha\Api\Exceptions\UniqueConstraintException;
 use Matcha\Api\Model\User;
+
+$_SERVER['SCRIPT_NAME'] = 'index.php';
 
 Flight::register('db', PDO::class, [
     'mysql:host=mysql;dbname=' . getenv('MYSQL_DATABASE'),
@@ -52,6 +55,12 @@ Flight::map('error', function (Throwable $error) {
         echo json_encode([
             'message' => $data->message,
             'code' => $data->code,
+        ]);
+    } else if ($error instanceof UniqueConstraintException) {
+        header("Content-Type: application/json; charset=utf-8", response_code: 400);
+
+        echo json_encode([
+            'message' => $error->getMessage(),
         ]);
     } else {
         header("Content-Type: application/json; charset=utf-8", response_code: 500);
