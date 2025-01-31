@@ -25,7 +25,6 @@ const formatGender = type => {
       return 'Other'
   }
 }
-// await getOui()
 onMounted(async () => {
   await getData()
 })
