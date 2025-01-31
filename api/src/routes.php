@@ -8,6 +8,7 @@ use Matcha\Api\Controllers\History\LikesHistoryController;
 use Matcha\Api\Controllers\ChatController;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Controllers\LocalisationController;
+use Matcha\Api\Controllers\Profile\ProfileController;
 use Matcha\Api\Controllers\Profile\ProfileSuggestionController;
 use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
@@ -46,6 +47,7 @@ Flight::group('/forgot', function () {
 Flight::group('/users', function () {
 
     Flight::group('/@username:[a-zA-Z0-9\.]{5,25}', function () {
+        Flight::route('GET /', [ProfileController::class, 'show']);
         Flight::route('POST /like', [LikeController::class, 'store']);
         Flight::route('DELETE /unlike', [LikeController::class, 'destroy']);
     });

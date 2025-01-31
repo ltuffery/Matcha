@@ -76,7 +76,7 @@ const router = createRouter({
       beforeEnter: [authGuard],
     },
     {
-      path: '/profile',
+      path: '/profile/:username',
       name: 'profile',
       component: ProfileView,
       beforeEnter: [authGuard],

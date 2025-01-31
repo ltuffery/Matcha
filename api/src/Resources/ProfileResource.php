@@ -24,6 +24,8 @@ class ProfileResource extends JsonResource
             'last_name' => $this->model->last_name,
             'age' => $this->model->getAge(),
             'biography' => $this->model->biography,
+            'gender' => $this->model->gender,
+            'tags' => $this->model->getTags(),
         ];
     }
 }

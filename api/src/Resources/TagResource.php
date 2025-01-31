@@ -14,7 +14,7 @@ class TagResource extends JsonResource
         parent::__construct($tag);
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): string
     {
         return $this->model->name;
     }
