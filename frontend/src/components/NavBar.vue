@@ -9,7 +9,8 @@ const sizeScreen = ref(window.matchMedia(breakPointScreen));
 
 const goTo = (link) => {
   if (link === 'profile') {
-    const username = 'example' // tmp
+    const decoded = JSON.parse(atob(localStorage.jwt.split('.')[1]))
+    const username = decoded.username
     router.push({ name: link, params: {username} })
   }
   else
