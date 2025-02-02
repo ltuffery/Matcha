@@ -12,6 +12,6 @@ module.exports = {
       ],
     plugins: [daisyui],
     daisyui: {
-        themes: ["dark", "valentine", "sunset"]
+        themes: ["dark", "valentine", "sunset", "cyberpunk", "aqua"]
     }
 };
