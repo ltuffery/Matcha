@@ -45,7 +45,7 @@ class UserBlockController
 
         if (!$block) {
             Flight::json([
-                'message' => 'Block not found',
+                'message' => 'This user is not blocked',
             ], 404);
             return;
         }
