@@ -25,7 +25,13 @@ class ProfileResource extends JsonResource
             return 0;
         }
 
-        return haversine($this->user->lat, $this->user->lon, $this->model->lat, $this->model->lon);
+        $distance = haversine($this->user->lat, $this->user->lon, $this->model->lat, $this->model->lon);
+
+        if ($distance < 1) {
+            return -1;
+        }
+
+        return $distance;
     }
 
     private function countCommonTags(): int
