@@ -23,7 +23,16 @@ class UserBlockController
         $block = new Block();
 
         $block->user_id = Flight::user()->id;
-        $block->blocked_id = User::find(['username' => $username])->id;
+        $blocked = User::find(['username' => $username]);
+
+        if (is_null($blocked)) {
+            Flight::json([
+                'message' => 'User not found',
+            ], 404);
+            return;
+        }
+
+        $block->blocked_id = $blocked->id;
 
         $block->save();
 
