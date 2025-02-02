@@ -29,7 +29,6 @@ class RegisterController
             'gender' => 'required',
             'sexual_preferences' => 'required',
             'biography' => 'required',
-            'tags' => 'required',
         ]);
 
         $request = Flight::request();
@@ -57,8 +56,8 @@ class RegisterController
         $saved = $user->save();
 
         if ($saved) {
-            foreach (explode(",", $request->data->tags) as $tag) {
-                $saved->addTag($tag);
+            if (isset($request->data->tags) && !empty($request->data->tags)) {
+                $this->saveTags($saved, $request->data->tags);
             }
 
             if (!getenv("PHPUNIT_TEST")) {
@@ -68,6 +67,13 @@ class RegisterController
             Flight::json([
                 'user' => json_encode($user),
             ], 201);
+        }
+    }
+
+    private function saveTags(User $user, string $tags): void
+    {
+        foreach (explode(",", $tags) as $tag) {
+            $user->addTag($tag);
         }
     }
 
