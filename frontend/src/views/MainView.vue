@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
 import { getSocket } from '@/plugins/socket.js'
+import Filter from '@/components/main/Filter.vue'
 
 const swiperRef = ref(null)
 const swiperInstance = ref(null)
@@ -73,7 +74,9 @@ onMounted(() => {
     v-if="skeleton === false"
     class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200"
   >
-    <div class="card bg-base-100 w-full max-w-lg shrink-0 shadow-2xl">
+    <div class="relative card bg-base-100 w-full max-w-lg shrink-0 shadow-2xl">
+      <Filter class="absolute top-2 right-2 z-20" />
+
       <div class="carousel w-full h-screen rounded-lg">
         <swiper
           ref="swiperRef"

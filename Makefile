@@ -14,6 +14,7 @@ fclean: down
 	docker system prune -af --volumes
 	rm -rf websocket/node_modules
 	rm -rf frontend/node_modules
+	rm -rf api/storage/photos/*
 
 re: fclean up
 
