@@ -58,6 +58,9 @@ Flight::group('/users', function () {
 
     Flight::group('/me', function () {
         Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
+        Flight::route('PUT|PATCH /', [ProfileController::class, 'update']);
+        Flight::route('PUT|PATCH /preferences', [ProfileController::class, 'update']); // TODO: Other controller ?
+
         Flight::route('GET /likes', [LikesHistoryController::class, 'index']);
         Flight::route('GET /suggestions', [ProfileSuggestionController::class, 'index']);
         Flight::route('GET /blocks', [UserBlockController::class, 'index']);

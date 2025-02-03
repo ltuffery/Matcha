@@ -17,4 +17,27 @@ class ProfileController
             new ProfileResource(User::find(["username" => $username]))
         );
     }
+
+    public function update(string $username): void
+    {
+        /** @var User $user */
+        $user = Flight::user();
+
+        if ($user->username !== $username) {
+            Flight::json([
+                'message' => 'Forbidden',
+            ], 403);
+            return;
+        }
+
+        foreach (Flight::request()->data as $key => $value) {
+            if (!isset($user->{$key})) {
+                continue;
+            }
+
+            $user->{$key} = $value;
+        }
+
+        $user->save();
+    }
 }
