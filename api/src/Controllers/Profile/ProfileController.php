@@ -23,13 +23,6 @@ class ProfileController
         /** @var User $user */
         $user = Flight::user();
 
-        if ($user->username !== $username) {
-            Flight::json([
-                'message' => 'Forbidden',
-            ], 403);
-            return;
-        }
-
         foreach (Flight::request()->data as $key => $value) {
             if (!isset($user->{$key})) {
                 continue;
@@ -39,5 +32,12 @@ class ProfileController
         }
 
         $user->save();
+    }
+
+    public function destroy(string $username): void
+    {
+        Flight::user()->delete();
+
+        Flight::json([], 203);
     }
 }
