@@ -8,7 +8,7 @@ use PDO;
 
 /**
  * @method static User find(array $data)
- * @method static User[] where(array $object)
+ * @method static User[] where(array $object, ?int $limit = null)
  * @method static User morph(array $object)
  * @method static User[] all()
  * @method User save()
@@ -139,7 +139,9 @@ class User extends Model
         ");
 
         $stmt->execute(['user_id' => $this->id]);
-        return array_map(fn (array $obj) => User::morph($obj), $stmt->fetchAll(PDO::FETCH_ASSOC));
+        $users =  array_map(fn (array $obj) => User::morph($obj), $stmt->fetchAll(PDO::FETCH_ASSOC));
+
+        return array_filter($users, fn ($user) => !$this->isBlocking($user));
     }
 
     /**
@@ -224,6 +226,41 @@ class User extends Model
         }
 
         return $tags;
+    }
+
+    public function block(User $user): void
+    {
+        $block = new Block();
+
+        $block->user_id = $this->id;
+        $block->blocked_id = $user->id;
+
+        $block->save();
+    }
+
+    public function unblock(User $user): bool
+    {
+        $block = Block::find([
+            'user_id' => $this->id,
+            'blocked_id' => $user->id,
+        ]);
+
+        if (!is_null($block)) {
+            $block->delete();
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isBlocking(User $user): bool
+    {
+        $block = Block::find([
+            'user_id' => $this->id,
+            'blocked_id' => $user->id,
+        ]);
+
+        return !is_null($block);
     }
 
     public static function authenticate(string $username, string $password): User|false

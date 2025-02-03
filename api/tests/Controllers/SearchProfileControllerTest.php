@@ -1,5 +1,6 @@
 <?php
 
+use Matcha\Api\Model\Block;
 use Matcha\Api\Model\User;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
 use Matcha\Api\Testing\Cases\HttpTestCase;
@@ -65,5 +66,23 @@ class SearchProfileControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertCount(count($finds));
+    }
+
+    public function testUserBlockedNotInList(): void
+    {
+        $users = User::factory()->count(10)->create();
+        $subUsername = substr($users[0]->username, 0, 5);
+        $finds = array_filter($users, fn (User $user) => str_starts_with($user->username, $subUsername));
+
+        $this->user->block($finds[0]);
+
+        $response = $this->withHeader([
+            'Authorization' => 'Bearer ' . $this->user->generateJWT(),
+        ])->get('/search/users', [
+            'q' => $subUsername,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertCount(count($finds) - 1);
     }
 }

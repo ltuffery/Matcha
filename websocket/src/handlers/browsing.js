@@ -14,7 +14,7 @@ export const browse = (username, socket) => {
       }
     }
 
-    if (!cacheBrowsing.has(username) || cacheBrowsing.get(username).length === 0) {
+    if (!cacheBrowsing.has(username) || cacheBrowsing.get(username).profiles.length === 0) {
       const res = await Api
         .get('/users/me/suggestions')
         .header('Authorization', socket.handshake.auth.token)
@@ -23,18 +23,24 @@ export const browse = (username, socket) => {
       const data = await res.json()
 
       if (!cacheBrowsing.has(username))
-        cacheBrowsing.set(username, data)
+        cacheBrowsing.set(username, {
+          sortBy: [],
+          profiles: data
+        })
     }
 
-    if (cacheBrowsing.has(username) && cacheBrowsing.get(username).length > 0) {
+    if (cacheBrowsing.has(username) && cacheBrowsing.get(username).profiles.length > 0) {
       const users = cacheBrowsing.get(username)
-      const suggest = users[0]
+      const suggest = users.profiles[0]
 
-      cacheBrowsing.set(username, users.slice(1, users.length))
+      cacheBrowsing.set(username, {
+        sortBy: users.sortBy,
+        profiles: users.profiles.slice(1, users.length)
+      })
 
       socket.emit("browsing", suggest)
 
-      if (cacheBrowsing.get(username).length === 0) {
+      if (cacheBrowsing.get(username).profiles.length === 0) {
         finished.push(username)
       }
     }

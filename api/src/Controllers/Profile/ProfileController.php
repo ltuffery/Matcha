@@ -13,10 +13,8 @@ class ProfileController
      */
     public function show(string $username): void
     {
-        $userInfo = (new ProfileResource(User::find(["username" => $username])))->jsonSerialize();
-        $userInfo["distance"] = 24;
-        $userInfo["me"] = $username == Flight::user()->username;
-
-        Flight::json($userInfo);
+        Flight::json(
+            new ProfileResource(User::find(["username" => $username]))
+        );
     }
 }
