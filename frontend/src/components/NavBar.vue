@@ -9,13 +9,7 @@ const props = defineProps({
 })
 
 const goTo = (link) => {
-  if (link === 'profile') {
-    const decoded = JSON.parse(atob(localStorage.jwt.split('.')[1]))
-    const username = decoded.username
-    router.push({ name: link, params: {username} })
-  }
-  else
-    router.push({ name: link })
+  router.push({ name: link })
 }
 </script>
 
@@ -77,7 +71,7 @@ const goTo = (link) => {
         </div>
 
         <div class="tooltip tooltip-right" data-tip="Profile">
-          <button @click="goTo('profile')" class="size-16 bg-base-100 rounded-xl btn">
+          <button @click="goTo('settings')" class="size-16 bg-base-100 rounded-xl btn">
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
               <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -141,7 +135,7 @@ const goTo = (link) => {
       </svg>
     </div>
 
-    <div @click="goTo('profile')" class="hover:bg-base-300/60 rounded-full flex items-center justify-center h-full w-full cursor-pointer">
+    <div @click="goTo('settings')" class="hover:bg-base-300/60 rounded-full flex items-center justify-center h-full w-full cursor-pointer">
       <svg class="size-10 mx-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
         <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>

@@ -43,8 +43,8 @@ function containSearch(user) {
 </script>
 
 <template>
-  <div class="flex bg-base-300 h-dvh w-full justify-center items-center">
-    <div class="bg-base-200 h-full w-full max-w-3xl px-4">
+  <!-- <div class="flex bg-base-300 h-dvh w-full justify-center items-center"> -->
+    <!-- <div class="bg-base-200 h-full w-full max-w-3xl px-4"> -->
       <!-- ########## List of users ########## -->
 
       <div class="flex flex-col h-full">
@@ -111,6 +111,6 @@ function containSearch(user) {
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    <!-- </div> -->
+  <!-- </div> -->
 </template>
