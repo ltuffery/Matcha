@@ -8,6 +8,8 @@ const props = defineProps({
   }
 })
 
+let selectedPage = 0
+
 const goTo = (link) => {
   router.push({ name: link })
 }
