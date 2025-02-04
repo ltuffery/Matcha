@@ -7,6 +7,7 @@ use Flight;
 use flight\net\UploadedFile;
 use Matcha\Api\Exceptions\InvalidDataException;
 use Matcha\Api\Model\Photo;
+use Matcha\Api\Model\Preference;
 use Matcha\Api\Model\User;
 use Matcha\Api\Validator\Validator;
 
@@ -27,7 +28,6 @@ class RegisterController
             'last_name' => 'required',
             'birthday' => 'required',
             'gender' => 'required',
-            'sexual_preferences' => 'required',
             'biography' => 'required',
         ]);
 
@@ -50,12 +50,13 @@ class RegisterController
         $user->first_name = $request->data->first_name;
         $user->last_name = $request->data->last_name;
         $user->gender = $request->data->gender;
-        $user->sexual_preferences = $request->data->sexual_preferences;
         $user->biography = $request->data->biography;
 
         $saved = $user->save();
 
         if ($saved) {
+            $this->createPreferences($saved);
+
             if (isset($request->data->tags) && !empty($request->data->tags)) {
                 $this->saveTags($saved, $request->data->tags);
             }
@@ -68,6 +69,17 @@ class RegisterController
                 'user' => json_encode($user),
             ], 201);
         }
+    }
+
+    private function createPreferences(User $user): void
+    {
+        $preferences = new Preference();
+
+        $preferences->user_id = $user->id;
+        $preferences->age_maximum = $user->getAge() + 3;
+        $preferences->age_minimum = max(18, $user->getAge() - 3);
+
+        $preferences->save();
     }
 
     private function saveTags(User $user, string $tags): void
