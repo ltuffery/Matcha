@@ -103,7 +103,12 @@ onMounted(async () => {
             class="flex gap-1 bg-base-300 rounded-box p-2 px-3 w-fit text-xl"
           >
             <label>At </label>
-            <label class="font-semibold">{{ data?.distance }} km</label>
+            <label class="font-semibold"
+              >{{
+                data?.distance === -1 ? 'less of 1' : data?.distance
+              }}
+              km</label
+            >
             <label>from you</label>
           </div>
         </div>

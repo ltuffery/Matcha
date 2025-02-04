@@ -10,7 +10,7 @@ import SearchUsersView from '@/views/SearchUsersView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import VerifyEmailView from '@/views/VerifyEmailView.vue'
 import NewPasswordView from '@/views/NewPasswordView.vue'
-import ProfileView from '@/views/UserProfile.vue'
+import UserProfileView from '@/views/UserProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -78,7 +78,7 @@ const router = createRouter({
     {
       path: '/profile/:username',
       name: 'profile',
-      component: ProfileView,
+      component: UserProfileView,
       beforeEnter: [authGuard],
     },
   ],
