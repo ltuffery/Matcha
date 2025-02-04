@@ -1,6 +1,14 @@
 <script setup>
 import { ref } from 'vue'
 import BirthdaySelector from '@/components/userForm/BirthdaySelector.vue'
+import {Api} from "@/utils/api.js";
+
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+})
 
 const email = ref()
 const firstName = ref()
@@ -53,6 +61,10 @@ const sendChangement = e => {
       break
   }
 }
+
+const deleteAccount = () => {
+  Api.delete('/users/me').send()
+}
 </script>
 
 <template>
@@ -82,7 +94,7 @@ const sendChangement = e => {
             type="text"
             class="grow"
             placeholder="Email"
-            value="test@test.test"
+            :value="props.data?.email"
             disabled
           />
         </label>
@@ -128,7 +140,7 @@ const sendChangement = e => {
               type="text"
               placeholder="First Name"
               class="input input-bordered w-full"
-              value="tmpName"
+              :value="props.data?.first_name"
               disabled
             />
             <button class="btn" @click="changeEntity('fname')">
@@ -168,7 +180,7 @@ const sendChangement = e => {
               type="text"
               placeholder="First Name"
               class="input input-bordered w-full"
-              value="tmpName"
+              :value="props.data?.last_name"
               disabled
             />
             <button class="btn" @click="changeEntity('lname')">
@@ -231,7 +243,7 @@ const sendChangement = e => {
 
   <div>
     <div class="card w-full p-5 mt-10">
-      <button class="btn btn-outline btn-error">Delete Account</button>
+      <button @click="deleteAccount" class="btn btn-outline btn-error">Delete Account</button>
     </div>
   </div>
 </template>

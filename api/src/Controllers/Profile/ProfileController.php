@@ -8,6 +8,13 @@ use Matcha\Api\Resources\ProfileResource;
 
 class ProfileController
 {
+    public function index(): void
+    {
+        Flight::json(
+            new ProfileResource(Flight::user())
+        );
+    }
+
     /**
      * @throws \ReflectionException
      */

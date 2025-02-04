@@ -2,13 +2,20 @@
 import DoubleSlide from '@/components/DoubleSlide.vue'
 import { onUnmounted, ref, watchEffect } from 'vue'
 
+const props = defineProps({
+  preferences: {
+    type: Object,
+    required: true,
+  }
+})
+
 const preferences = ref({
   age: {
-    start: 18,
-    end: 30,
+    start: props.preferences.age_minimum,
+    end: props.preferences.age_maximum,
   },
-  distance: 20,
-  sexual_preference: 'F',
+  distance: props.preferences.distance_maximum,
+  sexual_preference: props.preferences.sexual_preferences,
 })
 
 const ageRange = ref()

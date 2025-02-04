@@ -3,14 +3,20 @@ import ProfileView from '@/components/ProfileView.vue'
 import PreferencesSettings from '@/components/settings/PreferencesSettings.vue'
 import AccountSettings from '@/components/settings/AccountSettings.vue'
 import { ref } from 'vue'
+import {Api} from "@/utils/api.js";
+import LoadingScreen from "@/components/screen/LoadingScreen.vue";
 
-const temporaryImage = [
-  'https://as1.ftcdn.net/v2/jpg/06/12/64/52/1000_F_612645270_KBcBTf5CToMDyGr1hDpqSNyMK6eaXrPq.jpg',
-  'http://as1.ftcdn.net/v2/jpg/09/25/29/78/1000_F_925297895_12R4VyhRAEmvMGHEdGSXXj3B9PTHVYUa.jpg',
-  'https://as1.ftcdn.net/v2/jpg/02/44/38/08/1000_F_244380850_H3xd2rrb9CfCIcTyFcepVL670vvuTA0b.jpg',
-]
+const loading = ref(true)
+const settingsCategory = ref(1)
+const profile = ref({})
 
-let settingsCategory = ref(1)
+Api.get('/users/me').send()
+  .then(res => res.json())
+  .then(data => {
+    profile.value = data
+    loading.value = false
+  })
+
 
 const changeSettings = e => {
   if (e.target.id === 'ac') {
@@ -26,17 +32,19 @@ const changeSettings = e => {
 </script>
 
 <template>
-  <div class="flex bg-base-300 h-dvh w-full justify-center items-center">
+  <LoadingScreen v-if="loading" />
+
+  <div v-else class="flex bg-base-300 h-dvh w-full justify-center items-center">
     <div class="overflow-y-auto bg-base-200 h-full w-full max-w-3xl px-6">
       <div class="flex w-full h-full flex-col gap-3">
         <div class="flex w-full items-center flex-col gap-6">
           <div class="pt-14">
             <ProfileView
               class="w-20 h-36 cursor-pointer"
-              :images="temporaryImage"
+              :images="profile.photos"
             />
           </div>
-          <div class="text-xl">First Name</div>
+          <div class="text-xl">{{ profile.first_name }}</div>
         </div>
 
         <div>
@@ -46,9 +54,9 @@ const changeSettings = e => {
             </button>
           </div>
         </div>
-        <PreferencesSettings v-if="settingsCategory === 1" />
+        <PreferencesSettings :preferences="profile.preferences" v-if="settingsCategory === 1" />
 
-        <AccountSettings v-else />
+        <AccountSettings :data="profile" v-else />
       </div>
     </div>
   </div>
