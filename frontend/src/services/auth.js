@@ -75,7 +75,6 @@ export const logout = () => {
 }
 
 export const disconect = () => {
-  localStorage.removeItem('jwt')
-  localStorage.removeItem('refresh')
+  logout()
   router.push({name: 'home'})
 }
