@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import BirthdaySelector from '@/components/userForm/BirthdaySelector.vue'
-import {Api} from "@/utils/api.js";
+import { Api } from '@/utils/api.js'
 
 const props = defineProps({
   data: {
@@ -252,7 +252,9 @@ const deleteAccount = () => {
 
   <div>
     <div class="card w-full p-5 mt-10">
-      <button @click="deleteAccount" class="btn btn-outline btn-error">Delete Account</button>
+      <button @click="deleteAccount" class="btn btn-outline btn-error">
+        Delete Account
+      </button>
     </div>
   </div>
 </template>

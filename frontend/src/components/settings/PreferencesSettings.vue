@@ -1,13 +1,13 @@
 <script setup>
 import DoubleSlide from '@/components/DoubleSlide.vue'
 import { onUnmounted, ref, watchEffect } from 'vue'
-import {Api} from "@/utils/api.js";
+import { Api } from '@/utils/api.js'
 
 const props = defineProps({
   preferences: {
     type: Object,
     required: true,
-  }
+  },
 })
 
 const preferences = ref({
@@ -104,7 +104,12 @@ onUnmounted(() => {
     <div class="card bg-base-300 gap-3 w-full p-5">
       <div class="flex justify-between">
         <label>Research by same tags :</label>
-        <input v-model="byTags" type="checkbox" class="toggle" :checked="byTags" />
+        <input
+          v-model="byTags"
+          type="checkbox"
+          class="toggle"
+          :checked="byTags"
+        />
       </div>
       <!--            <TagSelector class="max-h-72 overflow-y-auto" />-->
     </div>

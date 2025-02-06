@@ -3,20 +3,20 @@ import ProfileView from '@/components/ProfileView.vue'
 import PreferencesSettings from '@/components/settings/PreferencesSettings.vue'
 import AccountSettings from '@/components/settings/AccountSettings.vue'
 import { ref } from 'vue'
-import {Api} from "@/utils/api.js";
-import LoadingScreen from "@/components/screen/LoadingScreen.vue";
+import { Api } from '@/utils/api.js'
+import LoadingScreen from '@/components/screen/LoadingScreen.vue'
 
 const loading = ref(true)
 const settingsCategory = ref(1)
 const profile = ref({})
 
-Api.get('/users/me').send()
+Api.get('/users/me')
+  .send()
   .then(res => res.json())
   .then(data => {
     profile.value = data
     loading.value = false
   })
-
 
 const changeSettings = e => {
   if (e.target.id === 'ac') {
@@ -54,7 +54,10 @@ const changeSettings = e => {
             </button>
           </div>
         </div>
-        <PreferencesSettings :preferences="profile.preferences" v-if="settingsCategory === 1" />
+        <PreferencesSettings
+          :preferences="profile.preferences"
+          v-if="settingsCategory === 1"
+        />
 
         <AccountSettings :data="profile" v-else />
       </div>
