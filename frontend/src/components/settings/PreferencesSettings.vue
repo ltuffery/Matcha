@@ -1,6 +1,7 @@
 <script setup>
 import DoubleSlide from '@/components/DoubleSlide.vue'
 import { onUnmounted, ref, watchEffect } from 'vue'
+import {Api} from "@/utils/api.js";
 
 const props = defineProps({
   preferences: {
@@ -19,6 +20,8 @@ const preferences = ref({
 })
 
 const ageRange = ref()
+const byTags = ref(!!props.preferences.by_tags)
+
 watchEffect(() => {
   if (ageRange.value) {
     preferences.value.age = {
@@ -29,7 +32,13 @@ watchEffect(() => {
 })
 
 onUnmounted(() => {
-  console.log('Save in DB ? (check if modif)')
+  Api.put('/users/me/preferences').send({
+    age_minimum: preferences.value.age.start,
+    age_maximum: preferences.value.age.end,
+    distance_maximum: preferences.value.distance,
+    sexual_preferences: preferences.value.sexual_preference,
+    by_tags: byTags.value,
+  })
 })
 </script>
 
@@ -95,7 +104,7 @@ onUnmounted(() => {
     <div class="card bg-base-300 gap-3 w-full p-5">
       <div class="flex justify-between">
         <label>Research by same tags :</label>
-        <input type="checkbox" class="toggle" checked="checked" />
+        <input v-model="byTags" type="checkbox" class="toggle" :checked="byTags" />
       </div>
       <!--            <TagSelector class="max-h-72 overflow-y-auto" />-->
     </div>

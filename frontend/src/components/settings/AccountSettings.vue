@@ -33,33 +33,42 @@ const changeEntity = e => {
   }
 }
 
-const sendChangement = e => {
+const sendChange = e => {
   if (e.key === 'Enter') {
     e.target.blur()
     return
   }
+
+  let data = {}
+
   switch (e.target.id) {
     case 'email':
-      console.log('I send ', e.target.value)
+      data.email = e.target.value
       email.value.disabled = true
       break
     case 'fname':
-      console.log('I send ', e.target.value)
+      data.first_name = e.target.value
       firstName.value.disabled = true
       break
     case 'lname':
-      console.log('I send ', e.target.value)
+      data.last_name = e.target.value
       lastName.value.disabled = true
       break
     case 'gender':
-      console.log('I send ', e.target.value)
+      data.gender = e.target.value
       break
     case 'birthday':
-      console.log('I send ', e.target.value)
+      data.birthday = e.target.value
       break
     default:
-      break
+      return
   }
+
+  if (Object.keys(data).length === 0) {
+    return
+  }
+
+  Api.put('/users/me').send(data)
 }
 
 const deleteAccount = () => {
@@ -88,8 +97,8 @@ const deleteAccount = () => {
           </svg>
           <input
             ref="email"
-            v-on:keyup.enter="sendChangement"
-            @blur="sendChangement"
+            v-on:keyup.enter="sendChange"
+            @blur="sendChange"
             id="email"
             type="text"
             class="grow"
@@ -134,8 +143,8 @@ const deleteAccount = () => {
           <div class="flex w-full gap-2">
             <input
               ref="firstName"
-              v-on:keyup.enter="sendChangement"
-              @blur="sendChangement"
+              v-on:keyup.enter="sendChange"
+              @blur="sendChange"
               id="fname"
               type="text"
               placeholder="First Name"
@@ -174,8 +183,8 @@ const deleteAccount = () => {
           <div class="flex w-full gap-2">
             <input
               ref="lastName"
-              v-on:keyup.enter="sendChangement"
-              @blur="sendChangement"
+              v-on:keyup.enter="sendChange"
+              @blur="sendChange"
               id="lname"
               type="text"
               placeholder="First Name"
@@ -215,7 +224,7 @@ const deleteAccount = () => {
   <div>
     <div class="card bg-base-300 gap-3 w-full p-5">
       <label>Birthday :</label>
-      <birthday-selector @input="sendChangement" id="birthday" />
+      <birthday-selector @input="sendChange" id="birthday" />
     </div>
   </div>
 
@@ -224,7 +233,7 @@ const deleteAccount = () => {
       <label>Gender :</label>
       <select
         class="select select-bordered w-full max-w-xs"
-        @change="sendChangement"
+        @change="sendChange"
         id="gender"
       >
         <option disabled selected>Choose one</option>

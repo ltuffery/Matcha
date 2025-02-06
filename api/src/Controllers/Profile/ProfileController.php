@@ -25,7 +25,7 @@ class ProfileController
         );
     }
 
-    public function update(string $username): void
+    public function update(): void
     {
         /** @var User $user */
         $user = Flight::user();
@@ -41,7 +41,7 @@ class ProfileController
         $user->save();
     }
 
-    public function destroy(string $username): void
+    public function destroy(): void
     {
         Flight::user()->delete();
 
