@@ -17,14 +17,4 @@ class Preference extends Model
     public bool $by_tags = true;
     public string $sexual_preferences = 'A';
 
-    public function getIdColumn(): string
-    {
-        return 'user_id';
-    }
-
-    protected function getId(): int
-    {
-        return $this->user_id;
-    }
-
 }

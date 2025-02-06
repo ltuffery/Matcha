@@ -22,16 +22,6 @@ abstract class Model
         return Flight::db();
     }
 
-    protected function getId(): int
-    {
-        return $this->id;
-    }
-
-    public function getIdColumn(): string
-    {
-        return 'id';
-    }
-
     public static function getTable(): string
     {
         $class = new ReflectionClass(get_called_class());
@@ -45,7 +35,7 @@ abstract class Model
      */
     public function save(): Model
     {
-        return $this->getId() > 0 ? $this->update() : $this->create();
+        return $this->id > 0 ? $this->update() : $this->create();
     }
 
     public function update(): Model
@@ -60,7 +50,7 @@ abstract class Model
                 array_values($data)
             )
         )
-        . ' WHERE ' . $this->getIdColumn() . ' = ' . $this->getId();
+        . ' WHERE id = ' . $this->id;
 
         self::db()->exec($sqlQuery);
         $this->reload();
