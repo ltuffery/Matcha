@@ -8,6 +8,7 @@ use Matcha\Api\Controllers\History\LikesHistoryController;
 use Matcha\Api\Controllers\ChatController;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Controllers\LocalisationController;
+use Matcha\Api\Controllers\Profile\PreferencesController;
 use Matcha\Api\Controllers\Profile\ProfileController;
 use Matcha\Api\Controllers\Profile\ProfileSuggestionController;
 use Matcha\Api\Controllers\Profile\UserBlockController;
@@ -58,6 +59,14 @@ Flight::group('/users', function () {
 
     Flight::group('/me', function () {
         Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
+
+        Flight::route('GET /', [ProfileController::class, 'index']);
+        Flight::route('PUT|PATCH /', [ProfileController::class, 'update']);
+        Flight::route('DELETE /', ProfileController::class . 'destroy');
+
+        Flight::route('PUT|PATCH /preferences', [PreferencesController::class, 'update']);
+        Flight::route('GET /preferences', [PreferencesController::class, 'index']);
+
         Flight::route('GET /likes', [LikesHistoryController::class, 'index']);
         Flight::route('GET /suggestions', [ProfileSuggestionController::class, 'index']);
         Flight::route('GET /blocks', [UserBlockController::class, 'index']);

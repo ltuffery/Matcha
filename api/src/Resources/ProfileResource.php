@@ -43,7 +43,7 @@ class ProfileResource extends JsonResource
 
     public function jsonSerialize(): array
     {
-        return [
+        $resource = [
             'username' => $this->model->username,
             'avatar' => $this->model->getAvatar(),
             'photos' => $this->model->getPhotosUrl(),
@@ -58,5 +58,12 @@ class ProfileResource extends JsonResource
             'gender' => $this->model->gender,
             'tags' => $this->model->getTags(),
         ];
+
+        if ($resource['me']) {
+            $resource['preferences'] = new PreferencesResource($this->model->getPreferences());
+            $resource['email'] = $this->model->email;
+        }
+
+        return $resource;
     }
 }

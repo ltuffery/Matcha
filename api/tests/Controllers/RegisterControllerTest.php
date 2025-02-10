@@ -67,7 +67,6 @@ class RegisterControllerTest extends TestCase
                 'first_name' => 'John',
                 'last_name' => 'Doe',
                 'gender' => 'M',
-                'sexual_preferences' => 'F',
                 'biography' => 'Lorem lorem',
             ]);
 
@@ -88,7 +87,6 @@ class RegisterControllerTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'gender' => 'M',
-            'sexual_preferences' => 'F',
             'biography' => 'Lorem lorem',
             'tags' => 'Netflix,Bike',
         ]);
@@ -111,11 +109,41 @@ class RegisterControllerTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'gender' => 'M',
-            'sexual_preferences' => 'F',
             'biography' => 'Lorem lorem',
             'tags' => 'Netflix,Bike',
         ]);
 
         $response->assertStatus(400);
+    }
+
+    public function testPreferencesIsCreated(): void
+    {
+        $response = $this->post('/auth/register', [
+            'username' => "teste",
+            'email' => 'email@test.com',
+            'password' => "password",
+            'birthday' => "2004-12-04",
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'gender' => 'M',
+            'biography' => 'Lorem lorem',
+            'tags' => 'Netflix,Bike',
+        ]);
+
+        $response->assertStatus(201);
+
+        $user = User::find([
+            'username' => 'teste',
+        ]);
+
+        $this->assertNotNull($user);
+
+        $preferences = $user->getPreferences();
+
+        $this->assertNotNull($preferences);
+        $this->assertEquals('A', $preferences->sexual_preferences);
+        $this->assertEquals(18, $preferences->age_minimum);
+        $this->assertEquals(23, $preferences->age_maximum);
+        $this->assertTrue($preferences->by_tags);
     }
 }

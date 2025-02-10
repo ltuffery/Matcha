@@ -13,9 +13,10 @@ class ProfileSuggestionController
         /** @var User $user */
         $user = Flight::user();
 
-        $sexualPreference = $user->sexual_preferences == 'A' ?
+        $preferences = $user->getPreferences();
+        $sexualPreference = $preferences->sexual_preferences == 'A' ?
             ['gender', '<', "('M', 'F', 'O')"] :
-            ['gender', '=', $user->sexual_preferences];
+            ['gender', '=', $preferences->sexual_preferences];
 
         $users = User::where([
             ['id', '<>', $user->id],

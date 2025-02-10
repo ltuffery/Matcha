@@ -205,7 +205,7 @@ abstract class Model
 
         $result = $stmt->fetch();
 
-        if ($result == false) {
+        if (!$result) {
             return null;
         }
 

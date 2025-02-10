@@ -29,7 +29,6 @@ class User extends Model
     public string|null $first_name;
     public string|null $last_name;
     public string|null $gender;
-    public string|null $sexual_preferences;
     public string|null $biography;
     public string $created_at;
     public bool $email_verified;
@@ -261,6 +260,13 @@ class User extends Model
         ]);
 
         return !is_null($block);
+    }
+
+    public function getPreferences(): Preference
+    {
+        return Preference::find([
+            'user_id' => $this->id,
+        ]);
     }
 
     public static function authenticate(string $username, string $password): User|false

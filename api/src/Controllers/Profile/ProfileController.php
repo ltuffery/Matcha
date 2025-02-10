@@ -8,6 +8,13 @@ use Matcha\Api\Resources\ProfileResource;
 
 class ProfileController
 {
+    public function index(): void
+    {
+        Flight::json(
+            new ProfileResource(Flight::user())
+        );
+    }
+
     /**
      * @throws \ReflectionException
      */
@@ -23,5 +30,28 @@ class ProfileController
         Flight::json(
             new ProfileResource($user)
         );
+    }
+
+    public function update(): void
+    {
+        /** @var User $user */
+        $user = Flight::user();
+
+        foreach (Flight::request()->data as $key => $value) {
+            if (!isset($user->{$key})) {
+                continue;
+            }
+
+            $user->{$key} = $value;
+        }
+
+        $user->save();
+    }
+
+    public function destroy(): void
+    {
+        Flight::user()->delete();
+
+        Flight::json([], 203);
     }
 }

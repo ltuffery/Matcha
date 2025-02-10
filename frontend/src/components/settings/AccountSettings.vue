@@ -1,6 +1,15 @@
 <script setup>
 import { ref } from 'vue'
 import BirthdaySelector from '@/components/userForm/BirthdaySelector.vue'
+import { Api } from '@/utils/api.js'
+import { logout } from '@/services/auth.js'
+
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+})
 
 const email = ref()
 const firstName = ref()
@@ -25,33 +34,47 @@ const changeEntity = e => {
   }
 }
 
-const sendChangement = e => {
+const sendChange = e => {
   if (e.key === 'Enter') {
     e.target.blur()
     return
   }
+
+  let data = {}
+
   switch (e.target.id) {
     case 'email':
-      console.log('I send ', e.target.value)
+      data.email = e.target.value
       email.value.disabled = true
       break
     case 'fname':
-      console.log('I send ', e.target.value)
+      data.first_name = e.target.value
       firstName.value.disabled = true
       break
     case 'lname':
-      console.log('I send ', e.target.value)
+      data.last_name = e.target.value
       lastName.value.disabled = true
       break
     case 'gender':
-      console.log('I send ', e.target.value)
+      data.gender = e.target.value
       break
     case 'birthday':
-      console.log('I send ', e.target.value)
+      data.birthday = e.target.value
       break
     default:
-      break
+      return
   }
+
+  if (Object.keys(data).length === 0) {
+    return
+  }
+
+  Api.put('/users/me').send(data)
+}
+
+const deleteAccount = () => {
+  Api.delete('/users/me').send()
+  logout()
 }
 </script>
 
@@ -76,13 +99,13 @@ const sendChangement = e => {
           </svg>
           <input
             ref="email"
-            v-on:keyup.enter="sendChangement"
-            @blur="sendChangement"
+            v-on:keyup.enter="sendChange"
+            @blur="sendChange"
             id="email"
             type="text"
             class="grow"
             placeholder="Email"
-            value="test@test.test"
+            :value="props.data?.email"
             disabled
           />
         </label>
@@ -122,13 +145,13 @@ const sendChangement = e => {
           <div class="flex w-full gap-2">
             <input
               ref="firstName"
-              v-on:keyup.enter="sendChangement"
-              @blur="sendChangement"
+              v-on:keyup.enter="sendChange"
+              @blur="sendChange"
               id="fname"
               type="text"
               placeholder="First Name"
               class="input input-bordered w-full"
-              value="tmpName"
+              :value="props.data?.first_name"
               disabled
             />
             <button class="btn" @click="changeEntity('fname')">
@@ -162,13 +185,13 @@ const sendChangement = e => {
           <div class="flex w-full gap-2">
             <input
               ref="lastName"
-              v-on:keyup.enter="sendChangement"
-              @blur="sendChangement"
+              v-on:keyup.enter="sendChange"
+              @blur="sendChange"
               id="lname"
               type="text"
               placeholder="First Name"
               class="input input-bordered w-full"
-              value="tmpName"
+              :value="props.data?.last_name"
               disabled
             />
             <button class="btn" @click="changeEntity('lname')">
@@ -203,7 +226,7 @@ const sendChangement = e => {
   <div>
     <div class="card bg-base-300 gap-3 w-full p-5">
       <label>Birthday :</label>
-      <birthday-selector @input="sendChangement" id="birthday" />
+      <birthday-selector @input="sendChange" id="birthday" />
     </div>
   </div>
 
@@ -212,13 +235,12 @@ const sendChangement = e => {
       <label>Gender :</label>
       <select
         class="select select-bordered w-full max-w-xs"
-        @change="sendChangement"
+        @change="sendChange"
         id="gender"
       >
-        <option disabled selected>Choose one</option>
-        <option value="M">Man</option>
-        <option value="F">Woman</option>
-        <option value="O">Other</option>
+        <option :selected="props.data?.gender === 'M'" value="M">Man</option>
+        <option :selected="props.data?.gender === 'F'" value="F">Woman</option>
+        <option :selected="props.data?.gender === 'O'" value="O">Other</option>
       </select>
     </div>
   </div>
@@ -231,7 +253,9 @@ const sendChangement = e => {
 
   <div>
     <div class="card w-full p-5 mt-10">
-      <button class="btn btn-outline btn-error">Delete Account</button>
+      <button @click="deleteAccount" class="btn btn-outline btn-error">
+        Delete Account
+      </button>
     </div>
   </div>
 </template>

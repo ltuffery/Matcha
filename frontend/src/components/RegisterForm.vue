@@ -13,7 +13,6 @@ const formData = {
   first_name: null,
   last_name: null,
   gender: null,
-  sexual_preferences: null,
   biography: null,
   tags: [],
   images: [],
@@ -101,16 +100,15 @@ function getErrorCode(message) {
   else if (message.search('last_name') != -1) return 4
   else if (message.search('birthday') != -1) return 5
   else if (message.search('gender') != -1) return 6
-  else if (message.search('sexual_preferences') != -1) return 7
-  else if (message.search('biography') != -1) return 8
-  else if (message.search('photos') != -1) return 9
+  else if (message.search('biography') != -1) return 7
+  else if (message.search('photos') != -1) return 8
 }
 
 function focusInput(code) {
   if (code < 3) step.value.setStep(0)
   else if (code >= 3 && code < 6) step.value.setStep(1)
-  else if (code >= 6 && code < 8) step.value.setStep(2)
-  else if (code == 8) step.value.setStep(3)
+  else if (code >= 6 && code < 7) step.value.setStep(2)
+  else if (code == 7) step.value.setStep(3)
   else step.value.setStep(4)
 
   nextTick(() => {
@@ -144,10 +142,6 @@ function focusInput(code) {
         refs.value.gender.classList.add('select-error')
         break
       case 7:
-        refs.value.sexual_preferences.focus()
-        refs.value.sexual_preferences.classList.add('select-error')
-        break
-      case 8:
         refs.value.biography.focus()
         refs.value.biography.classList.add('textarea-error')
         break
@@ -283,24 +277,6 @@ function eraseErrorStyle(el) {
               <option value="M">Man</option>
               <option value="F">Woman</option>
               <option value="O">Other</option>
-            </select>
-          </div>
-
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">Sexual Preferences</span>
-            </label>
-            <select
-              v-model="formData.sexual_preferences"
-              :ref="el => (refs.sexual_preferences = el)"
-              class="select select-bordered w-full max-w-xs"
-              @input="eraseErrorStyle"
-            >
-              <option disabled selected>Choose one</option>
-              <option value="M">Men</option>
-              <option value="F">Women</option>
-              <option value="O">Other</option>
-              <option value="A">All</option>
             </select>
           </div>
         </form>

@@ -2,9 +2,10 @@
 import { RouterView } from 'vue-router'
 import { isAuthenticated } from './services/auth'
 import { Api } from './utils/api'
-import { connectSocket } from '@/plugins/socket.js'
+import { connectSocket, getSocket } from '@/plugins/socket.js'
+import FeedbackToast from '@/components/FeedbackToast.vue'
 import NavBar from '@/components/NavBar.vue'
-import { onMounted, onUnmounted, ref } from 'vue'
+import {onMounted, onUnmounted, ref, useTemplateRef} from 'vue'
 
 const breakPointScreen = '(min-width: 70em)'
 
@@ -30,7 +31,18 @@ isAuthenticated().then(value => {
   }
 })
 
-onMounted(() => {
+let toast = useTemplateRef('toast')
+
+onMounted(async () => {
+  const isAuth = await isAuthenticated()
+
+  if (isAuth) {
+    getSocket().on('notification', notification => {
+      console.log(toast.value)
+      toast.value.addInfo('Hey !')
+    })
+  }
+
   const mediaQuery = window.matchMedia(breakPointScreen)
   mediaQuery.addEventListener('change', e => {
     sizeScreen.value = e
@@ -47,6 +59,7 @@ onUnmounted(() => {
 
 <template>
   <NavBar large-screen v-if="isAuth && sizeScreen.matches" />
+  <FeedbackToast ref="toast" class="w-full" />
   <div
     class="flex flex-col bg-base-300 h-dvh w-full justify-center items-center"
   >
