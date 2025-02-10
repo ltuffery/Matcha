@@ -5,8 +5,8 @@ import { Api } from './utils/api'
 import { connectSocket, getSocket } from '@/plugins/socket.js'
 import FeedbackToast from '@/components/FeedbackToast.vue'
 import NavBar from '@/components/NavBar.vue'
-import {onMounted, onUnmounted, ref, useTemplateRef} from 'vue'
-import FooterView from "@/components/FooterView.vue";
+import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import FooterView from '@/components/FooterView.vue'
 
 const breakPointScreen = '(min-width: 70em)'
 
@@ -64,7 +64,9 @@ onUnmounted(() => {
   <div
     class="flex flex-col bg-base-300 h-dvh w-full justify-center items-center"
   >
-    <div class="overflow-y-auto relative bg-base-200 h-full w-full max-w-3xl z-10">
+    <div
+      class="overflow-y-auto relative bg-base-200 h-full w-full max-w-3xl z-10"
+    >
       <RouterView />
     </div>
     <NavBar v-if="isAuth && !sizeScreen.matches" />
