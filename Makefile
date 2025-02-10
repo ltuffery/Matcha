@@ -1,6 +1,6 @@
 DC := docker compose
 
-all: up
+all: set_app_host up
 
 up:
 	$(DC) up --build
@@ -17,5 +17,13 @@ fclean: down
 	rm -rf api/storage/photos/*
 
 re: fclean up
+
+set_app_host:
+	@if [ "$(wildcard .env)" = "" ]; then \
+		(echo ".env Not Found"; false); \
+	else \
+		sed -i '/APP_HOST/d' .env; \
+		echo "\nAPP_HOST=$(shell hostname -i)" >> .env; \
+	fi
 
 .PHONY: all re clean fclean up down

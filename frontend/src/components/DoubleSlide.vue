@@ -7,7 +7,8 @@
       id="startValue"
       :min="props.min"
       :max="props.max"
-      value=""
+      :value="props.start"
+      class="z-20 mt-[0.5em]"
     />
     <input
       ref="endValue"
@@ -16,7 +17,8 @@
       id="endValue"
       :min="props.min"
       :max="props.max"
-      value=""
+      :value="props.end"
+      class="z-20 mt-[0.5em]"
     />
     <div
       ref="tooltipStart"
@@ -176,7 +178,22 @@ onMounted(() => {
     border-radius: 50%;
     cursor: pointer;
     position: relative;
-    margin-top: 1em;
+    // margin-top: 1em;
+    z-index: 3;
+  }
+
+  input[type='range']::-moz-range-thumb {
+    pointer-events: auto;
+    // -moz-appearance: none;
+    // appearance: none;
+    width: 1.5em;
+    height: 1.5em;
+    background: var(--fallback-b1, oklch(var(--b1) / 1));
+    border: 0.3rem solid var(--fallback-bc, oklch(var(--bc) / 1));
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    // margin-top: 1em;
     z-index: 3;
   }
 

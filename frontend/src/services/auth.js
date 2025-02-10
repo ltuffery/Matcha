@@ -1,4 +1,5 @@
 import { Api } from '@/utils/api'
+import router from '@/router'
 
 export const login = async (username, password) => {
   try {
@@ -59,8 +60,6 @@ export const isAuthenticated = async () => {
 
     if (!refreshed) return false
 
-    console.log('New session')
-
     return true
 
     /* eslint-disable */
@@ -73,4 +72,9 @@ export const isAuthenticated = async () => {
 export const logout = () => {
   localStorage.removeItem('jwt')
   localStorage.removeItem('refresh')
+}
+
+export const disconect = () => {
+  logout()
+  router.push({ name: 'home' })
 }
