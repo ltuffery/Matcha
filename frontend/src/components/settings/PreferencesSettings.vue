@@ -1,7 +1,7 @@
 <script setup>
 import DoubleSlide from '@/components/DoubleSlide.vue'
 import { onUnmounted, ref, watchEffect } from 'vue'
-import { disconect } from '@/services/auth';
+import { disconect } from '@/services/auth'
 
 const preferences = ref({
   age: {

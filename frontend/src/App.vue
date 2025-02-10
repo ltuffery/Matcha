@@ -3,12 +3,12 @@ import { RouterView } from 'vue-router'
 import { isAuthenticated } from './services/auth'
 import { Api } from './utils/api'
 import { connectSocket } from '@/plugins/socket.js'
-import NavBar from "@/components/NavBar.vue";
-import { onMounted, onUnmounted, ref } from "vue";
+import NavBar from '@/components/NavBar.vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 const breakPointScreen = '(min-width: 70em)'
 
-const sizeScreen = ref(window.matchMedia(breakPointScreen));
+const sizeScreen = ref(window.matchMedia(breakPointScreen))
 
 const isAuth = ref(false)
 
@@ -31,19 +31,25 @@ isAuthenticated().then(value => {
 })
 
 onMounted(() => {
-  const mediaQuery = window.matchMedia(breakPointScreen);
-  mediaQuery.addEventListener('change', (e) => {sizeScreen.value = e});
-});
+  const mediaQuery = window.matchMedia(breakPointScreen)
+  mediaQuery.addEventListener('change', e => {
+    sizeScreen.value = e
+  })
+})
 
 onUnmounted(() => {
-  const mediaQuery = window.matchMedia(breakPointScreen);
-  mediaQuery.removeEventListener('change', (e) => {sizeScreen.value = e});
-});
+  const mediaQuery = window.matchMedia(breakPointScreen)
+  mediaQuery.removeEventListener('change', e => {
+    sizeScreen.value = e
+  })
+})
 </script>
 
 <template>
   <NavBar large-screen v-if="isAuth && sizeScreen.matches" />
-  <div class="flex flex-col bg-base-300 h-dvh w-full justify-center items-center">
+  <div
+    class="flex flex-col bg-base-300 h-dvh w-full justify-center items-center"
+  >
     <div class="overflow-y-auto relative bg-base-200 h-full w-full max-w-3xl">
       <RouterView />
     </div>

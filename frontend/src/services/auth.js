@@ -76,5 +76,5 @@ export const logout = () => {
 
 export const disconect = () => {
   logout()
-  router.push({name: 'home'})
+  router.push({ name: 'home' })
 }

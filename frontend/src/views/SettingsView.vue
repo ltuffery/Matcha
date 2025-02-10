@@ -3,7 +3,7 @@ import ProfileView from '@/components/ProfileView.vue'
 import PreferencesSettings from '@/components/settings/PreferencesSettings.vue'
 import AccountSettings from '@/components/settings/AccountSettings.vue'
 import { ref } from 'vue'
-import router from "@/router";
+import router from '@/router'
 
 const temporaryImage = [
   'https://as1.ftcdn.net/v2/jpg/06/12/64/52/1000_F_612645270_KBcBTf5CToMDyGr1hDpqSNyMK6eaXrPq.jpg',
@@ -28,36 +28,36 @@ const changeSettings = e => {
 const goToProfile = () => {
   const decoded = JSON.parse(atob(localStorage.jwt.split('.')[1]))
   const username = decoded.username
-  router.push({ name: 'profile', params: {username} })
+  router.push({ name: 'profile', params: { username } })
 }
 </script>
 
 <template>
   <!-- <div class="flex bg-base-300 h-dvh w-full justify-center items-center"> -->
-    <!-- <div class="overflow-y-auto bg-base-200 h-full w-full max-w-3xl px-6"> -->
-      <div class="flex w-full h-full flex-col gap-3">
-        <div class="flex w-full items-center flex-col gap-6">
-          <div class="pt-14">
-            <ProfileView
-              class="w-20 h-36 cursor-pointer"
-              :images="temporaryImage"
-              @click="goToProfile"
-            />
-          </div>
-          <div class="text-xl">First Name</div>
-        </div>
-
-        <div>
-          <div class="card bg-base-300 gap-3 w-full p-5">
-            <button @click="changeSettings" id="ac" class="btn">
-              Account Settings
-            </button>
-          </div>
-        </div>
-        <PreferencesSettings v-if="settingsCategory === 1" />
-
-        <AccountSettings v-else />
+  <!-- <div class="overflow-y-auto bg-base-200 h-full w-full max-w-3xl px-6"> -->
+  <div class="flex w-full h-full flex-col gap-3">
+    <div class="flex w-full items-center flex-col gap-6">
+      <div class="pt-14">
+        <ProfileView
+          class="w-20 h-36 cursor-pointer"
+          :images="temporaryImage"
+          @click="goToProfile"
+        />
       </div>
-    <!-- </div> -->
+      <div class="text-xl">First Name</div>
+    </div>
+
+    <div>
+      <div class="card bg-base-300 gap-3 w-full p-5">
+        <button @click="changeSettings" id="ac" class="btn">
+          Account Settings
+        </button>
+      </div>
+    </div>
+    <PreferencesSettings v-if="settingsCategory === 1" />
+
+    <AccountSettings v-else />
+  </div>
+  <!-- </div> -->
   <!-- </div> -->
 </template>
