@@ -1,6 +1,7 @@
 <script setup>
 import DoubleSlide from '@/components/DoubleSlide.vue'
 import { onUnmounted, ref, watchEffect } from 'vue'
+import { disconect } from '@/services/auth'
 import { Api } from '@/utils/api.js'
 
 const props = defineProps({
@@ -117,7 +118,7 @@ onUnmounted(() => {
 
   <div>
     <div class="card w-full p-5 mt-10">
-      <button class="btn btn-outline">Disconect</button>
+      <button @click="disconect" class="btn btn-outline">Disconect</button>
     </div>
   </div>
 </template>

@@ -20,8 +20,15 @@ class ProfileController
      */
     public function show(string $username): void
     {
+        $user = User::find(["username" => $username]);
+
+        if (is_null($user)) {
+            Flight::json(["message" => "Not found."], 404);
+            return;
+        }
+
         Flight::json(
-            new ProfileResource(User::find(["username" => $username]))
+            new ProfileResource($user)
         );
     }
 

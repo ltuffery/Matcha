@@ -5,6 +5,7 @@ import AccountSettings from '@/components/settings/AccountSettings.vue'
 import { ref } from 'vue'
 import { Api } from '@/utils/api.js'
 import LoadingScreen from '@/components/screen/LoadingScreen.vue'
+import router from '@/router'
 
 const loading = ref(true)
 const settingsCategory = ref(1)
@@ -28,6 +29,12 @@ const changeSettings = e => {
     e.target.id = 'ac'
     e.target.innerHTML = 'Account Settings'
   }
+}
+
+const goToProfile = () => {
+  const decoded = JSON.parse(atob(localStorage.jwt.split('.')[1]))
+  const username = decoded.username
+  router.push({ name: 'profile', params: { username } })
 }
 </script>
 
