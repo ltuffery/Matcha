@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import BirthdaySelector from '@/components/userForm/BirthdaySelector.vue'
 import { Api } from '@/utils/api.js'
+import { logout } from '@/services/auth.js'
 
 const props = defineProps({
   data: {
@@ -73,6 +74,7 @@ const sendChange = e => {
 
 const deleteAccount = () => {
   Api.delete('/users/me').send()
+  logout()
 }
 </script>
 
@@ -236,10 +238,9 @@ const deleteAccount = () => {
         @change="sendChange"
         id="gender"
       >
-        <option disabled selected>Choose one</option>
-        <option value="M">Man</option>
-        <option value="F">Woman</option>
-        <option value="O">Other</option>
+        <option :selected="props.data?.gender === 'M'" value="M">Man</option>
+        <option :selected="props.data?.gender === 'F'" value="F">Woman</option>
+        <option :selected="props.data?.gender === 'O'" value="O">Other</option>
       </select>
     </div>
   </div>

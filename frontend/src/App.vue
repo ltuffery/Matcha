@@ -3,8 +3,8 @@ import { RouterView } from 'vue-router'
 import { isAuthenticated } from './services/auth'
 import { Api } from './utils/api'
 import { connectSocket, getSocket } from '@/plugins/socket.js'
-import FeedbackToast from "@/components/FeedbackToast.vue";
-import {onMounted, ref, useTemplateRef} from "vue";
+import FeedbackToast from '@/components/FeedbackToast.vue'
+import { onMounted, ref, useTemplateRef } from 'vue'
 
 isAuthenticated().then(value => {
   if (value) {
@@ -29,9 +29,9 @@ onMounted(async () => {
   const isAuth = await isAuthenticated()
 
   if (isAuth) {
-    getSocket().on("notification", (notification) => {
+    getSocket().on('notification', notification => {
       console.log(toast.value)
-      toast.value.addInfo("Hey !")
+      toast.value.addInfo('Hey !')
     })
   }
 })
