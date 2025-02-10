@@ -5,14 +5,18 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css' // Import Swiper styles
 import { EffectCreative } from 'swiper/modules'
 import { useRoute } from 'vue-router'
+import router from '@/router/index.js'
 
 const modules = ref([EffectCreative])
-let data = ref()
+const data = ref()
+const notFound = ref(false)
 const route = useRoute()
 
 const getData = async () => {
   const res = await Api.get(`users/${route.params.username}`).send()
-  data.value = await res.json()
+
+  if (res.ok) data.value = await res.json()
+  else notFound.value = true
 }
 
 const formatGender = type => {
@@ -31,6 +35,23 @@ onMounted(async () => {
 </script>
 
 <template>
+  <!-- User not found -->
+  <div
+    v-if="notFound"
+    class="relative h-dvh w-full flex justify-center items-center"
+  >
+    <div class="flex justify-center flex-col gap-4">
+      <h1 class="text-3xl">User not found !</h1>
+      <button
+        @click="router.push({ name: 'main' })"
+        class="btn btn-primary btn-outline"
+      >
+        Go home
+      </button>
+    </div>
+  </div>
+
+  <!-- User information if is found -->
   <!-- <div class="flex bg-base-300 h-dvh w-full justify-center items-center">
     <div class="overflow-y-auto relative bg-base-200 h-full w-full max-w-3xl"> -->
       <div class="flex flex-col p-4 items-center gap-4 w-full h-full">
@@ -82,7 +103,12 @@ onMounted(async () => {
             class="flex gap-1 bg-base-300 rounded-box p-2 px-3 w-fit text-xl"
           >
             <label>At </label>
-            <label class="font-semibold">{{ data?.distance }} km</label>
+            <label class="font-semibold"
+              >{{
+                data?.distance === -1 ? 'less of 1' : data?.distance
+              }}
+              km</label
+            >
             <label>from you</label>
           </div>
         </div>
