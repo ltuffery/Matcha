@@ -5,7 +5,7 @@ import { Api } from './utils/api'
 import { connectSocket, getSocket } from '@/plugins/socket.js'
 import FeedbackToast from '@/components/FeedbackToast.vue'
 import NavBar from '@/components/NavBar.vue'
-import { onMounted, ref, useTemplateRef } from 'vue'
+import {onMounted, onUnmounted, ref, useTemplateRef} from 'vue'
 
 const breakPointScreen = '(min-width: 70em)'
 
@@ -33,7 +33,7 @@ isAuthenticated().then(value => {
 
 let toast = useTemplateRef('toast')
 
-onMounted(() => {
+onMounted(async () => {
   const isAuth = await isAuthenticated()
 
   if (isAuth) {
