@@ -19,7 +19,7 @@ const input = () => {
 </script>
 
 <template>
-  <div class="max-w-3xl m-auto pt-8">
+  <div class="max-w-3xl h-full m-auto pt-8">
     <label class="input input-bordered flex items-center gap-2">
       <input
         @input="input"

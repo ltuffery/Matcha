@@ -2,6 +2,7 @@
 
 namespace Matcha\Database\Seeders;
 
+use Matcha\Api\Exceptions\UniqueConstraintException;
 use Matcha\Api\Model\Preference;
 use Matcha\Api\Model\User;
 
@@ -19,7 +20,9 @@ class PreferencesSeeder implements SeederInterface
             $preferences->distance_maximum = rand(1, 20);
             $preferences->by_tags = (bool)rand(0, 1);
 
-            $preferences->save();
+            try {
+                $preferences->save();
+            } catch (UniqueConstraintException) {}
         }
     }
 }

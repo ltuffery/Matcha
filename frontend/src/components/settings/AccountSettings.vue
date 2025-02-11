@@ -234,7 +234,7 @@ const deleteAccount = () => {
     <div class="card bg-base-300 gap-3 w-full p-5">
       <label>Gender :</label>
       <select
-        class="select select-bordered w-full max-w-xs"
+        class="select select-bordered w-full"
         @change="sendChange"
         id="gender"
       >

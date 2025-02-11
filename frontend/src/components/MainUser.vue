@@ -4,6 +4,7 @@ import vDoubleTap from '@/directives/doubleTap.js'
 import { ref } from 'vue'
 import 'swiper/swiper-bundle.css'
 import { Api } from '@/utils/api.js'
+import { EffectCreative } from 'swiper/modules'
 
 const props = defineProps({
   user: {
@@ -15,6 +16,7 @@ const props = defineProps({
 const isLiked = ref(false)
 const animated = ref(false)
 const skeleton = ref(false)
+const modules = ref([EffectCreative])
 
 const emit = defineEmits(['nextSlide'])
 
@@ -45,7 +47,7 @@ function btnLike(event) {
 <template>
   <!-- ### Skeleton part ### -->
   <skeleton v-if="skeleton === true">
-    <div class="carousel w-full rounded-lg static">
+    <div class="w-full rounded-lg static">
       <div
         class="skeleton w-full h-full shadow-md absolute left-0 start-0 z-10"
       ></div>
@@ -64,20 +66,30 @@ function btnLike(event) {
   </skeleton>
 
   <!-- ### main part part ### -->
-  <div v-if="skeleton === false" class="carousel w-full rounded-lg static">
+  <div v-if="skeleton === false" class="h-full w-full rounded-lg static">
     <swiper
       :slides-per-view="1"
-      :space-between="10"
       :loop="false"
       :pagination="{ clickable: true }"
       :watchOverflow="true"
-      class="w-full h-full bg-gray-200 shadow-md absolute left-0 start-0 z-10"
+      :effect="'creative'"
+      :creativeEffect="{
+        prev: {
+          shadow: true,
+          translate: [0, 0, -400],
+        },
+        next: {
+          translate: ['100%', 0, 0],
+        },
+      }"
+      :modules="modules"
+      class="w-full h-full absolute left-0 start-0 z-10"
     >
       <swiper-slide v-for="(image, index) in props.user.photos" :key="index">
         <img
           :src="image"
           alt="Slide image"
-          class="w-full h-full object-cover"
+          class="w-full h-full rounded-box object-cover"
           v-double-tap="likeUser"
         />
       </swiper-slide>
