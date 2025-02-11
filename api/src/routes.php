@@ -1,11 +1,11 @@
 <?php
 
-use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Controllers\Auth\VerifyTokenController;
+use Matcha\Api\Controllers\AuthenticatedSessionController;
+use Matcha\Api\Controllers\ChatController;
 use Matcha\Api\Controllers\EmailController;
 use Matcha\Api\Controllers\ForgotController;
-use Matcha\Api\Controllers\History\LikesHistoryController;
-use Matcha\Api\Controllers\ChatController;
+use Matcha\Api\Controllers\HistoryController;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Controllers\LocalisationController;
 use Matcha\Api\Controllers\Notifications\NotificationsController;
@@ -17,6 +17,7 @@ use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
 use Matcha\Api\Controllers\SearchProfileController;
 use Matcha\Api\Controllers\TagsController;
+use Matcha\Api\Controllers\ViewController;
 use Matcha\Api\Middleware\AuthMiddleware;
 
 Flight::route('GET /', function () {
@@ -56,6 +57,8 @@ Flight::group('/users', function () {
 
         Flight::route('POST /block', [UserBlockController::class, 'store']);
         Flight::route('DELETE /unblock', [UserBlockController::class, 'destroy']);
+
+        Flight::route('POST /view', [ViewController::class, 'store']);
     });
 
     Flight::group('/me', function () {
@@ -68,7 +71,7 @@ Flight::group('/users', function () {
         Flight::route('PUT|PATCH /preferences', [PreferencesController::class, 'update']);
         Flight::route('GET /preferences', [PreferencesController::class, 'index']);
 
-        Flight::route('GET /likes', [LikesHistoryController::class, 'index']);
+        Flight::route('GET /history', [HistoryController::class, 'index']);
         Flight::route('GET /suggestions', [ProfileSuggestionController::class, 'index']);
         Flight::route('GET /blocks', [UserBlockController::class, 'index']);
 

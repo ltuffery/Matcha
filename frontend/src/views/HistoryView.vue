@@ -1,17 +1,20 @@
 <script setup>
 import Tabs from '@/components/tabs/Tabs.vue'
 import Tab from '@/components/tabs/Tab.vue'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { Api } from '@/utils/api.js'
 import Avatar from '@/components/Avatar.vue'
 import { likesStore } from '@/store/likes.js'
 import Empty from '@/components/Empty.vue'
 
+const views = ref()
+
 onMounted(async () => {
-  const res = await Api.get('/users/me/likes').send()
+  const res = await Api.get('/users/me/history').send()
   const data = await res.json()
 
-  likesStore().set(data)
+  views.value = data.views
+  likesStore().set(data.likes)
 })
 
 const likes = computed(() => likesStore().users)
@@ -86,7 +89,19 @@ const validDeleteLikeHandler = username => {
       </ul>
     </Tab>
     <Tab name="Views">
-      <Empty text="No views" class="mt-12" />
+      <Empty v-if="views?.length === 0" text="No views" class="mt-12" />
+      <div v-else>
+        <div
+          v-for="(u, index) in views"
+          class="flex items-center justify-between p-4"
+          :key="index"
+        >
+          <div class="flex items-center gap-4 font-medium text-xl">
+            <Avatar type="squircle" :src="u.avatar" :username="u.username" />
+            {{ u.first_name }}
+          </div>
+        </div>
+      </div>
     </Tab>
   </Tabs>
 </template>
