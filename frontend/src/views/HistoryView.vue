@@ -1,7 +1,7 @@
 <script setup>
 import Tabs from '@/components/tabs/Tabs.vue'
 import Tab from '@/components/tabs/Tab.vue'
-import {computed, onMounted, ref} from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { Api } from '@/utils/api.js'
 import Avatar from '@/components/Avatar.vue'
 import { likesStore } from '@/store/likes.js'

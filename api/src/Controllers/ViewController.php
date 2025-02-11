@@ -9,8 +9,7 @@ class ViewController
 {
     public function store(string $username)
     {
-        if (Flight::user()->username == $username)
-        {
+        if (Flight::user()->username == $username) {
             Flight::json([], 422);
             return;
         }
