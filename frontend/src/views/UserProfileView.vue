@@ -39,7 +39,7 @@ onMounted(async () => {
   <!-- User not found -->
   <div
     v-if="notFound"
-    class="relative h-dvh w-full flex justify-center items-center"
+    class="relative h-full w-full flex justify-center items-center"
   >
     <div class="flex justify-center flex-col gap-4">
       <h1 class="text-3xl">User not found !</h1>
@@ -53,7 +53,7 @@ onMounted(async () => {
   </div>
 
   <!-- User information if is found -->
-  <div class="flex flex-col p-4 items-center gap-4 w-full h-full">
+  <div v-else class="flex flex-col p-4 items-center gap-4 w-full h-full">
     <div class="h-[40%] w-full">
       <swiper
         :slides-per-view="1"
