@@ -99,9 +99,9 @@ class User extends Model
         $like->save();
 
         if ($this->hasMatch($user->username)) {
-            $user->notificationFor($user, NotificationType::MATCH, $this->first_name . ' has match you');
+            Notification::to($this, $user, NotificationType::MATCH, $this->first_name . ' has match you');
         } else {
-            $user->notificationFor($user, NotificationType::LIKE, $this->first_name . ' has liked you');
+            Notification::to($this, $user, NotificationType::LIKE, $this->first_name . ' has liked you');
         }
     }
 
@@ -113,9 +113,11 @@ class User extends Model
         ]);
 
         if (!is_null($like)) {
-            $like->delete();
+            if ($this->hasMatch($like->liked()->username)) {
+                Notification::to($this, $user, NotificationType::UNLIKE, $this->first_name . ' has unlike you');
+            }
 
-            $user->notificationFor($user, NotificationType::UNLIKE, $this->first_name . ' has unliked you');
+            $like->delete();
         }
     }
 

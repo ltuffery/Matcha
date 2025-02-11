@@ -18,4 +18,28 @@ class NotificationsController
             NotificationsResource::collection($notifications)
         );
     }
+
+    public function viewed(int $id): void
+    {
+        $notification = Notification::find([
+            'id' => $id,
+        ]);
+
+        if ($notification->user_id !== Flight::user()->id) {
+            Flight::json([
+                'message' => 'You can not update notification.',
+            ], 403);
+            return;
+        }
+
+        if ($notification->view) {
+            Flight::json([], 204);
+            return;
+        }
+
+        $notification->view = true;
+
+        $notification->save();
+        Flight::json([], 204);
+    }
 }

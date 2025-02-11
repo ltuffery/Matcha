@@ -15,6 +15,7 @@ class NotificationsResource extends JsonResource
         $user = $this->model->sender();
 
         return [
+            'id' => $user->id,
             'type' => $this->model->type,
             'data' => [
                 'username' => $user->username,

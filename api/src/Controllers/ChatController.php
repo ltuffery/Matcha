@@ -5,6 +5,7 @@ namespace Matcha\Api\Controllers;
 use Flight;
 use Matcha\Api\Controllers\Notifications\NotificationType;
 use Matcha\Api\Model\Message;
+use Matcha\Api\Model\Notification;
 use Matcha\Api\Model\User;
 use Matcha\Api\Resources\MatchUserResource;
 use Matcha\Api\Resources\MessageResource;
@@ -88,7 +89,7 @@ class ChatController
 
         $saved = $message->save();
 
-        $user->notificationFor($receiver, NotificationType::MESSAGE, $user->first_name . ' sent you a message');
+        Notification::to($user, $receiver, NotificationType::MESSAGE, $user->first_name . ' sent you a message');
 
         Flight::json(new MessageResource($saved), 201);
     }

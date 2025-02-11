@@ -12,13 +12,16 @@ export const notificationsStore = defineStore('notifications', {
       this.notifications.push(notification)
     },
     hasNotificationNotView() {
-      return this.notifications.some(notification => notification.view)
+      return this.notifications.some(notification => !notification.data.view)
     },
     setAllView() {
       this.notifications = this.notifications.map(notification => {
         notification.view = true
         return notification
       })
+    },
+    getNotificationNotView() {
+      return this.notifications.filter(notification => !notification.data.view)
     }
   }
 })

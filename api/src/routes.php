@@ -75,7 +75,7 @@ Flight::group('/users', function () {
         Flight::route('GET /suggestions', [ProfileSuggestionController::class, 'index']);
         Flight::route('GET /blocks', [UserBlockController::class, 'index']);
 
-        Flight::route('POST /notifications', [NotificationsController::class, 'store']);
+        Flight::route('POST /notifications/@id/view', [NotificationsController::class, 'viewed']);
         Flight::route('GET /notifications', [NotificationsController::class, 'index']);
 
         Flight::group('/matches', function () {
