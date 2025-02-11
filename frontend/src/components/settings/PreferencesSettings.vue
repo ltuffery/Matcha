@@ -84,7 +84,7 @@ onUnmounted(() => {
       <div class="flex justify-between">
         <label>Interested by :</label>
       </div>
-      <select class="select select-bordered w-full max-w-xs">
+      <select class="select select-bordered w-full">
         <option :selected="preferences.sexual_preference === 'F'" value="F">
           Women
         </option>
