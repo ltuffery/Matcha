@@ -122,6 +122,23 @@ class User extends Model
         ]);
     }
 
+    public function view(User $user): void
+    {
+        $view = new View();
+
+        $view->user_id = $this->id;
+        $view->viewed_id = $user->id;
+
+        $view->save();
+    }
+
+    public function views(): array
+    {
+        return View::all([
+            'user_id' => $this->id,
+        ]);
+    }
+
     /**
      * Get all user matches
      *
