@@ -31,6 +31,7 @@ const formatGender = type => {
 }
 onMounted(async () => {
   await getData()
+  console.log("Send profile is viewed to backend")
 })
 </script>
 
