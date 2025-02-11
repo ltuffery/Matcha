@@ -3,6 +3,7 @@
 namespace Matcha\Api\Controllers;
 
 use Flight;
+use Matcha\Api\Controllers\Notifications\NotificationType;
 use Matcha\Api\Model\Message;
 use Matcha\Api\Model\User;
 use Matcha\Api\Resources\MatchUserResource;
@@ -23,7 +24,7 @@ class ChatController
 
     public function show(string $username): void
     {
-        if (!Flight::user()->hasMatche($username)) {
+        if (!Flight::user()->hasMatch($username)) {
             Flight::json([
                 "message" => "Forbidden.",
             ], 403);
@@ -79,12 +80,15 @@ class ChatController
             'username' => $username,
         ]);
         $message = new Message();
+        $user = Flight::user();
 
-        $message->sender_id = Flight::user()->id;
+        $message->sender_id = $user->id;
         $message->receiver_id = $receiver->id;
         $message->content = htmlspecialchars(Flight::request()->data->content);
 
         $saved = $message->save();
+
+        $receiver->createNotification(NotificationType::MESSAGE, $user->first_name . ' sent you a message');
 
         Flight::json(new MessageResource($saved), 201);
     }

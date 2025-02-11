@@ -1,7 +1,7 @@
-export const NOTIFICATION_TYPE = Object.freeze({
-  MESSAGE: Symbol("message"),
-  LIKE: Symbol("like"),
-  UNLIKE: Symbol("unlike"),
-  MATCH: Symbol("match"),
-  VIEW: Symbol("view"),
-});
+export const NOTIFICATION_TYPE = {
+  MESSAGE: "message",
+  LIKE: "like",
+  UNLIKE: "unlike",
+  MATCH: "match",
+  VIEW: "view",
+};

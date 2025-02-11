@@ -4,6 +4,7 @@ namespace Matcha\Api\Model;
 
 use Firebase\JWT\JWT;
 use Flight;
+use Matcha\Api\Controllers\Notifications\NotificationType;
 use PDO;
 
 /**
@@ -96,6 +97,12 @@ class User extends Model
         $like->liked_id = $user->id;
 
         $like->save();
+
+        if ($this->hasMatch($user->username)) {
+            $user->createNotification(NotificationType::MATCH, $this->first_name . ' has match you');
+        } else {
+            $user->createNotification(NotificationType::LIKE, $this->first_name . ' has liked you');
+        }
     }
 
     public function unlike(User $user): void
@@ -107,6 +114,8 @@ class User extends Model
 
         if (!is_null($like)) {
             $like->delete();
+
+            $user->createNotification(NotificationType::UNLIKE, $this->first_name . ' has unliked you');
         }
     }
 
@@ -149,7 +158,7 @@ class User extends Model
      * @param string username
      * @return bool
      */
-    public function hasMatche(string $username): bool
+    public function hasMatch(string $username): bool
     {
         $matches = $this->matches();
 
@@ -265,6 +274,24 @@ class User extends Model
     public function getPreferences(): Preference
     {
         return Preference::find([
+            'user_id' => $this->id,
+        ]);
+    }
+
+    public function createNotification(string $type, string $content): Notification
+    {
+        $notification = new Notification();
+
+        $notification->user_id = $this->id;
+        $notification->type = $type;
+        $notification->content = $content;
+
+        return $notification->save();
+    }
+
+    public function getNotifications(): array
+    {
+        return Notification::all([
             'user_id' => $this->id,
         ]);
     }

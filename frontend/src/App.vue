@@ -38,7 +38,11 @@ onMounted(async () => {
 
   if (isAuth) {
     getSocket().on('notification', notification => {
-      console.log(toast.value)
+      if (notification.type.toUpperCase() === 'MESSAGE'
+        && window.location.pathname === `/chat/${notification.data.sender}`) {
+        return
+      }
+
       toast.value.addInfo('Hey !')
     })
   }
@@ -59,7 +63,7 @@ onUnmounted(() => {
 
 <template>
   <NavBar large-screen v-if="isAuth && sizeScreen.matches" />
-  <FeedbackToast ref="toast" class="w-full" />
+  <FeedbackToast ref="toast" class="w-full z-50" />
   <div
     class="flex flex-col bg-base-300 h-dvh w-full justify-center items-center"
   >
