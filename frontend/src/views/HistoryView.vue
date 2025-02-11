@@ -24,7 +24,7 @@ const validDeleteLikeHandler = username => {
 </script>
 
 <template>
-  <Tabs class="max-w-3xl m-auto pt-8">
+  <Tabs class="max-w-3xl h-full m-auto pt-8">
     <Tab name="Likes">
       <Empty
         v-if="likesStore().users.length === 0"
@@ -33,7 +33,7 @@ const validDeleteLikeHandler = username => {
       />
 
       <ul v-else>
-        <li v-for="u in likes" class="flex items-center justify-between p-4">
+        <li v-for="(u, index) in likes" class="flex items-center justify-between p-4" :key="index">
           <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
             <div class="modal-box">
               <h3 class="text-lg font-bold">Are you sure ?</h3>
