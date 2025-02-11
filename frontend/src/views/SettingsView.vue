@@ -41,33 +41,30 @@ const goToProfile = () => {
 <template>
   <LoadingScreen v-if="loading" />
 
-  <div v-else class="flex bg-base-300 h-dvh w-full justify-center items-center">
-    <div class="overflow-y-auto bg-base-200 h-full w-full max-w-3xl px-6">
-      <div class="flex w-full h-full flex-col gap-3">
-        <div class="flex w-full items-center flex-col gap-6">
-          <div class="pt-14">
-            <ProfileView
-              class="w-20 h-36 cursor-pointer"
-              :images="profile.photos"
-            />
-          </div>
-          <div class="text-xl">{{ profile.first_name }}</div>
-        </div>
-
-        <div>
-          <div class="card bg-base-300 gap-3 w-full p-5">
-            <button @click="changeSettings" id="ac" class="btn">
-              Account Settings
-            </button>
-          </div>
-        </div>
-        <PreferencesSettings
-          :preferences="profile.preferences"
-          v-if="settingsCategory === 1"
+  <div v-else class="flex w-full h-full flex-col gap-3">
+    <div class="flex w-full items-center flex-col gap-6">
+      <div class="pt-14">
+        <ProfileView
+          class="w-20 h-36 cursor-pointer"
+          :images="profile.photos"
+          @click="goToProfile"
         />
+      </div>
+      <div class="text-xl">{{ profile.first_name }}</div>
+    </div>
 
-        <AccountSettings :data="profile" v-else />
+    <div>
+      <div class="card bg-base-300 gap-3 w-full p-5">
+        <button @click="changeSettings" id="ac" class="btn">
+          Account Settings
+        </button>
       </div>
     </div>
+    <PreferencesSettings
+      :preferences="profile.preferences"
+      v-if="settingsCategory === 1"
+    />
+
+    <AccountSettings :data="profile" v-else />
   </div>
 </template>

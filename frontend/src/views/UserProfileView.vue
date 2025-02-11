@@ -52,8 +52,6 @@ onMounted(async () => {
   </div>
 
   <!-- User information if is found -->
-  <!-- <div class="flex bg-base-300 h-dvh w-full justify-center items-center">
-    <div class="overflow-y-auto relative bg-base-200 h-full w-full max-w-3xl"> -->
   <div class="flex flex-col p-4 items-center gap-4 w-full h-full">
     <div class="h-[40%] w-full">
       <swiper
@@ -168,6 +166,4 @@ onMounted(async () => {
       </g>
     </svg>
   </button>
-  <!-- </div> -->
-  <!-- </div> -->
 </template>

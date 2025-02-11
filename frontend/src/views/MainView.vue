@@ -5,11 +5,13 @@ import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
 import { getSocket } from '@/plugins/socket.js'
 import Filter from '@/components/main/Filter.vue'
+import { EffectCreative } from 'swiper/modules'
 
 const swiperRef = ref(null)
 const swiperInstance = ref(null)
 const sections = ref([])
 const skeleton = ref(true)
+const modules = ref([EffectCreative])
 
 const onSwiperInit = swiper => {
   swiperInstance.value = swiper
@@ -44,71 +46,51 @@ onMounted(() => {
 
 <template>
   <!-- ### Skeleton part ### -->
-  <div v-if="skeleton">
-    <main
-      class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200"
-    >
-      <div class="card bg-base-100 w-full max-w-lg shrink-0 shadow-2xl">
-        <div class="carousel w-full rounded-lg static">
-          <div
-            class="skeleton w-full h-full shadow-md absolute left-0 start-0 z-10"
-          ></div>
-
-          <div
-            class="absolute left-0 bottom-0 w-full bg-gradient-to-b from-base-100 to-base-200 flex flex-col items-start z-20"
-          >
-            <div class="p-2 w-full relative">
-              <div class="flex items-center">
-                <span class="skeleton h-10 w-2/6"></span>
-              </div>
-              <p class="skeleton w-full h-5 mt-1"></p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
+  <div class="h-full w-full" v-if="skeleton">
+    <div class="h-[85%] w-full skeleton"></div>
+    <div>
+      <div class="skeleton h-10 w-2/6 mt-5"></div>
+      <div class="skeleton w-full h-5 mt-1"></div>
+    </div>
   </div>
 
   <!-- ### main part part ### -->
-  <main
-    v-if="skeleton === false"
-    class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200"
-  >
-    <div class="relative card bg-base-100 w-full max-w-lg shrink-0 shadow-2xl">
-      <Filter class="absolute top-2 right-2 z-20" />
+  <div v-else class="h-full w-full flex justify-center items-center">
+    <Filter class="absolute top-2 right-2 z-20" />
 
-      <div class="carousel w-full h-screen rounded-lg">
-        <swiper
-          ref="swiperRef"
-          :direction="'vertical'"
-          :slides-per-view="1"
-          :space-between="10"
-          :loop="false"
-          :pagination="{ clickable: true }"
-          :watchOverflow="true"
-          class="w-full h-full"
-          @swiper="onSwiperInit"
-          @slideChange="onSlideChange"
+    <div class="w-full h-full rounded-lg max-w-lg">
+      <swiper
+        ref="swiperRef"
+        :direction="'vertical'"
+        :slides-per-view="1"
+        :loop="false"
+        :pagination="{ clickable: true }"
+        :watchOverflow="true"
+        :effect="'creative'"
+        :creativeEffect="{
+          prev: {
+            shadow: true,
+            translate: [0, '-20%', -1],
+          },
+          next: {
+            translate: [0, '100%', 0],
+          },
+        }"
+        :modules="modules"
+        class="w-full h-full"
+        @swiper="onSwiperInit"
+        @slideChange="onSlideChange"
+      >
+        <swiper-slide
+          v-for="(content, index) in sections"
+          :key="index"
+          class="flex items-center justify-center h-full bg-gray-100"
         >
-          <swiper-slide
-            v-for="(content, index) in sections"
-            :key="index"
-            class="flex items-center justify-center h-full bg-gray-100"
-          >
-            <div class="bg-base-200 shadow-lg text-center max-w-lg">
-              <MainUser @nextSlide="goToNextSlide" :user="content" />
-            </div>
-          </swiper-slide>
-
-          <div class="swiper-pagination"></div>
-        </swiper>
-      </div>
+          <div class="bg-base-200 h-full shadow-lg">
+            <MainUser @nextSlide="goToNextSlide" :user="content" />
+          </div>
+        </swiper-slide>
+      </swiper>
     </div>
-  </main>
+  </div>
 </template>
-<style>
-.carousel {
-  height: 100vh;
-  max-height: 70rem;
-}
-</style>
