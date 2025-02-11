@@ -18,6 +18,7 @@ const preferences = ref({
   },
   distance: props.preferences.distance_maximum,
   sexual_preference: props.preferences.sexual_preferences,
+  fame_rating: 10
 })
 
 const ageRange = ref()
@@ -74,6 +75,23 @@ onUnmounted(() => {
         min="5"
         max="100"
         value="preferences.distance"
+        class="range"
+      />
+    </div>
+  </div>
+
+  <div>
+    <div class="card bg-base-300 gap-3 w-full p-5">
+      <div class="flex justify-between">
+        <label>Maximum fame rating :</label>
+        <label>{{ preferences.fame_rating }} %</label>
+      </div>
+      <input
+        v-model="preferences.fame_rating"
+        type="range"
+        min="0"
+        max="100"
+        value="preferences.fame_rating"
         class="range"
       />
     </div>
