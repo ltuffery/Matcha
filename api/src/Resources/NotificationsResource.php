@@ -12,11 +12,17 @@ class NotificationsResource extends JsonResource
 
     public function jsonSerialize(): array
     {
+        $user = $this->model->sender();
+
         return [
             'type' => $this->model->type,
-            'content' => $this->model->content,
-            'view' => $this->model->view,
-            'created_at' => $this->model->created_at,
+            'data' => [
+                'username' => $user->username,
+                'avatar' => $user->getAvatar(),
+                'content' => $this->model->content,
+                'view' => $this->model->view,
+                'created_at' => $this->model->created_at,
+            ],
         ];
     }
 }

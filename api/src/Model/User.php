@@ -99,9 +99,9 @@ class User extends Model
         $like->save();
 
         if ($this->hasMatch($user->username)) {
-            $user->createNotification(NotificationType::MATCH, $this->first_name . ' has match you');
+            $user->notificationFor($user, NotificationType::MATCH, $this->first_name . ' has match you');
         } else {
-            $user->createNotification(NotificationType::LIKE, $this->first_name . ' has liked you');
+            $user->notificationFor($user, NotificationType::LIKE, $this->first_name . ' has liked you');
         }
     }
 
@@ -115,7 +115,7 @@ class User extends Model
         if (!is_null($like)) {
             $like->delete();
 
-            $user->createNotification(NotificationType::UNLIKE, $this->first_name . ' has unliked you');
+            $user->notificationFor($user, NotificationType::UNLIKE, $this->first_name . ' has unliked you');
         }
     }
 
@@ -278,11 +278,12 @@ class User extends Model
         ]);
     }
 
-    public function createNotification(string $type, string $content): Notification
+    public function notificationFor(User $user, string $type, string $content): Notification
     {
         $notification = new Notification();
 
-        $notification->user_id = $this->id;
+        $notification->user_id = $user->id;
+        $notification->sender_id = $this->id;
         $notification->type = $type;
         $notification->content = $content;
 

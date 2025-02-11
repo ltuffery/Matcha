@@ -20,7 +20,13 @@ export const sendMessage = (username, socket) => {
       socket.to(onlineUsers.get(to).socketId).emit("receive_message", data)
       socket.to(onlineUsers.get(to).socketId).emit("notification", {
         type: NOTIFICATION_TYPE.MESSAGE,
-        data: data,
+        data: {
+          username: data.sender,
+          avatar: data.avatar,
+          content: data.sender + ' sent you a message',
+          view: false,
+          created_at: data.created_at,
+        },
       })
     }
 
