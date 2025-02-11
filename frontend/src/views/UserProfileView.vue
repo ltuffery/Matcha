@@ -31,7 +31,10 @@ const formatGender = type => {
 }
 onMounted(async () => {
   await getData()
-  console.log("Send profile is viewed to backend")
+
+  const decodedToken = JSON.parse(atob(localStorage.jwt.split('.')[1]));
+  if (notFound.value === false && route.params.username != decodedToken.username)
+    await Api.post(`users/${route.params.username}/view`).send()
 })
 </script>
 
