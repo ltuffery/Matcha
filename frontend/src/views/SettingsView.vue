@@ -6,7 +6,7 @@ import { ref } from 'vue'
 import { Api } from '@/utils/api.js'
 import LoadingScreen from '@/components/screen/LoadingScreen.vue'
 import router from '@/router'
-import {usePreferencesStore} from "@/store/preferences.js";
+import { usePreferencesStore } from '@/store/preferences.js'
 
 const loading = ref(true)
 const settingsCategory = ref(1)
@@ -63,9 +63,7 @@ const goToProfile = () => {
         </button>
       </div>
     </div>
-    <PreferencesSettings
-      v-if="settingsCategory === 1"
-    />
+    <PreferencesSettings v-if="settingsCategory === 1" />
 
     <AccountSettings :data="profile" v-else />
   </div>

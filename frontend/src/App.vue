@@ -5,7 +5,7 @@ import { connectSocket } from '@/plugins/socket.js'
 import NavBar from '@/components/NavBar.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
 import FooterView from '@/components/FooterView.vue'
-import {Tracking} from "@/services/tracking.js"
+import { Tracking } from '@/services/tracking.js'
 import Notification from '@/components/notifications/Notification.vue'
 
 const breakPointScreen = '(min-width: 70em)'

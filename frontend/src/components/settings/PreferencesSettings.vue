@@ -4,8 +4,8 @@ import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { disconnect } from '@/services/auth'
 import { Api } from '@/utils/api.js'
 import countryCodes from '@/assets/countryCodes.json'
-import {usePreferencesStore} from "@/store/preferences.js";
-import {Tracking} from "@/services/tracking.js";
+import { usePreferencesStore } from '@/store/preferences.js'
+import { Tracking } from '@/services/tracking.js'
 
 const preferencesStore = usePreferencesStore()
 const ageRange = ref()
@@ -27,22 +27,23 @@ const preferences = ref({
     posInfo: null,
   },
   fame_rating: 10,
-  cityList: null
+  cityList: null,
 })
 
-const refreshCityList = async (e) => {
-  preferences.value.cityList = await Tracking.getCityListByName(e.target.value, preferences.value.pos.countryCode)
+const refreshCityList = async e => {
+  preferences.value.cityList = await Tracking.getCityListByName(
+    e.target.value,
+    preferences.value.pos.countryCode,
+  )
 }
 
-const selectCityHandler = (e) => {
-  console.log(e.target.getAttribute("gcl"))
-  if (e.target.getAttribute("gcl") != null)
-  {
-    console.log("ask user")
+const selectCityHandler = e => {
+  console.log(e.target.getAttribute('gcl'))
+  if (e.target.getAttribute('gcl') != null) {
+    console.log('ask user')
     Tracking.setAtCurrentLocation()
     preferences.value.pos.is_custom_loc = false
-  }
-  else {
+  } else {
     preferences.value.pos.lat = e.target.getAttribute('lat')
     preferences.value.pos.lon = e.target.getAttribute('lon')
     preferences.value.pos.is_custom_loc = true
@@ -61,15 +62,24 @@ watchEffect(() => {
 })
 
 onMounted(async () => {
-  preferences.value.pos.posInfo = await Tracking.getPositionInfoByLatLon(preferences.value.pos.lat, preferences.value.pos.lon)
-  preferences.value.pos.countryCode = preferences.value.pos.posInfo?.countryCode ? preferences.value.pos.posInfo.countryCode : preferences.value.pos.countryCode
-  preferences.value.pos.name = preferences.value.pos.posInfo?.name ? preferences.value.pos.posInfo.name : preferences.value.pos.name
-  preferences.value.cityList = await Tracking.getCityListByName("", preferences.value.pos.countryCode)
+  preferences.value.pos.posInfo = await Tracking.getPositionInfoByLatLon(
+    preferences.value.pos.lat,
+    preferences.value.pos.lon,
+  )
+  preferences.value.pos.countryCode = preferences.value.pos.posInfo?.countryCode
+    ? preferences.value.pos.posInfo.countryCode
+    : preferences.value.pos.countryCode
+  preferences.value.pos.name = preferences.value.pos.posInfo?.name
+    ? preferences.value.pos.posInfo.name
+    : preferences.value.pos.name
+  preferences.value.cityList = await Tracking.getCityListByName(
+    '',
+    preferences.value.pos.countryCode,
+  )
 })
 
 onUnmounted(async () => {
-  if (localStorage.jwt == null)
-    return
+  if (localStorage.jwt == null) return
   const newObject = {
     age_minimum: preferences.value.age.start,
     age_maximum: preferences.value.age.end,
@@ -80,11 +90,9 @@ onUnmounted(async () => {
     lon: preferences.value.pos.lon,
     is_custom_loc: preferences.value.pos.is_custom_loc,
   }
-  if (!preferencesStore.isChanged(newObject))
-    return
+  if (!preferencesStore.isChanged(newObject)) return
   const response = await Api.put('/users/me/preferences').send(newObject)
-  if(response.ok)
-    preferencesStore.setPreferences(newObject)
+  if (response.ok) preferencesStore.setPreferences(newObject)
 })
 </script>
 
@@ -146,7 +154,10 @@ onUnmounted(async () => {
       <div class="flex justify-between">
         <label>Interested by :</label>
       </div>
-      <select v-model="preferences.sexual_preference" class="select select-bordered w-full">
+      <select
+        v-model="preferences.sexual_preference"
+        class="select select-bordered w-full"
+      >
         <option :selected="preferences.sexual_preference === 'F'" value="F">
           Women
         </option>
@@ -170,7 +181,11 @@ onUnmounted(async () => {
       </div>
 
       <div class="flex gap-2 w-full">
-        <select class="select select-bordered bg-none text-center text-lg p-0 w-20" @change="refreshCityList" v-model="preferences.pos.countryCode">
+        <select
+          class="select select-bordered bg-none text-center text-lg p-0 w-20"
+          @change="refreshCityList"
+          v-model="preferences.pos.countryCode"
+        >
           <option
             v-for="(code, index) in countryCodes"
             :key="index"
@@ -187,16 +202,33 @@ onUnmounted(async () => {
             tabindex="1"
             role="button"
             class="input input-bordered w-full"
-            :placeholder="preferences.pos.is_custom_loc ? preferences.pos.name : 'Current Location'"
+            :placeholder="
+              preferences.pos.is_custom_loc
+                ? preferences.pos.name
+                : 'Current Location'
+            "
             @input="refreshCityList"
           />
           <div
             tabindex="1"
             class="dropdown-content card card-compact bg-base-200 z-[1] w-full max-h-60 overflow-y-auto p-2 shadow"
           >
-            <div class="my-3 hover:bg-base-300 cursor-pointer" @click="selectCityHandler" gcl>Get current location</div>
+            <div
+              class="my-3 hover:bg-base-300 cursor-pointer"
+              @click="selectCityHandler"
+              gcl
+            >
+              Get current location
+            </div>
             <div class="divider my-0 mb-3"></div>
-            <div v-for="(city, index) in preferences.cityList" @click="selectCityHandler" :key="index" :lat="city.lat" :lon="city.lng" class="hover:bg-base-300 cursor-pointer">
+            <div
+              v-for="(city, index) in preferences.cityList"
+              @click="selectCityHandler"
+              :key="index"
+              :lat="city.lat"
+              :lon="city.lng"
+              class="hover:bg-base-300 cursor-pointer"
+            >
               {{ city.toponymName }}
             </div>
           </div>
@@ -227,6 +259,4 @@ onUnmounted(async () => {
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

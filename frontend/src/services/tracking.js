@@ -6,14 +6,12 @@ export class Tracking {
     response = await response.json() // temporary to view ip transmitted at backend
     console.log(response) // temporary to view ip transmitted at backend
 
-    navigator.geolocation.getCurrentPosition(
-      loc => {
-        Api.put('/users/me/localisation').send({
-          lat: loc.coords.latitude,
-          lon: loc.coords.longitude,
-        })
-      }
-    )
+    navigator.geolocation.getCurrentPosition(loc => {
+      Api.put('/users/me/localisation').send({
+        lat: loc.coords.latitude,
+        lon: loc.coords.longitude,
+      })
+    })
   }
 
   static getPositionInfoByLatLon = async (lat, lon) => {
