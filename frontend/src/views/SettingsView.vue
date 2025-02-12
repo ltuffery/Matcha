@@ -16,6 +16,9 @@ Api.get('/users/me')
   .then(res => res.json())
   .then(data => {
     profile.value = data
+    profile.value.preferences.lat = profile.value.lat
+    profile.value.preferences.lon = profile.value.lon
+    profile.value.preferences.user_set_loc = profile.value.user_set_loc
     loading.value = false
   })
 

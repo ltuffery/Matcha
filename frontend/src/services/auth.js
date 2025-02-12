@@ -74,7 +74,7 @@ export const logout = () => {
   localStorage.removeItem('refresh')
 }
 
-export const disconect = () => {
+export const disconnect = () => {
   logout()
   router.push({ name: 'home' })
 }
