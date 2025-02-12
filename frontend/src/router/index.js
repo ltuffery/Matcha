@@ -11,6 +11,7 @@ import SettingsView from '@/views/SettingsView.vue'
 import VerifyEmailView from '@/views/VerifyEmailView.vue'
 import NewPasswordView from '@/views/NewPasswordView.vue'
 import UserProfileView from '@/views/UserProfileView.vue'
+import NotFound from '@/views/NotFound.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -80,6 +81,11 @@ const router = createRouter({
       name: 'profile',
       component: UserProfileView,
       beforeEnter: [authGuard],
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: '404',
+      component: NotFound,
     },
   ],
 })
