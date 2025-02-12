@@ -3,7 +3,7 @@ import {computed, onMounted} from "vue";
 import {Api} from "@/utils/api.js";
 import {notificationsStore} from "@/store/notifications.js";
 import {getSocket} from "@/plugins/socket.js";
-import Avatar from "@/components/Avatar.vue";
+import NotificationItem from "@/components/notifications/NotificationItem.vue";
 
 const notifications = computed(() => {
   const orderedNotification = [... new Set(
@@ -15,10 +15,6 @@ const notifications = computed(() => {
 const hasNotification = computed(() => notificationsStore().hasNotificationNotView())
 const notificationNotViewed = computed(() => notificationsStore().getNotificationNotView())
 
-const markAsRead = id => {
-  Api.post(`/users/me/notifications/${id}/view`).send()
-}
-
 onMounted(async () => {
   const res = await Api.get('/users/me/notifications').send()
   const data = await res.json()
@@ -26,6 +22,7 @@ onMounted(async () => {
   notificationsStore().set(data.sort((a, b) => new Date(b.data.created_at) - new Date(a.data.created_at)))
 
   getSocket().on('notification', notification => {
+    console.log(notification)
     notificationsStore().add(notification)
   })
 })
@@ -54,18 +51,7 @@ onMounted(async () => {
       <h3 class="font-bold text-center py-2">Notification</h3>
       <div class="divider my-0"></div>
       <ul class="w-full overflow-y-auto">
-        <li class="relative" v-for="(notification, index) in notifications" :key="index" @click="markAsRead(notification.id)">
-          <a class="inline-flex items-center gap-4 w-full">
-            <Avatar type="squircle" :username="notification.data.username" width="12" :src="notification.data.avatar"/>
-
-            <div class="flex flex-col w-full overflow-hidden">
-              <p class="font-semibold truncate">{{ notification.data.content }}</p>
-              <p>{{ notification.data.created_at }}</p>
-            </div>
-
-            <div class="badge badge-error badge-xs left-0" v-if="!notification.data.view"></div>
-          </a>
-        </li>
+        <NotificationItem v-for="(notification, index) in notifications" :key="index" :notification="notification" />
       </ul>
       <div class="divider my-0"></div>
       <a href="#" class="text-center py-2 underline">View all</a>

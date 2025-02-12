@@ -3,7 +3,7 @@
 namespace Matcha\Api\Model;
 
 /**
- * @method Notification find(array $where)
+ * @method static Notification find(array $where)
  */
 class Notification extends Model
 {
@@ -32,6 +32,6 @@ class Notification extends Model
         $notification->type = $type;
         $notification->content = $content;
 
-        return $notification;
+        return $notification->save();
     }
 }

@@ -89,8 +89,6 @@ class ChatController
 
         $saved = $message->save();
 
-        Notification::to($user, $receiver, NotificationType::MESSAGE, $user->first_name . ' sent you a message');
-
         Flight::json(new MessageResource($saved), 201);
     }
 

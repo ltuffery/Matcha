@@ -59,6 +59,8 @@ Flight::group('/users', function () {
         Flight::route('DELETE /unblock', [UserBlockController::class, 'destroy']);
 
         Flight::route('POST /view', [ViewController::class, 'store']);
+
+        Flight::route('POST /notifications', [NotificationsController::class, 'store']);
     });
 
     Flight::group('/me', function () {

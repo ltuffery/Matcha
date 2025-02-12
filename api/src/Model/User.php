@@ -97,12 +97,6 @@ class User extends Model
         $like->liked_id = $user->id;
 
         $like->save();
-
-        if ($this->hasMatch($user->username)) {
-            Notification::to($this, $user, NotificationType::MATCH, $this->first_name . ' has match you');
-        } else {
-            Notification::to($this, $user, NotificationType::LIKE, $this->first_name . ' has liked you');
-        }
     }
 
     public function unlike(User $user): void
@@ -113,12 +107,22 @@ class User extends Model
         ]);
 
         if (!is_null($like)) {
-            if ($this->hasMatch($like->liked()->username)) {
-                Notification::to($this, $user, NotificationType::UNLIKE, $this->first_name . ' has unlike you');
-            }
-
             $like->delete();
         }
+    }
+
+    public function likedBy(User|string $user): bool
+    {
+        if (is_string($user)) {
+            $user = self::find($user);
+        }
+
+        $like = Like::find([
+            'user_id' => $user->id,
+            'liked_id' => $this->id,
+        ]);
+
+        return !is_null($like);
     }
 
     /**

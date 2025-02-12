@@ -3,7 +3,7 @@
 namespace Matcha\Api\Model;
 
 /**
- * @method Like find(array $where)
+ * @method static Like find(array $where)
  */
 class Like extends Model
 {
