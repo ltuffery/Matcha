@@ -1,6 +1,6 @@
 import { Api } from '@/utils/api.js'
 
-export class Traking {
+export class Tracking {
   static setAtCurrentLocation = async () => {
     let response = await Api.put('/users/me/localisation').send()
     response = await response.json() // temporary to view ip transmitted at backend

@@ -5,7 +5,7 @@ import { disconnect } from '@/services/auth'
 import { Api } from '@/utils/api.js'
 import countryCodes from '@/assets/countryCodes.json'
 import {usePreferencesStore} from "@/store/preferences.js";
-import {Traking} from "@/services/traking.js";
+import {Tracking} from "@/services/tracking.js";
 
 const preferencesStore = usePreferencesStore()
 const ageRange = ref()
@@ -31,7 +31,7 @@ const preferences = ref({
 })
 
 const refreshCityList = async (e) => {
-  preferences.value.cityList = await Traking.getCityListByName(e.target.value, preferences.value.pos.countryCode)
+  preferences.value.cityList = await Tracking.getCityListByName(e.target.value, preferences.value.pos.countryCode)
 }
 
 const selectCityHandler = (e) => {
@@ -39,7 +39,7 @@ const selectCityHandler = (e) => {
   if (e.target.getAttribute("gcl") != null)
   {
     console.log("ask user")
-    Traking.setAtCurrentLocation()
+    Tracking.setAtCurrentLocation()
     preferences.value.pos.is_custom_loc = false
   }
   else {
@@ -61,10 +61,10 @@ watchEffect(() => {
 })
 
 onMounted(async () => {
-  preferences.value.pos.posInfo = await Traking.getPositionInfoByLatLon(preferences.value.pos.lat, preferences.value.pos.lon)
+  preferences.value.pos.posInfo = await Tracking.getPositionInfoByLatLon(preferences.value.pos.lat, preferences.value.pos.lon)
   preferences.value.pos.countryCode = preferences.value.pos.posInfo?.countryCode ? preferences.value.pos.posInfo.countryCode : preferences.value.pos.countryCode
   preferences.value.pos.name = preferences.value.pos.posInfo?.name ? preferences.value.pos.posInfo.name : preferences.value.pos.name
-  preferences.value.cityList = await Traking.getCityListByName("", preferences.value.pos.countryCode)
+  preferences.value.cityList = await Tracking.getCityListByName("", preferences.value.pos.countryCode)
 })
 
 onUnmounted(async () => {

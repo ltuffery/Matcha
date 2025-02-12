@@ -8,9 +8,11 @@ use Matcha\Api\Controllers\ForgotController;
 use Matcha\Api\Controllers\HistoryController;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Controllers\LocalisationController;
+use Matcha\Api\Controllers\Notifications\NotificationsController;
 use Matcha\Api\Controllers\Profile\PreferencesController;
 use Matcha\Api\Controllers\Profile\ProfileController;
 use Matcha\Api\Controllers\Profile\ProfileSuggestionController;
+use Matcha\Api\Controllers\Profile\ReportController;
 use Matcha\Api\Controllers\Profile\UserBlockController;
 use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
@@ -37,8 +39,8 @@ Flight::group('/auth', function () {
 });
 
 Flight::group('/email', function () {
-    Flight::route('POST /verif', [EmailController::class, 'emailVerif']);
-    Flight::route('POST /token', [EmailController::class, 'verifToken']);
+    Flight::route('POST /verif', [EmailController::class, 'emailVerify']);
+    Flight::route('POST /token', [EmailController::class, 'verifyToken']);
 });
 
 Flight::group('/forgot', function () {
@@ -58,6 +60,10 @@ Flight::group('/users', function () {
         Flight::route('DELETE /unblock', [UserBlockController::class, 'destroy']);
 
         Flight::route('POST /view', [ViewController::class, 'store']);
+
+        Flight::route('POST /notifications', [NotificationsController::class, 'store']);
+
+        Flight::route('POST /report', [ReportController::class, 'store']);
     });
 
     Flight::group('/me', function () {
@@ -73,6 +79,9 @@ Flight::group('/users', function () {
         Flight::route('GET /history', [HistoryController::class, 'index']);
         Flight::route('GET /suggestions', [ProfileSuggestionController::class, 'index']);
         Flight::route('GET /blocks', [UserBlockController::class, 'index']);
+
+        Flight::route('POST /notifications/@id/view', [NotificationsController::class, 'viewed']);
+        Flight::route('GET /notifications', [NotificationsController::class, 'index']);
 
         Flight::group('/matches', function () {
             Flight::route('GET /', [ChatController::class, 'index']);

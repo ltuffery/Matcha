@@ -4,6 +4,7 @@ namespace Matcha\Api\Model;
 
 use Firebase\JWT\JWT;
 use Flight;
+use Matcha\Api\Controllers\Notifications\NotificationType;
 use PDO;
 
 /**
@@ -108,6 +109,20 @@ class User extends Model
         }
     }
 
+    public function likedBy(User|string $user): bool
+    {
+        if (is_string($user)) {
+            $user = self::find($user);
+        }
+
+        $like = Like::find([
+            'user_id' => $user->id,
+            'liked_id' => $this->id,
+        ]);
+
+        return !is_null($like);
+    }
+
     /**
      * Get all the likes that the user has made
      *
@@ -128,6 +143,27 @@ class User extends Model
         $view->viewed_id = $user->id;
 
         $view->save();
+    }
+
+    public function report(User $user, string $raison): void
+    {
+        $report = new Report();
+
+        $report->user_id = $this->id;
+        $report->reported_id = $user->id;
+        $report->raison = $raison;
+
+        $report->save();
+    }
+
+    public function hasReport(User $user): bool
+    {
+        $report = Report::find([
+            'user_id' => $this->id,
+            'reported_id' => $user->id,
+        ]);
+
+        return !is_null($report);
     }
 
     public function views(): array
@@ -164,7 +200,7 @@ class User extends Model
      * @param string username
      * @return bool
      */
-    public function hasMatche(string $username): bool
+    public function hasMatch(string $username): bool
     {
         $matches = $this->matches();
 
@@ -280,6 +316,14 @@ class User extends Model
     public function getPreferences(): Preference
     {
         return Preference::find([
+            'user_id' => $this->id,
+        ]);
+    }
+
+
+    public function getNotifications(): array
+    {
+        return Notification::all([
             'user_id' => $this->id,
         ]);
     }

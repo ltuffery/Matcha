@@ -1,13 +1,12 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import { isAuthenticated } from './services/auth'
-import { Api } from './utils/api'
-import { connectSocket, getSocket } from '@/plugins/socket.js'
-import FeedbackToast from '@/components/FeedbackToast.vue'
+import { connectSocket } from '@/plugins/socket.js'
 import NavBar from '@/components/NavBar.vue'
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import FooterView from '@/components/FooterView.vue'
-import {Traking} from "@/services/traking.js";
+import {Tracking} from "@/services/tracking.js"
+import Notification from '@/components/notifications/Notification.vue'
 
 const breakPointScreen = '(min-width: 70em)'
 
@@ -18,34 +17,20 @@ const isAuth = ref(false)
 isAuthenticated().then(value => {
   isAuth.value = value
   if (value) {
-    // navigator.geolocation.getCurrentPosition(
-    //   loc => {
-    //     Api.put('/users/me/localisation').send({
-    //       lat: loc.coords.latitude,
-    //       lon: loc.coords.longitude,
-    //     })
-    //   },
-    //   err => {
-    //     Api.put('/users/me/localisation').send()
-    //   },
-    // )
-    Traking.setAtCurrentLocation()
+    Tracking.setAtCurrentLocation()
     connectSocket()
   }
 })
 
-let toast = useTemplateRef('toast')
+window.addEventListener('login', () => {
+  isAuth.value = true
+})
+
+window.addEventListener('logout', () => {
+  isAuth.value = false
+})
 
 onMounted(async () => {
-  const isAuth = await isAuthenticated()
-
-  if (isAuth) {
-    getSocket().on('notification', notification => {
-      console.log(toast.value)
-      toast.value.addInfo('Hey !')
-    })
-  }
-
   const mediaQuery = window.matchMedia(breakPointScreen)
   mediaQuery.addEventListener('change', e => {
     sizeScreen.value = e
@@ -62,13 +47,13 @@ onUnmounted(() => {
 
 <template>
   <NavBar large-screen v-if="isAuth && sizeScreen.matches" />
-  <FeedbackToast ref="toast" class="w-full" />
   <div
     class="flex flex-col bg-base-300 h-dvh w-full justify-center items-center"
   >
     <div
       class="overflow-y-auto relative bg-base-200 h-full w-full max-w-3xl z-10"
     >
+      <Notification v-if="isAuth" class="absolute" />
       <RouterView />
     </div>
     <NavBar v-if="isAuth && !sizeScreen.matches" />
