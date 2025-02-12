@@ -6,6 +6,7 @@ import 'swiper/swiper-bundle.css' // Import Swiper styles
 import { EffectCreative } from 'swiper/modules'
 import { useRoute } from 'vue-router'
 import router from '@/router/index.js'
+import {getSocket} from "@/plugins/socket.js";
 
 const modules = ref([EffectCreative])
 const data = ref()
@@ -33,11 +34,9 @@ onMounted(async () => {
   await getData()
 
   const decodedToken = JSON.parse(atob(localStorage.jwt.split('.')[1]))
-  if (
-    notFound.value === false &&
-    route.params.username != decodedToken.username
-  )
-    await Api.post(`users/${route.params.username}/view`).send()
+
+  if (notFound.value === false && route.params.username !== decodedToken.username)
+    getSocket().emit("view", route.params.username)
 })
 </script>
 

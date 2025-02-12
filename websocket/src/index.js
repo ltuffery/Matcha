@@ -3,6 +3,7 @@ import authMiddleware from "./middlewares/authMiddleware.js";
 import {sendMessage} from "./handlers/chat.js";
 import {browse} from "./handlers/browsing.js";
 import {sortProfile} from "./handlers/sort-profile.js";
+import {like, unlike, view} from "./handlers/notifications.js";
 
 export const onlineUsers = new Map()
 export const cacheBrowsing = new Map()
@@ -33,6 +34,9 @@ io.on("connection", (socket) => {
   socket.on("send_message", sendMessage(username, socket))
   socket.on("browsing", browse(username, socket))
   socket.on("filter", sortProfile(username, socket))
+  socket.on("view", view(username, socket))
+  socket.on("like", like(username, socket))
+  socket.on("unlike", unlike(username, socket))
 
   socket.on("disconnect", (reason) => {
     onlineUsers.delete(username)
