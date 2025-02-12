@@ -60,7 +60,7 @@ class ProfileSuggestionController
 
         $stmt->execute();
 
-        return array_map(fn($data) => User::morph($data), $stmt->fetchAll());
+        return array_map(fn ($data) => User::morph($data), $stmt->fetchAll());
     }
 
     private function inLocation($lat1, $lon1, $lat2, $lon2, $rayon): bool
