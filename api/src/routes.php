@@ -8,6 +8,7 @@ use Matcha\Api\Controllers\ForgotController;
 use Matcha\Api\Controllers\HistoryController;
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Controllers\LocalisationController;
+use Matcha\Api\Controllers\Moderation\ReportController;
 use Matcha\Api\Controllers\Profile\PreferencesController;
 use Matcha\Api\Controllers\Profile\ProfileController;
 use Matcha\Api\Controllers\Profile\ProfileSuggestionController;
@@ -58,6 +59,8 @@ Flight::group('/users', function () {
         Flight::route('DELETE /unblock', [UserBlockController::class, 'destroy']);
 
         Flight::route('POST /view', [ViewController::class, 'store']);
+
+        Flight::route('POST /report', [ReportController::class, 'store']);
     });
 
     Flight::group('/me', function () {
