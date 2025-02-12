@@ -35,7 +35,6 @@ onMounted(async () => {
   )
 
   getSocket().on('notification', notification => {
-    console.log(notification)
     notificationsStore().add(notification)
   })
 })
