@@ -1,6 +1,6 @@
 <?php
 
-namespace Controllers\Moderation;
+namespace Controllers\Profile;
 
 use Flight;
 use Matcha\Api\Model\User;

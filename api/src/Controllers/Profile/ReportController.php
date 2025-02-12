@@ -1,8 +1,9 @@
 <?php
 
-namespace Matcha\Api\Controllers\Moderation;
+namespace Matcha\Api\Controllers\Profile;
 
 use Flight;
+use Matcha\Api\Exceptions\UniqueConstraintException;
 use Matcha\Api\Model\User;
 use Matcha\Api\Validator\Validator;
 
@@ -26,7 +27,10 @@ class ReportController
             return;
         }
 
-        $me->report($user, Flight::request()->data->raison);
+        try {
+            $me->report($user, Flight::request()->data->raison);
+        } catch (UniqueConstraintException) {}
+
         Flight::json([
             'success' => true,
         ], 201);

@@ -20,8 +20,8 @@ class ProfileSuggestionController
 
         $users = User::where([
             ['id', '<>', $user->id],
-            ['sexual_preferences', 'IN', "('A', '" . $user->gender . "')"],
-            $sexualPreference,
+//            ['sexual_preferences', 'IN', "('A', '" . $user->gender . "')"],
+//            $sexualPreference,
         ]);
         $likes = array_map(fn ($like) => $like->liked_id, $user->likes());
 
