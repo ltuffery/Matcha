@@ -301,17 +301,6 @@ class User extends Model
         ]);
     }
 
-    public function notificationFor(User $user, string $type, string $content): Notification
-    {
-        $notification = new Notification();
-
-        $notification->user_id = $user->id;
-        $notification->sender_id = $this->id;
-        $notification->type = $type;
-        $notification->content = $content;
-
-        return $notification->save();
-    }
 
     public function getNotifications(): array
     {
