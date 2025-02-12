@@ -5,6 +5,7 @@ import { disconnect } from '@/services/auth'
 import { Api } from '@/utils/api.js'
 import countryCodes from '@/assets/countryCodes.json'
 import {usePreferencesStore} from "@/store/preferences.js";
+import {Traking} from "@/services/traking.js";
 
 const preferencesStore = usePreferencesStore()
 const ageRange = ref()
@@ -28,26 +29,8 @@ const preferences = ref({
   cityList: null
 })
 
-const getPositionInfoByLatLon = async () => {
-  let res = await fetch(
-    `http://api.geonames.org/findNearbyJSON?lat=${preferences.value.pos.lat}&lng=${preferences.value.pos.lon}&username=example`,
-  )
-  res = await res.json()
-  res = {
-    countryCode: res.geonames[0].countryCode,
-    name: res.geonames[0].toponymName,
-  }
-  return res
-}
-
-const getPositionInfoByName = async (city, countryCode) => {
-  let res = await fetch(`http://api.geonames.org/searchJSON?name_startsWith=${city}&country=${countryCode}&featureClass=P&maxRows=10&username=example`)
-  res = await res.json()
-  return (res.geonames)
-}
-
 const refreshCityList = async (e) => {
-  preferences.value.cityList = await getPositionInfoByName(e.target.value, preferences.value.pos.countryCode)
+  preferences.value.cityList = await Traking.getCityListByName(e.target.value, preferences.value.pos.countryCode)
 }
 
 const selectCityHandler = (e) => {
@@ -55,6 +38,7 @@ const selectCityHandler = (e) => {
   if (e.target.getAttribute("gcl") != null)
   {
     console.log("ask user")
+    Traking.getCurrentLocation()
     preferences.value.pos.is_custom_loc = false
   }
   else {
@@ -74,13 +58,15 @@ watchEffect(() => {
 })
 
 onMounted(async () => {
-  preferences.value.pos.posInfo = await getPositionInfoByLatLon()
+  preferences.value.pos.posInfo = await Traking.getPositionInfoByLatLon()
   preferences.value.pos.countryCode = preferences.value.pos.posInfo?.countryCode ? preferences.value.pos.posInfo.countryCode : preferences.value.pos.countryCode
   preferences.value.pos.name = preferences.value.pos.posInfo?.name ? preferences.value.pos.posInfo.name : preferences.value.pos.name
-  preferences.value.cityList = await getPositionInfoByName("", preferences.value.pos.countryCode)
+  preferences.value.cityList = await Traking.getCityListByName("", preferences.value.pos.countryCode)
 })
 
 onUnmounted(async () => {
+  if (localStorage.jwt == null)
+    return
   const newObject = {
     age_minimum: preferences.value.age.start,
     age_maximum: preferences.value.age.end,

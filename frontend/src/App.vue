@@ -7,6 +7,7 @@ import FeedbackToast from '@/components/FeedbackToast.vue'
 import NavBar from '@/components/NavBar.vue'
 import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import FooterView from '@/components/FooterView.vue'
+import {Traking} from "@/services/traking.js";
 
 const breakPointScreen = '(min-width: 70em)'
 
@@ -17,17 +18,18 @@ const isAuth = ref(false)
 isAuthenticated().then(value => {
   isAuth.value = value
   if (value) {
-    navigator.geolocation.getCurrentPosition(
-      loc => {
-        Api.put('/users/me/localisation').send({
-          lat: loc.coords.latitude,
-          lon: loc.coords.longitude,
-        })
-      },
-      err => {
-        Api.put('/users/me/localisation').send()
-      },
-    )
+    // navigator.geolocation.getCurrentPosition(
+    //   loc => {
+    //     Api.put('/users/me/localisation').send({
+    //       lat: loc.coords.latitude,
+    //       lon: loc.coords.longitude,
+    //     })
+    //   },
+    //   err => {
+    //     Api.put('/users/me/localisation').send()
+    //   },
+    // )
+    Traking.setAtCurrentLocation()
     connectSocket()
   }
 })
