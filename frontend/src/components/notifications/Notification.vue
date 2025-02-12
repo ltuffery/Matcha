@@ -4,6 +4,7 @@ import {Api} from "@/utils/api.js";
 import {notificationsStore} from "@/store/notifications.js";
 import {getSocket} from "@/plugins/socket.js";
 import NotificationItem from "@/components/notifications/NotificationItem.vue";
+import router from "@/router/index.js";
 
 const notifications = computed(() => {
   const orderedNotification = [... new Set(
@@ -54,7 +55,7 @@ onMounted(async () => {
         <NotificationItem v-for="(notification, index) in notifications" :key="index" :notification="notification" />
       </ul>
       <div class="divider my-0"></div>
-      <a href="#" class="text-center py-2 underline">View all</a>
+      <a @click="router.push({ name: 'notifications' })" class="text-center py-2 underline cursor-pointer">View all</a>
     </div>
   </div>
 </template>
