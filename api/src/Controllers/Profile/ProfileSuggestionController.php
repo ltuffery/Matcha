@@ -25,9 +25,9 @@ class ProfileSuggestionController
         ]);
         $likes = array_map(fn ($like) => $like->liked_id, $user->likes());
 
-        $users = array_filter($users, function ($value) use ($likes, $user) {
+        $users = array_filter($users, function ($value) use ($likes, $user, $preferences) {
             return !in_array($value->id, $likes)
-                && $this->inLocation($user->lat, $user->lon, $value->lat, $value->lon, 20)
+                && $this->inLocation($preferences->lat, $preferences->lon, $value->getPreferences()->lat, $value->getPreferences()->lon, 20)
                 && !$user->isBlocking($value);
         });
 

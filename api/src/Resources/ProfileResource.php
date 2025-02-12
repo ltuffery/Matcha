@@ -62,9 +62,6 @@ class ProfileResource extends JsonResource
         if ($resource['me']) {
             $resource['preferences'] = new PreferencesResource($this->model->getPreferences());
             $resource['email'] = $this->model->email;
-            $resource['lat'] = $this->model->lat;
-            $resource['lon'] = $this->model->lon;
-            $resource['user_set_loc'] = $this->model->user_set_loc;
         }
 
         return $resource;
