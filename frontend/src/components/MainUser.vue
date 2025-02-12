@@ -5,6 +5,7 @@ import { ref } from 'vue'
 import 'swiper/swiper-bundle.css'
 import { Api } from '@/utils/api.js'
 import { EffectCreative } from 'swiper/modules'
+import ReportModal from '@/components/report/ReportModal.vue'
 
 const props = defineProps({
   user: {
@@ -128,11 +129,7 @@ function btnLike(event) {
         alt="like btn"
         class="size-10 my-2 cursor-pointer"
       />
-      <img
-        src="../assets/icons/flag.svg"
-        alt="more option btn"
-        class="size-10 my-2 cursor-pointer"
-      />
+      <ReportModal :username="props.user.username" />
     </div>
     <img
       src="../assets/icons/heart.svg"

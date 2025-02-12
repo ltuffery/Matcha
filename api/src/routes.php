@@ -12,6 +12,7 @@ use Matcha\Api\Controllers\Notifications\NotificationsController;
 use Matcha\Api\Controllers\Profile\PreferencesController;
 use Matcha\Api\Controllers\Profile\ProfileController;
 use Matcha\Api\Controllers\Profile\ProfileSuggestionController;
+use Matcha\Api\Controllers\Profile\ReportController;
 use Matcha\Api\Controllers\Profile\UserBlockController;
 use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
@@ -38,8 +39,8 @@ Flight::group('/auth', function () {
 });
 
 Flight::group('/email', function () {
-    Flight::route('POST /verif', [EmailController::class, 'emailVerif']);
-    Flight::route('POST /token', [EmailController::class, 'verifToken']);
+    Flight::route('POST /verif', [EmailController::class, 'emailVerify']);
+    Flight::route('POST /token', [EmailController::class, 'verifyToken']);
 });
 
 Flight::group('/forgot', function () {
@@ -61,6 +62,8 @@ Flight::group('/users', function () {
         Flight::route('POST /view', [ViewController::class, 'store']);
 
         Flight::route('POST /notifications', [NotificationsController::class, 'store']);
+
+        Flight::route('POST /report', [ReportController::class, 'store']);
     });
 
     Flight::group('/me', function () {

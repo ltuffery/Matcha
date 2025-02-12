@@ -147,6 +147,27 @@ class User extends Model
         $view->save();
     }
 
+    public function report(User $user, string $raison): void
+    {
+        $report = new Report();
+
+        $report->user_id = $this->id;
+        $report->reported_id = $user->id;
+        $report->raison = $raison;
+
+        $report->save();
+    }
+
+    public function hasReport(User $user): bool
+    {
+        $report = Report::find([
+            'user_id' => $this->id,
+            'reported_id' => $user->id,
+        ]);
+
+        return !is_null($report);
+    }
+
     public function views(): array
     {
         return View::all([

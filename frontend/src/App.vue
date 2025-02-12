@@ -32,6 +32,14 @@ isAuthenticated().then(value => {
   }
 })
 
+window.addEventListener('login', () => {
+  isAuth.value = true
+})
+
+window.addEventListener('logout', () => {
+  isAuth.value = false
+})
+
 onMounted(async () => {
   const mediaQuery = window.matchMedia(breakPointScreen)
   mediaQuery.addEventListener('change', e => {
