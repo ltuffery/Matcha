@@ -14,6 +14,10 @@ export const login = async (username, password) => {
       localStorage.setItem('jwt', data.token)
       localStorage.setItem('refresh', data.refresh)
 
+      const event = new Event('login')
+
+      window.dispatchEvent(event)
+
       return data
     }
 
@@ -72,6 +76,10 @@ export const isAuthenticated = async () => {
 export const logout = () => {
   localStorage.removeItem('jwt')
   localStorage.removeItem('refresh')
+
+  const event = new Event('logout')
+
+  window.dispatchEvent(event)
 }
 
 export const disconect = () => {
