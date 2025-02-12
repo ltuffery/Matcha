@@ -2,11 +2,11 @@
 import { RouterView } from 'vue-router'
 import { isAuthenticated } from './services/auth'
 import { Api } from './utils/api'
-import { connectSocket, getSocket } from '@/plugins/socket.js'
-import FeedbackToast from '@/components/FeedbackToast.vue'
+import { connectSocket } from '@/plugins/socket.js'
 import NavBar from '@/components/NavBar.vue'
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import FooterView from '@/components/FooterView.vue'
+import Notification from '@/components/notifications/Notification.vue'
 
 const breakPointScreen = '(min-width: 70em)'
 
@@ -32,8 +32,6 @@ isAuthenticated().then(value => {
   }
 })
 
-let toast = useTemplateRef('toast')
-
 window.addEventListener('login', () => {
   isAuth.value = true
 })
@@ -43,15 +41,6 @@ window.addEventListener('logout', () => {
 })
 
 onMounted(async () => {
-  const isAuth = await isAuthenticated()
-
-  if (isAuth) {
-    getSocket().on('notification', notification => {
-      console.log(toast.value)
-      toast.value.addInfo('Hey !')
-    })
-  }
-
   const mediaQuery = window.matchMedia(breakPointScreen)
   mediaQuery.addEventListener('change', e => {
     sizeScreen.value = e
@@ -68,13 +57,13 @@ onUnmounted(() => {
 
 <template>
   <NavBar large-screen v-if="isAuth && sizeScreen.matches" />
-  <FeedbackToast ref="toast" class="w-full" />
   <div
     class="flex flex-col bg-base-300 h-dvh w-full justify-center items-center"
   >
     <div
       class="overflow-y-auto relative bg-base-200 h-full w-full max-w-3xl z-10"
     >
+      <Notification v-if="isAuth" class="absolute" />
       <RouterView />
     </div>
     <NavBar v-if="isAuth && !sizeScreen.matches" />

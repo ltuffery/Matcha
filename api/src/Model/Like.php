@@ -2,6 +2,9 @@
 
 namespace Matcha\Api\Model;
 
+/**
+ * @method static Like find(array $where)
+ */
 class Like extends Model
 {
     protected string $table = 'likes';
