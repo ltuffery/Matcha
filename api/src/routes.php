@@ -37,8 +37,8 @@ Flight::group('/auth', function () {
 });
 
 Flight::group('/email', function () {
-    Flight::route('POST /verif', [EmailController::class, 'emailVerif']);
-    Flight::route('POST /token', [EmailController::class, 'verifToken']);
+    Flight::route('POST /verif', [EmailController::class, 'emailVerify']);
+    Flight::route('POST /token', [EmailController::class, 'verifyToken']);
 });
 
 Flight::group('/forgot', function () {

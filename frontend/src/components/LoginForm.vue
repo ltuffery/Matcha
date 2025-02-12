@@ -74,9 +74,9 @@ function loginUserAccount(e) {
 <template>
   <FeedbackToast posX="end" ref="toastsRef" class="h-2/6" />
   <form v-if="forgotPwd" @submit.prevent="forgetPassword">
-    <h3 class="text-3xl font-bold my-5">Forgot credencial</h3>
+    <h3 class="text-3xl font-bold my-5">Forgot credential</h3>
     <span class=""
-      >Forgot your username or password ? <br />Recive and change it by mail
+      >Forgot your username or password ? <br />Receive and change it by mail
       :</span
     >
     <div class="form-control">
@@ -140,9 +140,9 @@ function loginUserAccount(e) {
       />
     </div>
     <div class="flex justify-end mt-3 w-full">
-      <span class="cursor-pointer hover:underline" @click="forgotSwitch"
-        >Forgot credencial ?</span
-      >
+      <span class="cursor-pointer hover:underline" @click="forgotSwitch">
+        Forgot credential ?
+      </span>
     </div>
     <div class="form-control mt-6">
       <button class="btn btn-primary" type="submit">Login</button>

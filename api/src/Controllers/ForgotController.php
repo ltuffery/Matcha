@@ -3,62 +3,36 @@
 namespace Matcha\Api\Controllers;
 
 use Flight;
-use InvalidDataException;
+use Matcha\Api\Exceptions\InvalidDataException;
 use Matcha\Api\Model\User;
+use Matcha\Api\Services\Mailer;
 use Matcha\Api\Validator\Validator;
 use ReflectionException;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 class ForgotController
 {
     private function emailForgotSend($userTarget): void
     {
-        $mail = new PHPMailer(true);
+        // Generate token/link and save it in db
+        $temporaryToken = $userTarget->username . (string)rand();
+        $temporaryToken = password_hash($temporaryToken, PASSWORD_DEFAULT);
+        $url = "http://" . getenv("APP_HOST") . ":1212/forgot?user=" . $userTarget->username . "&token=" . $temporaryToken;
 
-        try {
-            //Server settings
-            $mail->isSMTP();
-            $mail->Host       = $_ENV['SMTP_HOST'];
-            $mail->Username   = $_ENV['SMTP_USER'];
-            $mail->Password   = $_ENV['SMTP_PASS'];
-            $mail->SMTPAuth   = true;
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = 465;
+        $userTarget->temporary_email_token = $temporaryToken;
+        $userTarget->save();
 
-            // Generate token/link and save it in db
-            $temporaryToken = $userTarget->username . (string)rand();
-            $temporaryToken = password_hash($temporaryToken, PASSWORD_DEFAULT);
-            $url = "http://localhost:1212/forgot?user=" . $userTarget->username . "&token=" . $temporaryToken;
-            $userTarget->temporary_email_token = $temporaryToken;
-            $userTarget->save();
-            // get and replace body mail
-            $bodyMail = file_get_contents(template('forgot.html'));
-            $bodyMail = str_replace(
-                ['{{username}}', '{{url}}'],
-                [htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $url],
-                $bodyMail
-            );
+        // get and replace body mail
+        $bodyMail = file_get_contents(template('forgot.html'));
+        $bodyMail = str_replace(
+            ['{{username}}', '{{url}}'],
+            [htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $url],
+            $bodyMail
+        );
 
-            //Recipients
-            $mail->setFrom('noreply@matcha.com', 'Matcha');
-            $mail->addAddress($userTarget->email, $userTarget->username);
-
-            $mail->isHTML(true);
-            $mail->Subject = 'Forgot credencial';
-            $mail->Body    = $bodyMail;
-            $mail->AltBody = 'your username is '. $userTarget->username .' and this is your link to change password : ' . $url;
-
-            $mail->CharSet = 'UTF-8';
-            $mail->Encoding = 'base64';
-            $mail->send();
-        } catch (Exception $e) {
-            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-        }
+        Mailer::to($userTarget->email, $userTarget->username)->send('Forgot credencial', $bodyMail);
     }
 
     /**
-     * @throws InvalidDataException
      * @throws ReflectionException
      */
     public function forgotCredencial(): void
@@ -78,7 +52,7 @@ class ForgotController
                 'success' => false,
                 'error' => "this email doesn't exist",
             ], 404);
-        } elseif ($user->email_verified == true) {
+        } elseif ($user->email_verified) {
             $this->emailForgotSend($user);
             Flight::json([
                 'success' => true,
@@ -164,7 +138,7 @@ class ForgotController
             $user->save();
             Flight::json([
                 'success' => true,
-            ], 200);
+            ]);
         } else {
             Flight::json([
                 'success' => false,
