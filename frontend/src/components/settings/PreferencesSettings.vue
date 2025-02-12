@@ -9,6 +9,7 @@ import {Traking} from "@/services/traking.js";
 
 const preferencesStore = usePreferencesStore()
 const ageRange = ref()
+const dropdownLocation = ref()
 const preferences = ref({
   age: {
     start: preferencesStore.preferences.age_minimum,
@@ -38,13 +39,15 @@ const selectCityHandler = (e) => {
   if (e.target.getAttribute("gcl") != null)
   {
     console.log("ask user")
-    Traking.getCurrentLocation()
+    Traking.setAtCurrentLocation()
     preferences.value.pos.is_custom_loc = false
   }
   else {
     preferences.value.pos.lat = e.target.getAttribute('lat')
     preferences.value.pos.lon = e.target.getAttribute('lon')
     preferences.value.pos.is_custom_loc = true
+    dropdownLocation.value.value = e.target.innerText
+    document.activeElement?.blur()
   }
 }
 
@@ -58,7 +61,7 @@ watchEffect(() => {
 })
 
 onMounted(async () => {
-  preferences.value.pos.posInfo = await Traking.getPositionInfoByLatLon()
+  preferences.value.pos.posInfo = await Traking.getPositionInfoByLatLon(preferences.value.pos.lat, preferences.value.pos.lon)
   preferences.value.pos.countryCode = preferences.value.pos.posInfo?.countryCode ? preferences.value.pos.posInfo.countryCode : preferences.value.pos.countryCode
   preferences.value.pos.name = preferences.value.pos.posInfo?.name ? preferences.value.pos.posInfo.name : preferences.value.pos.name
   preferences.value.cityList = await Traking.getCityListByName("", preferences.value.pos.countryCode)
@@ -180,6 +183,7 @@ onUnmounted(async () => {
 
         <div class="dropdown w-full">
           <input
+            ref="dropdownLocation"
             tabindex="1"
             role="button"
             class="input input-bordered w-full"
