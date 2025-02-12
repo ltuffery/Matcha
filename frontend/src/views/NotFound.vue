@@ -1,6 +1,5 @@
 <script setup>
-
-import router from "@/router/index.js";
+import router from '@/router/index.js'
 </script>
 
 <template>
@@ -11,7 +10,9 @@ import router from "@/router/index.js";
         <p class="py-6">
           Sorry, we couldn't find the page you were looking for.
         </p>
-        <button @click="router.push({ name: 'home' })" class="btn btn-primary">Back to Home</button>
+        <button @click="router.push({ name: 'home' })" class="btn btn-primary">
+          Back to Home
+        </button>
       </div>
     </div>
   </div>
