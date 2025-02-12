@@ -9,7 +9,6 @@ use Matcha\Api\Model\Notification;
  */
 class NotificationsResource extends JsonResource
 {
-
     public function jsonSerialize(): array
     {
         $user = $this->model->sender();

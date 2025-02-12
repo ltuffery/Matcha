@@ -1,4 +1,4 @@
-import {defineStore} from "pinia";
+import { defineStore } from 'pinia'
 
 export const notificationsStore = defineStore('notifications', {
   state: () => ({
@@ -24,5 +24,5 @@ export const notificationsStore = defineStore('notifications', {
         }
       }
     },
-  }
+  },
 })
