@@ -34,6 +34,14 @@ isAuthenticated().then(value => {
 
 let toast = useTemplateRef('toast')
 
+window.addEventListener('login', () => {
+  isAuth.value = true
+})
+
+window.addEventListener('logout', () => {
+  isAuth.value = false
+})
+
 onMounted(async () => {
   const isAuth = await isAuthenticated()
 
