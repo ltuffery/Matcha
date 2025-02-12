@@ -1,19 +1,19 @@
 <script setup>
-import {ref} from "vue";
-import {Api} from "@/utils/api.js";
+import { ref } from 'vue'
+import { Api } from '@/utils/api.js'
 
 const props = defineProps({
   username: {
     type: String,
     required: true,
-  }
+  },
 })
 
 const raison = ref()
 
 const sendReport = () => {
   Api.post(`/users/${props.username}/report`).send({
-    raison: raison.value
+    raison: raison.value,
   })
 }
 </script>

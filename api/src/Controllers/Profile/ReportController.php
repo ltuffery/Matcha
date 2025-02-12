@@ -29,7 +29,8 @@ class ReportController
 
         try {
             $me->report($user, Flight::request()->data->raison);
-        } catch (UniqueConstraintException) {}
+        } catch (UniqueConstraintException) {
+        }
 
         Flight::json([
             'success' => true,

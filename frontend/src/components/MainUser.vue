@@ -5,7 +5,7 @@ import { ref } from 'vue'
 import 'swiper/swiper-bundle.css'
 import { Api } from '@/utils/api.js'
 import { EffectCreative } from 'swiper/modules'
-import ReportModal from "@/components/report/ReportModal.vue";
+import ReportModal from '@/components/report/ReportModal.vue'
 
 const props = defineProps({
   user: {
