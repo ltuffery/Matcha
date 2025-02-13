@@ -37,6 +37,7 @@ class User extends Model
     public float|null $lat;
     public float|null $lon;
     public int $fame_rating = 0;
+    public string $last_connection;
 
     public function generateJWT(): string
     {
