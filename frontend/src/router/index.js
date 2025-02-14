@@ -94,6 +94,7 @@ const router = createRouter({
       path: '/EditProfile',
       name: 'EditProfile',
       component: EditProfileView,
+      beforeEnter: [authGuard],
     },
     {
       path: '/:catchAll(.*)',

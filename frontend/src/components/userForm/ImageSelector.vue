@@ -1,8 +1,15 @@
 <script setup>
-import { ref } from 'vue'
+import {onBeforeMount, ref, watch} from 'vue'
+
+const props = defineProps({
+  modelValue: {
+    type: Array
+  }
+})
 
 const images = ref([])
 const inputImage = ref()
+const emit = defineEmits(['update:modelValue'])
 
 const handleFileUpload = e => {
   for (let index = 0; index < e.target.files.length; index++) {
@@ -16,13 +23,34 @@ const handleFileUpload = e => {
     }
 
     images.value.push(element)
+    emit('update:modelValue', images.value)
   }
 }
 
 const handleRemoveFileUpload = index => {
   images.value.splice(index, 1)
   inputImage.value.value = ''
+  emit('update:modelValue', images.value)
 }
+
+const formatPropsToImage = () => {
+  if (props.modelValue)
+  {
+    console.log('oui')
+    for (const image of props.modelValue) {
+      images.value.push({file: null, url: image})
+    }
+  }
+}
+
+watch(() => props.modelValue, () => {
+  // formatPropsToImage()
+  console.log('oui-oui')
+});
+
+onBeforeMount(() => {
+  formatPropsToImage()
+})
 </script>
 
 <template>
