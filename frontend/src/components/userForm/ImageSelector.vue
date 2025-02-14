@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 
 const images = ref([])
+const inputImage = ref()
 
 const handleFileUpload = e => {
   for (let index = 0; index < e.target.files.length; index++) {
@@ -20,6 +21,7 @@ const handleFileUpload = e => {
 
 const handleRemoveFileUpload = index => {
   images.value.splice(index, 1)
+  inputImage.value.value = ''
 }
 </script>
 
@@ -58,6 +60,7 @@ const handleRemoveFileUpload = index => {
             </g>
           </svg>
           <input
+            ref="inputImage"
             @change="handleFileUpload"
             type="file"
             class="w-full h-full opacity-0 absolute cursor-pointer"
@@ -67,6 +70,7 @@ const handleRemoveFileUpload = index => {
         <div
           class="relative w-full h-40 border-2 border-primary rounded flex justify-center items-center cursor-pointer"
           v-for="(item, index) in images"
+          :key="index"
         >
           <img class="object-cover w-full h-full" alt="Image" :src="item.url" />
           <div
