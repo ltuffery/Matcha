@@ -25,7 +25,9 @@ class ProfileResource extends JsonResource
             return 0;
         }
 
-        $distance = haversine($this->user->lat, $this->user->lon, $this->model->lat, $this->model->lon);
+        $mePreferences = $this->user->getPreferences();
+        $otherPreferences = $this->model->getPreferences();
+        $distance = haversine($mePreferences->lat, $mePreferences->lon, $otherPreferences->lat, $otherPreferences->lon);
 
         if ($distance < 1) {
             return -1;

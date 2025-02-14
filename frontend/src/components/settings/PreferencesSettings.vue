@@ -1,27 +1,56 @@
 <script setup>
 import DoubleSlide from '@/components/DoubleSlide.vue'
-import { onUnmounted, ref, watchEffect } from 'vue'
-import { disconect } from '@/services/auth'
+import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
+import { disconnect } from '@/services/auth'
 import { Api } from '@/utils/api.js'
+import countryCodes from '@/assets/countryCodes.json'
+import { usePreferencesStore } from '@/store/preferences.js'
+import { Tracking } from '@/services/tracking.js'
 
-const props = defineProps({
-  preferences: {
-    type: Object,
-    required: true,
-  },
-})
-
+const preferencesStore = usePreferencesStore()
+const ageRange = ref()
+const dropdownLocation = ref()
 const preferences = ref({
   age: {
-    start: props.preferences.age_minimum,
-    end: props.preferences.age_maximum,
+    start: preferencesStore.preferences.age_minimum,
+    end: preferencesStore.preferences.age_maximum,
   },
-  distance: props.preferences.distance_maximum,
-  sexual_preference: props.preferences.sexual_preferences,
+  distance: preferencesStore.preferences.distance_maximum,
+  sexual_preference: preferencesStore.preferences.sexual_preferences,
+  byTags: preferencesStore.preferences.by_tags,
+  pos: {
+    lat: preferencesStore.preferences.lat,
+    lon: preferencesStore.preferences.lon,
+    is_custom_loc: preferencesStore.preferences.is_custom_loc,
+    countryCode: 'FR',
+    name: 'No Name',
+    posInfo: null,
+  },
+  fame_rating: 10,
+  cityList: null,
 })
 
-const ageRange = ref()
-const byTags = ref(!!props.preferences.by_tags)
+const refreshCityList = async e => {
+  preferences.value.cityList = await Tracking.getCityListByName(
+    e.target.value,
+    preferences.value.pos.countryCode,
+  )
+}
+
+const selectCityHandler = e => {
+  console.log(e.target.getAttribute('gcl'))
+  if (e.target.getAttribute('gcl') != null) {
+    console.log('ask user')
+    Tracking.setAtCurrentLocation()
+    preferences.value.pos.is_custom_loc = false
+  } else {
+    preferences.value.pos.lat = e.target.getAttribute('lat')
+    preferences.value.pos.lon = e.target.getAttribute('lon')
+    preferences.value.pos.is_custom_loc = true
+    dropdownLocation.value.value = e.target.innerText
+    document.activeElement?.blur()
+  }
+}
 
 watchEffect(() => {
   if (ageRange.value) {
@@ -32,14 +61,38 @@ watchEffect(() => {
   }
 })
 
-onUnmounted(() => {
-  Api.put('/users/me/preferences').send({
+onMounted(async () => {
+  preferences.value.pos.posInfo = await Tracking.getPositionInfoByLatLon(
+    preferences.value.pos.lat,
+    preferences.value.pos.lon,
+  )
+  preferences.value.pos.countryCode = preferences.value.pos.posInfo?.countryCode
+    ? preferences.value.pos.posInfo.countryCode
+    : preferences.value.pos.countryCode
+  preferences.value.pos.name = preferences.value.pos.posInfo?.name
+    ? preferences.value.pos.posInfo.name
+    : preferences.value.pos.name
+  preferences.value.cityList = await Tracking.getCityListByName(
+    '',
+    preferences.value.pos.countryCode,
+  )
+})
+
+onUnmounted(async () => {
+  if (localStorage.jwt == null) return
+  const newObject = {
     age_minimum: preferences.value.age.start,
     age_maximum: preferences.value.age.end,
     distance_maximum: preferences.value.distance,
     sexual_preferences: preferences.value.sexual_preference,
-    by_tags: byTags.value,
-  })
+    by_tags: preferences.value.byTags,
+    lat: preferences.value.pos.lat,
+    lon: preferences.value.pos.lon,
+    is_custom_loc: preferences.value.pos.is_custom_loc,
+  }
+  if (!preferencesStore.isChanged(newObject)) return
+  const response = await Api.put('/users/me/preferences').send(newObject)
+  if (response.ok) preferencesStore.setPreferences(newObject)
 })
 </script>
 
@@ -82,9 +135,29 @@ onUnmounted(() => {
   <div>
     <div class="card bg-base-300 gap-3 w-full p-5">
       <div class="flex justify-between">
+        <label>Maximum fame rating :</label>
+        <label>{{ preferences.fame_rating }} %</label>
+      </div>
+      <input
+        v-model="preferences.fame_rating"
+        type="range"
+        min="0"
+        max="100"
+        value="preferences.fame_rating"
+        class="range"
+      />
+    </div>
+  </div>
+
+  <div>
+    <div class="card bg-base-300 gap-3 w-full p-5">
+      <div class="flex justify-between">
         <label>Interested by :</label>
       </div>
-      <select class="select select-bordered w-full">
+      <select
+        v-model="preferences.sexual_preference"
+        class="select select-bordered w-full"
+      >
         <option :selected="preferences.sexual_preference === 'F'" value="F">
           Women
         </option>
@@ -104,12 +177,75 @@ onUnmounted(() => {
   <div>
     <div class="card bg-base-300 gap-3 w-full p-5">
       <div class="flex justify-between">
+        <label>Location :</label>
+      </div>
+
+      <div class="flex gap-2 w-full">
+        <select
+          class="select select-bordered bg-none text-center text-lg p-0 w-20"
+          @change="refreshCityList"
+          v-model="preferences.pos.countryCode"
+        >
+          <option
+            v-for="(code, index) in countryCodes"
+            :key="index"
+            class="hover:bg-base-300 cursor-pointer"
+            :selected="code === preferences.pos.countryCode"
+          >
+            {{ code }}
+          </option>
+        </select>
+
+        <div class="dropdown w-full">
+          <input
+            ref="dropdownLocation"
+            tabindex="1"
+            role="button"
+            class="input input-bordered w-full"
+            :placeholder="
+              preferences.pos.is_custom_loc
+                ? preferences.pos.name
+                : 'Current Location'
+            "
+            @input="refreshCityList"
+          />
+          <div
+            tabindex="1"
+            class="dropdown-content card card-compact bg-base-200 z-[1] w-full max-h-60 overflow-y-auto p-2 shadow"
+          >
+            <div
+              class="my-3 hover:bg-base-300 cursor-pointer"
+              @click="selectCityHandler"
+              gcl
+            >
+              Get current location
+            </div>
+            <div class="divider my-0 mb-3"></div>
+            <div
+              v-for="(city, index) in preferences.cityList"
+              @click="selectCityHandler"
+              :key="index"
+              :lat="city.lat"
+              :lon="city.lng"
+              class="hover:bg-base-300 cursor-pointer"
+            >
+              {{ city.toponymName }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card bg-base-300 gap-3 w-full p-5">
+      <div class="flex justify-between">
         <label>Research by same tags :</label>
         <input
-          v-model="byTags"
+          v-model="preferences.byTags"
           type="checkbox"
           class="toggle"
-          :checked="byTags"
+          :checked="preferences.byTags"
         />
       </div>
       <!--            <TagSelector class="max-h-72 overflow-y-auto" />-->
@@ -118,7 +254,9 @@ onUnmounted(() => {
 
   <div>
     <div class="card w-full p-5 mt-10">
-      <button @click="disconect" class="btn btn-outline">Disconect</button>
+      <button @click="disconnect" class="btn btn-outline">Disconnect</button>
     </div>
   </div>
 </template>
+
+<style scoped></style>

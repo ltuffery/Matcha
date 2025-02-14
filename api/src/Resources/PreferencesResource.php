@@ -22,6 +22,10 @@ class PreferencesResource extends JsonResource
             'age_maximum' => $this->model->age_maximum,
             'distance_maximum' => $this->model->distance_maximum,
             'by_tags' => $this->model->by_tags,
+            'sexual_preferences' => $this->model->sexual_preferences,
+            'lat' => $this->model->lat,
+            'lon' => $this->model->lon,
+            'is_custom_loc' => $this->model->is_custom_loc,
         ];
     }
 }

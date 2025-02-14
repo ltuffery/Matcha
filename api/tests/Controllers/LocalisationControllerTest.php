@@ -1,6 +1,6 @@
 <?php
 
-use Matcha\Api\Model\User;
+use Matcha\Api\Model\Preference;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
 use Matcha\Api\Testing\Cases\HttpTestCase;
 use PHPUnit\Framework\TestCase;
@@ -10,13 +10,13 @@ class LocalisationControllerTest extends TestCase
     use HttpTestCase;
     use DatabaseTestCase;
 
-    private User $user;
+    private Preference $preferences;
 
     public function setUp(): void
     {
         $this->setUpDatabase();
 
-        $this->user = User::factory()->create()[0];
+        $this->preferences = Preference::factory()->create()[0];
     }
 
     public function tearDown(): void
@@ -27,7 +27,7 @@ class LocalisationControllerTest extends TestCase
     public function testWithNoData(): void
     {
         $response = $this->withHeader(
-                ['Authorization' => 'Bearer ' . $this->user->generateJWT()]
+                ['Authorization' => 'Bearer ' . $this->preferences->user()->generateJWT()]
             )
             ->put('/users/me/localisation');
 
@@ -37,7 +37,7 @@ class LocalisationControllerTest extends TestCase
     public function testWithValidData(): void
     {
         $response = $this->withHeader(
-                ['Authorization' => 'Bearer ' . $this->user->generateJWT()]
+                ['Authorization' => 'Bearer ' . $this->preferences->user()->generateJWT()]
             )
             ->put('/users/me/localisation', [
                 'lat' => 1.555,

@@ -16,5 +16,15 @@ class Preference extends Model
     public int $distance_maximum = 10;
     public bool $by_tags = true;
     public string $sexual_preferences = 'A';
+    public float|null $lat = 0;
+    public float|null $lon = 0;
+    public bool $is_custom_loc = false;
+
+    public function user(): User
+    {
+        return User::find([
+            'id' => $this->user_id,
+        ]);
+    }
 
 }
