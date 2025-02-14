@@ -82,7 +82,7 @@ export const logout = () => {
   window.dispatchEvent(event)
 }
 
-export const disconect = () => {
+export const disconnect = () => {
   logout()
   router.push({ name: 'home' })
 }

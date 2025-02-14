@@ -26,7 +26,7 @@ class PreferencesController
             $preferences->{$name} = $value;
         }
 
-        var_dump($preferences->id);
+
 
         $preferences->save();
     }

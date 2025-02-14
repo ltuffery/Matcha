@@ -16,8 +16,12 @@ class ProfileSuggestionController
 
         $users = $this->getSuggestions($user);
 
-        $users = array_filter($users, function ($value) use ($user) {
-            return $this->inLocation($user->lat, $user->lon, $value->lat, $value->lon, 20)
+        $preferences = $user->getPreferences();
+
+
+        $users = array_filter($users, function ($value) use ($user, $preferences) {
+            $userPreferences = $value->getPreferences();
+            return $this->inLocation($preferences->lat, $preferences->lon, $userPreferences->lat, $userPreferences->lon, 20)
                 && !$user->isBlocking($value);
         });
 
