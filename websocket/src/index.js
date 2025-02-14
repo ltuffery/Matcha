@@ -39,9 +39,7 @@ io.on("connection", (socket) => {
     onlineUsers.delete(username)
     cacheBrowsing.delete(username)
 
-    Api.put('/users/me').header('Authorization', 'Bearer ' + socket.handshake.auth.token).send({
-      last_connection: new Date().toISOString()
-    })
+    Api.post('/users/me/offline').header('Authorization', 'Bearer ' + socket.handshake.auth.token).send()
 
     socket.broadcast.emit("user_offline", { username })
   });
