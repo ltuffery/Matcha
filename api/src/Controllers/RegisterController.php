@@ -42,6 +42,16 @@ class RegisterController
             throw new InvalidDataException(0, 'Photos is required.');
         }
 
+        $photos = $this->checkPhotos();
+
+        if (!$photos) {
+            Flight::json([
+                'code' => 0,
+                'message' => "Photos is not valid.",
+            ], 400);
+            return;
+        }
+
         $user = new User();
         $user->username = $request->data->username;
         $user->email = $request->data->email;
@@ -62,7 +72,7 @@ class RegisterController
             }
 
             if (!getenv("PHPUNIT_TEST")) {
-                $this->uploadPhotos($saved);
+                $this->uploadPhotos($saved, $photos);
             }
 
             Flight::json([
@@ -89,34 +99,42 @@ class RegisterController
         }
     }
 
-    private function uploadPhotos(User $user): void
+    private function checkPhotos(): array|false
+    {
+        $photos = Flight::request()->getUploadedFiles()['photos'];
+        $uploadPhotos = [];
+
+        if (!is_array($photos)) {
+            $photos = [$photos];
+        }
+
+        foreach ($photos as $photo) {
+            $service = \Matcha\Api\Services\Photo::new($photo);
+
+            if (!$service->isValidExtension()) {
+                return false;
+            }
+
+            $uploadPhotos[] = $service;
+        }
+
+        return $uploadPhotos;
+    }
+
+    /**
+     * @param User $user
+     * @param \Matcha\Api\Services\Photo[] $photos
+     * @return void
+     */
+    private function uploadPhotos(User $user, array $photos): void
     {
         if (!is_dir(BASE_PATH . "/storage/photos")) {
             mkdir(BASE_PATH . "/storage/photos", recursive: true);
         }
 
-        $photos = Flight::request()->getUploadedFiles()['photos'];
-
-        if (is_array($photos)) {
-            foreach (Flight::request()->getUploadedFiles()['photos'] as $file) {
-                $this->savePhotos($file, $user);
-            }
-        } else {
-            $this->savePhotos($photos, $user);
+        foreach ($photos as $photo) {
+            $photo->save($user);
         }
-    }
-
-    private function savePhotos(UploadedFile $file, User $user): void
-    {
-        $name = bin2hex(random_bytes(15));
-
-        $photo = new Photo();
-
-        $photo->name = $name;
-        $photo->user_id = $user->id;
-
-        $photo->create();
-        $file->moveTo(BASE_PATH . "/storage/photos/" . $name . ".png");
     }
 
 }
