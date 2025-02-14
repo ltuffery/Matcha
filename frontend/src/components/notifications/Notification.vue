@@ -90,8 +90,9 @@ onMounted(async () => {
       <a
         @click="router.push({ name: 'notifications' })"
         class="text-center py-2 underline cursor-pointer"
-        >View all</a
       >
+        View all
+      </a>
     </div>
   </div>
 </template>
