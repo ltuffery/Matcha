@@ -33,23 +33,12 @@ const handleRemoveFileUpload = index => {
   emit('update:modelValue', images.value)
 }
 
-const formatPropsToImage = () => {
-  if (props.modelValue)
-  {
-    console.log('oui')
-    for (const image of props.modelValue) {
-      images.value.push({file: null, url: image})
-    }
-  }
-}
-
 watch(() => props.modelValue, () => {
-  // formatPropsToImage()
-  console.log('oui-oui')
-});
+  images.value = props.modelValue ? props.modelValue : []
+})
 
 onBeforeMount(() => {
-  formatPropsToImage()
+    images.value = props.modelValue ? props.modelValue : []
 })
 </script>
 

@@ -15,18 +15,23 @@ onBeforeMount(async () => {
     if (res.ok)
       userInfoStore.set(await res.json())
   }
-  info.value.bio = userInfoStore.user.biography
-  info.value.photos = userInfoStore.user.photos
+  info.value.biography = userInfoStore.user.biography
+  info.value.photos = []
   info.value.tags = userInfoStore.user.tags
+
+  for (const image of userInfoStore.user.photos) {
+    info.value.photos.push({file: null, url: image})
+  }
 })
 
-onUnmounted(() => {
-  
+onUnmounted(async () => {
+  Api.put('/users/me').send(info.value)
+  Api.get('/users/me').send().then(res => res.json()).then(userInfoStore.add)
 })
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col gap-3">
     <div class="w-full flex justify-center">
       <image-selector v-model="info.photos" :model-value="info.photos" class="w-full max-w-sm" />
     </div>
@@ -34,7 +39,7 @@ onUnmounted(() => {
     <div class="flex flex-col gap-3 bg-base-300 rounded-box p-3">
       <span>Biography :</span>
       <textarea
-        v-model="info.bio"
+        v-model="info.biography"
         class="textarea textarea-bordered min-h-28"
         placeholder="Bio"
       ></textarea>
@@ -44,7 +49,4 @@ onUnmounted(() => {
       <tag-selector v-model="info.tags" :model-value="info.tags" />
     </div>
   </div>
-
-
-  <button class="btn" @click="testResult">test</button>
 </template>
