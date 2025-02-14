@@ -22,9 +22,6 @@ use Matcha\Api\Controllers\ViewController;
 use Matcha\Api\Middleware\AuthMiddleware;
 
 Flight::route('GET /', function () {
-    phpinfo();
-    return;
-
     $content = file_get_contents(dirname(__DIR__) . '/composer.json');
     $data = json_decode($content, true);
 
