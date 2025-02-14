@@ -73,6 +73,8 @@ Flight::group('/users', function () {
         Flight::route('PUT|PATCH /', [ProfileController::class, 'update']);
         Flight::route('DELETE /', ProfileController::class . 'destroy');
 
+        Flight::route('POST /offline', [ProfileController::class, 'offline']);
+
         Flight::route('PUT|PATCH /preferences', [PreferencesController::class, 'update']);
         Flight::route('GET /preferences', [PreferencesController::class, 'index']);
 

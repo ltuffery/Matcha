@@ -1,3 +1,0 @@
-ALTER TABLE `users`
-ADD `lat` FLOAT DEFAULT 0,
-ADD `lon` FLOAT DEFAULT 0;

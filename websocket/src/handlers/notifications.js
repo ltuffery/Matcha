@@ -8,7 +8,9 @@ export const sendNotification = async (type, username, socket) => {
   })
   const data = await res.json()
 
-  socket.to(onlineUsers.get(username).socketId).emit("notification", data)
+  if (onlineUsers.has(username)) {
+    socket.to(onlineUsers.get(username).socketId).emit("notification", data)
+  }
 }
 
 export const like = (username, socket) => {

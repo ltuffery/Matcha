@@ -10,11 +10,11 @@ class LocalisationController
     public function update(): void
     {
         $request = Flight::request();
-        $user = Flight::user();
+        $userPreferences = Flight::user()->getPreferences();
 
         if (isset($request->data->lat) && isset($request->data->lon)) {
-            $user->lon = $request->data->lon;
-            $user->lat = $request->data->lat;
+            $userPreferences->lon = $request->data->lon;
+            $userPreferences->lat = $request->data->lat;
         } else {
             $api = new IpApi();
             $ip = $request->ip;
@@ -25,11 +25,11 @@ class LocalisationController
                 return;
             }
 
-            $user->lon = $loc->lon;
-            $user->lat = $loc->lat;
+            $userPreferences->lon = $loc->lon;
+            $userPreferences->lat = $loc->lat;
         }
 
-        $user->save();
+        $userPreferences->save();
 
         Flight::json([], 204);
     }

@@ -6,16 +6,19 @@ import { ref } from 'vue'
 import { Api } from '@/utils/api.js'
 import LoadingScreen from '@/components/screen/LoadingScreen.vue'
 import router from '@/router'
+import { usePreferencesStore } from '@/store/preferences.js'
 
 const loading = ref(true)
 const settingsCategory = ref(1)
 const profile = ref({})
+const preferencesStore = usePreferencesStore()
 
 Api.get('/users/me')
   .send()
   .then(res => res.json())
   .then(data => {
     profile.value = data
+    preferencesStore.setPreferences(profile.value.preferences)
     loading.value = false
   })
 
@@ -60,10 +63,7 @@ const goToProfile = () => {
         </button>
       </div>
     </div>
-    <PreferencesSettings
-      :preferences="profile.preferences"
-      v-if="settingsCategory === 1"
-    />
+    <PreferencesSettings v-if="settingsCategory === 1" />
 
     <AccountSettings :data="profile" v-else />
   </div>
