@@ -25,7 +25,30 @@ onBeforeMount(async () => {
 })
 
 onUnmounted(async () => {
-  Api.put('/users/me').send(info.value)
+  const formData = new FormData();
+  formData.append('biography', info.value.biography);
+
+  info.value.photos.forEach((photo, index) => {
+    formData.append(`photos[${index}][file]`, photo.file);
+    formData.append(`photos[${index}][url]`, photo.url);
+  });
+
+  info.value.tags.forEach((tag) => {
+    formData.append('tags[]', tag);
+  });
+
+  // let tmp = await Api.put('/users/me').send(formData)
+  // tmp = await tmp.json()
+  console.log(formData)
+  fetch(`http://${location.hostname}:3000/users/me`, {
+    method: 'POST',
+    body: formData,
+    headers: {'Authorization': `Bearer ${localStorage.jwt}`}
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+  // console.log(tmp)
   Api.get('/users/me').send().then(res => res.json()).then(userInfoStore.add)
 })
 </script>

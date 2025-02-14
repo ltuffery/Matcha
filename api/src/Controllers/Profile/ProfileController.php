@@ -39,10 +39,14 @@ class ProfileController
         /** @var User $user */
         $user = Flight::user();
 
+        // var_dump(Flight::request()->files);
+
+
+
         foreach (Flight::request()->data as $key => $value) {
             if (!isset($user->{$key})) {
 
-                if ($key == 'photos') {
+                if ($key == 'photos' && !is_null($value)) {
                     $this->savePhotos($user, $value);
                 } else if ($key == 'tags') {
                     UserTag::deleteAllFromUser($user);
@@ -67,17 +71,59 @@ class ProfileController
         $myPhotos = $user->getPhotosUrl();
 
         foreach ($value as $photo) {
-            if (!is_null($photo['file'])) {
-                $p = Photo::new($photo['file']);
-
-                if (!$p->isValidExtension()) {
-                    Flight::json(["message" => "Invalid file type."], 400);
-                    return;
-                }
-
-                $photos[] = $p;
-            } else {
+            if (isset($photo['file']) && !is_null($photo['file']))
                 unset($myPhotos[array_search($photo['url'], $myPhotos)]);
+            // if (isset($photo['file']) && !is_null($photo['file'])) {
+            //     $fileData = $photo['file'];
+
+            //     $uploadedFile = new \flight\net\UploadedFile(
+            //         $fileData['name'],     // Nom du fichier (string)
+            //         $fileData['tmp_name'], // Chemin temporaire (string)
+            //         $fileData['size'],     // Taille (int)
+            //         $fileData['type'],     // Type MIME (string)
+            //         $fileData['error']     // Code d'erreur (int)
+            //     );
+
+            //     $p = Photo::new($uploadedFile);
+
+            //     if (!$p->isValidExtension()) {
+            //         Flight::json(["message" => "Invalid file type."], 400);
+            //         return;
+            //     }
+
+            //     $photos[] = $p;
+            // } else {
+            //     unset($myPhotos[array_search($photo['url'], $myPhotos)]);
+            // }
+        }
+
+        $files = Flight::request()->files['photos'];
+        if (isset($files['photos']))
+            $files = $files['photos'];
+
+        if (isset($files['photos'])) {
+            foreach ($files['name'] as $index => $photo)
+            {
+                // $fileData = $photo['file'];
+
+                    $uploadedFile = new \flight\net\UploadedFile(
+                        $files['name'][$index]['file'],
+                        $files['type'][$index]['file'],
+                        $files['size'][$index]['file'],
+                        $files['tmp_name'][$index]['file'],
+                        $files['error'][$index]['file'],
+
+                    );
+
+                    var_dump($uploadedFile);
+                    $p = Photo::new($uploadedFile);
+
+                    if (!$p->isValidExtension()) {
+                        Flight::json(["message" => "Invalid file type."], 400);
+                        return;
+                    }
+
+                    $photos[] = $p;
             }
         }
 
@@ -91,7 +137,7 @@ class ProfileController
         }
 
         foreach ($photos as $photo) {
-            $photo->upload($user);
+            $photo->save($user);
         }
     }
 

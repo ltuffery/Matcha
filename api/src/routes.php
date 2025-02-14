@@ -70,7 +70,7 @@ Flight::group('/users', function () {
         Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
 
         Flight::route('GET /', [ProfileController::class, 'index']);
-        Flight::route('PUT|PATCH /', [ProfileController::class, 'update']);
+        Flight::route('PUT|POST /', [ProfileController::class, 'update']);
         Flight::route('DELETE /', ProfileController::class . 'destroy');
 
         Flight::route('POST /offline', [ProfileController::class, 'offline']);
