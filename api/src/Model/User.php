@@ -35,6 +35,7 @@ class User extends Model
     public bool $email_verified;
     public string|null $temporary_email_token;
     public int $fame_rating = 0;
+    public string $last_connection;
 
     public function generateJWT(): string
     {

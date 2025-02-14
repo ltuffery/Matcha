@@ -54,4 +54,13 @@ class ProfileController
 
         Flight::json([], 203);
     }
+
+    public function offline(): void
+    {
+        $user = Flight::user();
+
+        $user->last_connection = date('Y-m-d H:i:s');
+
+        $user->save();
+    }
 }

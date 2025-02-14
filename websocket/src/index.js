@@ -3,6 +3,7 @@ import authMiddleware from "./middlewares/authMiddleware.js";
 import {sendMessage} from "./handlers/chat.js";
 import {browse} from "./handlers/browsing.js";
 import {sortProfile} from "./handlers/sort-profile.js";
+import {Api} from "./services/api.js";
 
 export const onlineUsers = new Map()
 export const cacheBrowsing = new Map()
@@ -37,6 +38,8 @@ io.on("connection", (socket) => {
   socket.on("disconnect", (reason) => {
     onlineUsers.delete(username)
     cacheBrowsing.delete(username)
+
+    Api.post('/users/me/offline').header('Authorization', 'Bearer ' + socket.handshake.auth.token).send()
 
     socket.broadcast.emit("user_offline", { username })
   });
