@@ -2,6 +2,8 @@
 
 namespace Matcha\Api\Model;
 
+use Flight;
+
 class UserTag extends Model
 {
     protected string $table = 'user_tags';
@@ -9,4 +11,9 @@ class UserTag extends Model
 
     public int $user_id;
     public int $tag_id;
+
+    public static function deleteAllFromUser(User $user)
+    {
+        Flight::db()->query("DELETE FROM `user_tags` WHERE `user_id` = " . $user->id);
+    }
 }
