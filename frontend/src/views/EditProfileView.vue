@@ -37,6 +37,8 @@ onUnmounted(async () => {
     formData.append('tags[]', tag);
   });
 
+  formData.append('_method', 'put')
+
   // let tmp = await Api.put('/users/me').send(formData)
   // tmp = await tmp.json()
   console.log(formData)
