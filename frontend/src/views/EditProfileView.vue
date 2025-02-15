@@ -45,9 +45,7 @@ onUnmounted(async () => {
     body: formData,
     headers: {'Authorization': `Bearer ${localStorage.jwt}`}
   })
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error(error));
+
   // console.log(tmp)
   Api.get('/users/me').send().then(res => res.json()).then(userInfoStore.add)
 })
