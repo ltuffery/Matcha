@@ -91,8 +91,8 @@ const router = createRouter({
       beforeEnter: [authGuard],
     },
     {
-      path: '/EditProfile',
-      name: 'EditProfile',
+      path: '/profile/:username/edit',
+      name: 'profile.edit',
       component: EditProfileView,
       beforeEnter: [authGuard],
     },

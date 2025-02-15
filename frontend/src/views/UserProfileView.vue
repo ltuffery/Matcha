@@ -21,7 +21,7 @@ const getData = async () => {
 }
 
 const editMyProfile = () => {
-  router.push({name: "EditProfile"})
+  router.push({name: "profile.edit", params: route.params.username})
 }
 
 const formatGender = type => {
