@@ -1,10 +1,10 @@
 import { Server } from "socket.io";
-import authMiddleware from "./middlewares/authMiddleware.js";
-import {sendMessage} from "./handlers/chat.js";
-import {browse} from "./handlers/browsing.js";
-import {sortProfile} from "./handlers/sort-profile.js";
-import {like, unlike, view} from "./handlers/notifications.js";
-import {Api} from "./services/api.js";
+import authMiddleware from "@/middlewares/authMiddleware";
+import {sendMessage} from "@/handlers/chat";
+import {browse} from "@/handlers/browsing";
+import {sortProfile} from "@/handlers/sort-profile";
+import {like, unlike, view} from "@/handlers/notifications";
+import {Api} from "@/services/api";
 
 export const onlineUsers = new Map()
 export const cacheBrowsing = new Map()
@@ -18,7 +18,7 @@ const io = new Server({
 io.use(authMiddleware)
 
 io.on("connection", (socket) => {
-  const username = socket.handshake.auth.username;
+  const username: string = socket.handshake.auth.username;
 
   if (!username) {
     socket.disconnect()
@@ -43,7 +43,10 @@ io.on("connection", (socket) => {
     onlineUsers.delete(username)
     cacheBrowsing.delete(username)
 
-    Api.post('/users/me/offline').header('Authorization', 'Bearer ' + socket.handshake.auth.token).send()
+    Api
+      .post('/users/me/offline')
+      .header('Authorization', 'Bearer ' + socket.handshake.auth.token)
+      .send()
 
     socket.broadcast.emit("user_offline", { username })
   });

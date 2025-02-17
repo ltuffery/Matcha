@@ -1,9 +1,10 @@
-import {cacheBrowsing} from "../index.js";
-import {Api} from "../services/api.js";
+import {cacheBrowsing} from '@/server';
+import {Api} from "@/services/api";
+import {Socket} from "socket.io";
 
-let finished = []
+let finished: any[] = []
 
-export const browse = (username, socket) => {
+export const browse = (username: string, socket: Socket) => {
   return async () => {
     if (finished.includes(username)) {
       if (!cacheBrowsing.has(username)) {

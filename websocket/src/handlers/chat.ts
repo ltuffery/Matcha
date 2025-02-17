@@ -1,10 +1,11 @@
-import {onlineUsers} from "../index.js";
-import {Api} from "../services/api.js";
+import {onlineUsers} from "@/server";
+import {Api} from "@/services/api";
 import {sendNotification} from "./notifications.js";
-import {NOTIFICATION_TYPE} from "../enums/notification-types.js";
+import {NOTIFICATION_TYPE} from "@/enums/notification-types";
+import {Socket} from "socket.io";
 
-export const sendMessage = (username, socket) => {
-  return async (to, content) => {
+export const sendMessage = (username: string, socket: Socket) => {
+  return async (to: string, content: string) => {
     const res = await Api.post(`/users/me/matches/${to}`)
       .header('Authorization', 'Bearer ' + socket.handshake.auth.token)
       .send({
