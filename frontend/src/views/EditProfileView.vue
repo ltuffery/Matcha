@@ -33,9 +33,13 @@ onUnmounted(async () => {
     formData.append(`photos[${index}][url]`, photo.url);
   });
 
-  info.value.tags.forEach((tag) => {
-    formData.append('tags[]', tag);
-  });
+  if (info.value.tags.length === 0) {
+    formData.append('tags[]', [])
+  } else {
+    info.value.tags.forEach((tag) => {
+      formData.append('tags[]', tag);
+    });
+  }
 
   formData.append('_method', 'put')
 
