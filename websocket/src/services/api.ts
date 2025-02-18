@@ -40,7 +40,7 @@ export class Api {
     return this
   }
 
-  async send(body: Body|unknown) {
+  async send(body?: Body) {
     return await fetch(`http://api:3000/${this._path}`, {
       method: this._method,
       headers: this._headers,

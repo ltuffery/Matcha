@@ -4,8 +4,8 @@ import {Socket} from "socket.io";
 
 let finished: any[] = []
 
-export const browse = (username: string, socket: Socket) => {
-  return async () => {
+export const handleBrowsingEvent = (username: string, socket: Socket) => {
+  socket.on("browsing", async () => {
     if (finished.includes(username)) {
       if (!cacheBrowsing.has(username)) {
         finished = finished.filter(value => value !== username)
@@ -45,5 +45,5 @@ export const browse = (username: string, socket: Socket) => {
         finished.push(username)
       }
     }
-  }
+  })
 }
