@@ -39,10 +39,6 @@ class ProfileController
         /** @var User $user */
         $user = Flight::user();
 
-        // var_dump(Flight::request()->files);
-
-
-
         foreach (Flight::request()->data as $key => $value) {
             if (!isset($user->{$key})) {
 

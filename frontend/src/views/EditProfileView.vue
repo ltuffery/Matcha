@@ -43,16 +43,12 @@ onUnmounted(async () => {
 
   formData.append('_method', 'put')
 
-  // let tmp = await Api.put('/users/me').send(formData)
-  // tmp = await tmp.json()
-  console.log(formData)
   fetch(`http://${location.hostname}:3000/users/me`, {
     method: 'POST',
     body: formData,
     headers: {'Authorization': `Bearer ${localStorage.jwt}`}
   })
 
-  // console.log(tmp)
   Api.get('/users/me').send().then(res => res.json()).then(userInfoStore.add)
 })
 </script>
@@ -60,7 +56,7 @@ onUnmounted(async () => {
 <template>
   <div class="flex flex-col gap-3">
     <div class="w-full flex justify-center">
-      <image-selector v-model="info.photos" :model-value="info.photos" class="w-full max-w-sm" />
+      <ImageSelector v-model="info.photos" :model-value="info.photos" class="w-full max-w-sm" />
     </div>
 
     <div class="flex flex-col gap-3 bg-base-300 rounded-box p-3">
@@ -73,7 +69,7 @@ onUnmounted(async () => {
     </div>
 
     <div class="flex flex-col gap-3 bg-base-300 rounded-box p-3">
-      <tag-selector v-model="info.tags" :model-value="info.tags" />
+      <TagSelector v-model="info.tags" :model-value="info.tags" />
     </div>
   </div>
 </template>
