@@ -1,6 +1,7 @@
 import {NOTIFICATION_TYPES} from "@/enums/notificationTypes";
 import {Api} from "@/services/api";
 import {Socket} from "socket.io";
+import {OnlineUsersCache} from "@/cache/onlineUsersCache";
 
 const sendNotification = async (type: NOTIFICATION_TYPES, username: string, socket: Socket) => {
   const res = await Api.post(`/users/${username}/notifications`).header('Authorization', 'Bearer ' + socket.handshake.auth.token).send({
@@ -8,8 +9,8 @@ const sendNotification = async (type: NOTIFICATION_TYPES, username: string, sock
   })
   const data = await res.json()
 
-  if (onlineUsers.has(username)) {
-    socket.to(onlineUsers.get(username).socketId).emit("notification", data)
+  if (OnlineUsersCache.has(username)) {
+    socket.to(OnlineUsersCache.getSocketId(username) as string).emit("notification", data)
   }
 }
 

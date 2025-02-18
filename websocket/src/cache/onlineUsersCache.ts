@@ -32,6 +32,11 @@ export class OnlineUsersCache extends MemoryCache {
     }
   }
 
+  static has(username: string): boolean
+  {
+    return OnlineUsersCache.getSocketId(username) !== undefined
+  }
+
   static getSocketId(username: string): string | undefined
   {
     const cache = OnlineUsersCache.getAll()
