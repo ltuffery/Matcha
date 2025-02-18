@@ -13,6 +13,7 @@ import NewPasswordView from '@/views/NewPasswordView.vue'
 import UserProfileView from '@/views/UserProfileView.vue'
 import NotificationsView from '@/views/NotificationsView.vue'
 import NotFound from '@/views/NotFound.vue'
+import EditProfileView from "@/views/EditProfileView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -87,6 +88,12 @@ const router = createRouter({
       path: '/notifications',
       name: 'notifications',
       component: NotificationsView,
+      beforeEnter: [authGuard],
+    },
+    {
+      path: '/profile/:username/edit',
+      name: 'profile.edit',
+      component: EditProfileView,
       beforeEnter: [authGuard],
     },
     {

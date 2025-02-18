@@ -1,7 +1,15 @@
 <script setup>
-import { ref } from 'vue'
+import {onBeforeMount, ref, watch} from 'vue'
+
+const props = defineProps({
+  modelValue: {
+    type: Array
+  }
+})
 
 const images = ref([])
+const inputImage = ref()
+const emit = defineEmits(['update:modelValue'])
 
 const handleFileUpload = e => {
   for (let index = 0; index < e.target.files.length; index++) {
@@ -15,12 +23,23 @@ const handleFileUpload = e => {
     }
 
     images.value.push(element)
+    emit('update:modelValue', images.value)
   }
 }
 
 const handleRemoveFileUpload = index => {
   images.value.splice(index, 1)
+  inputImage.value.value = ''
+  emit('update:modelValue', images.value)
 }
+
+watch(() => props.modelValue, () => {
+  images.value = props.modelValue ? props.modelValue : []
+})
+
+onBeforeMount(() => {
+    images.value = props.modelValue ? props.modelValue : []
+})
 </script>
 
 <template>
@@ -58,6 +77,7 @@ const handleRemoveFileUpload = index => {
             </g>
           </svg>
           <input
+            ref="inputImage"
             @change="handleFileUpload"
             type="file"
             class="w-full h-full opacity-0 absolute cursor-pointer"
@@ -67,6 +87,7 @@ const handleRemoveFileUpload = index => {
         <div
           class="relative w-full h-40 border-2 border-primary rounded flex justify-center items-center cursor-pointer"
           v-for="(item, index) in images"
+          :key="index"
         >
           <img class="object-cover w-full h-full" alt="Image" :src="item.url" />
           <div

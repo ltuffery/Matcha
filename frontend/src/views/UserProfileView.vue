@@ -20,6 +20,10 @@ const getData = async () => {
   else notFound.value = true
 }
 
+const editMyProfile = () => {
+  router.push({name: "profile.edit", params: route.params.username})
+}
+
 const formatGender = type => {
   switch (type) {
     case 'M':
@@ -149,6 +153,7 @@ onMounted(async () => {
   <button
     v-if="data?.me"
     class="sticky bottom-[5%] left-full mr-10 z-30 rounded-full btn btn-outline bg-base-300/80 flex items-center justify-center size-14"
+    @click="editMyProfile"
   >
     <svg
       class="w-11"
