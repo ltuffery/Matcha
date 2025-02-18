@@ -1,12 +1,12 @@
-DC := docker compose
+DC := docker compose -f ./docker-compose.core.yml
 
 all: set_app_host dev
 
 dev:
-	$(DC) --profile dev up --build
+	$(DC) -f ./docker-compose.dev.yml up --build
 
 prod: set_app_host
-	$(DC) --profile prod up --build
+	$(DC) -f ./docker-compose.prod.yml up --build
 
 down:
 	$(DC) down

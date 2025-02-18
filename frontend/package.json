@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 1212 --host 0.0.0.0",
-    "build": "vite build && chmod -R 777 dist",
+    "build": "vite build",
     "preview": "vite preview",
     "test:unit": "vitest",
     "lint": "eslint . --fix",
