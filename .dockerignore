@@ -1,5 +1,5 @@
 README.md
 .env
-Dockerfile
+docker-compose.override.yml
 docker-compose.yml
 .gitignore

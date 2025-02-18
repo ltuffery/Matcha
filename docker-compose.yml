@@ -51,6 +51,7 @@ services:
   websocket:
     build:
       context: ./websocket/
+#    image: node:22.11
     container_name: websocket
     restart: always
     volumes:
@@ -63,10 +64,11 @@ services:
       - matchaNetwork
     depends_on:
       - mysql
+#    working_dir: /app
+#    command: sh -c "npm install && chmod -R 777 node_modules && npm start"
 
-  frontend:
-    build:
-      context: ./frontend/
+  frontend_dev:
+    image: node:22.11
     container_name: frontend
     restart: always
     volumes:
@@ -77,8 +79,46 @@ services:
       - 1212:1212
     networks:
       - matchaNetwork
+    working_dir: /app
+    command: sh -c "npm install && chmod -R 777 node_modules && npm run dev"
+    profiles: ["dev"]
+
+  frontend:
+    image: node:22.11
+    container_name: frontend
+    volumes:
+      - frontend:/app
+    networks:
+      - matchaNetwork
+    working_dir: /app
+    command: sh -c "npm install && chmod -R 777 node_modules && npm run build"
+    profiles: ["prod"]
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: always
+    ports:
+      - "1212:1212"
     depends_on:
-      - mysql
+      - frontend
+    volumes:
+      - ./frontend/dist:/tmp/dist
+      - ./nginx/conf.d:/etc/nginx/conf.d
+#    command: /bin/sh -c "cp -R /tmp/dist/* /usr/share/nginx/html && chown -R nginx:nginx /usr/share/nginx/html && chmod -R 755 /usr/share/nginx/html && nginx -g 'daemon off;'"
+    command: /bin/sh -c "
+      echo 'Waiting to frontend build...';
+      while [ ! -f /tmp/dist/index.html ]; do
+      echo 'Waiting to frontend build...';
+      sleep 2;
+      done;
+      echo 'Build finished, running of Nginx...';
+      cp -R /tmp/dist/* /usr/share/nginx/html &&
+      chown -R nginx:nginx /usr/share/nginx/html &&
+      chmod -R 755 /usr/share/nginx/html &&
+      nginx -g 'daemon off;'
+      "
+    profiles: ["prod"]
 
 volumes:
   frontend:
