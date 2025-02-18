@@ -26,7 +26,7 @@ class MessageSeeder implements SeederInterface
                     $receiver = $user->id;
                 }
 
-                for ($i = 0; $i < rand(0, 1000); $i++) {
+                for ($i = 0; $i < rand(0, 50); $i++) {
                     $message = new Message();
 
                     $message->sender_id = $sender;

@@ -31,19 +31,11 @@ abstract class Factory
             $model = new $this->model();
             $data = $this->define();
 
-            try {
-                foreach ($data as $key => $value) {
-                    $model->{$key} = $value;
-                }
-
-                $entities[] = $model->save();
-            } catch (Exception $e) {
-                if (!getenv('PHPUNIT_TEST')) {
-                    echo sprintf("\033[0;31m[%s] \033[0m%s", $this->model, $e->getMessage()) . PHP_EOL;
-                } else {
-                    throw $e;
-                }
+            foreach ($data as $key => $value) {
+                $model->{$key} = $value;
             }
+
+            $entities[] = $model->save();
         }
 
         return $entities;

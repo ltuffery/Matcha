@@ -7,6 +7,15 @@ use Matcha\Api\Model\User;
 
 class PhotoSeeder implements SeederInterface
 {
+    private array $photos = [];
+    private int $count = 0;
+
+    public function __construct()
+    {
+        $this->photos = scandir(dirname(__DIR__) . "/data_preset/photos/");
+        $this->count = count($this->photos);
+    }
+
     public function run(): void
     {
         $users = User::all();
@@ -17,22 +26,29 @@ class PhotoSeeder implements SeederInterface
             }
 
             for ($i = 0; $i < rand(1, (5 - count($user->getPhotosUrl()))); $i++) {
-                $name = $this->savePhoto($user->id);
-
-                file_put_contents(BASE_PATH . "/storage/photos/" . $name . ".png", file_get_contents(faker()->imageUrl()));
+                $this->savePhoto($user->id);
             }
         }
     }
 
-    private function savePhoto(int $user_id): string
+    private function savePhoto(int $user_id): void
     {
+        $file = $this->photos[rand(0, $this->count - 1)];
+
+        if (!is_file(dirname(__DIR__) . "/data_preset/photos/" . $file)) {
+            return;
+        }
+
         $photo = new Photo();
 
         $photo->name = bin2hex(random_bytes(15));
         $photo->user_id = $user_id;
 
-        $photo->save();
+        file_put_contents(
+            BASE_PATH . "/storage/photos/" . $file,
+            file_get_contents(dirname(__DIR__) . "/data_preset/photos/" . $file)
+        );
 
-        return $photo->name;
+        $photo->save();
     }
 }
