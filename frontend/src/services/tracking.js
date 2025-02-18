@@ -2,9 +2,7 @@ import { Api } from '@/utils/api.js'
 
 export class Tracking {
   static setAtCurrentLocation = async () => {
-    let response = await Api.put('/users/me/localisation').send()
-    response = await response.json() // temporary to view ip transmitted at backend
-    console.log(response) // temporary to view ip transmitted at backend
+    await Api.put('/users/me/localisation').send()
 
     navigator.geolocation.getCurrentPosition(loc => {
       Api.put('/users/me/localisation').send({

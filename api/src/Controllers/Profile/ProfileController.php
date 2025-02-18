@@ -47,8 +47,10 @@ class ProfileController
                 } else if ($key == 'tags') {
                     UserTag::deleteAllFromUser($user);
 
-                    foreach ($value as $tag) {
-                        $user->addTag($tag);
+                    if (!empty($value)) {
+                        foreach ($value as $tag) {
+                            $user->addTag($tag);
+                        }
                     }
                 }
 

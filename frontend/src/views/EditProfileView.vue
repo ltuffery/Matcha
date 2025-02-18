@@ -34,7 +34,7 @@ onUnmounted(async () => {
   });
 
   if (info.value.tags.length === 0) {
-    formData.append('tags[]', [])
+    formData.append('tags', [])
   } else {
     info.value.tags.forEach((tag) => {
       formData.append('tags[]', tag);
