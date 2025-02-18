@@ -1,4 +1,3 @@
-import {onlineUsers} from "@/server";
 import {NOTIFICATION_TYPES} from "@/enums/notificationTypes";
 import {Api} from "@/services/api";
 import {Socket} from "socket.io";
@@ -23,38 +22,4 @@ export const sendRequest = (username: string, type: NOTIFICATION_TYPES, socket: 
         await sendNotification(NOTIFICATION_TYPES.LIKE, username, socket)
       }
     })
-}
-
-export const like = (username: string, socket: Socket) => {
-  return async (user: string) => {
-    Api.post(`/users/${user}/like`)
-      .header('Authorization', 'Bearer ' + socket.handshake.auth.token)
-      .send()
-      .then(async res => {
-        if (res.ok) {
-          await sendNotification(NOTIFICATION_TYPES.LIKE, user, socket)
-        }
-      })
-  }
-}
-
-export const unlike = (username: string, socket: Socket) => {
-  return async (user: string) => {
-    Api.post(`/users/${user}/unlike`)
-      .header('Authorization', 'Bearer ' + socket.handshake.auth.token)
-      .send()
-      .then(async res => {
-        if (res.ok) {
-          await sendNotification(NOTIFICATION_TYPES.UNLIKE, user, socket)
-        }
-      })
-  }
-}
-
-export const view = (username: string, socket: Socket) => {
-  return async (user: string) => {
-    Api.post(`/users/${user}/view`).header('Authorization', 'Bearer ' + socket.handshake.auth.token).send()
-
-    await sendNotification(NOTIFICATION_TYPES.VIEW, user, socket)
-  }
 }
