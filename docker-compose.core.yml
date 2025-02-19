@@ -30,24 +30,6 @@ services:
     networks:
       - matchaNetwork
 
-#  api:
-#    build:
-#      context: ./api/
-#      dockerfile: Dockerfile
-#    container_name: api
-#    restart: always
-#    volumes:
-#      - api:/app
-#    ports:
-#      - 3000:3000
-#    networks:
-#      - matchaNetwork
-#    depends_on:
-#      mysql:
-#        condition: service_healthy
-#    env_file:
-#      - ./.env
-
   websocket:
     build:
       context: ./websocket/
@@ -64,58 +46,6 @@ services:
       - matchaNetwork
     depends_on:
       - mysql
-#    working_dir: /app
-#    command: sh -c "npm install && chmod -R 777 node_modules && npm start"
-
-#  frontend_dev:
-#    image: node:22.11
-#    container_name: frontend
-#    restart: always
-#    volumes:
-#      - frontend:/app
-#    expose:
-#      - '1212'
-#    ports:
-#      - 1212:1212
-#    networks:
-#      - matchaNetwork
-#    working_dir: /app
-#    command: sh -c "npm install && chmod -R 777 node_modules && npm run dev"
-
-#  frontend:
-#    image: node:22.11
-#    container_name: frontend
-#    volumes:
-#      - frontend:/app
-#    networks:
-#      - matchaNetwork
-#    working_dir: /app
-#    command: sh -c "npm install && chmod -R 777 node_modules && npm run build"
-
-#  nginx:
-#    image: nginx:alpine
-#    container_name: nginx
-#    restart: always
-#    ports:
-#      - "1212:1212"
-#    depends_on:
-#      - frontend
-#    volumes:
-#      - ./frontend/dist:/tmp/dist
-#      - ./nginx/conf.d:/etc/nginx/conf.d
-##    command: /bin/sh -c "cp -R /tmp/dist/* /usr/share/nginx/html && chown -R nginx:nginx /usr/share/nginx/html && chmod -R 755 /usr/share/nginx/html && nginx -g 'daemon off;'"
-#    command: /bin/sh -c "
-#      echo 'Waiting to frontend build...';
-#      while [ ! -f /tmp/dist/index.html ]; do
-#      echo 'Waiting to frontend build...';
-#      sleep 2;
-#      done;
-#      echo 'Build finished, running of Nginx...';
-#      cp -R /tmp/dist/* /usr/share/nginx/html &&
-#      chown -R nginx:nginx /usr/share/nginx/html &&
-#      chmod -R 755 /usr/share/nginx/html &&
-#      nginx -g 'daemon off;'
-#      "
 
 volumes:
   frontend:
