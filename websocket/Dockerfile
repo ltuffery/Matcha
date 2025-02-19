@@ -1,4 +1,4 @@
-FROM node:22.11
+FROM oven/bun:latest
 
 WORKDIR /app
 COPY --chmod=777 ./entrypoint_docker.sh .

@@ -1,6 +1,7 @@
-import {Api} from "../services/api.js";
+import {Api} from "@/services/api";
+import {Socket} from "socket.io";
 
-export default async function authMiddleware(socket, next) {
+export default async function authMiddleware(socket: Socket, next: CallableFunction) {
   const token = socket.handshake.auth.token; // Récupère le token envoyé par le client
   if (!token) {
     return next(new Error("Token required"));

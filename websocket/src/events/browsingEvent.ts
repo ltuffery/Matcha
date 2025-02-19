@@ -1,10 +1,11 @@
-import {cacheBrowsing} from "../index.js";
-import {Api} from "../services/api.js";
+import {cacheBrowsing} from '@/server';
+import {Api} from "@/services/api";
+import {Socket} from "socket.io";
 
-let finished = []
+let finished: any[] = []
 
-export const browse = (username, socket) => {
-  return async () => {
+export const handleBrowsingEvent = (username: string, socket: Socket) => {
+  socket.on("browsing", async () => {
     if (finished.includes(username)) {
       if (!cacheBrowsing.has(username)) {
         finished = finished.filter(value => value !== username)
@@ -44,5 +45,5 @@ export const browse = (username, socket) => {
         finished.push(username)
       }
     }
-  }
+  })
 }
