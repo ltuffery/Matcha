@@ -1,0 +1,52 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    container_name: nginx
+    restart: always
+    ports:
+      - "1212:1212"
+    networks:
+      - matchaNetwork
+
+
+
+  nginx_api:
+    image: nginx:alpine
+    container_name: nginx_api
+    restart: always
+    volumes:
+      - api:/app
+      - ./nginx/api.conf:/etc/nginx/conf.d/api.conf
+    ports:
+      - "3000:3000"
+    networks:
+      - matchaNetwork
+    depends_on:
+      - api
+    command: /bin/sh -c "
+      cp -R /app/* /usr/share/nginx/html/ &&
+      chown -R nginx:nginx /usr/share/nginx/html/ &&
+      chmod -R 755 /usr/share/nginx/html/ &&
+      nginx -g 'daemon off;'"      
+
+  api:
+    build:
+      context: ./api/
+      dockerfile: Dockerfile.prod
+    container_name: api
+    restart: always
+    volumes:
+      - api:/app
+#    ports:
+#      - 3000:3000
+    expose:
+      - 9000
+    networks:
+      - matchaNetwork
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file:
+      - ./.env

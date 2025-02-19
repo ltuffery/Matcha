@@ -1,0 +1,33 @@
+services:
+  frontend:
+      image: node:22.11
+      container_name: frontend
+      restart: always
+      volumes:
+        - frontend:/app
+      expose:
+        - '1212'
+      ports:
+        - 1212:1212
+      networks:
+        - matchaNetwork
+      working_dir: /app
+      command: sh -c "npm install && npm run dev"
+
+  api:
+    build:
+      context: ./api/
+      dockerfile: Dockerfile
+    container_name: api
+    restart: always
+    volumes:
+      - api:/app
+    ports:
+      - 3000:3000
+    networks:
+      - matchaNetwork
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file:
+      - ./.env
