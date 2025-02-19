@@ -13,7 +13,7 @@ class UserSeeder implements SeederInterface
             $this->createDefaultUser();
         } catch (Exception) {}
 
-        User::factory()->count(20)->create();
+        User::factory()->create();
     }
 
     private function createDefaultUser(): void
