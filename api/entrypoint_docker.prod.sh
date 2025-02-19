@@ -12,6 +12,8 @@ done
 
 cp /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
 
+sed -i 's|^listen =.*|listen = 0.0.0.0:9000|' /etc/php8/php-fpm.d/www.conf
+
 composer migrate
 
 php-fpm8 -F

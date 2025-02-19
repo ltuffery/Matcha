@@ -5,21 +5,31 @@ services:
       dockerfile: ./nginx/Dockerfile
     container_name: nginx
     restart: always
-    depends_on:
-      - api
-    volumes:
-      - api:/app
     ports:
       - "1212:1212"
+    networks:
+      - matchaNetwork
+
+
+
+  nginx_api:
+    image: nginx:alpine
+    container_name: nginx_api
+    restart: always
+    volumes:
+      - api:/app
+      - ./nginx/api.conf:/etc/nginx/conf.d/api.conf
+    ports:
       - "3000:3000"
     networks:
       - matchaNetwork
+    depends_on:
+      - api
     command: /bin/sh -c "
-      mkdir /usr/share/nginx/html/backend &&
-      cp -R /app/* /usr/share/nginx/html/backend &&
-      chown -R nginx:nginx /usr/share/nginx/html/backend &&
-      chmod -R 755 /usr/share/nginx/html/backend &&
-      nginx -g 'daemon off;'"
+      cp -R /app/* /usr/share/nginx/html/ &&
+      chown -R nginx:nginx /usr/share/nginx/html/ &&
+      chmod -R 755 /usr/share/nginx/html/ &&
+      nginx -g 'daemon off;'"      
 
   api:
     build:
