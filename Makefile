@@ -27,7 +27,7 @@ set_app_host:
 		(echo ".env Not Found"; false); \
 	else \
 		sed -i '/APP_HOST/d' .env; \
-		echo -e "\nAPP_HOST=$(shell hostname -i)" >> .env; \
+		echo "\nAPP_HOST=$(shell hostname -i)" >> .env; \
 	fi
 
 .PHONY: all re clean fclean up down
