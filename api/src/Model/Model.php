@@ -143,7 +143,7 @@ abstract class Model
             $class = new ReflectionClass($this);
             $tableName = $this->table ?: strtolower($class->getShortName());
             $data = $this->getData();
-            $where = array_map(fn ($k, $v) => $k . ' = "' . $v . '"', array_keys($data), array_values($data));
+            $where = array_map(fn ($k, $v) => '`' . $k . '` = "' . $v . '"', array_keys($data), array_values($data));
 
             $sqlQuery = 'SELECT * FROM `' . $tableName . '` WHERE ' . implode(" AND ", $where);
 

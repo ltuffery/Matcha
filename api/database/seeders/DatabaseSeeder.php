@@ -10,11 +10,9 @@ class DatabaseSeeder implements SeederInterface
     {
         $this->call([
             UserSeeder::class,
-            PreferencesSeeder::class,
-            MatchesSeeder::class,
-            MessageSeeder::class,
-            PhotoSeeder::class,
-            TagSeeder::class,
+//            MatchesSeeder::class,
+//            MessageSeeder::class,
+//            TagSeeder::class,
         ], $n);
     }
 

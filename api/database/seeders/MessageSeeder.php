@@ -32,8 +32,7 @@ class MessageSeeder implements SeederInterface
                     $message->sender_id = $sender;
                     $message->receiver_id = $receiver;
                     $message->content = faker()->sentence(15);
-                    $message->view = true;
-                    $message->created_at = faker()->dateTime->format('Y-m-d');
+                    $message->view = true;;
 
                     $message->save();
                 }

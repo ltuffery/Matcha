@@ -30,7 +30,7 @@ class TagSeeder implements SeederInterface
         }
 
         foreach ($users as $user) {
-            $elements = faker()->randomElements($tags, rand(0, count($tags) << 1));
+            $elements = faker()->randomElements($tags, rand(0, count($tags) - 1));
 
             foreach ($elements as $el) {
                 $newTag = new UserTag();
