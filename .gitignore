@@ -157,3 +157,4 @@ vendor
 .phpunit*
 .php-cs-fixer.cache
 /api/storage/photos
+bun.lock

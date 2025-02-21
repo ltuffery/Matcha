@@ -1,3 +1,3 @@
-npm install
+bun install
 chmod -R 777 node_modules
-npm start
+bun run start

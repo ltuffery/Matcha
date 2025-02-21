@@ -1,7 +1,10 @@
-import {cacheBrowsing} from "../index.js";
+import {cacheBrowsing} from "@/server";
+import {Socket} from "socket.io";
 
-export const sortProfile = (username, socket) => {
-  return (rules) => {
+type Rules = {[name: string]: boolean}
+
+export const sortProfile = (username: string, socket: Socket) => {
+  return (rules: Rules) => {
     if (!cacheBrowsing.has(username)) {
       cacheBrowsing.set(username, {
         sortBy: rules,
