@@ -30,27 +30,10 @@ services:
     networks:
       - matchaNetwork
 
-  api:
-    build:
-      context: ./api/
-      dockerfile: Dockerfile
-    container_name: api
-    restart: always
-    volumes:
-      - api:/app
-    ports:
-      - 3000:3000
-    networks:
-      - matchaNetwork
-    depends_on:
-      mysql:
-        condition: service_healthy
-    env_file:
-      - ./.env
-
   websocket:
     build:
       context: ./websocket/
+#    image: node:22.11
     container_name: websocket
     restart: always
     volumes:
@@ -59,22 +42,6 @@ services:
       - 3001:3001
     expose:
       - '3001'
-    networks:
-      - matchaNetwork
-    depends_on:
-      - mysql
-
-  frontend:
-    build:
-      context: ./frontend/
-    container_name: frontend
-    restart: always
-    volumes:
-      - frontend:/app
-    expose:
-      - '1212'
-    ports:
-      - 1212:1212
     networks:
       - matchaNetwork
     depends_on:

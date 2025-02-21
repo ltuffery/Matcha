@@ -1,9 +1,12 @@
-DC := docker compose
+DC := docker compose -f ./docker-compose.core.yml
 
-all: set_app_host up
+all: set_app_host dev
 
-up:
-	$(DC) up --build
+dev:
+	$(DC) -f ./docker-compose.dev.yml up --build
+
+prod: set_app_host
+	$(DC) -f ./docker-compose.prod.yml up --build
 
 down:
 	$(DC) down
@@ -14,9 +17,10 @@ fclean: down
 	docker system prune -af --volumes
 	rm -rf websocket/node_modules
 	rm -rf frontend/node_modules
+	rm -rf frontend/dist
 	rm -rf api/storage/photos/*
 
-re: fclean up
+re: fclean dev
 
 set_app_host:
 	@if [ "$(wildcard .env)" = "" ]; then \
