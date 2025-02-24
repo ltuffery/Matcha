@@ -96,8 +96,8 @@ class RegisterControllerTest extends TestCase
 
     public function testWithEmailAlreadyExist(): void
     {
-        /** @var User */
-        $user = User::factory()->create()[0];
+        /** @var User $user */
+        $user = User::factory()->create();
 
         $this->expectException(UniqueConstraintException::class);
 

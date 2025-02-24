@@ -16,7 +16,7 @@ class LocalisationControllerTest extends TestCase
     {
         $this->setUpDatabase();
 
-        $this->preferences = Preference::factory()->create()[0];
+        $this->preferences = Preference::factory()->create();
     }
 
     public function tearDown(): void

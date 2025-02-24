@@ -41,7 +41,7 @@ class LikeControllerTest extends TestCase
 
     public function testLikeUserFound(): void
     {
-        $liked = User::factory()->create()[0];
+        $liked = User::factory()->create();
 
         $response = $this->withHeader([
             'Authorization' => 'Bearer ' . $this->user->generateJWT(),
@@ -61,7 +61,7 @@ class LikeControllerTest extends TestCase
 
     public function testUnLikeLikeNotFound(): void
     {
-        $liked = User::factory()->create()[0];
+        $liked = User::factory()->create();
 
         $like = new Like();
         $like->user_id = $this->user->id;
@@ -78,7 +78,7 @@ class LikeControllerTest extends TestCase
 
     public function testUnLikeUserFound(): void
     {
-        $liked = User::factory()->create()[0];
+        $liked = User::factory()->create();
 
         $response = $this->withHeader([
             'Authorization' => 'Bearer ' . $this->user->generateJWT(),
@@ -90,7 +90,7 @@ class LikeControllerTest extends TestCase
     public function testDoubleLikeUser(): void
 
     {
-        $liked = User::factory()->create()[0];
+        $liked = User::factory()->create();
 
         $response = $this->withHeader([
             'Authorization' => 'Bearer ' . $this->user->generateJWT(),

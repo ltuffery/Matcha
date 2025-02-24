@@ -2,7 +2,6 @@
 
 namespace Matcha\Api\Factory;
 
-use Exception;
 use Matcha\Api\Model\Model;
 
 abstract class Factory
