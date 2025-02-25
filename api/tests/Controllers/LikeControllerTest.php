@@ -22,7 +22,7 @@ class LikeControllerTest extends TestCase
     {
         $this->setUpDatabase();
 
-        $this->user = User::factory()->create()[0];
+        $this->user = User::factory()->create();
     }
 
     public function tearDown(): void
@@ -88,7 +88,6 @@ class LikeControllerTest extends TestCase
     }
 
     public function testDoubleLikeUser(): void
-
     {
         $liked = User::factory()->create();
 
@@ -106,6 +105,7 @@ class LikeControllerTest extends TestCase
 
         $response->assertStatus(400);
     }
+
     public function testLikeMultipleUser(): void
     {
         $users = User::factory()->count(5)->create();
