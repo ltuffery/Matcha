@@ -6,7 +6,6 @@ use Matcha\Api\Model\User;
 
 class PhotoFactory extends Factory
 {
-
     private bool $userFaker = false;
 
     protected function define(): array

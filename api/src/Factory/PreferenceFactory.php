@@ -6,7 +6,6 @@ use Matcha\Api\Model\User;
 
 class PreferenceFactory extends Factory
 {
-
     protected function define(): array
     {
         $newUser = User::factory()->create();
