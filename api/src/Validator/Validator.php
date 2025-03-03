@@ -9,10 +9,10 @@ abstract class Validator
 {
     public static function required(array $data): void
     {
-        $collection = Flight::request()->data;
+        $collection = (array) Flight::request()->data;
 
         foreach ($data as $value) {
-            if (!in_array($value, $collection->data)) {
+            if (!in_array($value, $collection)) {
                 throw new InvalidDataException(0, $data . " is required.");
             }
         }
