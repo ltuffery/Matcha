@@ -4,7 +4,8 @@ namespace Matcha\Api\Model;
 
 use Firebase\JWT\JWT;
 use Flight;
-use Matcha\Api\Validator\EmailValidator;
+use Matcha\Api\Validator\Asserts\Email;
+use Matcha\Api\Validator\Asserts\Regex;
 use PDO;
 
 /**
@@ -23,10 +24,11 @@ class User extends Model
         'username', 'email'
     ];
 
+    #[Regex('[a-zA-Z0-9\.]{5,25}')]
     public string $username;
     public string $password;
 
-    #[EmailValidator()]
+    #[Email()]
     public string $email;
 
     public string|null $birthday;

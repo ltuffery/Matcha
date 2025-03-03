@@ -37,8 +37,8 @@ class EmailController
      */
     public function emailVerify(): void
     {
-        Validator::make([
-            'email' => 'required|email',
+        Validator::required([
+            'email',
         ]);
 
         $request = Flight::request();
@@ -71,9 +71,9 @@ class EmailController
      */
     public function verifyToken(): void
     {
-        Validator::make([
-            'username' => 'required',
-            'token' => 'required',
+        Validator::required([
+            'username',
+            'token',
         ]);
 
         $request = Flight::request();
