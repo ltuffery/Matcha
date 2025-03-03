@@ -29,7 +29,10 @@ class PhotoFactory extends Factory
         if ($this->userFaker) {
             $url = faker()->imageUrl();
         } else {
-            $photos = scandir(BASE_PATH . "/database/data_preset/photos/");
+            $photos = array_diff(
+                scandir(BASE_PATH . "/database/data_preset/photos/"),
+                [".", ".."] // For remove "." and ".." directory (errno=21)
+            );
 
             $url = BASE_PATH
                 . "/database/data_preset/photos/"
