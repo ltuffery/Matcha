@@ -4,7 +4,7 @@ namespace Matcha\Api\Model;
 
 use Firebase\JWT\JWT;
 use Flight;
-use Matcha\Api\Controllers\Notifications\NotificationType;
+use Matcha\Api\Validator\EmailValidator;
 use PDO;
 
 /**
@@ -25,7 +25,10 @@ class User extends Model
 
     public string $username;
     public string $password;
+
+    #[EmailValidator()]
     public string $email;
+
     public string|null $birthday;
     public string|null $first_name;
     public string|null $last_name;
