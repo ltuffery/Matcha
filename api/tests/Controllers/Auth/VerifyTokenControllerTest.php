@@ -26,7 +26,7 @@ class VerifyTokenControllerTest extends TestCase
     public function testVerifyTokenSuccess(): void
     {
         /** @var User $user */
-        $user = User::factory()->create()[0];
+        $user = User::factory()->create();
 
         $response = $this->post('/auth/verify-token', [
             'token' => $user->generateJWT(),
@@ -40,8 +40,6 @@ class VerifyTokenControllerTest extends TestCase
 
     public function testVerifyTokenFail(): void
     {
-        $user = User::factory()->create()[0];
-
         $response = $this->post('/auth/verify-token', [
             'token' => 'test.test.test',
         ]);

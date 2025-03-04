@@ -44,7 +44,7 @@ class ProfileController
 
                 if ($key == 'photos' && !is_null($value)) {
                     $this->savePhotos($user, $value);
-                } else if ($key == 'tags') {
+                } elseif ($key == 'tags') {
                     UserTag::deleteAllFromUser($user);
 
                     if (!empty($value)) {
@@ -69,35 +69,35 @@ class ProfileController
         $myPhotos = $user->getPhotosUrl();
 
         foreach ($value as $photo) {
-            if (isset($photo['file']) && !is_null($photo['file']))
+            if (isset($photo['file']) && !is_null($photo['file'])) {
                 unset($myPhotos[array_search($photo['url'], $myPhotos)]);
+            }
         }
 
         $files = Flight::request()->files;
-        if (isset($files['photos']))
+        if (isset($files['photos'])) {
             $files = $files['photos'];
+        }
 
         if (isset($files['name'])) {
-            foreach ($files['name'] as $index => $photo)
-            {
-                    $uploadedFile = new \flight\net\UploadedFile(
-                        $files['name'][$index]['file'],
-                        $files['type'][$index]['file'],
-                        $files['size'][$index]['file'],
-                        $files['tmp_name'][$index]['file'],
-                        $files['error'][$index]['file'],
+            foreach ($files['name'] as $index => $photo) {
+                $uploadedFile = new \flight\net\UploadedFile(
+                    $files['name'][$index]['file'],
+                    $files['type'][$index]['file'],
+                    $files['size'][$index]['file'],
+                    $files['tmp_name'][$index]['file'],
+                    $files['error'][$index]['file'],
+                );
 
-                    );
+                var_dump($uploadedFile);
+                $p = Photo::new($uploadedFile);
 
-                    var_dump($uploadedFile);
-                    $p = Photo::new($uploadedFile);
+                if (!$p->isValidExtension()) {
+                    Flight::json(["message" => "Invalid file type."], 400);
+                    return;
+                }
 
-                    if (!$p->isValidExtension()) {
-                        Flight::json(["message" => "Invalid file type."], 400);
-                        return;
-                    }
-
-                    $photos[] = $p;
+                $photos[] = $p;
             }
         }
 

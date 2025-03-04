@@ -6,10 +6,10 @@ use Matcha\Api\Model\User;
 
 class PreferenceFactory extends Factory
 {
-
     protected function define(): array
     {
-        $newUser = User::factory()->create()[0];
+        $newUser = User::factory()->create();
+
         return [
             "user_id" => $newUser->id,
             "age_maximum" => rand($newUser->getAge(), 60),
