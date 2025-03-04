@@ -28,7 +28,7 @@ class UserTest extends TestCase
     public function testGetAge(): void
     {
         /** @var User $users */
-        $users = User::factory()->create()[0];
+        $users = User::factory()->create();
 
         $users->birthday = "2000-01-01";
 

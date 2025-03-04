@@ -21,7 +21,7 @@ class ProfileSuggestionController
 
         $users = array_filter($users, function ($value) use ($user, $preferences) {
             $userPreferences = $value->getPreferences();
-            return $this->inLocation($preferences->lat, $preferences->lon, $userPreferences->lat,$userPreferences->lon, $preferences->distance_maximum)
+            return $this->inLocation($preferences->lat, $preferences->lon, $userPreferences->lat, $userPreferences->lon, $preferences->distance_maximum)
                 && !$user->isBlocking($value);
         });
 
@@ -64,7 +64,7 @@ class ProfileSuggestionController
 
         $stmt->execute();
 
-        return array_map(fn($data) => User::morph($data), $stmt->fetchAll());
+        return array_map(fn ($data) => User::morph($data), $stmt->fetchAll());
     }
 
     private function inLocation($lat1, $lon1, $lat2, $lon2, $rayon): bool

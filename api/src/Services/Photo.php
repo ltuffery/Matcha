@@ -8,7 +8,7 @@ use Matcha\Api\Model\User;
 
 class Photo
 {
-    const VALID_EXTENSIONS = ['jpg', 'jpeg', 'gif', 'png'];
+    public const VALID_EXTENSIONS = ['jpg', 'jpeg', 'gif', 'png'];
     private UploadedFile $file;
 
     public function __construct(UploadedFile $file)
