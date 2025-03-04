@@ -30,14 +30,14 @@ class User extends Model
     #[Email()]
     public string $email;
 
-    public string|null $birthday;
-    public string|null $first_name;
-    public string|null $last_name;
-    public string|null $gender;
-    public string|null $biography;
+    public ?string $birthday;
+    public ?string $first_name;
+    public ?string $last_name;
+    public ?string $gender;
+    public ?string $biography;
     public string $created_at;
     public bool $email_verified;
-    public string|null $temporary_email_token;
+    public ?string $temporary_email_token;
     public int $fame_rating = 0;
     public string $last_connection;
 
@@ -72,7 +72,7 @@ class User extends Model
     /**
      * Get user avatar (first image upload)
      */
-    public function getAvatar(): string|null
+    public function getAvatar(): ?string
     {
         /** @var Photo $photo */
         $photo = Photo::where([
@@ -225,7 +225,7 @@ class User extends Model
         return array_map(fn (Photo $photo) => "http://" . $host .  ":3000/medias/p/" . $photo->name, $photos);
     }
 
-    public function getAge(): int|null
+    public function getAge(): ?int
     {
         if (is_null($this->birthday)) {
             return null;

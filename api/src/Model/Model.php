@@ -60,7 +60,7 @@ abstract class Model
         return $this;
     }
 
-    private function create(): Model|null
+    private function create(): ?Model
     {
         if (!$this->canCreate()) {
             return null;
@@ -213,11 +213,11 @@ abstract class Model
 
     /**
      *
-     * @return Model|null
+     * @return ?Model
      * @throws ReflectionException
      * @throws Exception
      */
-    public static function find(array $options): Model|null
+    public static function find(array $options): ?Model
     {
         $where = array_map(function ($k) {
             return $k . "=?";

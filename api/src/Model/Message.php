@@ -24,7 +24,7 @@ class Message extends Model
      * Get last message of user1 and user2
      * @throws ReflectionException
      */
-    public static function lastOf(User $user1, User $user2): Model|null
+    public static function lastOf(User $user1, User $user2): ?Model
     {
         /** @var PDOStatement $stmt */
         $stmt = Flight::db()->prepare("
