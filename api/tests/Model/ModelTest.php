@@ -24,7 +24,7 @@ class ModelTest extends TestCase
         $this->user->password = "pass";
         $this->user->birthday = "2000-05-21";
 
-        return $this->user->create();
+        return $this->user->save();
     }
 
     private function createUsers(int $n): void
@@ -35,7 +35,7 @@ class ModelTest extends TestCase
             $this->user->password = "pass";
             $this->user->birthday = "2000-05-21";
 
-            $this->user->create();
+            $this->user->save();
         }
     }
 

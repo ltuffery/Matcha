@@ -14,7 +14,6 @@ use PDO;
  * @method static User morph(array $object)
  * @method static User[] all()
  * @method User save()
- * @method User create()
  * @method User update()
  */
 class User extends Model
