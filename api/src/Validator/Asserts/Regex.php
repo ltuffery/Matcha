@@ -5,7 +5,7 @@ namespace Matcha\Api\Validator\Asserts;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
-class Regex extends Assert
+class Regex implements Assert
 {
     private string $regex;
 
@@ -14,7 +14,7 @@ class Regex extends Assert
         $this->regex = $regex;
     }
 
-    public function test(mixed $value): bool
+    public function assert(mixed $value): bool
     {
         $matches = [];
 

@@ -2,7 +2,7 @@
 
 namespace Matcha\Api\Validator\Asserts;
 
-class Minimum extends Assert
+class Minimum implements Assert
 {
     private int $n;
     private bool $acceptEquals;
@@ -13,7 +13,7 @@ class Minimum extends Assert
         $this->acceptEquals = $acceptEquals;
     }
 
-    public function test(mixed $value): bool
+    public function assert(mixed $value): bool
     {
         if ($this->acceptEquals) {
             return (is_numeric($value) && $value >= $this->n)

@@ -95,7 +95,7 @@ abstract class Model
             foreach ($attributes as $attribute) {
                 $instance = $attribute->newInstance();
 
-                if (!$instance->test($property->getValue($this))) {
+                if (!$instance->assert($property->getValue($this))) {
                     throw new Exception("test");
                 }
             }

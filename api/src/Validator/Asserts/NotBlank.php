@@ -2,9 +2,9 @@
 
 namespace Matcha\Api\Validator\Asserts;
 
-class NotBlank extends Assert
+class NotBlank implements Assert
 {
-    public function test(mixed $value): bool
+    public function assert(mixed $value): bool
     {
         return !empty($value);
     }
