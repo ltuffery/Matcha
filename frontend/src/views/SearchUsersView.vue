@@ -31,15 +31,15 @@ function testSearch(){
 
 <template>
   <div class="flex flex-col gap-10">
-    <div class="flex">
-      <div class="dropdown">
+    <div class="flex mt-3">
+      <div class="dropdown dropdown-start">
         <div tabindex="0" role="button" class="btn m-1">
           <div>Location</div>
-          <div>click</div>
+          <div>No criteria</div>
         </div>
         <div
           tabindex="0"
-          class="dropdown-content card card-compact bg-primary text-primary-content z-[1] w-64 p-2 shadow"
+          class="dropdown-content card card-compact bg-base-100 text-primary-content z-[1] w-64 p-2 shadow"
         >
           <div class="card-body">
             <h3 class="card-title">Card title!</h3>
@@ -57,7 +57,7 @@ function testSearch(){
         </div>
         <div
           tabindex="0"
-          class="dropdown-content card card-compact bg-primary text-primary-content z-[1] w-64 p-2 shadow"
+          class="dropdown-content card card-compact bg-base-100 text-primary-content z-[1] w-64 p-2 shadow"
         >
           <div class="card-body">
             <h3 class="card-title">Set age gap</h3>
@@ -83,7 +83,7 @@ function testSearch(){
         </div>
         <div
           tabindex="0"
-          class="dropdown-content card card-compact bg-primary text-primary-content z-[1] w-64 p-2 shadow"
+          class="dropdown-content card card-compact bg-base-100 text-primary-content z-[1] w-64 p-2 shadow"
         >
           <div class="card-body">
             <h3 class="card-title">Set fame rating gap</h3>
@@ -102,14 +102,14 @@ function testSearch(){
 
       <div class="divider divider-horizontal mx-0 py-3"></div>
 
-      <div class="dropdown">
+      <div class="dropdown dropdown-end">
         <div tabindex="0" role="button" class="btn m-1">
           <div>Tags</div>
-          <div>20 Selected</div>
+          <div>All</div> <!-- Or x selected -->
         </div>
         <div
           tabindex="0"
-          class="dropdown-content card card-compact bg-primary text-primary-content z-[1] w-64 p-2 shadow"
+          class="dropdown-content card card-compact bg-base-100 text-primary-content z-[1] w-64 p-2 shadow"
         >
           <div class="card-body">
             <h3 class="card-title">Card title!</h3>
@@ -123,22 +123,73 @@ function testSearch(){
 
     <div>
       <div class="flex justify-between w-full py-2 bg-base-300/60">
-        <div></div>
-        <div>
+        <div class="flex items-center">
 
-          <div class="mr-3">
-            <svg class="size-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-              <g id="SVGRepo_iconCarrier">
-                <path d="M20.058 9.72255C21.0065 9.18858 21.4808 8.9216 21.7404 8.49142C22 8.06124 22 7.54232 22 6.50448V5.81466C22 4.48782 22 3.8244 21.5607 3.4122C21.1213 3 20.4142 3 19 3H5C3.58579 3 2.87868 3 2.43934 3.4122C2 3.8244 2 4.48782 2 5.81466V6.50448C2 7.54232 2 8.06124 2.2596 8.49142C2.5192 8.9216 2.99347 9.18858 3.94202 9.72255L6.85504 11.3624C7.49146 11.7206 7.80967 11.8998 8.03751 12.0976C8.51199 12.5095 8.80408 12.9935 8.93644 13.5872C9 13.8722 9 14.2058 9 14.8729L9 17.5424C9 18.452 9 18.9067 9.25192 19.2613C9.50385 19.6158 9.95128 19.7907 10.8462 20.1406C12.7248 20.875 13.6641 21.2422 14.3321 20.8244C15 20.4066 15 19.4519 15 17.5424V14.8729C15 14.2058 15 13.8722 15.0636 13.5872C15.1959 12.9935 15.488 12.5095 15.9625 12.0976" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-              </g>
-            </svg>
+
+          <div class="dropdown dropdown-start ml-3">
+            <div tabindex="0" role="button" class="size-8">
+              <svg class="w-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path d="M4 16L13 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                  <path d="M6 11H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                  <path d="M8 6L13 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                  <path d="M17 4L17 20L20 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                </g>
+              </svg>
+            </div>
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+              <li class="w-full flex items-center text-base">Sort by</li>
+              <div class="divider my-0"></div>
+              <li>
+                <div class="form-control">
+                  <label class="label cursor-pointer">
+                    <input type="checkbox" class="checkbox" />
+                    <span class="label-text ml-2">Age</span>
+                  </label>
+                </div>
+              </li>
+              <li>
+                <div class="flex flex-col">
+                  <span>Age gap</span>
+                  <double-slide />
+                </div>
+              </li>
+              <li>
+                <button class="btn"> <!-- Useless ? -->
+                  Apply
+                </button>
+              </li>
+            </ul>
+          </div>
+
+
+
+        </div>
+        <div class="flex items-center">
+
+          <div class="dropdown dropdown-end mr-3">
+            <div tabindex="0" role="button" class="size-8">
+              <svg class="w-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path d="M20.058 9.72255C21.0065 9.18858 21.4808 8.9216 21.7404 8.49142C22 8.06124 22 7.54232 22 6.50448V5.81466C22 4.48782 22 3.8244 21.5607 3.4122C21.1213 3 20.4142 3 19 3H5C3.58579 3 2.87868 3 2.43934 3.4122C2 3.8244 2 4.48782 2 5.81466V6.50448C2 7.54232 2 8.06124 2.2596 8.49142C2.5192 8.9216 2.99347 9.18858 3.94202 9.72255L6.85504 11.3624C7.49146 11.7206 7.80967 11.8998 8.03751 12.0976C8.51199 12.5095 8.80408 12.9935 8.93644 13.5872C9 13.8722 9 14.2058 9 14.8729L9 17.5424C9 18.452 9 18.9067 9.25192 19.2613C9.50385 19.6158 9.95128 19.7907 10.8462 20.1406C12.7248 20.875 13.6641 21.2422 14.3321 20.8244C15 20.4066 15 19.4519 15 17.5424V14.8729C15 14.2058 15 13.8722 15.0636 13.5872C15.1959 12.9935 15.488 12.5095 15.9625 12.0976" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                </g>
+              </svg>
+            </div>
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+              <li class="w-full flex items-center text-base">Filter by</li>
+              <div class="divider my-0"></div>
+              <li><a>Item 1</a></li>
+              <li><a>Item 2</a></li>
+            </ul>
           </div>
 
         </div>
       </div>
-      <div>content</div>
+      <div class="pt-3 px-3">content</div>
     </div>
   </div>
 
