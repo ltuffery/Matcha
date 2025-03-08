@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import UserSearchCard from '@/components/UserSearchCard.vue'
 import { Api } from '@/utils/api'
-import {onBeforeMount, ref, watch} from 'vue'
-import DoubleSlide from "@/components/DoubleSlide.vue";
+import { onBeforeMount, ref, watch } from 'vue'
+import DoubleSlide from '@/components/DoubleSlide.vue'
 
 const search = ref('')
 const users = ref([])
 const seachCretiria = ref([])
+const sortStatus = ref({
+  age: 0,
+  location: 0,
+  fameRate: 0,
+  tag: 0,
+})
 
 const input = () => {
   if (search.value.length >= 2) {
@@ -19,12 +25,74 @@ const input = () => {
   }
 }
 
+const getImageOf = value => {
+  switch (value) {
+    case 0:
+      return `<svg class="w-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                    <path d="M7 3.33782C8.47087 2.48697 10.1786 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 10.1786 2.48697 8.47087 3.33782 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                </g>
+              </svg>`
+    case 1:
+      return `<svg class="w-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path d="M4 16L13 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                  <path d="M6 11H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                  <path d="M8 6L13 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                  <path d="M17 4L17 20L20 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                </g>
+              </svg>`
+    case 2:
+      return `<svg class="w-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <path d="M4 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                    <path d="M6 13H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                    <path d="M8 18H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                    <path d="M17 20V4L20 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                </g>
+              </svg>`
+    default:
+      break
+  }
+}
+
+const changeState = value => {
+  switch (value) {
+    case 'age':
+      if (sortStatus.value.age == 2) sortStatus.value.age = 0
+      else sortStatus.value.age++
+      break
+
+    case 'location':
+      if (sortStatus.value.location == 2) sortStatus.value.location = 0
+      else sortStatus.value.location++
+      break
+
+    case 'fameRate':
+      if (sortStatus.value.fameRate == 2) sortStatus.value.fameRate = 0
+      else sortStatus.value.fameRate++
+      break
+
+    case 'tag':
+      if (sortStatus.value.tag == 2) sortStatus.value.tag = 0
+      else sortStatus.value.tag++
+      break
+  }
+}
+
 onBeforeMount(() => {
-  seachCretiria.value.age = {t1: 18, t2: 80}
-  seachCretiria.value.fame = {t1: 0, t2: 99}
+  seachCretiria.value.age = { t1: 18, t2: 80 }
+  seachCretiria.value.fame = { t1: 0, t2: 99 }
 })
 
-function testSearch(){
+function testSearch() {
   console.log(seachCretiria.value)
 }
 </script>
@@ -33,14 +101,33 @@ function testSearch(){
   <div class="flex flex-col gap-10">
     <div class="flex mt-3">
       <div class="dropdown dropdown-start w-full">
-        <div tabindex="0" role="button" class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2">
+        <div
+          tabindex="0"
+          role="button"
+          class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2"
+        >
           <div class="flex text-base">
             <span>Location</span>
-            <svg class="size-6 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              class="size-6 ml-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></g>
               <g id="SVGRepo_iconCarrier">
-                <path d="M19 9L12 15L10.25 13.5M5 9L7.33333 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path
+                  d="M19 9L12 15L10.25 13.5M5 9L7.33333 11"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
               </g>
             </svg>
           </div>
@@ -60,18 +147,37 @@ function testSearch(){
       <div class="divider divider-horizontal mx-0 py-3"></div>
 
       <div class="dropdown w-full">
-        <div tabindex="0" role="button" class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2 m-1">
+        <div
+          tabindex="0"
+          role="button"
+          class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2 m-1"
+        >
           <div class="flex text-base">
             <span>Age gap</span>
-            <svg class="size-6 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              class="size-6 ml-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></g>
               <g id="SVGRepo_iconCarrier">
-                <path d="M19 9L12 15L10.25 13.5M5 9L7.33333 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path
+                  d="M19 9L12 15L10.25 13.5M5 9L7.33333 11"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
               </g>
             </svg>
           </div>
-          <div>{{seachCretiria.age.t1}} - {{seachCretiria.age.t2}}</div>
+          <div>{{ seachCretiria.age.t1 }} - {{ seachCretiria.age.t2 }}</div>
         </div>
         <div
           tabindex="0"
@@ -79,15 +185,15 @@ function testSearch(){
         >
           <div class="card-body">
             <h3 class="card-title">Set age gap</h3>
-              <DoubleSlide
-                class="mt-3"
-                tooltip
-                v-model="seachCretiria.age"
-                :min="18"
-                :max="80"
-                :start="seachCretiria.age.t1"
-                :end="seachCretiria.age.t2"
-              />
+            <DoubleSlide
+              class="mt-3"
+              tooltip
+              v-model="seachCretiria.age"
+              :min="18"
+              :max="80"
+              :start="seachCretiria.age.t1"
+              :end="seachCretiria.age.t2"
+            />
           </div>
         </div>
       </div>
@@ -95,18 +201,37 @@ function testSearch(){
       <div class="divider divider-horizontal mx-0 py-3"></div>
 
       <div class="dropdown w-full">
-        <div tabindex="0" role="button" class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2 m-1">
+        <div
+          tabindex="0"
+          role="button"
+          class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2 m-1"
+        >
           <div class="flex text-base">
             <span>Fame gap</span>
-            <svg class="size-6 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              class="size-6 ml-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></g>
               <g id="SVGRepo_iconCarrier">
-                <path d="M19 9L12 15L10.25 13.5M5 9L7.33333 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path
+                  d="M19 9L12 15L10.25 13.5M5 9L7.33333 11"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
               </g>
             </svg>
           </div>
-          <div>{{seachCretiria.fame.t1}} - {{seachCretiria.fame.t2}}</div>
+          <div>{{ seachCretiria.fame.t1 }} - {{ seachCretiria.fame.t2 }}</div>
         </div>
         <div
           tabindex="0"
@@ -130,18 +255,38 @@ function testSearch(){
       <div class="divider divider-horizontal mx-0 py-3"></div>
 
       <div class="dropdown dropdown-end w-full">
-        <div tabindex="0" role="button" class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2 m-1">
+        <div
+          tabindex="0"
+          role="button"
+          class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2 m-1"
+        >
           <div class="flex text-base">
             <span>Tags</span>
-            <svg class="size-6 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg
+              class="size-6 ml-1"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g
+                id="SVGRepo_tracerCarrier"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></g>
               <g id="SVGRepo_iconCarrier">
-                <path d="M19 9L12 15L10.25 13.5M5 9L7.33333 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path
+                  d="M19 9L12 15L10.25 13.5M5 9L7.33333 11"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
               </g>
             </svg>
           </div>
-          <div>All</div> <!-- Or x selected -->
+          <div>All</div>
+          <!-- Or x selected -->
         </div>
         <div
           tabindex="0"
@@ -152,8 +297,6 @@ function testSearch(){
             <p>you can use any element as a dropdown.</p>
           </div>
         </div>
-
-
       </div>
 
       <div class="divider divider-horizontal mx-0 py-3"></div>
@@ -161,75 +304,152 @@ function testSearch(){
       <div class="flex items-center justify-center w-full">
         <button class="btn btn-neutral" @click="testSearch">Search</button>
       </div>
-
     </div>
 
     <div>
       <div class="flex justify-between w-full py-2 bg-base-300/60">
         <div class="flex items-center">
-
-
           <div class="dropdown dropdown-start ml-3">
             <div tabindex="0" role="button" class="size-8">
-              <svg class="w-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                class="w-full"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
                 <g id="SVGRepo_iconCarrier">
-                  <path d="M4 16L13 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-                  <path d="M6 11H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-                  <path d="M8 6L13 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-                  <path d="M17 4L17 20L20 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <path
+                    d="M4 16L13 16"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  ></path>
+                  <path
+                    d="M6 11H13"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  ></path>
+                  <path
+                    d="M8 6L13 6"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  ></path>
+                  <path
+                    d="M17 4L17 20L20 16"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  ></path>
                 </g>
               </svg>
             </div>
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+            <ul
+              tabindex="0"
+              class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+            >
               <li class="w-full flex items-center text-base">Sort by</li>
+              <div class="divider my-0"></div>
+              <li @click="changeState('age')">
+                <div class="form-control">
+                    <span
+                      class="size-6"
+                      v-html="getImageOf(sortStatus.age)"
+                    ></span>
+                    <span class="label-text ml-2">Age</span>
+                </div>
+              </li>
+              <li @click="changeState('location')">
+                <div class="form-control">
+                    <span
+                      class="size-6"
+                      v-html="getImageOf(sortStatus.location)"
+                    ></span>
+                    <span class="label-text ml-2">Location</span>
+                </div>
+              </li>
+              <li @click="changeState('fameRate')">
+                <div class="form-control">
+                    <span
+                      class="size-6"
+                      v-html="getImageOf(sortStatus.fameRate)"
+                    ></span>
+                    <span class="label-text ml-2">Fame rate</span>
+                </div>
+              </li>
+              <li @click="changeState('tag')">
+                <div class="form-control">
+                    <span
+                      class="size-6"
+                      v-html="getImageOf(sortStatus.tag)"
+                    ></span>
+                    <span class="label-text ml-2">Tags</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <div class="dropdown dropdown-end mr-3">
+            <div tabindex="0" role="button" class="size-8">
+              <svg
+                class="w-full"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g
+                  id="SVGRepo_tracerCarrier"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></g>
+                <g id="SVGRepo_iconCarrier">
+                  <path
+                    d="M20.058 9.72255C21.0065 9.18858 21.4808 8.9216 21.7404 8.49142C22 8.06124 22 7.54232 22 6.50448V5.81466C22 4.48782 22 3.8244 21.5607 3.4122C21.1213 3 20.4142 3 19 3H5C3.58579 3 2.87868 3 2.43934 3.4122C2 3.8244 2 4.48782 2 5.81466V6.50448C2 7.54232 2 8.06124 2.2596 8.49142C2.5192 8.9216 2.99347 9.18858 3.94202 9.72255L6.85504 11.3624C7.49146 11.7206 7.80967 11.8998 8.03751 12.0976C8.51199 12.5095 8.80408 12.9935 8.93644 13.5872C9 13.8722 9 14.2058 9 14.8729L9 17.5424C9 18.452 9 18.9067 9.25192 19.2613C9.50385 19.6158 9.95128 19.7907 10.8462 20.1406C12.7248 20.875 13.6641 21.2422 14.3321 20.8244C15 20.4066 15 19.4519 15 17.5424V14.8729C15 14.2058 15 13.8722 15.0636 13.5872C15.1959 12.9935 15.488 12.5095 15.9625 12.0976"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  ></path>
+                </g>
+              </svg>
+            </div>
+            <ul
+              tabindex="0"
+              class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+            >
+              <li class="w-full flex items-center text-base">Filter by</li>
               <div class="divider my-0"></div>
               <li>
                 <div class="form-control">
-                  <label class="label cursor-pointer">
-                    <input type="checkbox" class="checkbox" />
-                    <span class="label-text ml-2">Age</span>
-                  </label>
+                  <span class="label-text ml-2">Age</span>
                 </div>
               </li>
               <li>
-                <div class="flex flex-col">
-                  <span>Age gap</span>
-                  <double-slide />
+                <div class="form-control">
+                  <span class="label-text ml-2">Location</span>
                 </div>
               </li>
               <li>
-                <button class="btn"> <!-- Useless ? -->
-                  Apply
-                </button>
+                <div class="form-control">
+                  <span class="label-text ml-2">Fame rate</span>
+                </div>
+              </li>
+              <li>
+                <div class="form-control">
+                  <span class="label-text ml-2">Tags</span>
+                </div>
               </li>
             </ul>
           </div>
-
-
-
-        </div>
-        <div class="flex items-center">
-
-          <div class="dropdown dropdown-end mr-3">
-            <div tabindex="0" role="button" class="size-8">
-              <svg class="w-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path d="M20.058 9.72255C21.0065 9.18858 21.4808 8.9216 21.7404 8.49142C22 8.06124 22 7.54232 22 6.50448V5.81466C22 4.48782 22 3.8244 21.5607 3.4122C21.1213 3 20.4142 3 19 3H5C3.58579 3 2.87868 3 2.43934 3.4122C2 3.8244 2 4.48782 2 5.81466V6.50448C2 7.54232 2 8.06124 2.2596 8.49142C2.5192 8.9216 2.99347 9.18858 3.94202 9.72255L6.85504 11.3624C7.49146 11.7206 7.80967 11.8998 8.03751 12.0976C8.51199 12.5095 8.80408 12.9935 8.93644 13.5872C9 13.8722 9 14.2058 9 14.8729L9 17.5424C9 18.452 9 18.9067 9.25192 19.2613C9.50385 19.6158 9.95128 19.7907 10.8462 20.1406C12.7248 20.875 13.6641 21.2422 14.3321 20.8244C15 20.4066 15 19.4519 15 17.5424V14.8729C15 14.2058 15 13.8722 15.0636 13.5872C15.1959 12.9935 15.488 12.5095 15.9625 12.0976" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-                </g>
-              </svg>
-            </div>
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-              <li class="w-full flex items-center text-base">Filter by</li>
-              <div class="divider my-0"></div>
-              <li><a>Item 1</a></li>
-              <li><a>Item 2</a></li>
-            </ul>
-          </div>
-
         </div>
       </div>
       <div class="pt-3 px-3">content</div>
