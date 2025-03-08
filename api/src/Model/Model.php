@@ -84,7 +84,7 @@ abstract class Model
     private function testValidator(): void
     {
         $reflexion = new ReflectionClass($this::class);
-        
+
         foreach ($reflexion->getProperties() as $property) {
             $attributes = $property->getAttributes();
 

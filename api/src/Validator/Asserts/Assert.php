@@ -2,6 +2,7 @@
 
 namespace Matcha\Api\Validator\Asserts;
 
-interface Assert {
+interface Assert
+{
     public function assert(mixed $value): bool;
 }
