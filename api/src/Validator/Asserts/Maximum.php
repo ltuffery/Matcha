@@ -2,6 +2,9 @@
 
 namespace Matcha\Api\Validator\Asserts;
 
+use Attribute;
+
+#[Attribute(Attribute::TARGET_PROPERTY)]
 class Maximum implements Assert
 {
     private int $n;

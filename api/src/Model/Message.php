@@ -3,6 +3,7 @@
 namespace Matcha\Api\Model;
 
 use Flight;
+use Matcha\Api\Validator\Asserts\NotBlank;
 use PDO;
 use PDOStatement;
 use ReflectionException;
@@ -15,9 +16,15 @@ class Message extends Model
     protected string $table = 'messages';
 
     public int $sender_id;
+
     public int $receiver_id;
+
+    #[NotBlank()]
     public string $content;
+
     public bool $view = false;
+
+    #[NotBlank()]
     public string $created_at;
 
     /**

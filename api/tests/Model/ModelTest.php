@@ -25,6 +25,9 @@ class ModelTest extends TestCase
         $this->user->email = "test@test.com";
         $this->user->password = "pass";
         $this->user->birthday = "2000-05-21";
+        $this->user->first_name = "John";
+        $this->user->last_name = "Doe";
+        $this->user->gender = 'M';
 
         return $this->user->save();
     }
@@ -38,6 +41,9 @@ class ModelTest extends TestCase
             $this->user->email = faker()->email;
             $this->user->password = "pass";
             $this->user->birthday = "2000-05-21";
+            $this->user->first_name = faker()->firstName;
+            $this->user->last_name = faker()->lastName;
+            $this->user->gender = faker()->randomElement(['M', 'F', 'O']);
 
             $this->user->save();
         }
@@ -69,6 +75,9 @@ class ModelTest extends TestCase
         $this->user->email = "test@test.com";
         $this->user->password = "pass";
         $this->user->birthday = "2000-05-21";
+        $this->user->first_name = "John";
+        $this->user->last_name = "Doe";
+        $this->user->gender = 'M';
 
         $user = $this->user->save();
 

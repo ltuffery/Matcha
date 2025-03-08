@@ -2,12 +2,15 @@
 
 namespace Matcha\Api\Validator\Asserts;
 
+use Attribute;
+
+#[Attribute(Attribute::TARGET_PROPERTY)]
 class Minimum implements Assert
 {
     private int $n;
     private bool $acceptEquals;
 
-    public function __construct(int $n, bool $acceptEquals = false)
+    public function __construct(int $n, bool $acceptEquals = true)
     {
         $this->n = $n;
         $this->acceptEquals = $acceptEquals;

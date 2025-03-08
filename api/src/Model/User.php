@@ -5,6 +5,8 @@ namespace Matcha\Api\Model;
 use Firebase\JWT\JWT;
 use Flight;
 use Matcha\Api\Validator\Asserts\Email;
+use Matcha\Api\Validator\Asserts\Minimum;
+use Matcha\Api\Validator\Asserts\NotBlank;
 use Matcha\Api\Validator\Asserts\Regex;
 use PDO;
 
@@ -25,20 +27,37 @@ class User extends Model
 
     #[Regex('[a-zA-Z0-9\.]{5,25}')]
     public string $username;
+
+    #[NotBlank()]
     public string $password;
 
     #[Email()]
     public string $email;
 
-    public ?string $birthday;
-    public ?string $first_name;
-    public ?string $last_name;
-    public ?string $gender;
+    #[NotBlank()]
+    public string $birthday;
+
+    #[NotBlank()]
+    public string $first_name;
+
+    #[NotBlank()]
+    public string $last_name;
+
+    #[NotBlank()]
+    public string $gender;
+
     public ?string $biography;
+
+    #[NotBlank()]
     public string $created_at;
+
     public bool $email_verified;
+
     public ?string $temporary_email_token;
+
+    #[Minimum(0)]
     public int $fame_rating = 0;
+
     public string $last_connection;
 
     public function generateJWT(): string
