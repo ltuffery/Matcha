@@ -32,14 +32,23 @@ function testSearch(){
 <template>
   <div class="flex flex-col gap-10">
     <div class="flex mt-3">
-      <div class="dropdown dropdown-start">
-        <div tabindex="0" role="button" class="btn m-1">
-          <div>Location</div>
+      <div class="dropdown dropdown-start w-full">
+        <div tabindex="0" role="button" class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2">
+          <div class="flex text-base">
+            <span>Location</span>
+            <svg class="size-6 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path d="M19 9L12 15L10.25 13.5M5 9L7.33333 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </g>
+            </svg>
+          </div>
           <div>No criteria</div>
         </div>
         <div
           tabindex="0"
-          class="dropdown-content card card-compact bg-base-100 text-primary-content z-[1] w-64 p-2 shadow"
+          class="dropdown-content card card-compact bg-base-100 z-[1] w-64 p-2 shadow"
         >
           <div class="card-body">
             <h3 class="card-title">Card title!</h3>
@@ -50,14 +59,23 @@ function testSearch(){
 
       <div class="divider divider-horizontal mx-0 py-3"></div>
 
-      <div class="dropdown">
-        <div tabindex="0" role="button" class="btn m-1">
-          <div>Age gap</div>
+      <div class="dropdown w-full">
+        <div tabindex="0" role="button" class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2 m-1">
+          <div class="flex text-base">
+            <span>Age gap</span>
+            <svg class="size-6 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path d="M19 9L12 15L10.25 13.5M5 9L7.33333 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </g>
+            </svg>
+          </div>
           <div>{{seachCretiria.age.t1}} - {{seachCretiria.age.t2}}</div>
         </div>
         <div
           tabindex="0"
-          class="dropdown-content card card-compact bg-base-100 text-primary-content z-[1] w-64 p-2 shadow"
+          class="dropdown-content card card-compact bg-base-100 z-[1] w-64 p-2 shadow"
         >
           <div class="card-body">
             <h3 class="card-title">Set age gap</h3>
@@ -76,14 +94,23 @@ function testSearch(){
 
       <div class="divider divider-horizontal mx-0 py-3"></div>
 
-      <div class="dropdown">
-        <div tabindex="0" role="button" class="btn m-1">
-          <div>Fame gap</div>
+      <div class="dropdown w-full">
+        <div tabindex="0" role="button" class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2 m-1">
+          <div class="flex text-base">
+            <span>Fame gap</span>
+            <svg class="size-6 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path d="M19 9L12 15L10.25 13.5M5 9L7.33333 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </g>
+            </svg>
+          </div>
           <div>{{seachCretiria.fame.t1}} - {{seachCretiria.fame.t2}}</div>
         </div>
         <div
           tabindex="0"
-          class="dropdown-content card card-compact bg-base-100 text-primary-content z-[1] w-64 p-2 shadow"
+          class="dropdown-content card card-compact bg-base-100 z-[1] w-64 p-2 shadow"
         >
           <div class="card-body">
             <h3 class="card-title">Set fame rating gap</h3>
@@ -102,23 +129,39 @@ function testSearch(){
 
       <div class="divider divider-horizontal mx-0 py-3"></div>
 
-      <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn m-1">
-          <div>Tags</div>
+      <div class="dropdown dropdown-end w-full">
+        <div tabindex="0" role="button" class="hover:bg-base-300 rounded-lg font-semibold select-none cursor-pointer w-full text-sm px-3 py-2 m-1">
+          <div class="flex text-base">
+            <span>Tags</span>
+            <svg class="size-6 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+              <g id="SVGRepo_iconCarrier">
+                <path d="M19 9L12 15L10.25 13.5M5 9L7.33333 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </g>
+            </svg>
+          </div>
           <div>All</div> <!-- Or x selected -->
         </div>
         <div
           tabindex="0"
-          class="dropdown-content card card-compact bg-base-100 text-primary-content z-[1] w-64 p-2 shadow"
+          class="dropdown-content card card-compact bg-base-100 z-[1] w-64 p-2 shadow"
         >
           <div class="card-body">
             <h3 class="card-title">Card title!</h3>
             <p>you can use any element as a dropdown.</p>
           </div>
         </div>
+
+
       </div>
 
-      <button class="btn" @click="testSearch">Search</button>
+      <div class="divider divider-horizontal mx-0 py-3"></div>
+
+      <div class="flex items-center justify-center w-full">
+        <button class="btn btn-neutral" @click="testSearch">Search</button>
+      </div>
+
     </div>
 
     <div>
