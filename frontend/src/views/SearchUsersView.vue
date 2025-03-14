@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import UserSearchCard from '@/components/UserSearchCard.vue'
+import UserPreviewCard from '@/components/UserPreviewCard.vue'
 import { Api } from '@/utils/api'
 import { onBeforeMount, ref, watch } from 'vue'
 import DoubleSlide from '@/components/DoubleSlide.vue'
@@ -16,40 +17,51 @@ const sortStatus = ref({
 
 const filter = ref({
   age: [
-    {age: 22, selected: false},
-    {age: 24, selected: false},
-    {age: 32, selected: false},
-    {age: 1423, selected: false},
-    {age: 21, selected: false},
-    {age: 76, selected: false},
-    {age: 55, selected: false},
+    { age: 22, selected: false },
+    { age: 24, selected: false },
+    { age: 32, selected: false },
+    { age: 1423, selected: false },
+    { age: 21, selected: false },
+    { age: 76, selected: false },
+    { age: 55, selected: false },
   ],
   location: [
-    {name: 'Tours', selected: false},
-    {name: 'Other name', selected: false},
-    {name: 'Random name', selected: false},
-    {name: 'A Random name very too long for the dropdown', selected: false},
-    {name: 'Another name', selected: false},
-    {name: 'etc', selected: false},
-    {name: 'Toulouse', selected: false},
+    { name: 'Tours', selected: false },
+    { name: 'Other name', selected: false },
+    { name: 'Random name', selected: false },
+    { name: 'A Random name very too long for the dropdown', selected: false },
+    { name: 'Another name', selected: false },
+    { name: 'etc', selected: false },
+    { name: 'Toulouse', selected: false },
+  ],
+  fame: [
+    { name: '12', selected: false },
+    { name: '32', selected: false },
+    { name: '23', selected: false },
+    { name: '45', selected: false },
+  ],
+  tags: [
+    { name: 'ouioui', selected: false },
+    { name: 'baguette', selected: false },
+    { name: 'bike', selected: false },
+    { name: 'rando', selected: false },
   ],
 })
 
-const input = () => {
-  if (search.value.length >= 2) {
-    Api.get(`search/users?q=${search.value}`)
-      .send()
-      .then(res => res.json())
-      .then(data => (users.value = data))
-  } else {
-    users.value = []
-  }
-}
+// const input = () => {
+//   if (search.value.length >= 2) {
+//     Api.get(`search/users?q=${search.value}`)
+//       .send()
+//       .then(res => res.json())
+//       .then(data => (users.value = data))
+//   } else {
+//     users.value = []
+//   }
+// }
 
 // -------------- To debug --------------
-const printInfo = () =>
-{
-  console.log(filter.value.age)
+const printInfo = () => {
+  console.log(users.value)
 }
 
 const getImageOf = value => {
@@ -425,94 +437,8 @@ function testSearch() {
           </div>
         </div>
 
-        <!--     ------------------------ Start of V1 filter ------------------------    -->
-
+        <!--     ------------------------ Start of filter dropdown ------------------------    -->
         <div class="flex items-center">
-          <div class="dropdown dropdown-end mr-3">
-            <div tabindex="0" role="button" class="size-8">
-              <svg
-                class="w-full"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path
-                    d="M20.058 9.72255C21.0065 9.18858 21.4808 8.9216 21.7404 8.49142C22 8.06124 22 7.54232 22 6.50448V5.81466C22 4.48782 22 3.8244 21.5607 3.4122C21.1213 3 20.4142 3 19 3H5C3.58579 3 2.87868 3 2.43934 3.4122C2 3.8244 2 4.48782 2 5.81466V6.50448C2 7.54232 2 8.06124 2.2596 8.49142C2.5192 8.9216 2.99347 9.18858 3.94202 9.72255L6.85504 11.3624C7.49146 11.7206 7.80967 11.8998 8.03751 12.0976C8.51199 12.5095 8.80408 12.9935 8.93644 13.5872C9 13.8722 9 14.2058 9 14.8729L9 17.5424C9 18.452 9 18.9067 9.25192 19.2613C9.50385 19.6158 9.95128 19.7907 10.8462 20.1406C12.7248 20.875 13.6641 21.2422 14.3321 20.8244C15 20.4066 15 19.4519 15 17.5424V14.8729C15 14.2058 15 13.8722 15.0636 13.5872C15.1959 12.9935 15.488 12.5095 15.9625 12.0976"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                  ></path>
-                </g>
-              </svg>
-            </div>
-            <ul
-              tabindex="0"
-              class="dropdown-content bg-base-100 rounded-box z-[1] w-48 p-2 shadow"
-            >
-              <li class="w-full flex items-center text-base">Filter by</li>
-              <div class="divider my-0"></div>
-              <li>
-                <div class="flex flex-col items-center">
-                  <span class="text-base">Age</span>
-                  <div class="divider self-center m-0 opacity-50 w-16"></div>
-                  <div class="flex flex-wrap gap-1 max-h-40 overflow-y-auto">
-                    <label
-                      v-for="(obj, index) in filter.age"
-                      :key="index"
-                      class="flex items-center w-fit cursor-pointer p-1 rounded-lg hover:bg-base-200"
-                    >
-                      <input
-                        v-model="obj.selected"
-                        type="checkbox"
-                        class="checkbox size-5"
-                      />
-                      <span class="label-text ml-2">{{ obj.age }}</span>
-                    </label>
-                  </div>
-                </div>
-              </li>
-              <li class="mt-3">
-                <div class="flex flex-col items-center">
-                  <span class="text-base">Location</span>
-                  <div class="divider self-center m-0 opacity-50 w-16"></div>
-                  <div class="flex flex-col gap-1 max-h-60 overflow-y-auto">
-                    <label
-                      v-for="(obj, index) in filter.location"
-                      :key="index"
-                      class="flex items-center w-fit cursor-pointer p-1 rounded-lg hover:bg-base-200"
-                    >
-                      <input
-                        v-model="obj.selected"
-                        type="checkbox"
-                        class="checkbox size-5"
-                      />
-                      <span class="label-text ml-2">{{ obj.name }}</span>
-                    </label>
-                  </div>
-                </div>
-              </li>
-              <li class="mt-3">
-                <div class="form-control flex flex-col items-center">
-                  <span class="text-base">Fame rate</span>
-                </div>
-              </li>
-              <li class="mt-3">
-                <div class="form-control flex flex-col items-center">
-                  <span class="text-base">Tags</span>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <!--     ------------------------ End of V1 filter ------------------------    -->
-
-          <!--     ------------------------ Start of V2 filter ------------------------    -->
 
           <div class="dropdown dropdown-end mr-3">
             <div tabindex="0" role="button" class="size-8">
@@ -545,7 +471,10 @@ function testSearch() {
               <li class="w-full flex items-center text-base">Filter by</li>
               <div class="divider my-0"></div>
               <li>
-                <details tabindex="0" class="collapse collapse-arrow border-base-300 bg-base-200 border">
+                <details
+                  tabindex="0"
+                  class="collapse collapse-arrow border-base-300 bg-base-200 border"
+                >
                   <summary class="collapse-title text-base">Age</summary>
                   <div class="collapse-content">
                     <div class="flex flex-wrap gap-1 max-h-40 overflow-y-auto">
@@ -566,8 +495,13 @@ function testSearch() {
                 </details>
               </li>
               <li class="mt-2">
-                <details tabindex="0" class="collapse collapse-arrow border-base-300 bg-base-200 border">
-                  <summary class="collapse-title text-base select-none">Location</summary>
+                <details
+                  tabindex="0"
+                  class="collapse collapse-arrow border-base-300 bg-base-200 border"
+                >
+                  <summary class="collapse-title text-base select-none">
+                    Location
+                  </summary>
                   <div class="collapse-content">
                     <div class="flex flex-col gap-1 max-h-60 overflow-y-auto">
                       <label
@@ -587,26 +521,66 @@ function testSearch() {
                 </details>
               </li>
               <li class="mt-3">
-                <div class="form-control flex flex-col items-center">
-                  <span class="text-base">Fame rate</span>
-                </div>
+                <details
+                  tabindex="0"
+                  class="collapse collapse-arrow border-base-300 bg-base-200 border"
+                >
+                  <summary class="collapse-title text-base select-none">
+                    Fame rate
+                  </summary>
+                  <div class="collapse-content">
+                    <div class="flex flex-wrap gap-1 max-h-40 overflow-y-auto">
+                      <label
+                        v-for="(obj, index) in filter.fame"
+                        :key="index"
+                        class="flex items-center w-fit cursor-pointer p-1 rounded-lg hover:bg-base-200"
+                      >
+                        <input
+                          v-model="obj.selected"
+                          type="checkbox"
+                          class="checkbox size-5"
+                        />
+                        <span class="label-text ml-2">{{ obj.name }}</span>
+                      </label>
+                    </div>
+                  </div>
+                </details>
               </li>
               <li class="mt-3">
-                <div class="form-control flex flex-col items-center">
-                  <span class="text-base">Tags</span>
-                </div>
+                <details
+                  tabindex="0"
+                  class="collapse collapse-arrow border-base-300 bg-base-200 border"
+                >
+                  <summary class="collapse-title text-base select-none">
+                    Tags
+                  </summary>
+                  <div class="collapse-content">
+                    <div class="flex flex-wrap gap-1 max-h-40 overflow-y-auto">
+                      <label
+                        v-for="(obj, index) in filter.tags"
+                        :key="index"
+                        class="flex items-center w-fit cursor-pointer p-1 rounded-lg hover:bg-base-200"
+                      >
+                        <input
+                          v-model="obj.selected"
+                          type="checkbox"
+                          class="checkbox size-5"
+                        />
+                        <span class="label-text ml-2">{{ obj.name }}</span>
+                      </label>
+                    </div>
+                  </div>
+                </details>
               </li>
             </ul>
           </div>
 
-          <!--     ------------------------ End of V2 filter ------------------------    -->
-
-
-
+          <!--     ------------------------ End of filter dropdown ------------------------    -->
         </div>
       </div>
       <div class="pt-3 px-3">
         content
+        <UserPreviewCard />
         <button class="btn" @click="printInfo">Debug</button>
       </div>
     </div>
