@@ -3,6 +3,7 @@
 namespace Matcha\Api\Model;
 
 use Flight;
+use Matcha\Api\Validator\Asserts\NotBlank;
 use PDO;
 use PDOStatement;
 use ReflectionException;
@@ -15,16 +16,22 @@ class Message extends Model
     protected string $table = 'messages';
 
     public int $sender_id;
+
     public int $receiver_id;
+
+    #[NotBlank()]
     public string $content;
+
     public bool $view = false;
+
+    #[NotBlank()]
     public string $created_at;
 
     /**
      * Get last message of user1 and user2
      * @throws ReflectionException
      */
-    public static function lastOf(User $user1, User $user2): Model|null
+    public static function lastOf(User $user1, User $user2): ?Model
     {
         /** @var PDOStatement $stmt */
         $stmt = Flight::db()->prepare("

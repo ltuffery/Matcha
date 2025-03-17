@@ -238,16 +238,16 @@
         },
         {
             "name": "flightphp/core",
-            "version": "v3.13.1",
+            "version": "v3.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/flightphp/core.git",
-                "reference": "da6540bbdd3b64a28de0606da7b530d0013f281c"
+                "reference": "9bd17d9db53920dd06d2b590e5189374f91eb50a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/flightphp/core/zipball/da6540bbdd3b64a28de0606da7b530d0013f281c",
-                "reference": "da6540bbdd3b64a28de0606da7b530d0013f281c",
+                "url": "https://api.github.com/repos/flightphp/core/zipball/9bd17d9db53920dd06d2b590e5189374f91eb50a",
+                "reference": "9bd17d9db53920dd06d2b590e5189374f91eb50a",
                 "shasum": ""
             },
             "require": {
@@ -306,9 +306,9 @@
             "homepage": "http://flightphp.com",
             "support": {
                 "issues": "https://github.com/flightphp/core/issues",
-                "source": "https://github.com/flightphp/core/tree/v3.13.1"
+                "source": "https://github.com/flightphp/core/tree/v3.15.0"
             },
-            "time": "2025-01-14T05:58:50+00:00"
+            "time": "2025-03-05T05:39:18+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
@@ -1043,16 +1043,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.69.1",
+            "version": "v3.71.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "13b0c0eede38c11cd674b080f2b485d0f14ffa9f"
+                "reference": "3825ffdc69501e1c9230291b79f036a0c0d8749d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/13b0c0eede38c11cd674b080f2b485d0f14ffa9f",
-                "reference": "13b0c0eede38c11cd674b080f2b485d0f14ffa9f",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/3825ffdc69501e1c9230291b79f036a0c0d8749d",
+                "reference": "3825ffdc69501e1c9230291b79f036a0c0d8749d",
                 "shasum": ""
             },
             "require": {
@@ -1134,7 +1134,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.69.1"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.71.0"
             },
             "funding": [
                 {
@@ -1142,7 +1142,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-18T23:57:43+00:00"
+            "time": "2025-03-07T23:06:56+00:00"
         },
         {
             "name": "myclabs/deep-copy",

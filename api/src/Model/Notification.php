@@ -2,6 +2,8 @@
 
 namespace Matcha\Api\Model;
 
+use Matcha\Api\Validator\Asserts\NotBlank;
+
 /**
  * @method static Notification find(array $where)
  */
@@ -10,10 +12,17 @@ class Notification extends Model
     protected string $table = 'notifications';
 
     public int $user_id;
+
     public int $sender_id;
+
     public string $type;
+
+    #[NotBlank()]
     public string $content;
+
     public bool $view = false;
+
+    #[NotBlank()]
     public string $created_at;
 
     public function sender(): User

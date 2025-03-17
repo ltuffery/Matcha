@@ -35,10 +35,12 @@ abstract class Model
      */
     public function save(): Model
     {
+        $this->testValidator();
+
         return $this->id > 0 ? $this->update() : $this->create();
     }
 
-    public function update(): Model
+    private function update(): Model
     {
         $data = $this->getData();
         $sqlQuery = "UPDATE " . $this->getTable()
@@ -58,7 +60,7 @@ abstract class Model
         return $this;
     }
 
-    public function create(): Model|null
+    private function create(): ?Model
     {
         if (!$this->canCreate()) {
             return null;
@@ -77,6 +79,27 @@ abstract class Model
         $this->reload();
 
         return $this;
+    }
+
+    private function testValidator(): void
+    {
+        $reflexion = new ReflectionClass($this::class);
+
+        foreach ($reflexion->getProperties() as $property) {
+            $attributes = $property->getAttributes();
+
+            if (count($attributes) == 0) {
+                break;
+            }
+
+            foreach ($attributes as $attribute) {
+                $instance = $attribute->newInstance();
+
+                if (!$instance->assert($property->getValue($this))) {
+                    throw new Exception("test");
+                }
+            }
+        }
     }
 
     /**
@@ -190,11 +213,11 @@ abstract class Model
 
     /**
      *
-     * @return Model|null
+     * @return ?Model
      * @throws ReflectionException
      * @throws Exception
      */
-    public static function find(array $options): Model|null
+    public static function find(array $options): ?Model
     {
         $where = array_map(function ($k) {
             return $k . "=?";

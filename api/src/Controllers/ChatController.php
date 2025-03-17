@@ -73,8 +73,8 @@ class ChatController
 
     public function store(string $username): void
     {
-        Validator::make([
-            'content' => 'required',
+        Validator::required([
+            'content',
         ]);
 
         $receiver = User::find([
