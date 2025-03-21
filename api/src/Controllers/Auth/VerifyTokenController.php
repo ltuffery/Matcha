@@ -12,8 +12,8 @@ class VerifyTokenController
 {
     public function store(): void
     {
-        Validator::make([
-            'token' => 'required',
+        Validator::required([
+            'token',
         ]);
 
         try {

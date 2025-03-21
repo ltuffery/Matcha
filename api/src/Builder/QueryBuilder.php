@@ -18,6 +18,8 @@ class QueryBuilder
 
     private ?int $limit = null;
 
+    private ?string $group = null;
+
     public function __construct(string $class)
     {
         $this->class = $class;
@@ -47,6 +49,13 @@ class QueryBuilder
     public function limit(int $limit): self
     {
         $this->limit = $limit;
+
+        return $this;
+    }
+
+    public function groupBy(string $column): self
+    {
+        $this->group = $column;
 
         return $this;
     }
@@ -93,6 +102,10 @@ class QueryBuilder
 
         if (!is_null($this->limit)) {
             $raw .= " LIMIT " . $this->limit;
+        }
+
+        if (!is_null($this->group)) {
+            $raw .= " GROUP BY " . $this->group;
         }
 
         return $raw;

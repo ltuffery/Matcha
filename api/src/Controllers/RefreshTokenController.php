@@ -14,8 +14,8 @@ class RefreshTokenController
 {
     public function store(): void
     {
-        Validator::make([
-            'refresh' => 'required',
+        Validator::required([
+            'refresh',
         ]);
 
         try {

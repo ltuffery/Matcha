@@ -51,7 +51,7 @@ class Photo
         $photo->name = $name;
         $photo->user_id = $user->id;
 
-        $photo->create();
+        $photo->save();
         $this->file->moveTo(BASE_PATH . "/storage/photos/" . $name . ".png");
     }
 }

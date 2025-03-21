@@ -31,8 +31,8 @@ class NotificationsController
 
     public function store(string $username): void
     {
-        Validator::make([
-            'type' => 'required',
+        Validator::required([
+            'type',
         ]);
 
         $me = Flight::user();
