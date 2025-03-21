@@ -1,17 +1,31 @@
 <script setup>
-const image_tmp =
-  'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp'
+import router from "@/router/index.js";
+
+const props = defineProps({
+  username: {
+    type: String,
+    required: true,
+  },
+  age: {
+    type: String,
+    required: true,
+  },
+  avatar: {
+    type: String,
+    required: true,
+  },
+})
 </script>
 
 <template>
   <div class="card1">
     <div class="card-face">
       <div class="absolute top-0 w-full h-full rounded-box bg-black opacity-20"></div>
-      <img :src="image_tmp" class="w-full h-full object-cover rounded-box" />
-      <div class="absolute bottom-3 left-3 text-white">Name, 24</div>
+      <img :src="props.avatar" class="w-full h-full object-cover rounded-box" />
+      <div class="absolute w-4/5 bottom-3 left-3 text-white flex flex-nowrap gap-1"><span class="truncate">{{ props.username }}</span>, <span class="">{{ props.age }}</span></div>
     </div>
     <div class="card-back">
-      <button class="btn btn-xs">View profile</button>
+      <button class="btn btn-xs" @click="router.push({ name: 'profile', params: {username: props.username} })">View profile</button>
     </div>
   </div>
 </template>

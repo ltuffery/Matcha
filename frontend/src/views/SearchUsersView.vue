@@ -137,7 +137,7 @@ function testSearch() {
 </script>
 
 <template>
-  <div class="flex flex-col gap-10">
+  <div class="flex flex-col h-full">
     <div class="flex mt-3">
       <div class="dropdown dropdown-start w-full">
         <div
@@ -345,7 +345,7 @@ function testSearch() {
       </div>
     </div>
 
-    <div>
+    <div class="pt-8">
       <div class="flex justify-between w-full py-2 bg-base-300/60">
         <div class="flex items-center">
           <div class="dropdown dropdown-start ml-3">
@@ -578,11 +578,18 @@ function testSearch() {
           <!--     ------------------------ End of filter dropdown ------------------------    -->
         </div>
       </div>
-      <div class="pt-3 px-3">
-        content
-        <UserPreviewCard />
-        <button class="btn" @click="printInfo">Debug</button>
-      </div>
+
+<!--      <button class="btn" @click="printInfo">Debug</button>-->
+    </div>
+    <div class="py-8 overflow-y-auto w-full flex flex-wrap justify-center gap-5">
+      <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+      <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+      <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+      <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+      <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+      <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+      <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+      <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
     </div>
   </div>
 
