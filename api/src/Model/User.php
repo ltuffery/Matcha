@@ -9,7 +9,6 @@ use PDO;
 
 /**
  * @method static User find(array $data)
- * @method static User[] where(array $object, ?int $limit = null)
  * @method static User morph(array $object)
  * @method static User[] all()
  * @method User save()
@@ -70,10 +69,9 @@ class User extends Model
      */
     public function getAvatar(): string|null
     {
-        /** @var Photo $photo */
         $photo = Photo::where([
             ['user_id', '=', $this->id],
-        ], 1);
+        ])->limit(1)->get();
 
         if ($photo == null) {
             return null;

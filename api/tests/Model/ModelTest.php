@@ -1,5 +1,6 @@
 <?php
 
+use Matcha\Api\Model\Model;
 use Matcha\Api\Model\User;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
 use PHPUnit\Framework\TestCase;
@@ -200,11 +201,11 @@ class ModelTest extends TestCase
     {
         $user = $this->createUser();
 
-        $users = User::where([
+        $user = User::where([
             ['username', '=', $user->username]
-        ]);
+        ])->get();
 
-        $this->assertCount(1, $users);
+        $this->assertInstanceOf(User::class, $user);
     }
 
     public function testWhereWithLimit(): void
@@ -213,7 +214,7 @@ class ModelTest extends TestCase
 
         $users = User::where([
             ['id', '>', '1']
-        ], 2);
+        ])->limit(2)->get();
 
         $this->assertCount(2, $users);
     }

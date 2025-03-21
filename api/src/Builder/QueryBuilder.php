@@ -4,6 +4,7 @@ namespace Matcha\Api\Builder;
 
 use Flight;
 use Matcha\Api\Model\Model;
+use PDO;
 
 class QueryBuilder
 {
@@ -14,6 +15,8 @@ class QueryBuilder
     private ?string $order = null;
 
     private array $joins = [];
+
+    private ?int $limit = null;
 
     public function __construct(string $class)
     {
@@ -41,6 +44,13 @@ class QueryBuilder
         return $this;
     }
 
+    public function limit(int $limit): self
+    {
+        $this->limit = $limit;
+
+        return $this;
+    }
+
     public function join(string $table, string $column, string $condition, string $value): self
     {
         $this->joins[] = "INNER JOIN "
@@ -56,34 +66,52 @@ class QueryBuilder
     {
         $whereRaw = array_map(function ($value, $index) {
             if ($index === 0) {
-                return $value[1] . $value[2] . $value[3];
+                $base = $value[1] . " " . $value[2] . " ";
+
+                if ($value[2] == "IN") {
+                    return $base . $value[3];
+                } else {
+                    return $base . "'" . $value[3] . "'";
+                }
             }
 
-            return join(" ", $value);
+            return implode(" ", $value);
         }, $this->wheres, array_keys($this->wheres));
 
-        return join(" ", $whereRaw);
+        return " WHERE " . implode(" ", $whereRaw);
     }
 
     public function getRawSql(): string
     {
         $raw = "SELECT * FROM " . $this->class::getTable() . " "
-                                . join(" ", $this->joins) . " "
+                                . implode(" ", $this->joins) . " "
                                 . $this->buildWhereQuery();
 
-        if ($this->order != null) {
+        if (!is_null($this->order)) {
             $raw .= " " . $this->order;
+        }
+
+        if (!is_null($this->limit)) {
+            $raw .= " LIMIT " . $this->limit;
         }
 
         return $raw;
     }
 
-    public function get(): Model
+    public function get(): Model|array
     {
         $stmt = Flight::db()->prepare($this->getRawSql());
 
         $stmt->execute();
 
-        return $this->class::morph($stmt->fetch());
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (count($data) == 1) {
+            return $this->class::morph($data[0]);
+        }
+
+        return array_map(function ($row) {
+            return $this->class::morph($row);
+        }, $data);
     }
 }
