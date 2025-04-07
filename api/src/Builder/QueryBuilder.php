@@ -41,13 +41,13 @@ class QueryBuilder
         return $this;
     }
 
-    public function join(string $table, string $column, string $condition, string $value): self
+    public function join(string $table, callable $func): self
     {
-        $this->joins[] = "INNER JOIN "
-                            . $table . " ON "
-                            . $column . " "
-                            . $condition . " "
-                            . $value;
+        $builder = new JoinBuilder($table);
+
+        $func($builder);
+
+        $joins[] = $builder->build();
 
         return $this;
     }
