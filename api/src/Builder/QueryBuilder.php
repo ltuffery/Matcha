@@ -54,6 +54,10 @@ class QueryBuilder
 
     private function buildWhereQuery(): string
     {
+        if (empty($this->wheres)) {  
+            return "";
+        }
+
         $whereRaw = array_map(function ($value, $index) {
             if ($index === 0) {
                 return $value[1] . $value[2] . $value[3];
@@ -62,7 +66,7 @@ class QueryBuilder
             return join(" ", $value);
         }, $this->wheres, array_keys($this->wheres));
 
-        return join(" ", $whereRaw);
+        return "WHERE " . join(" ", $whereRaw);
     }
 
     public function getRawSql(): string
