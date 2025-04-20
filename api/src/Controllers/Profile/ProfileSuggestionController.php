@@ -52,10 +52,14 @@ class ProfileSuggestionController
             ['users.gender', 'IN', "('M', 'F', 'O')"]
         ])
             ->join('preferences', 'preferences.user_id', '=', 'users.id')
-            ->join('preferences', 'preferences.sexual_preferences', '=', $user->gender) // TODO: IN ('A', '$user->gender')
+//            ->join('preferences', 'preferences.sexual_preferences', '=', $user->gender) // TODO: IN ('A', '$user->gender')
             ->join('likes', 'likes.user_id', '=', 'users.id')
-            ->groupBy('users.username')
-            ->get();
+            ->groupBy('users.username');
+
+
+//        fwrite(STDOUT, $users->getRawSql());
+
+        $users = $users->get();
 
 //        $stmt = Flight::db()->prepare("
 //        SELECT
