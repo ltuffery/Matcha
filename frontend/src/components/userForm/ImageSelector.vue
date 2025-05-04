@@ -1,10 +1,10 @@
 <script setup>
-import {onBeforeMount, ref, watch} from 'vue'
+import { onBeforeMount, ref, watch } from 'vue'
 
 const props = defineProps({
   modelValue: {
-    type: Array
-  }
+    type: Array,
+  },
 })
 
 const images = ref([])
@@ -33,12 +33,15 @@ const handleRemoveFileUpload = index => {
   emit('update:modelValue', images.value)
 }
 
-watch(() => props.modelValue, () => {
-  images.value = props.modelValue ? props.modelValue : []
-})
+watch(
+  () => props.modelValue,
+  () => {
+    images.value = props.modelValue ? props.modelValue : []
+  },
+)
 
 onBeforeMount(() => {
-    images.value = props.modelValue ? props.modelValue : []
+  images.value = props.modelValue ? props.modelValue : []
 })
 </script>
 

@@ -6,7 +6,7 @@ import 'swiper/swiper-bundle.css' // Import Swiper styles
 import { EffectCreative } from 'swiper/modules'
 import { useRoute } from 'vue-router'
 import router from '@/router/index.js'
-import {getSocket} from "@/plugins/socket.js";
+import { getSocket } from '@/plugins/socket.js'
 
 const modules = ref([EffectCreative])
 const data = ref()
@@ -21,7 +21,7 @@ const getData = async () => {
 }
 
 const editMyProfile = () => {
-  router.push({name: "profile.edit", params: route.params.username})
+  router.push({ name: 'profile.edit', params: route.params.username })
 }
 
 const formatGender = type => {
@@ -39,8 +39,11 @@ onMounted(async () => {
 
   const decodedToken = JSON.parse(atob(localStorage.jwt.split('.')[1]))
 
-  if (notFound.value === false && route.params.username !== decodedToken.username)
-    getSocket().emit("view", route.params.username)
+  if (
+    notFound.value === false &&
+    route.params.username !== decodedToken.username
+  )
+    getSocket().emit('view', route.params.username)
 })
 </script>
 
