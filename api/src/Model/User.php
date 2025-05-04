@@ -4,16 +4,17 @@ namespace Matcha\Api\Model;
 
 use Firebase\JWT\JWT;
 use Flight;
-use Matcha\Api\Controllers\Notifications\NotificationType;
+use Matcha\Api\Validator\Asserts\Email;
+use Matcha\Api\Validator\Asserts\Minimum;
+use Matcha\Api\Validator\Asserts\NotBlank;
+use Matcha\Api\Validator\Asserts\Regex;
 use PDO;
 
 /**
  * @method static User find(array $data)
- * @method static User[] where(array $object, ?int $limit = null)
  * @method static User morph(array $object)
  * @method static User[] all()
  * @method User save()
- * @method User create()
  * @method User update()
  */
 class User extends Model
@@ -23,18 +24,39 @@ class User extends Model
         'username', 'email'
     ];
 
+    #[Regex('[a-zA-Z0-9\.]{5,25}')]
     public string $username;
+
+    #[NotBlank()]
     public string $password;
+
+    #[Email()]
     public string $email;
-    public string|null $birthday;
-    public string|null $first_name;
-    public string|null $last_name;
-    public string|null $gender;
-    public string|null $biography;
+
+    #[NotBlank()]
+    public string $birthday;
+
+    #[NotBlank()]
+    public string $first_name;
+
+    #[NotBlank()]
+    public string $last_name;
+
+    #[NotBlank()]
+    public string $gender;
+
+    public ?string $biography;
+
+    #[NotBlank()]
     public string $created_at;
+
     public bool $email_verified;
-    public string|null $temporary_email_token;
+
+    public ?string $temporary_email_token;
+
+    #[Minimum(0)]
     public int $fame_rating = 0;
+
     public string $last_connection;
 
     public function generateJWT(): string
@@ -68,12 +90,11 @@ class User extends Model
     /**
      * Get user avatar (first image upload)
      */
-    public function getAvatar(): string|null
+    public function getAvatar(): ?string
     {
-        /** @var Photo $photo */
         $photo = Photo::where([
             ['user_id', '=', $this->id],
-        ], 1);
+        ])->limit(1)->get();
 
         if ($photo == null) {
             return null;
@@ -221,7 +242,7 @@ class User extends Model
         return array_map(fn (Photo $photo) => "http://" . $host .  ":3000/medias/p/" . $photo->name, $photos);
     }
 
-    public function getAge(): int|null
+    public function getAge(): ?int
     {
         if (is_null($this->birthday)) {
             return null;

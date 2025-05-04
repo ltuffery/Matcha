@@ -4,6 +4,7 @@ namespace Matcha\Api\Model;
 
 use Exception;
 use Flight;
+use Matcha\Api\Builder\QueryBuilder;
 use Matcha\Api\Factory\Factory;
 use Matcha\Api\Exceptions\UniqueConstraintException;
 use PDO;
@@ -35,10 +36,12 @@ abstract class Model
      */
     public function save(): Model
     {
+        $this->testValidator();
+
         return $this->id > 0 ? $this->update() : $this->create();
     }
 
-    public function update(): Model
+    private function update(): Model
     {
         $data = $this->getData();
         $sqlQuery = "UPDATE " . $this->getTable()
@@ -58,7 +61,7 @@ abstract class Model
         return $this;
     }
 
-    public function create(): Model|null
+    private function create(): ?Model
     {
         if (!$this->canCreate()) {
             return null;
@@ -77,6 +80,27 @@ abstract class Model
         $this->reload();
 
         return $this;
+    }
+
+    private function testValidator(): void
+    {
+        $reflexion = new ReflectionClass($this::class);
+
+        foreach ($reflexion->getProperties() as $property) {
+            $attributes = $property->getAttributes();
+
+            if (count($attributes) == 0) {
+                break;
+            }
+
+            foreach ($attributes as $attribute) {
+                $instance = $attribute->newInstance();
+
+                if (!$instance->assert($property->getValue($this))) {
+                    throw new Exception("test");
+                }
+            }
+        }
     }
 
     /**
@@ -190,11 +214,11 @@ abstract class Model
 
     /**
      *
-     * @return Model|null
+     * @return ?Model
      * @throws ReflectionException
      * @throws Exception
      */
-    public static function find(array $options): Model|null
+    public static function find(array $options): ?Model
     {
         $where = array_map(function ($k) {
             return $k . "=?";
@@ -213,38 +237,24 @@ abstract class Model
     }
 
     /**
-     * @return Model[]
+     * @param array $params
+     * @return QueryBuilder
      */
-    public static function where(array $params, ?int $limit = null): array
+    public static function where(array $params): QueryBuilder
     {
-        $where = [];
+        $builder = new QueryBuilder(get_called_class());
+
+        if (!is_array($params[0])) {
+            return $builder->where(...$params);
+        }
 
         foreach ($params as $param) {
             if (is_array($param)) {
-                $line = '`' .$param[0] . '` ' . $param[1];
-
-                if (is_string($param[2]) && $param[2][0] == '(') {
-                    $line .= ' ' . $param[2];
-                } else {
-                    $line .= ' "' . $param[2] . '"';
-                }
-
-                $where[] = $line;
+                $builder->where($param[0], $param[1], $param[2]);
             }
         }
 
-        $query = "SELECT * FROM " . self::getTable() . " WHERE " . implode(" AND ", $where);
-
-        if (!is_null($limit)) {
-            $query .= " LIMIT " . $limit;
-        }
-
-        $stmt = self::db()->prepare($query);
-        $stmt->execute();
-
-        $users = array_map(fn ($item) => self::morph($item), $stmt->fetchAll(PDO::FETCH_ASSOC));
-
-        return $users;
+        return $builder;
     }
 
     /**

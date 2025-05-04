@@ -22,7 +22,7 @@ class NotificationsController
     {
         $notifications = Notification::where([
             ['user_id', '=', Flight::user()->id],
-        ], 50);
+        ])->limit(50)->get();
 
         Flight::json(
             NotificationsResource::collection($notifications)
@@ -31,8 +31,8 @@ class NotificationsController
 
     public function store(string $username): void
     {
-        Validator::make([
-            'type' => 'required',
+        Validator::required([
+            'type',
         ]);
 
         $me = Flight::user();

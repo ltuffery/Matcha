@@ -48,23 +48,38 @@ class ProfileSuggestionController
             "users.gender IN ('M', 'F', 'O')" :
             "users.gender = '$preferences->sexual_preferences'";
 
-        $stmt = Flight::db()->prepare("
-        SELECT
-            users.*
-        FROM users
-                 INNER JOIN preferences
-                            ON users.id = preferences.user_id
-                                AND preferences.sexual_preferences IN ('A', '$user->gender')
-                 INNER JOIN likes
-                            ON 1 <> likes.liked_id
-                                AND likes.user_id = users.id
-        WHERE $sexualPreference
-        GROUP BY users.username;
-        ");
+        $users = User::where([
+            ['users.gender', 'IN', "('M', 'F', 'O')"]
+        ])
+            ->join('preferences', 'preferences.user_id', '=', 'users.id')
+//            ->join('preferences', 'preferences.sexual_preferences', '=', $user->gender) // TODO: IN ('A', '$user->gender')
+            ->join('likes', 'likes.user_id', '=', 'users.id')
+            ->groupBy('users.username');
 
-        $stmt->execute();
 
-        return array_map(fn ($data) => User::morph($data), $stmt->fetchAll());
+//        fwrite(STDOUT, $users->getRawSql());
+
+        $users = $users->get();
+
+//        $stmt = Flight::db()->prepare("
+//        SELECT
+//            users.*
+//        FROM users
+//                 INNER JOIN preferences
+//                            ON users.id = preferences.user_id
+//                                AND preferences.sexual_preferences IN ('A', '$user->gender')
+//                 INNER JOIN likes
+//                            ON 1 <> likes.liked_id
+//                                AND likes.user_id = users.id
+//        WHERE $sexualPreference
+//        GROUP BY users.username;
+//        ");
+
+//        $stmt->execute();
+
+//        return array_map(fn ($data) => User::morph($data), $stmt->fetchAll());
+
+        return $users;
     }
 
     private function inLocation($lat1, $lon1, $lat2, $lon2, $rayon): bool
