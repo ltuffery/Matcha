@@ -53,7 +53,7 @@ onMounted(async () => {
     <div class="flex justify-center flex-col gap-4">
       <h1 class="text-3xl">User not found !</h1>
       <button
-        @click="router.push({ name: 'main' })"
+        @click="router.push({ name: 'browse' })"
         class="btn btn-primary btn-outline"
       >
         Go home

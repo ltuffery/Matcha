@@ -4,7 +4,7 @@ import ConvView from '@/views/ConvView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { isAuthenticated } from '@/services/auth.js'
 import HomeView from '@/views/HomeView.vue'
-import MainView from '@/views/MainView.vue'
+import MainView from '@/views/BrowseView.vue'
 import { authGuard } from '@/middlewares/auth.js'
 import SearchUsersView from '@/views/SearchUsersView.vue'
 import SettingsView from '@/views/SettingsView.vue'
@@ -25,7 +25,7 @@ const router = createRouter({
       beforeEnter: (to, from, next) => {
         isAuthenticated().then(value => {
           if (value) {
-            next({ name: 'main' })
+            next({ name: 'browse' })
           } else {
             next()
           }
@@ -33,8 +33,8 @@ const router = createRouter({
       },
     },
     {
-      path: '/main',
-      name: 'main',
+      path: '/browse',
+      name: 'browse',
       component: MainView,
       beforeEnter: [authGuard],
     },
