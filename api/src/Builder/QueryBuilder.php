@@ -25,7 +25,7 @@ class QueryBuilder
         $this->class = $class;
     }
 
-    public function where(string $column, string $condition, string $value): self
+    public function andWhere(string $column, string $condition, string $value): self
     {
         $this->wheres[] = ['AND', $column, $condition, $value];
 
@@ -115,7 +115,7 @@ class QueryBuilder
         return $raw;
     }
 
-    public function get(): Model|array
+    public function get(): Model|array|null
     {
         $stmt = Flight::db()->prepare($this->getRawSql());
 
@@ -127,8 +127,16 @@ class QueryBuilder
             return $this->class::morph($data[0]);
         }
 
-        return array_map(function ($row) {
+        $models = array_map(function ($row) {
             return $this->class::morph($row);
         }, $data);
+
+        if (count($models) > 1) {
+            return $models;
+        } else if (isset($models[0])) {
+            return $models[0];
+        }
+
+        return null;
     }
 }

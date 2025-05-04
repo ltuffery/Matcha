@@ -245,12 +245,12 @@ abstract class Model
         $builder = new QueryBuilder(get_called_class());
 
         if (!is_array($params[0])) {
-            return $builder->where(...$params);
+            return $builder->andWhere(...$params);
         }
 
         foreach ($params as $param) {
             if (is_array($param)) {
-                $builder->where($param[0], $param[1], $param[2]);
+                $builder->andWhere($param[0], $param[1], $param[2]);
             }
         }
 
