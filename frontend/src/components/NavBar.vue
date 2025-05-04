@@ -21,7 +21,7 @@ const goTo = link => {
       <div class="flex flex-col items-center gap-3 pt-5 w-full">
         <div class="tooltip tooltip-right" data-tip="Home">
           <button
-            @click="goTo('main')"
+            @click="goTo('browse')"
             class="size-16 bg-base-100 rounded-xl btn"
           >
             <svg
@@ -263,7 +263,7 @@ const goTo = link => {
     </div>
 
     <div
-      @click="goTo('main')"
+      @click="goTo('browse')"
       class="hover:bg-base-300/60 rounded-full flex items-center justify-center h-full w-full cursor-pointer"
     >
       <svg

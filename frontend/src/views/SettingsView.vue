@@ -7,7 +7,7 @@ import { Api } from '@/utils/api.js'
 import LoadingScreen from '@/components/screen/LoadingScreen.vue'
 import router from '@/router'
 import { usePreferencesStore } from '@/store/preferences.js'
-import {useUserInfoStore} from "@/store/userInfo.js";
+import { useUserInfoStore } from '@/store/userInfo.js'
 
 const loading = ref(true)
 const settingsCategory = ref(1)

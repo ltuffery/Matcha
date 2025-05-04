@@ -50,7 +50,7 @@ function loginUserAccount(e) {
           Api.put('/users/me/localisation').send()
         },
       )
-      router.push({ name: 'main' })
+      router.push({ name: 'browse' })
       connectSocket()
     } else {
       switch (res.status) {
