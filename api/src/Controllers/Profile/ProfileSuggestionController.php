@@ -3,6 +3,7 @@
 namespace Matcha\Api\Controllers\Profile;
 
 use Flight;
+use Matcha\Api\Builder\JoinBuilder;
 use Matcha\Api\Model\User;
 use Matcha\Api\Resources\ProfileResource;
 use ReflectionException;
@@ -51,33 +52,17 @@ class ProfileSuggestionController
         $users = User::where([
             ['users.gender', 'IN', "('M', 'F', 'O')"]
         ])
-            ->join('preferences', 'preferences.user_id', '=', 'users.id')
-//            ->join('preferences', 'preferences.sexual_preferences', '=', $user->gender) // TODO: IN ('A', '$user->gender')
-            ->join('likes', 'likes.user_id', '=', 'users.id')
+            ->join('preferences', function (JoinBuilder $builder) use ($user) {
+                $builder
+                    ->and('preferences.user_id', '=', 'users.id')
+                    ->and('preferences.sexual_preferences', 'IN', "('A', '$user->gender')");
+            })
+            ->join('likes', function (JoinBuilder $builder) {
+                $builder->and('likes.user_id', '=', 'users.id');
+            })
             ->groupBy('users.username');
 
-
-//        fwrite(STDOUT, $users->getRawSql());
-
-        $users = $users->get();
-
-//        $stmt = Flight::db()->prepare("
-//        SELECT
-//            users.*
-//        FROM users
-//                 INNER JOIN preferences
-//                            ON users.id = preferences.user_id
-//                                AND preferences.sexual_preferences IN ('A', '$user->gender')
-//                 INNER JOIN likes
-//                            ON 1 <> likes.liked_id
-//                                AND likes.user_id = users.id
-//        WHERE $sexualPreference
-//        GROUP BY users.username;
-//        ");
-
-//        $stmt->execute();
-
-//        return array_map(fn ($data) => User::morph($data), $stmt->fetchAll());
+        $users = $users->get(true);
 
         return $users;
     }

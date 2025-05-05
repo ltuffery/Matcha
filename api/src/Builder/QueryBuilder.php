@@ -115,7 +115,7 @@ class QueryBuilder
         return $raw;
     }
 
-    public function get(): Model|array|null
+    public function get(bool $array = false): Model|array|null
     {
         $stmt = Flight::db()->prepare($this->getRawSql());
 
@@ -133,7 +133,7 @@ class QueryBuilder
 
         if (count($models) > 1) {
             return $models;
-        } else if (isset($models[0])) {
+        } else if (isset($models[0]) && $array) {
             return $models[0];
         }
 

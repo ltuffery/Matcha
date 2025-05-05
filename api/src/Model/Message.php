@@ -59,11 +59,7 @@ class Message extends Model
         ->andWhere('receiver_id', '=', $user1->id)
         ->orderBy('created_at', 'DESC')
         ->limit($limit)
-        ->get();
-
-        if (!is_array($messages)) {
-            return [$messages];
-        }
+        ->get(true);
 
         return $messages;
     }
@@ -84,12 +80,10 @@ class Message extends Model
             ])
             ->orderBy('created_at', 'DESC')
             ->limit($limit)
-            ->get();
+            ->get(true);
 
         if (is_null($messages)) {
             return 0;
-        } else if (is_object($messages)) {
-            return 1;
         }
 
         return count($messages);
