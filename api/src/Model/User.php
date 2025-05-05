@@ -4,6 +4,7 @@ namespace Matcha\Api\Model;
 
 use Firebase\JWT\JWT;
 use Flight;
+use Matcha\Api\Builder\JoinBuilder;
 use Matcha\Api\Validator\Asserts\Email;
 use Matcha\Api\Validator\Asserts\Minimum;
 use Matcha\Api\Validator\Asserts\NotBlank;
@@ -202,16 +203,16 @@ class User extends Model
      */
     public function matches(): array
     {
-        $stmt = Flight::db()->prepare("
-            SELECT *
-            FROM users u
-            JOIN likes l1 ON u.id = l1.liked_id
-            JOIN likes l2 ON l1.user_id = l2.liked_id AND l2.user_id = u.id
-            WHERE l1.user_id = :user_id
-        ");
-
-        $stmt->execute(['user_id' => $this->id]);
-        $users =  array_map(fn (array $obj) => User::morph($obj), $stmt->fetchAll(PDO::FETCH_ASSOC));
+        $users = $this::where(['l1.user_id', '=', $this->id])
+            ->join('likes l1', function (JoinBuilder $builder) {
+                $builder->and('users.id', '=', 'l1.liked_id');
+            })
+            ->join('likes l2', function (JoinBuilder $builder) {
+                $builder
+                    ->and('l1.user_id', '=', 'l2.liked_id')
+                    ->and('l2.user_id', '=', 'users.id');
+            })
+            ->get(array: true);
 
         return array_filter($users, fn ($user) => !$this->isBlocking($user));
     }

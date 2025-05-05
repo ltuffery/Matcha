@@ -35,7 +35,7 @@ class Message extends Model
     {
         $message = self::allOf($user1, $user2, 1);
 
-        if (is_null($message)) {
+        if (empty($message)) {
             return null;
         }
 

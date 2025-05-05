@@ -115,7 +115,7 @@ class QueryBuilder
         return $raw;
     }
 
-    public function get(bool $array = false): Model|array|null
+    public function get(?bool $array = false): Model|array|null
     {
         $stmt = Flight::db()->prepare($this->getRawSql());
 
@@ -123,17 +123,13 @@ class QueryBuilder
 
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if (count($data) == 1) {
-            return $this->class::morph($data[0]);
-        }
-
         $models = array_map(function ($row) {
             return $this->class::morph($row);
         }, $data);
 
-        if (count($models) > 1) {
+        if (count($models) > 1 || $array) {
             return $models;
-        } else if (isset($models[0]) && $array) {
+        } else if (isset($models[0])) {
             return $models[0];
         }
 

@@ -15,13 +15,13 @@ class JoinBuilder
 
     public function and(string $column, string $condition, string $value): self
     {
-        $join = [];
+        $startWith = '';
 
         if (!empty($this->joins)) {
-            $join[0] = 'AND';
+            $startWith = 'AND';
         }
 
-        $this->joins[] = array_merge($join, [$column, $condition, $value]);
+        $this->joins[] = $startWith . " " . $column . " " . $condition . " " . $value;
 
         return $this;
     }
