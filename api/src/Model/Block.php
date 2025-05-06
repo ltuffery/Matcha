@@ -3,7 +3,7 @@
 namespace Matcha\Api\Model;
 
 /**
- * @method Block find(array $where)
+ * @method static Block find(array $where)
  */
 class Block extends Model
 {

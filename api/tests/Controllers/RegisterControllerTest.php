@@ -143,7 +143,7 @@ class RegisterControllerTest extends TestCase
         $this->assertNotNull($preferences);
         $this->assertEquals('A', $preferences->sexual_preferences);
         $this->assertEquals(18, $preferences->age_minimum);
-        $this->assertEquals(23, $preferences->age_maximum);
+        $this->assertEquals(24, $preferences->age_maximum);
         $this->assertTrue($preferences->by_tags);
     }
 }

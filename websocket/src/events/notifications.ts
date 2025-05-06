@@ -3,7 +3,7 @@ import {Api} from "@/services/api";
 import {Socket} from "socket.io";
 import {OnlineUsersCache} from "@/cache/onlineUsersCache";
 
-const sendNotification = async (type: NOTIFICATION_TYPES, username: string, socket: Socket) => {
+export const sendNotification = async (type: NOTIFICATION_TYPES, username: string, socket: Socket) => {
   const res = await Api.post(`/users/${username}/notifications`).header('Authorization', 'Bearer ' + socket.handshake.auth.token).send({
     type: type,
   })

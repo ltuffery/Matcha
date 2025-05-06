@@ -4,6 +4,7 @@ namespace Matcha\Api\Model;
 
 use Exception;
 use Flight;
+use Matcha\Api\Builder\QueryBuilder;
 use Matcha\Api\Factory\Factory;
 use Matcha\Api\Exceptions\UniqueConstraintException;
 use PDO;
@@ -236,38 +237,24 @@ abstract class Model
     }
 
     /**
-     * @return Model[]
+     * @param array $params
+     * @return QueryBuilder
      */
-    public static function where(array $params, ?int $limit = null): array
+    public static function where(array $params): QueryBuilder
     {
-        $where = [];
+        $builder = new QueryBuilder(get_called_class());
+
+        if (!is_array($params[0])) {
+            return $builder->andWhere(...$params);
+        }
 
         foreach ($params as $param) {
             if (is_array($param)) {
-                $line = '`' .$param[0] . '` ' . $param[1];
-
-                if (is_string($param[2]) && $param[2][0] == '(') {
-                    $line .= ' ' . $param[2];
-                } else {
-                    $line .= ' "' . $param[2] . '"';
-                }
-
-                $where[] = $line;
+                $builder->andWhere($param[0], $param[1], $param[2]);
             }
         }
 
-        $query = "SELECT * FROM " . self::getTable() . " WHERE " . implode(" AND ", $where);
-
-        if (!is_null($limit)) {
-            $query .= " LIMIT " . $limit;
-        }
-
-        $stmt = self::db()->prepare($query);
-        $stmt->execute();
-
-        $users = array_map(fn ($item) => self::morph($item), $stmt->fetchAll(PDO::FETCH_ASSOC));
-
-        return $users;
+        return $builder;
     }
 
     /**

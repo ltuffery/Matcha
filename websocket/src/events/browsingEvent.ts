@@ -23,6 +23,8 @@ export const handleBrowsingEvent = (username: string, socket: Socket) => {
 
       const data = await res.json()
 
+      console.log(data)
+
       if (!cacheBrowsing.has(username))
         cacheBrowsing.set(username, {
           sortBy: [],

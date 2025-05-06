@@ -26,7 +26,7 @@ class MatchUserResource extends JsonResource
         $last_message = Message::lastOf($this->model, Flight::user());
 
         $resource['last_message'] = !is_null($last_message) ? new MessageResource($last_message) : null;
-        $resource['unread'] = Message::allUnreadOf(Flight::user(), $this->model);
+        $resource['unread'] = Message::countUnreadOf(Flight::user(), $this->model);
 
         return $resource;
     }

@@ -6,7 +6,7 @@ use Matcha\Api\Validator\Asserts\Maximum;
 use Matcha\Api\Validator\Asserts\Minimum;
 
 /**
- * @method Preference find(array $where)
+ * @method static Preference find(array $where)
  */
 class Preference extends Model
 {
