@@ -193,7 +193,7 @@ class QueryBuilder
 
         if (count($models) > 1 || $array) {
             return $models;
-        } else if (isset($models[0])) {
+        } elseif (isset($models[0])) {
             return $models[0];
         }
 

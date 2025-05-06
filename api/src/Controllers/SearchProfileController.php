@@ -27,7 +27,7 @@ class SearchProfileController
         /** @var User $me */
         $me = Flight::user();
         if (is_array($users)) {
-            $users = array_filter($users, fn($user) => !$me->isBlocking($user));
+            $users = array_filter($users, fn ($user) => !$me->isBlocking($user));
         } else {
             $users = $me->isBlocking($users) ? [] : [$users];
         }
