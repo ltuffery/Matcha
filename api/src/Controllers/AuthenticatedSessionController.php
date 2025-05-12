@@ -16,9 +16,9 @@ class AuthenticatedSessionController
      */
     public function store(): void
     {
-        Validator::make([
-            'username' => 'required',
-            'password' => 'required',
+        Validator::required([
+            'username',
+            'password',
         ]);
 
         $request = Flight::request();

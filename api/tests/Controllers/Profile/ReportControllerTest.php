@@ -19,7 +19,7 @@ class ReportControllerTest extends TestCase
     {
         $this->setUpDatabase();
 
-        $this->user = User::factory()->create()[0];
+        $this->user = User::factory()->create();
     }
 
     protected function tearDown(): void
@@ -29,7 +29,8 @@ class ReportControllerTest extends TestCase
 
     public function testReportOtherUser(): void
     {
-        $user2 = User::factory()->create()[0];
+        /** @var User $user2 */
+        $user2 = User::factory()->create();
 
         $response = $this->withHeader([
             'Authorization' => 'Bearer ' . $this->user->generateJWT(),

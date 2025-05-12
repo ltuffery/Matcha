@@ -23,7 +23,7 @@ class TestResponse
      * Assert status code
      *
      * @param int $status
-     * @param string|null $message
+     * @param ?string $message
      * @return void
      */
     public static function assertStatus(int $status, ?string $message = ''): void
@@ -39,8 +39,8 @@ class TestResponse
     /**
      * Assert JSON data
      *
-     * @param array<string, mixed>|null $data
-     * @param string|null $message
+     * @param array<string, mixed>? $data
+     * @param ?string $message
      * @return void
      */
     public static function assertJson(?array $data = [], ?string $message = ''): void

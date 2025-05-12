@@ -10,16 +10,7 @@ class ValidatorTest extends TestCase
     {
         $this->expectNotToPerformAssertions();
 
-        Validator::make([]);
-    }
-
-    public function testUnexistValidator()
-    {
-        $this->expectNotToPerformAssertions();
-
-        Validator::make([
-            'test' => 'Unexist'
-        ]);
+        Validator::required([]);
     }
 
 }

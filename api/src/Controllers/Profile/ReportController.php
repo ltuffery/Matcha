@@ -11,8 +11,8 @@ class ReportController
 {
     public function store(string $username): void
     {
-        Validator::make([
-            'raison' => 'required',
+        Validator::required([
+            'raison',
         ]);
 
         $user = User::find([

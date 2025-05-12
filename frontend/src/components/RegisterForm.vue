@@ -28,6 +28,7 @@ const currentStep = computed(() => {
 const totalSteps = 5
 const feedbackRef = ref()
 const maxAge = ref()
+const inputImage = ref()
 
 const handleFileUpload = e => {
   for (let index = 0; index < e.target.files.length; index++) {
@@ -46,6 +47,7 @@ const handleFileUpload = e => {
 
 const handleRemoveFileUpload = index => {
   images.value.splice(index, 1)
+  inputImage.value.value = ''
 }
 
 function setMaxAge() {
@@ -340,6 +342,7 @@ function eraseErrorStyle(el) {
                   </g>
                 </svg>
                 <input
+                  ref="inputImage"
                   @change="handleFileUpload"
                   type="file"
                   class="w-full h-full opacity-0 absolute cursor-pointer"

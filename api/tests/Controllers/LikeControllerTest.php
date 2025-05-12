@@ -22,7 +22,7 @@ class LikeControllerTest extends TestCase
     {
         $this->setUpDatabase();
 
-        $this->user = User::factory()->create()[0];
+        $this->user = User::factory()->create();
     }
 
     public function tearDown(): void
@@ -41,7 +41,7 @@ class LikeControllerTest extends TestCase
 
     public function testLikeUserFound(): void
     {
-        $liked = User::factory()->create()[0];
+        $liked = User::factory()->create();
 
         $response = $this->withHeader([
             'Authorization' => 'Bearer ' . $this->user->generateJWT(),
@@ -61,7 +61,7 @@ class LikeControllerTest extends TestCase
 
     public function testUnLikeLikeNotFound(): void
     {
-        $liked = User::factory()->create()[0];
+        $liked = User::factory()->create();
 
         $like = new Like();
         $like->user_id = $this->user->id;
@@ -78,7 +78,7 @@ class LikeControllerTest extends TestCase
 
     public function testUnLikeUserFound(): void
     {
-        $liked = User::factory()->create()[0];
+        $liked = User::factory()->create();
 
         $response = $this->withHeader([
             'Authorization' => 'Bearer ' . $this->user->generateJWT(),
@@ -88,9 +88,8 @@ class LikeControllerTest extends TestCase
     }
 
     public function testDoubleLikeUser(): void
-
     {
-        $liked = User::factory()->create()[0];
+        $liked = User::factory()->create();
 
         $response = $this->withHeader([
             'Authorization' => 'Bearer ' . $this->user->generateJWT(),
@@ -106,6 +105,7 @@ class LikeControllerTest extends TestCase
 
         $response->assertStatus(400);
     }
+
     public function testLikeMultipleUser(): void
     {
         $users = User::factory()->count(5)->create();

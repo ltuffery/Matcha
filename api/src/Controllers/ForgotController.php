@@ -37,8 +37,8 @@ class ForgotController
      */
     public function forgotCredencial(): void
     {
-        Validator::make([
-            'email' => 'required|email',
+        Validator::required([
+            'email',
         ]);
 
         $request = Flight::request();
@@ -71,9 +71,9 @@ class ForgotController
      */
     public function tokenVerify(): void
     {
-        Validator::make([
-            'username' => 'required',
-            'token' => 'required',
+        Validator::required([
+            'username',
+            'token',
         ]);
 
         $request = Flight::request();
@@ -109,11 +109,11 @@ class ForgotController
      */
     public function changePwd(): void
     {
-        Validator::make([
-            'username' => 'required',
-            'newPassword' => 'required',
-            'confirmPassword' => 'required',
-            'token' => 'required',
+        Validator::required([
+            'username',
+            'newPassword',
+            'confirmPassword',
+            'token',
         ]);
 
         $request = Flight::request();

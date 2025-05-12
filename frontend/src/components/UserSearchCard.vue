@@ -1,6 +1,6 @@
 <script setup>
 import Avatar from '@/components/Avatar.vue'
-import router from "@/router/index.js";
+import router from '@/router/index.js'
 
 const props = defineProps({
   username: {
@@ -19,6 +19,13 @@ const props = defineProps({
       <Avatar type="squircle" :username="props.username" :src="props.avatar" />
       <span class="text-2xl">{{ props.username }}</span>
     </div>
-    <button @click="router.push({ name: 'profile', params: {username: props.username} })" class="btn">Profile</button>
+    <button
+      @click="
+        router.push({ name: 'profile', params: { username: props.username } })
+      "
+      class="btn"
+    >
+      Profile
+    </button>
   </div>
 </template>

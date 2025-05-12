@@ -3,6 +3,7 @@
 namespace Matcha\Api\Model;
 
 use Flight;
+use Matcha\Api\Validator\Asserts\NotBlank;
 use PDO;
 use PDOStatement;
 use ReflectionException;
@@ -15,39 +16,30 @@ class Message extends Model
     protected string $table = 'messages';
 
     public int $sender_id;
+
     public int $receiver_id;
+
+    #[NotBlank()]
     public string $content;
+
     public bool $view = false;
+
+    #[NotBlank()]
     public string $created_at;
 
     /**
      * Get last message of user1 and user2
      * @throws ReflectionException
      */
-    public static function lastOf(User $user1, User $user2): Model|null
+    public static function lastOf(User $user1, User $user2): ?Model
     {
-        /** @var PDOStatement $stmt */
-        $stmt = Flight::db()->prepare("
-            SELECT * 
-            FROM messages 
-            WHERE (sender_id = :sender_id AND receiver_id = :receiver_id)
-            OR (sender_id = :receiver_id AND receiver_id = :sender_id)
-            ORDER BY created_at DESC
-            LIMIT 1;
-        ");
+        $message = self::allOf($user1, $user2, 1);
 
-        $stmt->execute([
-            'sender_id' => $user1->id,
-            'receiver_id' => $user2->id,
-        ]);
-
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$data) {
+        if (empty($message)) {
             return null;
         }
 
-        return Message::morph($data);
+        return $message[0];
     }
 
     /**
@@ -57,25 +49,19 @@ class Message extends Model
      * @return Message[]
      * @throws ReflectionException
      */
-    public static function allOf(User $user1, User $user2, int $limit = 50): array
+    public static function allOf(User $user1, User $user2, int $limit = 50): array|null
     {
-        $stmt = Flight::db()->prepare("
-            SELECT * 
-            FROM messages 
-            WHERE (sender_id = :sender_id AND receiver_id = :receiver_id)
-            OR (sender_id = :receiver_id AND receiver_id = :sender_id)
-            ORDER BY created_at DESC
-            LIMIT " . $limit . ";");
+        $messages = Message::where([
+            ['sender_id', '=', $user1->id],
+            ['receiver_id', '=', $user2->id],
+        ])
+        ->orWhere('sender_id', '=', $user2->id)
+        ->andWhere('receiver_id', '=', $user1->id)
+        ->orderBy('created_at', 'DESC')
+        ->limit($limit)
+        ->get(true);
 
-        $stmt->execute([
-            'sender_id' => $user1->id,
-            'receiver_id' => $user2->id,
-        ]);
-
-        return array_map(
-            fn (array $data) => Message::morph($data),
-            $stmt->fetchAll(PDO::FETCH_ASSOC)
-        );
+        return $messages;
     }
 
     /**
@@ -85,20 +71,21 @@ class Message extends Model
      * @return int
      * @throws ReflectionException
      */
-    public static function allUnreadOf(User $me, User $other, int $limit = 50): int
+    public static function countUnreadOf(User $me, User $other, int $limit = 50): int
     {
-        $stmt = Flight::db()->prepare("
-            SELECT * 
-            FROM messages 
-            WHERE sender_id = :sender_id AND receiver_id = :receiver_id AND view = 0
-            ORDER BY created_at
-            LIMIT " . $limit . ";");
+        $messages = Message::where([
+                ['sender_id', '=', $other->id],
+                ['receiver_id', '=', $me->id],
+                ['view', '=', 0]
+            ])
+            ->orderBy('created_at', 'DESC')
+            ->limit($limit)
+            ->get(true);
 
-        $stmt->execute([
-            'sender_id' => $other->id,
-            'receiver_id' => $me->id,
-        ]);
+        if (is_null($messages)) {
+            return 0;
+        }
 
-        return count($stmt->fetchAll(PDO::FETCH_ASSOC));
+        return count($messages);
     }
 }

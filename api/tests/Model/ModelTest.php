@@ -19,23 +19,33 @@ class ModelTest extends TestCase
 
     private function createUser(): User
     {
+        $this->user = new User();
+
         $this->user->username = "test";
         $this->user->email = "test@test.com";
         $this->user->password = "pass";
         $this->user->birthday = "2000-05-21";
+        $this->user->first_name = "John";
+        $this->user->last_name = "Doe";
+        $this->user->gender = 'M';
 
-        return $this->user->create();
+        return $this->user->save();
     }
 
     private function createUsers(int $n): void
     {
         for ($i = 0; $i < $n; $i++) {
+            $this->user = new User();
+
             $this->user->username = faker()->userName;
             $this->user->email = faker()->email;
             $this->user->password = "pass";
             $this->user->birthday = "2000-05-21";
+            $this->user->first_name = faker()->firstName;
+            $this->user->last_name = faker()->lastName;
+            $this->user->gender = faker()->randomElement(['M', 'F', 'O']);
 
-            $this->user->create();
+            $this->user->save();
         }
     }
 
@@ -53,7 +63,7 @@ class ModelTest extends TestCase
         $user = $this->createUser();
 
         $user->username = "update";
-        $user = $user->update();
+        $user = $user->save();
 
         $this->assertEquals(1, $user->id);
         $this->assertEquals("update", $user->username);
@@ -65,6 +75,9 @@ class ModelTest extends TestCase
         $this->user->email = "test@test.com";
         $this->user->password = "pass";
         $this->user->birthday = "2000-05-21";
+        $this->user->first_name = "John";
+        $this->user->last_name = "Doe";
+        $this->user->gender = 'M';
 
         $user = $this->user->save();
 
@@ -200,11 +213,11 @@ class ModelTest extends TestCase
     {
         $user = $this->createUser();
 
-        $users = User::where([
+        $user = User::where([
             ['username', '=', $user->username]
-        ]);
+        ])->get();
 
-        $this->assertCount(1, $users);
+        $this->assertInstanceOf(User::class, $user);
     }
 
     public function testWhereWithLimit(): void
@@ -213,7 +226,7 @@ class ModelTest extends TestCase
 
         $users = User::where([
             ['id', '>', '1']
-        ], 2);
+        ])->limit(2)->get();
 
         $this->assertCount(2, $users);
     }
