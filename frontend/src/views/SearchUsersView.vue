@@ -283,7 +283,7 @@ function testSearch() {
               tooltip
               v-model="seachCretiria.fame"
               :min="0"
-              :max="99"
+              :max="100"
               :start="seachCretiria.fame.t1"
               :end="seachCretiria.fame.t2"
             />
@@ -581,7 +581,7 @@ function testSearch() {
 
 <!--      <button class="btn" @click="printInfo">Debug</button>-->
     </div>
-    <div class="py-8 overflow-y-auto w-full flex flex-wrap justify-center gap-5">
+    <div class="py-8 overflow-y-auto w-full flex flex-wrap justify-center gap-5 z-0">
       <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
       <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
       <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
