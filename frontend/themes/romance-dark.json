@@ -1,0 +1,24 @@
+{
+  "romance-dark": {
+    "primary": "oklch(70% 0.22 20)",
+    "primary-content": "oklch(100% 0.01 10)",
+    "secondary": "oklch(80% 0.12 310)",
+    "secondary-content": "oklch(30% 0.02 310)",
+    "accent": "oklch(85% 0.15 200)",
+    "accent-content": "oklch(30% 0.03 210)",
+    "neutral": "oklch(40% 0.02 0)",
+    "neutral-content": "oklch(95% 0.01 0)",
+    "base-100": "oklch(15% 0.01 20)",
+    "base-200": "oklch(20% 0.015 20)",
+    "base-300": "oklch(26% 0.02 20)",
+    "base-content": "oklch(96% 0.01 0)",
+    "info": "oklch(80% 0.1 220)",
+    "success": "oklch(75% 0.15 140)",
+    "warning": "oklch(80% 0.15 80)",
+    "error": "oklch(70% 0.2 30)",
+    "info-content": "oklch(25% 0.05 220)",
+    "success-content": "oklch(25% 0.05 140)",
+    "warning-content": "oklch(25% 0.05 80)",
+    "error-content": "oklch(100% 0.01 0)"
+  }
+}
