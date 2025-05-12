@@ -128,7 +128,7 @@ const changeState = value => {
 
 onBeforeMount(() => {
   seachCretiria.value.age = { t1: 18, t2: 80 }
-  seachCretiria.value.fame = { t1: 0, t2: 99 }
+  seachCretiria.value.fame = { t1: 0, t2: 100 }
 })
 
 function testSearch() {
