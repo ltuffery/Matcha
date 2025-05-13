@@ -466,10 +466,14 @@ function testSearch() {
         <!--     ------------------------ Start of filter dropdown ------------------------    -->
         <div class="flex items-center">
 
+
+
+
+
           <div class="dropdown dropdown-end mr-3">
-            <div tabindex="0" role="button" class="size-8">
+            <label tabindex=0 class="size-8 cursor-pointer">
               <svg
-                class="w-full"
+                class="size-8"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -489,20 +493,14 @@ function testSearch() {
                   ></path>
                 </g>
               </svg>
-            </div>
-            <ul
-              tabindex="0"
-              class="dropdown-content bg-base-100 rounded-box z-[1] w-48 p-2 shadow"
-            >
+            </label>
+            <ul tabIndex=0 class="menu bg-base-200 w-56 rounded-box dropdown-content z-[1]">
               <li class="w-full flex items-center text-base">Filter by</li>
               <div class="divider my-0"></div>
               <li>
-                <details
-                  tabindex="0"
-                  class="collapse collapse-arrow border-base-300 bg-base-200 border"
-                >
-                  <summary class="collapse-title text-base">Age</summary>
-                  <div class="collapse-content">
+                <details>
+                  <summary>Age</summary>
+                  <ul class="max-w-48">
                     <div class="flex flex-wrap gap-1 max-h-40 overflow-y-auto">
                       <label
                         v-for="(obj, index) in filter.age"
@@ -517,18 +515,13 @@ function testSearch() {
                         <span class="label-text ml-2">{{ obj.age }}</span>
                       </label>
                     </div>
-                  </div>
+                  </ul>
                 </details>
               </li>
-              <li class="mt-2">
-                <details
-                  tabindex="0"
-                  class="collapse collapse-arrow border-base-300 bg-base-200 border"
-                >
-                  <summary class="collapse-title text-base select-none">
-                    Location
-                  </summary>
-                  <div class="collapse-content">
+              <li>
+                <details>
+                  <summary>Location</summary>
+                  <ul class="max-w-48">
                     <div class="flex flex-col gap-1 max-h-60 overflow-y-auto">
                       <label
                         v-for="(obj, index) in filter.location"
@@ -543,18 +536,13 @@ function testSearch() {
                         <span class="label-text ml-2">{{ obj.name }}</span>
                       </label>
                     </div>
-                  </div>
+                  </ul>
                 </details>
               </li>
-              <li class="mt-3">
-                <details
-                  tabindex="0"
-                  class="collapse collapse-arrow border-base-300 bg-base-200 border"
-                >
-                  <summary class="collapse-title text-base select-none">
-                    Fame rate
-                  </summary>
-                  <div class="collapse-content">
+              <li>
+                <details>
+                  <summary>Fame rate</summary>
+                  <ul class="max-w-48">
                     <div class="flex flex-wrap gap-1 max-h-40 overflow-y-auto">
                       <label
                         v-for="(obj, index) in filter.fame"
@@ -569,18 +557,13 @@ function testSearch() {
                         <span class="label-text ml-2">{{ obj.name }}</span>
                       </label>
                     </div>
-                  </div>
+                  </ul>
                 </details>
               </li>
-              <li class="mt-3">
-                <details
-                  tabindex="0"
-                  class="collapse collapse-arrow border-base-300 bg-base-200 border"
-                >
-                  <summary class="collapse-title text-base select-none">
-                    Tags
-                  </summary>
-                  <div class="collapse-content">
+              <li>
+                <details>
+                  <summary>Tags</summary>
+                  <ul class="max-w-48">
                     <div class="flex flex-wrap gap-1 max-h-40 overflow-y-auto">
                       <label
                         v-for="(obj, index) in filter.tags"
@@ -595,9 +578,9 @@ function testSearch() {
                         <span class="label-text ml-2">{{ obj.name }}</span>
                       </label>
                     </div>
-                  </div>
+                  </ul>
                 </details>
-              </li>
+              </li>              
             </ul>
           </div>
 
