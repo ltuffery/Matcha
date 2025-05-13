@@ -22,11 +22,15 @@ class SearchProfileController
 
         $users = User::where([
             ['username', 'LIKE', '%' . $query['q'] . '%']
-        ], self::NUMBER_USERS_SEARCHABLE);
+        ])->limit(self::NUMBER_USERS_SEARCHABLE)->get();
 
         /** @var User $me */
         $me = Flight::user();
-        $users = array_filter($users, fn ($user) => !$me->isBlocking($user));
+        if (is_array($users)) {
+            $users = array_filter($users, fn ($user) => !$me->isBlocking($user));
+        } else {
+            $users = $me->isBlocking($users) ? [] : [$users];
+        }
 
         Flight::json(
             SearchableUserResource::collection($users)

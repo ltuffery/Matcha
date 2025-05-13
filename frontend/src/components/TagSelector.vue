@@ -7,8 +7,8 @@ const emit = defineEmits(['update:modelValue'])
 
 const props = defineProps({
   modelValue: {
-    type: Array
-  }
+    type: Array,
+  },
 })
 
 console.log(props.modelValue)
@@ -24,7 +24,11 @@ function addTagSelected(tag) {
 onMounted(async () => {
   const response = await Api.get('/tags').send()
   tags.value = (await response.json()).map(item => {
-    if (props.modelValue && props.modelValue.length > 0 && props.modelValue.indexOf(item) > -1)
+    if (
+      props.modelValue &&
+      props.modelValue.length > 0 &&
+      props.modelValue.indexOf(item) > -1
+    )
       return { name: item, selected: true }
     return { name: item, selected: false }
   })
