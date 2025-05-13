@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import UserSearchCard from '@/components/UserSearchCard.vue'
 import UserPreviewCard from '@/components/UserPreviewCard.vue'
+import TagSelector from '@/components/TagSelector.vue'
 import { Api } from '@/utils/api'
 import { onBeforeMount, ref, watch } from 'vue'
 import DoubleSlide from '@/components/DoubleSlide.vue'
 
 const search = ref('')
 const users = ref([])
-const seachCretiria = ref([])
+const searchCretiria = ref([])
 const sortStatus = ref({
   age: 0,
   location: 0,
@@ -127,12 +128,12 @@ const changeState = value => {
 }
 
 onBeforeMount(() => {
-  seachCretiria.value.age = { t1: 18, t2: 80 }
-  seachCretiria.value.fame = { t1: 0, t2: 100 }
+  searchCretiria.value.age = { t1: 18, t2: 80 }
+  searchCretiria.value.fame = { t1: 0, t2: 100 }
 })
 
 function testSearch() {
-  console.log(seachCretiria.value)
+  console.log(searchCretiria.value)
 }
 </script>
 
@@ -242,7 +243,7 @@ function testSearch() {
               </g>
             </svg>
           </div>
-          <div>{{ seachCretiria.age.t1 }} - {{ seachCretiria.age.t2 }}</div>
+          <div>{{ searchCretiria.age.t1 }} - {{ searchCretiria.age.t2 }}</div>
         </div>
         <div
           tabindex="0"
@@ -253,11 +254,11 @@ function testSearch() {
             <DoubleSlide
               class="mt-3"
               tooltip
-              v-model="seachCretiria.age"
+              v-model="searchCretiria.age"
               :min="18"
               :max="80"
-              :start="seachCretiria.age.t1"
-              :end="seachCretiria.age.t2"
+              :start="searchCretiria.age.t1"
+              :end="searchCretiria.age.t2"
             />
           </div>
         </div>
@@ -296,7 +297,7 @@ function testSearch() {
               </g>
             </svg>
           </div>
-          <div>{{ seachCretiria.fame.t1 }} - {{ seachCretiria.fame.t2 }}</div>
+          <div>{{ searchCretiria.fame.t1 }} - {{ searchCretiria.fame.t2 }}</div>
         </div>
         <div
           tabindex="0"
@@ -307,11 +308,11 @@ function testSearch() {
             <DoubleSlide
               class="mt-3"
               tooltip
-              v-model="seachCretiria.fame"
+              v-model="searchCretiria.fame"
               :min="0"
               :max="100"
-              :start="seachCretiria.fame.t1"
-              :end="seachCretiria.fame.t2"
+              :start="searchCretiria.fame.t1"
+              :end="searchCretiria.fame.t2"
             />
           </div>
         </div>
@@ -350,16 +351,16 @@ function testSearch() {
               </g>
             </svg>
           </div>
-          <div>All</div>
+          <div>{{ searchCretiria.tags && searchCretiria.tags.length > 0 ? searchCretiria.tags.length + ' Selected' : 'All' }}</div>
           <!-- Or x selected -->
         </div>
         <div
           tabindex="0"
           class="dropdown-content card card-compact bg-base-100 z-[1] w-64 p-2 shadow"
         >
-          <div class="card-body">
-            <h3 class="card-title">Card title!</h3>
-            <p>you can use any element as a dropdown.</p>
+          <div class="card-body max-h-96 overflow-y-auto">
+            <h3 class="card-title">Select tags</h3>
+            <TagSelector v-model="searchCretiria.tags" />
           </div>
         </div>
       </div>
