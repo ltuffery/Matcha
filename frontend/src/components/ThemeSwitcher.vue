@@ -78,6 +78,26 @@
           value="aqua"
         />
       </li>
+      <li>
+        <input
+          type="radio"
+          name="theme-dropdown"
+          class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+          aria-label="Romance Light"
+          value="romance-light"
+        />
+      </li>
+      <li>
+        <input
+          type="radio"
+          name="theme-dropdown"
+          class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+          aria-label="Romance Dark"
+          value="romance-dark"
+        />
+      </li>
     </ul>
   </div>
 </template>
+<script setup lang="ts">
+</script>
