@@ -9,6 +9,28 @@ use Matcha\Api\Resources\SearchableUserResource;
 class SearchProfileController
 {
 
+    public function search(): void
+    {
+        $me = Flight::user();
+        $data = Flight::request()->data;
+        $where = [];
+
+        if (isset($data->age))
+        {
+            $where[] = [
+                'birthday',
+                'BETWEEN',
+                'DATE_SUB(CURDATE(), INTERVAL '.$data->age[1].' YEAR)',
+                'AND',
+                'DATE_SUB(CURDATE(), INTERVAL '.$data->age[0].' YEAR);'
+            ];
+        }
+
+        $users = User::where($where)->limit(25)->get();
+        Flight::json(
+            SearchableUserResource::collection($users)
+        );
+    }
     public function index(): void
     {
         /** @var User $me */

@@ -5,15 +5,21 @@ import TagSelector from '@/components/TagSelector.vue'
 import { Api } from '@/utils/api'
 import { onBeforeMount, ref, watch } from 'vue'
 import DoubleSlide from '@/components/DoubleSlide.vue'
+import { Tracking } from '@/services/tracking.js'
 
 const search = ref('')
 const users = ref([])
-const searchCretiria = ref([])
+const searchCriteria = ref([])
 const sortStatus = ref({
   age: 0,
   location: 0,
   fameRate: 0,
   tag: 0,
+})
+
+const locationParam = ref({
+  cityList: '',
+  countryCode: 'FR',
 })
 
 const filter = ref({
@@ -127,13 +133,38 @@ const changeState = value => {
   }
 }
 
+const addLocation = e => {
+  searchCriteria.value.loc.push({
+    'name': e.currentTarget.getAttribute('name'),
+    'lat': e.currentTarget.getAttribute('lat'),
+    'lon': e.currentTarget.getAttribute('lon'),
+  })
+}
+
+const removeLocation = e => {
+  searchCriteria.value.loc.splice(e.currentTarget.getAttribute('index'), 1);
+}
+
+const refreshCityList = async e => {
+  locationParam.value.cityList = await Tracking.getCityListByName(
+    e.target.value,
+    locationParam.value.countryCode
+  )
+}
+
 onBeforeMount(() => {
-  searchCretiria.value.age = { t1: 18, t2: 80 }
-  searchCretiria.value.fame = { t1: 0, t2: 100 }
+  searchCriteria.value.age = { t1: 18, t2: 80 }
+  searchCriteria.value.fame = { t1: 0, t2: 100 }
+  searchCriteria.value.loc = []
 })
 
-function testSearch() {
-  console.log(searchCretiria.value)
+async function testSearch() {
+  searchCriteria.value.age = Object.values(searchCriteria.value.age);
+  searchCriteria.value.fame = Object.values(searchCriteria.value.fame);
+  console.log(searchCriteria.value)
+  let response = await Api.post('/search/users').send(searchCriteria.value);
+  response = await response.json()
+  console.log(response)
 }
 </script>
 
@@ -179,8 +210,12 @@ function testSearch() {
         >
           <div class="card-body">
             <h3 class="card-title">Location</h3>
-            <div class="flex items-center gap-1">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-6 text-error opacity-60 hover:opacity-100" >
+            <div
+              class="flex items-center gap-1"
+              v-for="(city, index) in searchCriteria.loc"
+              :key="index"
+              :name="city.name">
+              <svg @click="removeLocation" :index="index" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-6 text-error opacity-60 hover:opacity-100" >
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                 <g id="SVGRepo_iconCarrier">
@@ -188,24 +223,27 @@ function testSearch() {
                   <path d="M5 15.2161C4.35254 13.5622 4 11.8013 4 10.1433C4 5.64588 7.58172 2 12 2C16.4183 2 20 5.64588 20 10.1433C20 14.6055 17.4467 19.8124 13.4629 21.6744C12.5343 22.1085 11.4657 22.1085 10.5371 21.6744C9.26474 21.0797 8.13831 20.1439 7.19438 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
                 </g>
               </svg>
-              <span>Toulouse</span>
+              <span>{{ city.name }}</span>
             </div>
+
+
             <!-- <p>Toulouse</p> -->
-            <label class="input input-bordered flex items-center gap-2">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="size-4 text-error opacity-70">
-                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <path d="M12.5 7.04148C12.3374 7.0142 12.1704 7 12 7C10.3431 7 9 8.34315 9 10C9 11.6569 10.3431 13 12 13C13.6569 13 15 11.6569 15 10C15 9.82964 14.9858 9.6626 14.9585 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-                  <path d="M5 15.2161C4.35254 13.5622 4 11.8013 4 10.1433C4 5.64588 7.58172 2 12 2C16.4183 2 20 5.64588 20 10.1433C20 14.6055 17.4467 19.8124 13.4629 21.6744C12.5343 22.1085 11.4657 22.1085 10.5371 21.6744C9.26474 21.0797 8.13831 20.1439 7.19438 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-                </g>
-              </svg>
-              <input type="text" class="grow" placeholder="Toulouse" />
-            </label>
-            <div>
-              <p>within a 4km radius</p>
-              <input type="range" min="10" max="100" value="20" class="range" />
+            <input type="text" class="grow input input-bordered" placeholder="Toulouse" @input="refreshCityList" />
+            <div class="w-full max-h-48">
+              <div
+                v-for="(city, index) in locationParam.cityList"
+                @click="addLocation"
+                :key="index"
+                :lat="city.lat"
+                :lon="city.lng"
+                :name="city.toponymName"
+                class="hover:bg-base-300 cursor-pointer"
+              >
+                {{ city.toponymName }}
+              </div>
             </div>
+
+
           </div>
         </div>
       </div>
@@ -243,7 +281,7 @@ function testSearch() {
               </g>
             </svg>
           </div>
-          <div>{{ searchCretiria.age.t1 }} - {{ searchCretiria.age.t2 }}</div>
+          <div>{{ searchCriteria.age.t1 }} - {{ searchCriteria.age.t2 }}</div>
         </div>
         <div
           tabindex="0"
@@ -254,11 +292,11 @@ function testSearch() {
             <DoubleSlide
               class="mt-3"
               tooltip
-              v-model="searchCretiria.age"
+              v-model="searchCriteria.age"
               :min="18"
               :max="80"
-              :start="searchCretiria.age.t1"
-              :end="searchCretiria.age.t2"
+              :start="searchCriteria.age.t1"
+              :end="searchCriteria.age.t2"
             />
           </div>
         </div>
@@ -297,7 +335,7 @@ function testSearch() {
               </g>
             </svg>
           </div>
-          <div>{{ searchCretiria.fame.t1 }} - {{ searchCretiria.fame.t2 }}</div>
+          <div>{{ searchCriteria.fame.t1 }} - {{ searchCriteria.fame.t2 }}</div>
         </div>
         <div
           tabindex="0"
@@ -308,11 +346,11 @@ function testSearch() {
             <DoubleSlide
               class="mt-3"
               tooltip
-              v-model="searchCretiria.fame"
+              v-model="searchCriteria.fame"
               :min="0"
               :max="100"
-              :start="searchCretiria.fame.t1"
-              :end="searchCretiria.fame.t2"
+              :start="searchCriteria.fame.t1"
+              :end="searchCriteria.fame.t2"
             />
           </div>
         </div>
@@ -351,8 +389,7 @@ function testSearch() {
               </g>
             </svg>
           </div>
-          <div>{{ searchCretiria.tags && searchCretiria.tags.length > 0 ? searchCretiria.tags.length + ' Selected' : 'All' }}</div>
-          <!-- Or x selected -->
+          <div>{{ searchCriteria.tags && searchCriteria.tags.length > 0 ? searchCriteria.tags.length + ' Selected' : 'All' }}</div>
         </div>
         <div
           tabindex="0"
@@ -360,7 +397,7 @@ function testSearch() {
         >
           <div class="card-body max-h-96 overflow-y-auto">
             <h3 class="card-title">Select tags</h3>
-            <TagSelector v-model="searchCretiria.tags" />
+            <TagSelector v-model="searchCriteria.tags" />
           </div>
         </div>
       </div>
@@ -581,7 +618,7 @@ function testSearch() {
                     </div>
                   </ul>
                 </details>
-              </li>              
+              </li>
             </ul>
           </div>
 
@@ -600,6 +637,8 @@ function testSearch() {
       <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
       <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
       <UserPreviewCard username="Leo" age="104" avatar="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+
+      <span>By security, the search is limited by 25 users only</span>
     </div>
   </div>
 

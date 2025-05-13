@@ -98,6 +98,7 @@ Flight::group('/users', function () {
 Flight::route('GET /tags', [TagsController::class, 'index']);
 
 Flight::group('/search', function () {
+    Flight::route('POST /users', [SearchProfileController::class, 'search']);
     Flight::route('GET /users', [SearchProfileController::class, 'index']);
 }, [AuthMiddleware::class]);
 
