@@ -13,10 +13,10 @@ use Matcha\Api\Controllers\Profile\PreferencesController;
 use Matcha\Api\Controllers\Profile\ProfileController;
 use Matcha\Api\Controllers\Profile\ProfileSuggestionController;
 use Matcha\Api\Controllers\Profile\ReportController;
+use Matcha\Api\Controllers\Profile\SearchProfileController;
 use Matcha\Api\Controllers\Profile\UserBlockController;
 use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
-use Matcha\Api\Controllers\SearchProfileController;
 use Matcha\Api\Controllers\TagsController;
 use Matcha\Api\Controllers\ViewController;
 use Matcha\Api\Middleware\AuthMiddleware;
@@ -98,6 +98,7 @@ Flight::group('/users', function () {
 Flight::route('GET /tags', [TagsController::class, 'index']);
 
 Flight::group('/search', function () {
+    Flight::route('POST /users', [SearchProfileController::class, 'search']);
     Flight::route('GET /users', [SearchProfileController::class, 'index']);
 }, [AuthMiddleware::class]);
 
