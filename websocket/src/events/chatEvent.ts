@@ -20,6 +20,7 @@ export const handleChatEvents = (socket: Socket) => {
 
     if (OnlineUsersCache.has(to)) {
       socket.to(OnlineUsersCache.getSocketId(to) as string).emit("receive_message", data)
+
       await sendNotification(NOTIFICATION_TYPES.MESSAGE, to, socket)
     }
 

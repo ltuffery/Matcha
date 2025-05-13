@@ -4,6 +4,8 @@ import {Api} from "@/services/api";
 import {handleChatEvents} from "@/events/chatEvent";
 import {handleLikeEvent} from "@/events/likeEvent";
 import {handleViewEvent} from "@/events/viewEvent";
+import {handleBrowsingEvent} from "@/events/browsingEvent";
+import {cacheBrowsing} from "@/server";
 
 export const registerEvents = (io: Server) => {
   io.on("connection", (socket) => {
@@ -22,10 +24,12 @@ export const registerEvents = (io: Server) => {
     handleChatEvents(socket)
     handleLikeEvent(socket)
     handleViewEvent(socket)
+    handleBrowsingEvent(username, socket)
 
     // Disconnect event
     socket.on("disconnect", () => {
       OnlineUsersCache.remove(username)
+      cacheBrowsing.delete(username)
 
       Api
         .post('/users/me/offline')
