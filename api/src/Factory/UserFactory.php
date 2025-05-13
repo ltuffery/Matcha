@@ -14,7 +14,7 @@ class UserFactory extends Factory
             'first_name' => faker()->firstName(),
             'last_name' => faker()->lastName(),
             'birthday' => faker()->dateTimeBetween('-50 years', '-18 years')->format('Y-m-d'),
-            'gender' => array_rand(['M', 'F', 'O']) + 1,
+            'gender' => faker()->randomElement(['M', 'F', 'O']),
             'biography' => faker()->sentence(),
         ];
     }

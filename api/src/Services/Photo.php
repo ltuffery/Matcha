@@ -8,7 +8,7 @@ use Matcha\Api\Model\User;
 
 class Photo
 {
-    const VALID_EXTENSIONS = ['jpg', 'jpeg', 'gif', 'png'];
+    public const VALID_EXTENSIONS = ['jpg', 'jpeg', 'gif', 'png'];
     private UploadedFile $file;
 
     public function __construct(UploadedFile $file)
@@ -51,7 +51,7 @@ class Photo
         $photo->name = $name;
         $photo->user_id = $user->id;
 
-        $photo->create();
+        $photo->save();
         $this->file->moveTo(BASE_PATH . "/storage/photos/" . $name . ".png");
     }
 }

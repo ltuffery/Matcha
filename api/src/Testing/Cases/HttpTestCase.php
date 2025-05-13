@@ -56,8 +56,13 @@ trait HttpTestCase
         if ($method == 'GET') {
             $_GET = $data;
         } else {
+            $_POST = $data;
             $body = json_encode($data);
         }
+
+        $_SERVER['REQUEST_URI'] = $url;
+        $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] = $method;
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
         Flight::response()->clear();
         Flight::request()->init([
@@ -65,7 +70,7 @@ trait HttpTestCase
             'method' => $method,
             'type' => 'application/json',
             'body' => $body,
-            'ip' => '127.0.0.1',
+            'ip' => $_SERVER['REMOTE_ADDR'],
             'files' => new Collection($_FILES),
         ]);
 

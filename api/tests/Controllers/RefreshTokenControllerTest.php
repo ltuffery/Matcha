@@ -16,7 +16,7 @@ class RefreshTokenControllerTest extends TestCase
     {
         $this->setUpDatabase();
 
-        $this->user = User::factory()->create()[0];
+        $this->user = User::factory()->create();
     }
 
     public function tearDown(): void

@@ -20,15 +20,15 @@ class RegisterController
      */
     public function store(): void
     {
-        Validator::make([
-            'username' => 'required|regex:[a-zA-Z0-9\.]{5,25}',
-            'email' => 'required|email',
-            'password' => 'required',
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'birthday' => 'required',
-            'gender' => 'required',
-            'biography' => 'required',
+        Validator::required([
+            'username',
+            'email',
+            'password',
+            'first_name',
+            'last_name',
+            'birthday',
+            'gender',
+            'biography',
         ]);
 
         $request = Flight::request();

@@ -7,11 +7,13 @@ import { Api } from '@/utils/api.js'
 import LoadingScreen from '@/components/screen/LoadingScreen.vue'
 import router from '@/router'
 import { usePreferencesStore } from '@/store/preferences.js'
+import { useUserInfoStore } from '@/store/userInfo.js'
 
 const loading = ref(true)
 const settingsCategory = ref(1)
 const profile = ref({})
 const preferencesStore = usePreferencesStore()
+const userInfoStore = useUserInfoStore()
 
 Api.get('/users/me')
   .send()
@@ -19,6 +21,7 @@ Api.get('/users/me')
   .then(data => {
     profile.value = data
     preferencesStore.setPreferences(profile.value.preferences)
+    userInfoStore.set(profile.value)
     loading.value = false
   })
 
