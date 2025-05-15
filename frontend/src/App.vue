@@ -37,10 +37,10 @@ onMounted(async () => {
     sizeScreen.value = e
   })
 
-  const theme = localStorage.getItem("theme")
+  const theme = localStorage.getItem('theme')
 
   if (theme !== null) {
-    document.querySelector("html").setAttribute("data-theme", theme);
+    document.querySelector('html').setAttribute('data-theme', theme)
   }
 })
 

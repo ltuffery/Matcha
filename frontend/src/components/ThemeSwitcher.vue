@@ -1,10 +1,10 @@
 <script setup>
 import { ref, watch } from 'vue'
 
-const picked = ref(localStorage.getItem("theme") || 'default')
+const picked = ref(localStorage.getItem('theme') || 'default')
 
-watch(picked, (newTheme) => {
-  localStorage.setItem("theme", newTheme)
+watch(picked, newTheme => {
+  localStorage.setItem('theme', newTheme)
 })
 </script>
 
