@@ -63,6 +63,8 @@ services:
       - matchaNetwork
     depends_on:
       - mysql
+    env_file:
+      - .env
 
   frontend:
     build:

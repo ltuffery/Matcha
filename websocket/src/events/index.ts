@@ -6,6 +6,7 @@ import {handleLikeEvent} from "@/events/likeEvent";
 import {handleViewEvent} from "@/events/viewEvent";
 import {handleBrowsingEvent} from "@/events/browsingEvent";
 import {cacheBrowsing} from "@/server";
+import {db} from "@/database/database";
 
 export const registerEvents = (io: Server) => {
   io.on("connection", (socket) => {
@@ -31,14 +32,22 @@ export const registerEvents = (io: Server) => {
       OnlineUsersCache.remove(username)
       cacheBrowsing.delete(username)
 
-      Api
-        .post('/users/me/offline')
-        .header('Authorization', 'Bearer ' + socket.handshake.auth.token)
-        .send()
-        .then(res => {
-          if (res.ok)
+      db.prepare("UPDATE users SET last_connection = ? WHERE username = ?", (err, stmt) => {
+        stmt.execute([new Date(), username], (err, result) => {
+          if (err == null) {
             socket.broadcast.emit("user_offline", { username })
+          }
         })
+      })
+
+      // Api
+      //   .post('/users/me/offline')
+      //   .header('Authorization', 'Bearer ' + socket.handshake.auth.token)
+      //   .send()
+      //   .then(res => {
+      //     if (res.ok)
+      //       socket.broadcast.emit("user_offline", { username })
+      //   })
     });
   });
 };
