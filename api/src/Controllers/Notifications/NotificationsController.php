@@ -22,7 +22,7 @@ class NotificationsController
     {
         $notifications = Notification::where([
             ['user_id', '=', Flight::user()->id],
-        ])->limit(50)->get();
+        ])->limit(50)->get(true);
 
         Flight::json(
             NotificationsResource::collection($notifications)
