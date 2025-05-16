@@ -32,9 +32,16 @@ window.addEventListener('logout', () => {
 
 onMounted(async () => {
   const mediaQuery = window.matchMedia(breakPointScreen)
+
   mediaQuery.addEventListener('change', e => {
     sizeScreen.value = e
   })
+
+  const theme = localStorage.getItem('theme')
+
+  if (theme !== null) {
+    document.querySelector('html').setAttribute('data-theme', theme)
+  }
 })
 
 onUnmounted(() => {
