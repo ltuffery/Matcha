@@ -1,3 +1,13 @@
+<script setup>
+import { ref, watch } from 'vue'
+
+const picked = ref(localStorage.getItem('theme') || 'default')
+
+watch(picked, newTheme => {
+  localStorage.setItem('theme', newTheme)
+})
+</script>
+
 <template>
   <div class="dropdown dropdown-right dropdown-end">
     <div
@@ -40,6 +50,7 @@
           class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
           aria-label="Default"
           value="default"
+          v-model="picked"
         />
       </li>
       <li>
@@ -49,6 +60,7 @@
           class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
           aria-label="Dark"
           value="dark"
+          v-model="picked"
         />
       </li>
       <li>
@@ -58,6 +70,7 @@
           class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
           aria-label="Cyberpunk"
           value="cyberpunk"
+          v-model="picked"
         />
       </li>
       <li>
@@ -67,6 +80,7 @@
           class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
           aria-label="Sunset"
           value="sunset"
+          v-model="picked"
         />
       </li>
       <li>
@@ -76,6 +90,7 @@
           class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
           aria-label="Aqua"
           value="aqua"
+          v-model="picked"
         />
       </li>
       <li>
@@ -85,6 +100,7 @@
           class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
           aria-label="Romance Light"
           value="romance-light"
+          v-model="picked"
         />
       </li>
       <li>
@@ -94,10 +110,9 @@
           class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
           aria-label="Romance Dark"
           value="romance-dark"
+          v-model="picked"
         />
       </li>
     </ul>
   </div>
 </template>
-<script setup lang="ts">
-</script>
