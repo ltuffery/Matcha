@@ -22,11 +22,13 @@ export function connectSocket() {
         onlineUsersStore.setOnlineUsers(users)
       })
 
-      socket.on('user_online', ({ username }) => {
-        onlineUsersStore.addOnlineUser(username)
+      socket.on('user_online', (username) => {
+        console.log(username)
+        if (!onlineUsersStore.isOnlineUser(username))
+          onlineUsersStore.addOnlineUser(username)
       })
 
-      socket.on('user_offline', ({ username }) => {
+      socket.on('user_offline', (username) => {
         onlineUsersStore.removeOnlineUser(username)
       })
     })
