@@ -54,15 +54,6 @@ export const registerEvents = (io: Server) => {
           }
         })
       })
-
-      // Api
-      //   .post('/users/me/offline')
-      //   .header('Authorization', 'Bearer ' + socket.handshake.auth.token)
-      //   .send()
-      //   .then(res => {
-      //     if (res.ok)
-      //       socket.broadcast.emit("user_offline", { username })
-      //   })
     });
   });
 };
