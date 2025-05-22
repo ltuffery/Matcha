@@ -8,7 +8,7 @@ abstract class Factory
 {
     private string $model;
     private int $count = 1;
-    private array $states = [];
+    protected array $states = [];
     private array $child = [];
 
     public function __construct(string $model)
@@ -38,11 +38,19 @@ abstract class Factory
 
         for ($i = 0; $i < $this->count; $i++) {
             $model = new $this->model();
-            $data = array_merge($this->define(), $this->states);
+            $states = [];
 
-            foreach ($data as $key => $value) {
-                $model->{$key} = $value;
+            foreach ($this->states as $key => $state) {
+                if ($state instanceof Model) {
+                    $states[$key . '_id'] = $state->id;
+                } else {
+                    $states[$key] = $state;
+                }
             }
+
+            $data = array_merge($this->define(), $states);
+
+            $model->fill($data);
 
             $saved = $model->save();
 
@@ -55,7 +63,7 @@ abstract class Factory
                  */
                 foreach ($this->child as $child) {
                     $child->state([
-                        strtolower($className) . '_id' => $saved->id,
+                        strtolower($className) => $saved,
                     ])->create();
                 }
             }
