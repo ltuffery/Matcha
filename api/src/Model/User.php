@@ -5,6 +5,7 @@ namespace Matcha\Api\Model;
 use Firebase\JWT\JWT;
 use Flight;
 use Matcha\Api\Builder\JoinBuilder;
+use Matcha\Api\Exceptions\AutoLikeException;
 use Matcha\Api\Validator\Asserts\Email;
 use Matcha\Api\Validator\Asserts\Minimum;
 use Matcha\Api\Validator\Asserts\NotBlank;
@@ -109,9 +110,14 @@ class User extends Model
      *
      * @param User $user
      * @return void
+     * @throws AutoLikeException
      */
     public function like(User $user): void
     {
+        if ($this->id === $user->id) {
+            throw new AutoLikeException();
+        }
+
         $like = new Like();
 
         $like->user_id = $this->id;
