@@ -245,10 +245,6 @@ class User extends Model
 
     public function getAge(): ?int
     {
-        if (is_null($this->birthday)) {
-            return null;
-        }
-
         $birthDate = explode("-", $this->birthday);
 
         return (date("md", date("U", mktime(0, 0, 0, $birthDate[2], $birthDate[1], $birthDate[0]))) > date("md")
