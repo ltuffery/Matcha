@@ -12,8 +12,10 @@ class PhotoFactory extends Factory
     {
         $name = $this->generatePhoto();
 
+        $user = $this->states['user'] ?? User::factory()->create();
+
         return [
-            'user_id' => User::factory()->create()->id,
+            'user_id' => $user->id,
             'name' => $name,
         ];
     }
@@ -29,10 +31,10 @@ class PhotoFactory extends Factory
         if ($this->userFaker) {
             $url = faker()->imageUrl();
         } else {
-            $photos = array_diff(
+            $photos = array_values(array_diff(
                 scandir(BASE_PATH . "/database/data_preset/photos/"),
                 [".", ".."] // For remove "." and ".." directory (errno=21)
-            );
+            ));
 
             $url = BASE_PATH
                 . "/database/data_preset/photos/"
