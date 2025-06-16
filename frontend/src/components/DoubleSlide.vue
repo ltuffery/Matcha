@@ -132,10 +132,11 @@ const handleClick = e => {
 }
 
 const handleInput = e => {
-  if (startValue.value.value > endValue.value.value) {
-    if (e.target.id === 'startValue')
-      startValue.value.value = endValue.value.value
-    else endValue.value.value = startValue.value.value
+  const raw = Number(e.target.value)
+  if (e.target.id === 'startValue') {
+    startValue.value.value = Math.min(Math.max(raw, props.min), endValue.value.value)
+  } else {
+    endValue.value.value   = Math.max(Math.min(raw, props.max), startValue.value.value)
   }
   updateValues()
   const temporary = {
