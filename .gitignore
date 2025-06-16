@@ -158,3 +158,4 @@ vendor
 .php-cs-fixer.cache
 /api/storage/photos
 bun.lock
+composer.lock

@@ -1,5 +1,6 @@
 import { Api } from '@/utils/api'
 import router from '@/router'
+import { getSocket } from '@/plugins/socket.js'
 
 export const login = async (username, password) => {
   try {
@@ -80,6 +81,8 @@ export const logout = () => {
   const event = new Event('logout')
 
   window.dispatchEvent(event)
+
+  getSocket().close()
 }
 
 export const disconnect = () => {

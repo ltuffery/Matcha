@@ -1,8 +1,8 @@
-import {Api} from "@/services/api";
 import {sendNotification} from "./notifications.js";
 import {NOTIFICATION_TYPES} from "@/enums/notificationTypes";
 import {Socket} from "socket.io";
 import {OnlineUsersCache} from "@/cache/onlineUsersCache";
+import {Api} from "@/services/api";
 
 export const handleChatEvents = (socket: Socket) => {
   socket.on("send_message", async (to, content) => {
@@ -19,7 +19,8 @@ export const handleChatEvents = (socket: Socket) => {
     const data = await res.json()
 
     if (OnlineUsersCache.has(to)) {
-      socket.to(OnlineUsersCache.get(to)).emit("receive_message", data)
+      socket.to(OnlineUsersCache.getSocketId(to) as string).emit("receive_message", data)
+
       await sendNotification(NOTIFICATION_TYPES.MESSAGE, to, socket)
     }
 

@@ -1,4 +1,6 @@
 import daisyui from 'daisyui'
+const romanceLight = require('./themes/romance-light.json');
+const romanceDark = require('./themes/romance-dark.json');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -12,6 +14,6 @@ module.exports = {
       ],
     plugins: [daisyui],
     daisyui: {
-        themes: ["dark", "valentine", "sunset", "cyberpunk", "aqua"]
+        themes: ["dark", "valentine", "sunset", "cyberpunk", "aqua", romanceDark, romanceLight,]
     }
 };
