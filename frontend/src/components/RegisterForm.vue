@@ -75,7 +75,7 @@ async function handleSubmit() {
       )
     }
 
-    const req = await fetch(`http://${location.hostname}:3000/auth/register`, {
+    const req = await fetch(`https://${location.hostname}/api/auth/register`, {
       method: 'POST',
       body: form,
     })

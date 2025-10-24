@@ -8,7 +8,7 @@ export function connectSocket() {
   if (!socket && isAuthenticated()) {
     const decoded = JSON.parse(atob(getToken().split('.')[1]))
 
-    socket = io(`${location.hostname}:3001`, {
+    socket = io(`${location.hostname}/ws`, {
       auth: {
         username: decoded.username,
         token: getToken(),
