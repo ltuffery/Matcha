@@ -41,7 +41,7 @@ onUnmounted(async () => {
 
   formData.append('_method', 'put')
 
-  fetch(`http://${location.hostname}:3000/users/me`, {
+  fetch(`https://${location.hostname}/api/users/me`, {
     method: 'POST',
     body: formData,
     headers: { Authorization: `Bearer ${localStorage.jwt}` },
