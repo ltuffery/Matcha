@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v2.10
+    image: traefik:latest
     container_name: traefik
     restart: always
     command:
@@ -11,11 +11,12 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websocket.address=:3001"
     ports:
-      - "80:80"
-      - "443:443"
+      - "8090:80"
+      - "8443:443"
       - "8080:8080"  # Dashboard Traefik
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${XDG_RUNTIME_DIR}/docker.sock:/var/run/docker.sock
     networks:
       - matchaNetwork
 

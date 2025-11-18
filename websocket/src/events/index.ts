@@ -1,6 +1,5 @@
 import { Server } from "socket.io";
 import {OnlineUsersCache} from "@/cache/onlineUsersCache";
-import {Api} from "@/services/api";
 import {handleChatEvents} from "@/events/chatEvent";
 import {handleLikeEvent} from "@/events/likeEvent";
 import {handleViewEvent} from "@/events/viewEvent";
