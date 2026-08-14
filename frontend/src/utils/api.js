@@ -69,7 +69,10 @@ export class Api {
       this.header('Authorization', `Bearer ${jwt}`)
     }
 
-    let res = await fetch(`https://${location.hostname}/api/${this.path}`, {
+    const port = location.port !== "" ?
+      ":" + location.port :
+      ""
+    let res = await fetch(`http://${location.hostname}${port}/api/${this.path}`, {
       method: this.method,
       headers: this.headers,
       body: body != null ? JSON.stringify(body) : null,
