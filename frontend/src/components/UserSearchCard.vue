@@ -1,16 +1,11 @@
-<script setup>
+<script setup lang="ts">
 import Avatar from '@/components/Avatar.vue'
-import router from '@/router/index.js'
+import router from '@/router'
 
-const props = defineProps({
-  username: {
-    type: String,
-    required: true,
-  },
-  avatar: {
-    type: String,
-  },
-})
+const props = defineProps<{
+  username: string
+  avatar?: string
+}>()
 </script>
 
 <template>

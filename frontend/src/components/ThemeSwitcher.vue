@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue'
 
 const picked = ref(localStorage.getItem('theme') || 'default')
@@ -13,7 +13,7 @@ watch(picked, newTheme => {
     <div
       tabindex="0"
       role="button"
-      class="w-20 h-8 flex items-center justify-center rounded-xl bg-base-100 mb-5"
+      class="w-20 h-8 flex items-center justify-center rounded-xl bg-background mb-5"
     >
       <span class="text-sm">Theme</span>
       <svg
@@ -41,7 +41,7 @@ watch(picked, newTheme => {
     </div>
     <ul
       tabindex="0"
-      class="dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow-2xl"
+      class="dropdown-content bg-muted rounded-box z-[1] w-52 p-2 shadow-2xl"
     >
       <li>
         <input
@@ -68,48 +68,8 @@ watch(picked, newTheme => {
           type="radio"
           name="theme-dropdown"
           class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-          aria-label="Cyberpunk"
-          value="cyberpunk"
-          v-model="picked"
-        />
-      </li>
-      <li>
-        <input
-          type="radio"
-          name="theme-dropdown"
-          class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-          aria-label="Sunset"
-          value="sunset"
-          v-model="picked"
-        />
-      </li>
-      <li>
-        <input
-          type="radio"
-          name="theme-dropdown"
-          class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-          aria-label="Aqua"
-          value="aqua"
-          v-model="picked"
-        />
-      </li>
-      <li>
-        <input
-          type="radio"
-          name="theme-dropdown"
-          class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-          aria-label="Romance Light"
-          value="romance-light"
-          v-model="picked"
-        />
-      </li>
-      <li>
-        <input
-          type="radio"
-          name="theme-dropdown"
-          class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-          aria-label="Romance Dark"
-          value="romance-dark"
+          aria-label="Light"
+          value="light"
           v-model="picked"
         />
       </li>

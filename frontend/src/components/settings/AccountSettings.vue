@@ -1,65 +1,65 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import BirthdaySelector from '@/components/userForm/BirthdaySelector.vue'
-import { Api } from '@/utils/api.js'
-import { logout } from '@/services/auth.js'
+import { Api } from '@/utils/api'
+import { logout } from '@/services/auth'
+import type { User } from '@/types'
 
-const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
-})
+const props = defineProps<{
+  data: Partial<User>
+}>()
 
-const email = ref()
-const firstName = ref()
-const lastName = ref()
+const email = ref<HTMLInputElement>()
+const firstName = ref<HTMLInputElement>()
+const lastName = ref<HTMLInputElement>()
 
-const changeEntity = e => {
+const changeEntity = (e: string) => {
   switch (e) {
     case 'email':
-      email.value.disabled = false
-      email.value.focus()
+      email.value!.disabled = false
+      email.value!.focus()
       break
     case 'fname':
-      firstName.value.disabled = false
-      firstName.value.focus()
+      firstName.value!.disabled = false
+      firstName.value!.focus()
       break
     case 'lname':
-      lastName.value.disabled = false
-      lastName.value.focus()
+      lastName.value!.disabled = false
+      lastName.value!.focus()
       break
     default:
       break
   }
 }
 
-const sendChange = e => {
-  if (e.key === 'Enter') {
-    e.target.blur()
+const sendChange = (e: KeyboardEvent | Event) => {
+  if (e instanceof KeyboardEvent && e.key === 'Enter') {
+    const target = e.target as HTMLElement
+    target?.blur()
     return
   }
 
-  let data = {}
+  const target = e.target as HTMLElement
+  const data: Record<string, string> = {}
 
-  switch (e.target.id) {
+  switch (target.id) {
     case 'email':
-      data.email = e.target.value
-      email.value.disabled = true
+      data.email = (target as HTMLInputElement).value
+      email.value!.disabled = true
       break
     case 'fname':
-      data.first_name = e.target.value
-      firstName.value.disabled = true
+      data.first_name = (target as HTMLInputElement).value
+      firstName.value!.disabled = true
       break
     case 'lname':
-      data.last_name = e.target.value
-      lastName.value.disabled = true
+      data.last_name = (target as HTMLInputElement).value
+      lastName.value!.disabled = true
       break
     case 'gender':
-      data.gender = e.target.value
+      data.gender = (target as HTMLSelectElement).value
       break
     case 'birthday':
-      data.birthday = e.target.value
+      data.birthday = (target as HTMLInputElement).value
       break
     default:
       return
@@ -80,7 +80,7 @@ const deleteAccount = () => {
 
 <template>
   <div>
-    <div class="card bg-base-300 gap-3 w-full p-5">
+    <div class="card bg-muted gap-3 w-full p-5">
       <label>Email :</label>
       <div class="flex w-full gap-2">
         <label class="input input-bordered w-full flex items-center gap-2">
@@ -138,7 +138,7 @@ const deleteAccount = () => {
   </div>
 
   <div>
-    <div class="card bg-base-300 gap-3 w-full p-5">
+    <div class="card bg-muted gap-3 w-full p-5">
       <div class="flex flex-col w-full gap-4">
         <div class="flex flex-col gap-2">
           <label>First Name (Display name) :</label>
@@ -224,14 +224,14 @@ const deleteAccount = () => {
   </div>
 
   <div>
-    <div class="card bg-base-300 gap-3 w-full p-5">
+    <div class="card bg-muted gap-3 w-full p-5">
       <label>Birthday :</label>
       <birthday-selector @input="sendChange" id="birthday" />
     </div>
   </div>
 
   <div>
-    <div class="card bg-base-300 gap-3 w-full p-5">
+    <div class="card bg-muted gap-3 w-full p-5">
       <label>Gender :</label>
       <select
         class="select select-bordered w-full"
@@ -246,7 +246,7 @@ const deleteAccount = () => {
   </div>
 
   <div>
-    <div class="card bg-base-300 gap-3 w-full p-5">
+    <div class="card bg-muted gap-3 w-full p-5">
       <button class="btn">Change Your Password</button>
     </div>
   </div>

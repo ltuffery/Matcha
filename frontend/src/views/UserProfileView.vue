@@ -1,30 +1,31 @@
-<script setup>
-import { Api } from '@/utils/api.js'
+<script setup lang="ts">
+import { Api } from '@/utils/api'
 import { onMounted, ref } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import 'swiper/swiper-bundle.css' // Import Swiper styles
+import 'swiper/swiper-bundle.css'
 import { EffectCreative } from 'swiper/modules'
 import { useRoute } from 'vue-router'
-import router from '@/router/index.js'
-import { getSocket } from '@/plugins/socket.js'
+import router from '@/router'
+import { getSocket } from '@/plugins/socket'
+import type { User } from '@/types'
 
 const modules = ref([EffectCreative])
-const data = ref()
+const data = ref<User>()
 const notFound = ref(false)
 const route = useRoute()
 
 const getData = async () => {
   const res = await Api.get(`users/${route.params.username}`).send()
 
-  if (res.ok) data.value = await res.json()
+  if (res.ok) data.value = (await res.json()) as User
   else notFound.value = true
 }
 
 const editMyProfile = () => {
-  router.push({ name: 'profile.edit', params: route.params.username })
+  router.push({ name: 'profile.edit', params: route.params })
 }
 
-const formatGender = type => {
+const formatGender = (type?: string): string => {
   switch (type) {
     case 'M':
       return 'Man'
@@ -32,12 +33,17 @@ const formatGender = type => {
       return 'Woman'
     case 'O':
       return 'Other'
+    default:
+      return ''
   }
 }
+
 onMounted(async () => {
   await getData()
 
-  const decodedToken = JSON.parse(atob(localStorage.jwt.split('.')[1]))
+  const decodedToken = JSON.parse(atob(localStorage.jwt!.split('.')[1])) as {
+    username: string
+  }
 
   if (
     notFound.value === false &&
@@ -48,7 +54,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- User not found -->
   <div
     v-if="notFound"
     class="relative h-full w-full flex justify-center items-center"
@@ -64,7 +69,6 @@ onMounted(async () => {
     </div>
   </div>
 
-  <!-- User information if is found -->
   <div v-else class="flex flex-col p-4 items-center gap-4 w-full h-full">
     <div class="h-[40%] w-full">
       <swiper
@@ -97,7 +101,7 @@ onMounted(async () => {
 
     <div class="flex flex-col w-full gap-2">
       <div class="flex justify-between">
-        <div class="flex gap-2 bg-base-300 rounded-box p-2 px-3 w-fit text-xl">
+        <div class="flex gap-2 bg-muted rounded-box p-2 px-3 w-fit text-xl">
           <div>
             <label class="font-semibold">{{ data?.first_name }}</label>
             <label>,</label>
@@ -108,7 +112,7 @@ onMounted(async () => {
           {{ formatGender(data?.gender) }}
         </div>
       </div>
-      <div class="flex gap-1 bg-base-300 rounded-box p-2 px-3 w-fit text-xl">
+      <div class="flex gap-1 bg-muted rounded-box p-2 px-3 w-fit text-xl">
         <label>At </label>
         <label class="font-semibold"
           >{{ data?.distance === -1 ? 'less of 1' : data?.distance }} km</label
@@ -118,10 +122,10 @@ onMounted(async () => {
     </div>
 
     <div class="w-full">
-      <div class="flex flex-col gap-1 bg-base-300 rounded-box p-2 px-3">
+      <div class="flex flex-col gap-1 bg-muted rounded-box p-2 px-3">
         <label class="text-base">Biography</label>
         <div
-          class="flex text-wrap overflow-y-auto bg-base-200/70 rounded-box p-2 px-3 w-full min-h-24 max-h-72 text-lg"
+          class="flex text-wrap overflow-y-auto bg-muted/70 rounded-box p-2 px-3 w-full min-h-24 max-h-72 text-lg"
         >
           <label>{{ data?.biography }}</label>
         </div>
@@ -129,16 +133,16 @@ onMounted(async () => {
     </div>
 
     <div class="w-full">
-      <div class="flex flex-col gap-1 bg-base-300 rounded-box p-2 px-3">
+      <div class="flex flex-col gap-1 bg-muted rounded-box p-2 px-3">
         <label class="text-base">Passions</label>
         <div
-          class="flex text-wrap overflow-y-auto bg-base-200/70 rounded-box p-2 px-3 w-full min-h-24 max-h-72 text-lg"
+          class="flex text-wrap overflow-y-auto bg-muted/70 rounded-box p-2 px-3 w-full min-h-24 max-h-72 text-lg"
         >
           <div>
             <div
               v-for="tag in data?.tags"
               :key="tag"
-              class="badge badge-outline badge-lg gap-1 bg-base-100"
+              class="badge badge-outline badge-lg gap-1 bg-background"
             >
               {{ tag }}
             </div>
@@ -155,7 +159,7 @@ onMounted(async () => {
 
   <button
     v-if="data?.me"
-    class="sticky bottom-[5%] left-full mr-10 z-30 rounded-full btn btn-outline bg-base-300/80 flex items-center justify-center size-14"
+    class="sticky bottom-[5%] left-full mr-10 z-30 rounded-full btn btn-outline bg-muted/80 flex items-center justify-center size-14"
     @click="editMyProfile"
   >
     <svg

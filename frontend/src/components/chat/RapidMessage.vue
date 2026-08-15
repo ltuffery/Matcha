@@ -1,15 +1,12 @@
-<script setup>
-const props = defineProps({
-  content: {
-    type: String,
-    required: true,
-  },
-})
+<script setup lang="ts">
+const props = defineProps<{
+  content: string
+}>()
 </script>
 
 <template>
   <div
-    class="badge badge-outline text-nowrap hover:bg-base-300 select-none cursor-pointer badge-lg"
+    class="badge badge-outline text-nowrap hover:bg-muted select-none cursor-pointer badge-lg"
   >
     {{ props.content }}
   </div>

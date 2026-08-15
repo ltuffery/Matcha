@@ -1,12 +1,9 @@
-<script setup>
-import router from '@/router/index.js'
+<script setup lang="ts">
+import router from '@/router'
 
-const props = defineProps({
-  text: {
-    type: String,
-    required: true,
-  },
-})
+const props = defineProps<{
+  text: string
+}>()
 </script>
 
 <template>

@@ -1,18 +1,23 @@
-<script setup>
-const emit = defineEmits(['input', 'update:modelValue'])
+<script setup lang="ts">
+const emit = defineEmits<{
+  input: [e: Event]
+  'update:modelValue': [value: string]
+}>()
+
 const maxDate = setMaxDate()
 
-function setMaxDate() {
+function setMaxDate(): string {
   const maxDate = new Date()
   maxDate.setFullYear(new Date().getFullYear() - 18)
 
   const formattedDate = maxDate.toISOString().split('T')[0]
-  return formattedDate
-} // setMaxAge()
+  return formattedDate as string
+}
 
-const emitChange = e => {
+const emitChange = (e: Event) => {
+  const target = e.target as HTMLInputElement
   emit('input', e)
-  emit('update:modelValue', e.target.value)
+  emit('update:modelValue', target.value)
 }
 </script>
 

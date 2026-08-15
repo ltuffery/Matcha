@@ -1,25 +1,33 @@
-<script setup>
+<script setup lang="ts">
 import { onBeforeMount, ref, watch } from 'vue'
 
-const props = defineProps({
-  modelValue: {
-    type: Array,
-  },
-})
+interface ImageItem {
+  file: File | null
+  url: string
+}
 
-const images = ref([])
-const inputImage = ref()
-const emit = defineEmits(['update:modelValue'])
+const props = defineProps<{
+  modelValue?: ImageItem[]
+}>()
 
-const handleFileUpload = e => {
-  for (let index = 0; index < e.target.files.length; index++) {
+const images = ref<ImageItem[]>([])
+const inputImage = ref<HTMLInputElement>()
+const emit = defineEmits<{
+  'update:modelValue': [value: ImageItem[]]
+}>()
+
+const handleFileUpload = (e: Event) => {
+  const target = e.target as HTMLInputElement
+  if (!target.files) return
+
+  for (let index = 0; index < target.files.length; index++) {
     if (images.value.length == 5) {
       break
     }
 
-    const element = {
-      file: e.target.files[index],
-      url: URL.createObjectURL(e.target.files[index]),
+    const element: ImageItem = {
+      file: target.files[index],
+      url: URL.createObjectURL(target.files[index]),
     }
 
     images.value.push(element)
@@ -27,9 +35,9 @@ const handleFileUpload = e => {
   }
 }
 
-const handleRemoveFileUpload = index => {
+const handleRemoveFileUpload = (index: number) => {
   images.value.splice(index, 1)
-  inputImage.value.value = ''
+  if (inputImage.value) inputImage.value.value = ''
   emit('update:modelValue', images.value)
 }
 

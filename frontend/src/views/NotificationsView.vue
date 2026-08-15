@@ -1,16 +1,17 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
-import { notificationsStore } from '@/store/notifications.js'
+import { notificationsStore } from '@/store/notifications'
 import Avatar from '@/components/Avatar.vue'
-import { Api } from '@/utils/api.js'
+import { Api } from '@/utils/api'
+import type { NotificationData } from '@/types'
 
 const notifications = computed(() =>
-  notificationsStore().notifications.sort((a, b) => {
-    return new Date(b.data.created_at) - new Date(a.data.created_at)
+  [...notificationsStore().notifications].sort((a, b) => {
+    return new Date(b.data.created_at).getTime() - new Date(a.data.created_at).getTime()
   }),
 )
 
-const markAsRead = async notification => {
+const markAsRead = async (notification: NotificationData) => {
   const res = await Api.post(
     `/users/me/notifications/${notification.id}/view`,
   ).send()
@@ -24,7 +25,6 @@ const markAsRead = async notification => {
 <template>
   <div class="overflow-x-auto">
     <table class="table">
-      <!-- head -->
       <thead>
         <tr>
           <th>Profile</th>
@@ -34,7 +34,6 @@ const markAsRead = async notification => {
       </thead>
 
       <tbody>
-        <!-- row 1 -->
         <tr v-for="(notification, index) in notifications" :key="index">
           <td>
             <div class="flex items-center gap-3">

@@ -1,10 +1,9 @@
 <template>
-  <!-- ##### Skeleton before check token ##### -->
   <main v-if="skeleton">
     <div
-      class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200 px-2"
+      class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-muted px-2"
     >
-      <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+      <div class="card bg-background w-full max-w-sm shrink-0 shadow-2xl">
         <div class="skeleton card-body h-24"></div>
       </div>
     </div>
@@ -12,11 +11,10 @@
 
   <main
     v-else
-    class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-200 px-2"
+    class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-muted px-2"
   >
-    <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+    <div class="card bg-background w-full max-w-sm shrink-0 shadow-2xl">
       <div class="card-body">
-        <!-- ##### Body form of new password ##### -->
         <form v-if="pageState == 'goodToken'" @submit.prevent="changePassword">
           <div v-if="successed" class="toast toast-top toast-right">
             <div class="alert alert-success">
@@ -87,13 +85,11 @@
           </div>
         </form>
 
-        <!-- ### Body of bad Link/Token ### -->
-        <span v-if="pageState == 'badToken'" class="text-error"
+        <span v-if="pageState == 'badToken'" class="text-destructive"
           >You don't have right to change this password or your link has
           expired</span
         >
 
-        <!-- ### Body confirmation of updating password  ### -->
         <span v-if="pageState == 'updatePwdSuccess'" class="text-success"
           >Your password has been successfully changed !</span
         >
@@ -102,33 +98,32 @@
   </main>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Api } from '@/utils/api'
 import { ref } from 'vue'
 
-const pageState = ref('badToken')
+const pageState = ref<'badToken' | 'goodToken' | 'updatePwdSuccess'>('badToken')
 const skeleton = ref(true)
-const successed = ref(null)
+const successed = ref<boolean | null>(null)
 const errorContent = ref('')
 const successContent = ref('')
-const tokenPwd = ref()
+const tokenPwd = ref<string>()
 
-// Input form
-const newPassword = ref(),
-  confirmPassword = ref()
+const newPassword = ref<string>()
+const confirmPassword = ref<string>()
 
-let urlParams = new URLSearchParams(window.location.search)
+const urlParams = new URLSearchParams(window.location.search)
 
-function printBack(state, info) {
+function printBack(state: boolean, info: string) {
   if (state == false) errorContent.value = info
   else successContent.value = info
   successed.value = state
-  setTimeout(function () {
+  setTimeout(() => {
     successed.value = null
   }, 2500)
 }
 
-async function changePassword(e) {
+async function changePassword() {
   if (newPassword.value != confirmPassword.value) {
     printBack(false, 'the password need to be same')
   } else {
@@ -138,28 +133,31 @@ async function changePassword(e) {
       confirmPassword: confirmPassword.value,
       token: tokenPwd.value,
     }
-    let req = await Api.post('forgot/change-password').send(info)
-    req = await req.json()
-    if (req.success) {
+    const req = await Api.post('forgot/change-password').send(
+      info as unknown as Record<string, unknown>,
+    )
+    const data = (await req.json()) as { success: boolean; error?: string }
+    if (data.success) {
       printBack(true, 'The password is changed')
       pageState.value = 'updatePwdSuccess'
-    } else printBack(false, req.error)
+    } else printBack(false, data.error ?? 'Unknown error')
   }
-  pwd1.value = ''
-  pwd2.value = ''
+  newPassword.value = ''
+  confirmPassword.value = ''
 }
 
 const checkToken = async () => {
-  let info = {
+  const info = {
     username: urlParams.get('user'),
     token: urlParams.get('token'),
   }
-  let req = await Api.post('forgot/token-verify').send(info)
-  req = await req.json()
-  console.log(req)
-  if (req.success) {
+  const req = await Api.post('forgot/token-verify').send(
+    info as unknown as Record<string, unknown>,
+  )
+  const data = (await req.json()) as { success: boolean; token?: string }
+  if (data.success) {
     pageState.value = 'goodToken'
-    tokenPwd.value = req.token
+    tokenPwd.value = data.token
   } else pageState.value = 'badToken'
   skeleton.value = false
 }

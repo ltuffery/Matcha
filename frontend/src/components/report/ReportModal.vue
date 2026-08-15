@@ -1,15 +1,12 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import { Api } from '@/utils/api.js'
+import { Api } from '@/utils/api'
 
-const props = defineProps({
-  username: {
-    type: String,
-    required: true,
-  },
-})
+const props = defineProps<{
+  username: string
+}>()
 
-const raison = ref()
+const raison = ref<string>()
 
 const sendReport = () => {
   Api.post(`/users/${props.username}/report`).send({

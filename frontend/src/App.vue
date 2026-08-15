@@ -1,16 +1,16 @@
-<script setup>
+<script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { isAuthenticated } from './services/auth'
-import { connectSocket } from '@/plugins/socket.js'
+import { isAuthenticated } from '@/services/auth'
+import { connectSocket } from '@/plugins/socket'
 import NavBar from '@/components/NavBar.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
 import FooterView from '@/components/FooterView.vue'
-import { Tracking } from '@/services/tracking.js'
+import { Tracking } from '@/services/tracking'
 import Notification from '@/components/notifications/Notification.vue'
 
 const breakPointScreen = '(min-width: 70em)'
 
-const sizeScreen = ref(window.matchMedia(breakPointScreen))
+const sizeScreen = ref<MediaQueryList>(window.matchMedia(breakPointScreen))
 
 const isAuth = ref(false)
 
@@ -33,21 +33,21 @@ window.addEventListener('logout', () => {
 onMounted(async () => {
   const mediaQuery = window.matchMedia(breakPointScreen)
 
-  mediaQuery.addEventListener('change', e => {
-    sizeScreen.value = e
+  mediaQuery.addEventListener('change', () => {
+    sizeScreen.value = mediaQuery
   })
 
   const theme = localStorage.getItem('theme')
 
   if (theme !== null) {
-    document.querySelector('html').setAttribute('data-theme', theme)
+    document.querySelector('html')?.setAttribute('data-theme', theme)
   }
 })
 
 onUnmounted(() => {
   const mediaQuery = window.matchMedia(breakPointScreen)
-  mediaQuery.removeEventListener('change', e => {
-    sizeScreen.value = e
+  mediaQuery.removeEventListener('change', () => {
+    sizeScreen.value = mediaQuery
   })
 })
 </script>
@@ -55,10 +55,10 @@ onUnmounted(() => {
 <template>
   <NavBar large-screen v-if="isAuth && sizeScreen.matches" />
   <div
-    class="flex flex-col bg-base-300 h-dvh w-full justify-center items-center"
+    class="flex flex-col bg-muted h-dvh w-full justify-center items-center"
   >
     <div
-      class="overflow-y-auto relative bg-base-200 h-full w-full max-w-3xl z-10"
+      class="overflow-y-auto relative bg-card h-full w-full max-w-3xl z-10"
     >
       <Notification v-if="isAuth" class="absolute" />
       <RouterView />

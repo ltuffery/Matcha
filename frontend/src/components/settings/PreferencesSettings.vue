@@ -1,16 +1,32 @@
-<script setup>
+<script setup lang="ts">
 import DoubleSlide from '@/components/DoubleSlide.vue'
 import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { disconnect } from '@/services/auth'
-import { Api } from '@/utils/api.js'
+import { Api } from '@/utils/api'
 import countryCodes from '@/assets/countryCodes.json'
-import { usePreferencesStore } from '@/store/preferences.js'
-import { Tracking } from '@/services/tracking.js'
+import { usePreferencesStore } from '@/store/preferences'
+import { Tracking } from '@/services/tracking'
+import type { CityInfo, GeoPositionInfo, Preferences } from '@/types'
 
 const preferencesStore = usePreferencesStore()
-const ageRange = ref()
-const dropdownLocation = ref()
-const preferences = ref({
+const ageRange = ref<{ t1: number; t2: number }>()
+const dropdownLocation = ref<HTMLInputElement>()
+const preferences = ref<{
+  age: { start: number; end: number }
+  distance: number
+  sexual_preference: string
+  byTags: boolean
+  pos: {
+    lat: number
+    lon: number
+    is_custom_loc: boolean | number
+    countryCode: string
+    name: string
+    posInfo: GeoPositionInfo | null
+  }
+  fame_rating: number
+  cityList: CityInfo[] | null
+}>({
   age: {
     start: preferencesStore.preferences.age_minimum,
     end: preferencesStore.preferences.age_maximum,
@@ -30,25 +46,25 @@ const preferences = ref({
   cityList: null,
 })
 
-const refreshCityList = async e => {
-  preferences.value.cityList = await Tracking.getCityListByName(
-    e.target.value,
+const refreshCityList = (e: Event) => {
+  const target = e.target as HTMLInputElement
+  preferences.value.cityList = Tracking.getCityListByName(
+    target.value,
     preferences.value.pos.countryCode,
-  )
+  ) as unknown as CityInfo[]
 }
 
-const selectCityHandler = e => {
-  console.log(e.target.getAttribute('gcl'))
-  if (e.target.getAttribute('gcl') != null) {
-    console.log('ask user')
+const selectCityHandler = (e: Event) => {
+  const target = e.target as HTMLElement
+  if (target.getAttribute('gcl') != null) {
     Tracking.setAtCurrentLocation()
     preferences.value.pos.is_custom_loc = false
   } else {
-    preferences.value.pos.lat = e.target.getAttribute('lat')
-    preferences.value.pos.lon = e.target.getAttribute('lon')
+    preferences.value.pos.lat = Number(target.getAttribute('lat'))
+    preferences.value.pos.lon = Number(target.getAttribute('lon'))
     preferences.value.pos.is_custom_loc = true
-    dropdownLocation.value.value = e.target.innerText
-    document.activeElement?.blur()
+    if (dropdownLocation.value) dropdownLocation.value.value = target.innerText
+    ;(document.activeElement as HTMLElement | null)?.blur()
   }
 }
 
@@ -80,7 +96,7 @@ onMounted(async () => {
 
 onUnmounted(async () => {
   if (localStorage.jwt == null) return
-  const newObject = {
+  const newObject: Preferences = {
     age_minimum: preferences.value.age.start,
     age_maximum: preferences.value.age.end,
     distance_maximum: preferences.value.distance,
@@ -88,17 +104,17 @@ onUnmounted(async () => {
     by_tags: preferences.value.byTags,
     lat: preferences.value.pos.lat,
     lon: preferences.value.pos.lon,
-    is_custom_loc: preferences.value.pos.is_custom_loc,
+    is_custom_loc: preferences.value.pos.is_custom_loc ? 1 : 0,
   }
   if (!preferencesStore.isChanged(newObject)) return
-  const response = await Api.put('/users/me/preferences').send(newObject)
+  const response = await Api.put('/users/me/preferences').send(newObject as unknown as Record<string, unknown>)
   if (response.ok) preferencesStore.setPreferences(newObject)
 })
 </script>
 
 <template>
   <div class="w-full flex items-center flex-col">
-    <div class="card bg-base-300 gap-3 w-full p-5">
+    <div class="card bg-muted gap-3 w-full p-5">
       <div class="flex justify-between">
         <label>Age range :</label>
         <label
@@ -116,7 +132,7 @@ onUnmounted(async () => {
   </div>
 
   <div>
-    <div class="card bg-base-300 gap-3 w-full p-5">
+    <div class="card bg-muted gap-3 w-full p-5">
       <div class="flex justify-between">
         <label>Maximum distance :</label>
         <label>{{ preferences.distance }} Km</label>
@@ -126,14 +142,13 @@ onUnmounted(async () => {
         type="range"
         min="5"
         max="100"
-        value="preferences.distance"
         class="range"
       />
     </div>
   </div>
 
   <div>
-    <div class="card bg-base-300 gap-3 w-full p-5">
+    <div class="card bg-muted gap-3 w-full p-5">
       <div class="flex justify-between">
         <label>Maximum fame rating :</label>
         <label>{{ preferences.fame_rating }} %</label>
@@ -143,14 +158,13 @@ onUnmounted(async () => {
         type="range"
         min="0"
         max="100"
-        value="preferences.fame_rating"
         class="range"
       />
     </div>
   </div>
 
   <div>
-    <div class="card bg-base-300 gap-3 w-full p-5">
+    <div class="card bg-muted gap-3 w-full p-5">
       <div class="flex justify-between">
         <label>Interested by :</label>
       </div>
@@ -175,7 +189,7 @@ onUnmounted(async () => {
   </div>
 
   <div>
-    <div class="card bg-base-300 gap-3 w-full p-5">
+    <div class="card bg-muted gap-3 w-full p-5">
       <div class="flex justify-between">
         <label>Location :</label>
       </div>
@@ -189,7 +203,7 @@ onUnmounted(async () => {
           <option
             v-for="(code, index) in countryCodes"
             :key="index"
-            class="hover:bg-base-300 cursor-pointer"
+            class="hover:bg-muted cursor-pointer"
             :selected="code === preferences.pos.countryCode"
           >
             {{ code }}
@@ -211,10 +225,10 @@ onUnmounted(async () => {
           />
           <div
             tabindex="1"
-            class="dropdown-content card card-compact bg-base-200 z-[1] w-full max-h-60 overflow-y-auto p-2 shadow"
+            class="dropdown-content card card-compact bg-muted z-[1] w-full max-h-60 overflow-y-auto p-2 shadow"
           >
             <div
-              class="my-3 hover:bg-base-300 cursor-pointer"
+              class="my-3 hover:bg-muted cursor-pointer"
               @click="selectCityHandler"
               gcl
             >
@@ -227,7 +241,7 @@ onUnmounted(async () => {
               :key="index"
               :lat="city.lat"
               :lon="city.lng"
-              class="hover:bg-base-300 cursor-pointer"
+              class="hover:bg-muted cursor-pointer"
             >
               {{ city.toponymName }}
             </div>
@@ -238,7 +252,7 @@ onUnmounted(async () => {
   </div>
 
   <div>
-    <div class="card bg-base-300 gap-3 w-full p-5">
+    <div class="card bg-muted gap-3 w-full p-5">
       <div class="flex justify-between">
         <label>Research by same tags :</label>
         <input
@@ -248,7 +262,6 @@ onUnmounted(async () => {
           :checked="preferences.byTags"
         />
       </div>
-      <!--            <TagSelector class="max-h-72 overflow-y-auto" />-->
     </div>
   </div>
 

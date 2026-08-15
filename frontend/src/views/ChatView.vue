@@ -1,14 +1,34 @@
-<script setup>
+<script setup lang="ts">
 import UserCard from '@/components/chat/UserCard.vue'
 import { Api } from '@/utils/api'
 import { ref } from 'vue'
 import router from '@/router'
 import Avatar from '@/components/Avatar.vue'
 import Empty from '@/components/Empty.vue'
+import type { User } from '@/types'
 
-const matches = ref([])
-const conversations = ref([])
-const searchInput = ref()
+interface ChatUser {
+  username: string
+  email?: string
+  first_name?: string
+  last_name?: string
+  gender?: 'M' | 'F' | 'O'
+  biography?: string
+  birthday?: string
+  age?: number
+  photos?: string[]
+  tags?: string[]
+  avatar?: string
+  distance?: number
+  fame_rating?: number
+  me?: boolean
+  last_message?: { content: string; created_at: string }
+  unread?: number
+}
+
+const matches = ref<ChatUser[]>([])
+const conversations = ref<ChatUser[]>([])
+const searchInput = ref<string>()
 
 Api.get('/users/me/matches')
   .send()
@@ -19,23 +39,23 @@ Api.get('/users/me/matches')
 
     return res.json()
   })
-  .then(data => {
+  .then((data: ChatUser[]) => {
     for (const user of data) {
       if (!user.last_message) matches.value.push(user)
       else conversations.value.push(user)
     }
     conversations.value.sort(
       (a, b) =>
-        new Date(b.last_message.created_at) -
-        new Date(a.last_message.created_at),
+        new Date(b.last_message!.created_at).getTime() -
+        new Date(a.last_message!.created_at).getTime(),
     )
   })
 
-function convClick(username) {
-  router.push({ name: `conversation`, params: { username } })
+function convClick(username: string) {
+  router.push({ name: 'conversation', params: { username } })
 }
 
-function containSearch(user) {
+function containSearch(user: string): boolean {
   if (!searchInput.value || searchInput.value.length < 1) return true
 
   return user.toLowerCase().includes(searchInput.value.toLowerCase())
@@ -43,8 +63,6 @@ function containSearch(user) {
 </script>
 
 <template>
-  <!-- ########## List of users ########## -->
-
   <div class="flex flex-col h-full">
     <div class="pt-5">
       <label class="input input-bordered flex items-center gap-2">
@@ -99,10 +117,10 @@ function containSearch(user) {
         @click="convClick(content.username)"
       >
         <UserCard
-          v-if="containSearch(content.first_name)"
+          v-if="containSearch(content.first_name ?? '')"
           :label="content.unread"
           :lastMessage="content.last_message?.content"
-          :firstName="content.first_name"
+          :firstName="content.first_name ?? ''"
           :avatar="content.avatar"
           :username="content.username"
         />

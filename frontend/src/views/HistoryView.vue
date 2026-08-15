@@ -1,17 +1,23 @@
-<script setup>
+<script setup lang="ts">
 import Tabs from '@/components/tabs/Tabs.vue'
 import Tab from '@/components/tabs/Tab.vue'
 import { computed, onMounted, ref } from 'vue'
-import { Api } from '@/utils/api.js'
+import { Api } from '@/utils/api'
 import Avatar from '@/components/Avatar.vue'
-import { likesStore } from '@/store/likes.js'
+import { likesStore } from '@/store/likes'
 import Empty from '@/components/Empty.vue'
+import type { User } from '@/types'
 
-const views = ref()
+interface HistoryData {
+  views: User[]
+  likes: User[]
+}
+
+const views = ref<User[]>()
 
 onMounted(async () => {
   const res = await Api.get('/users/me/history').send()
-  const data = await res.json()
+  const data = (await res.json()) as HistoryData
 
   views.value = data.views
   likesStore().set(data.likes)
@@ -19,7 +25,7 @@ onMounted(async () => {
 
 const likes = computed(() => likesStore().users)
 
-const validDeleteLikeHandler = username => {
+const validDeleteLikeHandler = (username: string) => {
   likesStore().remove(username)
 
   Api.delete(`/users/${username}/unlike`).send()

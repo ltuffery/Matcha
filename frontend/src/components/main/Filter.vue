@@ -1,27 +1,20 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
-import { getSocket } from '@/plugins/socket.js'
+import { getSocket } from '@/plugins/socket'
 
-const sortedRules = ref([
-  {
-    title: 'Age',
-    checked: false,
-  },
-  {
-    title: 'Distance',
-    checked: false,
-  },
-  {
-    title: 'Fame Rating',
-    checked: false,
-  },
-  {
-    title: 'Common Tags',
-    checked: false,
-  },
+interface SortRule {
+  title: string
+  checked: boolean
+}
+
+const sortedRules = ref<SortRule[]>([
+  { title: 'Age', checked: false },
+  { title: 'Distance', checked: false },
+  { title: 'Fame Rating', checked: false },
+  { title: 'Common Tags', checked: false },
 ])
 
-const handlerChange = e => {
+const handlerChange = () => {
   const rules = sortedRules.value.filter(rule => rule.checked)
 
   getSocket().emit(
@@ -83,7 +76,7 @@ const handlerChange = e => {
     </button>
     <ul
       tabindex="0"
-      class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+      class="dropdown-content menu bg-background rounded-box z-[1] w-52 p-2 shadow"
     >
       <li v-for="(rule, index) in sortedRules" :key="index">
         <label class="cursor-pointer">

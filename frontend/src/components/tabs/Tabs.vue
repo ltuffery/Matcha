@@ -6,7 +6,7 @@ import {
   onMounted,
   onBeforeMount,
   toRefs,
-  VNode,
+  type VNode,
 } from 'vue'
 
 export interface TabProps {
@@ -30,7 +30,10 @@ export default defineComponent({
 
     onBeforeMount(() => {
       if (slots.default) {
-        state.tabs = slots.default().filter(child => child.type.name === 'Tab')
+        state.tabs = slots.default().filter(child => {
+          const type = child.type as { name?: string }
+          return type?.name === 'Tab'
+        }) as unknown as VNode<TabProps>[]
       }
     })
 
@@ -53,7 +56,7 @@ export default defineComponent({
         :class="{ 'tab-active': selectedIndex === index }"
         class="tab"
       >
-        {{ tab.props.name }}
+        {{ tab.props?.name }}
       </div>
     </div>
     <div>

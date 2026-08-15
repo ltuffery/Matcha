@@ -1,19 +1,22 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { Api } from '@/utils/api'
 
-const tags = ref([])
-const emit = defineEmits(['update:modelValue'])
+interface Tag {
+  name: string
+  selected: boolean
+}
 
-const props = defineProps({
-  modelValue: {
-    type: Array,
-  },
-})
+const tags = ref<Tag[]>([])
+const emit = defineEmits<{
+  'update:modelValue': [value: string[]]
+}>()
 
-console.log(props.modelValue)
+const props = defineProps<{
+  modelValue?: string[]
+}>()
 
-function addTagSelected(tag) {
+function addTagSelected(tag: Tag) {
   tag.selected = !tag.selected
   emit(
     'update:modelValue',
@@ -23,7 +26,8 @@ function addTagSelected(tag) {
 
 onMounted(async () => {
   const response = await Api.get('/tags').send()
-  tags.value = (await response.json()).map(item => {
+  const data = (await response.json()) as string[]
+  tags.value = data.map(item => {
     if (
       props.modelValue &&
       props.modelValue.length > 0 &&
@@ -40,13 +44,13 @@ onMounted(async () => {
     <div class="w-full">
       <label>Tags Selected :</label>
       <div
-        class="flex flex-wrap bg-base-200 select-none p-2 mt-1 gap-1 w-full min-h-10 max-h-24 overflow-y-auto rounded-box"
+        class="flex flex-wrap bg-muted select-none p-2 mt-1 gap-1 w-full min-h-10 max-h-24 overflow-y-auto rounded-box"
       >
         <div
           @click="addTagSelected(tag)"
           v-for="tag in tags.filter(tag => tag.selected)"
-          :key="tag"
-          class="badge badge-outline badge-lg gap-1 cursor-pointer bg-base-100 hover:bg-base-100 hover:badge-outline hover:badge-error"
+          :key="tag.name"
+          class="badge badge-outline badge-lg gap-1 cursor-pointer bg-background hover:bg-background hover:badge-outline hover:badge-error"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -69,8 +73,8 @@ onMounted(async () => {
       <div
         @click="addTagSelected(tag)"
         v-for="tag in tags.filter(tag => !tag.selected)"
-        :key="tag"
-        class="badge badge-outline badge-lg hover:bg-base-200 cursor-pointer"
+        :key="tag.name"
+        class="badge badge-outline badge-lg hover:bg-muted cursor-pointer"
       >
         {{ tag.name }}
       </div>

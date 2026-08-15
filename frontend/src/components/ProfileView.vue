@@ -1,12 +1,7 @@
-<script setup>
-import { defineProps } from 'vue'
-
-const props = defineProps({
-  images: {
-    type: Object,
-    required: true,
-  },
-})
+<script setup lang="ts">
+const props = defineProps<{
+  images: string[]
+}>()
 
 const defaultImage =
   'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp'

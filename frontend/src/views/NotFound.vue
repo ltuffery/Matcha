@@ -1,9 +1,9 @@
-<script setup>
-import router from '@/router/index.js'
+<script setup lang="ts">
+import router from '@/router'
 </script>
 
 <template>
-  <div class="hero bg-base-200 min-h-screen">
+  <div class="hero bg-muted min-h-screen">
     <div class="hero-content text-center">
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">404</h1>

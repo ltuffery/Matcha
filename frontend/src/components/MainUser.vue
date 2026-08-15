@@ -1,27 +1,27 @@
-<script setup>
+<script setup lang="ts">
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import vDoubleTap from '@/directives/doubleTap.js'
+import vDoubleTap from '@/directives/doubleTap'
 import { ref } from 'vue'
 import 'swiper/swiper-bundle.css'
-import { Api } from '@/utils/api.js'
+import { Api } from '@/utils/api'
 import { EffectCreative } from 'swiper/modules'
 import ReportModal from '@/components/report/ReportModal.vue'
+import type { User } from '@/types'
 
-const props = defineProps({
-  user: {
-    type: Object,
-    required: true,
-  },
-})
+const props = defineProps<{
+  user: User
+}>()
 
 const isLiked = ref(false)
 const animated = ref(false)
 const skeleton = ref(false)
 const modules = ref([EffectCreative])
 
-const emit = defineEmits(['nextSlide'])
+const emit = defineEmits<{
+  nextSlide: []
+}>()
 
-function likeUser(event) {
+function likeUser(_event: Event) {
   isLiked.value = true
   animated.value = true
 
@@ -33,7 +33,7 @@ function likeUser(event) {
   }, 300)
 }
 
-function btnLike(event) {
+function btnLike() {
   isLiked.value = !isLiked.value
 
   if (isLiked.value) {
@@ -46,7 +46,6 @@ function btnLike(event) {
 </script>
 
 <template>
-  <!-- ### Skeleton part ### -->
   <skeleton v-if="skeleton === true">
     <div class="w-full rounded-lg static">
       <div
@@ -54,7 +53,7 @@ function btnLike(event) {
       ></div>
 
       <div
-        class="absolute left-0 bottom-0 w-full bg-gradient-to-b from-base-100 to-base-200 flex flex-col items-start z-20"
+        class="absolute left-0 bottom-0 w-full bg-gradient-to-b from-background to-muted flex flex-col items-start z-20"
       >
         <div class="p-2 w-full relative">
           <div class="flex items-center">
@@ -66,7 +65,6 @@ function btnLike(event) {
     </div>
   </skeleton>
 
-  <!-- ### main part part ### -->
   <div v-if="skeleton === false" class="h-full w-full rounded-lg static">
     <swiper
       :slides-per-view="1"
@@ -96,7 +94,7 @@ function btnLike(event) {
       </swiper-slide>
     </swiper>
     <div
-      class="absolute left-0 bottom-0 w-full text-black bg-gradient-to-b from-transparent to-base-200 flex flex-col items-start z-20"
+      class="absolute left-0 bottom-0 w-full text-black bg-gradient-to-b from-transparent to-muted flex flex-col items-start z-20"
     >
       <div class="p-2 w-full relative">
         <img

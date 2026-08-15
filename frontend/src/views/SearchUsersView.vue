@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import UserSearchCard from '@/components/UserSearchCard.vue'
 import { Api } from '@/utils/api'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
+import type { User } from '@/types'
 
 const search = ref('')
-const users = ref([])
+const users = ref<User[]>([])
 
 const input = () => {
   if (search.value.length >= 2) {
     Api.get(`search/users?q=${search.value}`)
       .send()
       .then(res => res.json())
-      .then(data => (users.value = data))
+      .then((data: User[]) => (users.value = data))
   } else {
     users.value = []
   }
@@ -62,7 +63,7 @@ const input = () => {
     >
       <UserSearchCard
         v-for="user in users"
-        :key="user"
+        :key="user.username"
         :username="user.username"
         :avatar="user.avatar"
       />

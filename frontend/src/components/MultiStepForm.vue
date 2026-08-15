@@ -1,14 +1,11 @@
-<script setup>
+<script setup lang="ts">
 import { defineProps, ref } from 'vue'
 
-const props = defineProps({
-  totalSteps: {
-    type: Number,
-    required: true,
-  },
-})
+const props = defineProps<{
+  totalSteps: number
+}>()
 
-let currentStep = ref(0)
+const currentStep = ref(0)
 
 function nextStep() {
   if (currentStep.value < props.totalSteps) {
@@ -22,7 +19,7 @@ function prevStep() {
   }
 }
 
-function setStep(step) {
+function setStep(step: number) {
   if (step >= 0 && step < props.totalSteps) {
     currentStep.value = step
   }
@@ -38,12 +35,10 @@ defineExpose({
 <template>
   <div class="multi-step-form">
     <div v-if="currentStep < props.totalSteps">
-      <!-- Affichage de l'étape courante -->
       <div :key="currentStep">
         <slot :name="'step-' + currentStep" />
       </div>
 
-      <!-- Navigation entre les étapes -->
       <div class="flex gap-4">
         <div
           class="form-control mt-6 w-full"

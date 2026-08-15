@@ -1,38 +1,52 @@
-<script setup>
+<script setup lang="ts">
 import ImageSelector from '@/components/userForm/ImageSelector.vue'
 import TagSelector from '@/components/TagSelector.vue'
-import { useUserInfoStore } from '@/store/userInfo.js'
-import { Api } from '@/utils/api.js'
+import { useUserInfoStore } from '@/store/userInfo'
+import { Api } from '@/utils/api'
 import { onBeforeMount, onUnmounted, ref } from 'vue'
+import type { User } from '@/types'
+
+interface ImageItem {
+  file: File | null
+  url: string
+}
 
 const userInfoStore = useUserInfoStore()
-const info = ref({})
+const info = ref<{
+  biography: string | undefined
+  photos: ImageItem[]
+  tags: string[]
+}>({
+  biography: undefined,
+  photos: [],
+  tags: [],
+})
 
 onBeforeMount(async () => {
   if (!userInfoStore.user.username) {
     const res = await Api.get('/users/me').send()
-    if (res.ok) userInfoStore.set(await res.json())
+    if (res.ok) userInfoStore.set((await res.json()) as User)
   }
   info.value.biography = userInfoStore.user.biography
   info.value.photos = []
-  info.value.tags = userInfoStore.user.tags
+  info.value.tags = userInfoStore.user.tags ?? []
 
-  for (const image of userInfoStore.user.photos) {
+  for (const image of userInfoStore.user.photos ?? []) {
     info.value.photos.push({ file: null, url: image })
   }
 })
 
 onUnmounted(async () => {
   const formData = new FormData()
-  formData.append('biography', info.value.biography)
+  formData.append('biography', info.value.biography ?? '')
 
   info.value.photos.forEach((photo, index) => {
-    formData.append(`photos[${index}][file]`, photo.file)
+    formData.append(`photos[${index}][file]`, photo.file ?? '')
     formData.append(`photos[${index}][url]`, photo.url)
   })
 
   if (info.value.tags.length === 0) {
-    formData.append('tags', [])
+    formData.append('tags', '')
   } else {
     info.value.tags.forEach(tag => {
       formData.append('tags[]', tag)
@@ -50,7 +64,7 @@ onUnmounted(async () => {
   Api.get('/users/me')
     .send()
     .then(res => res.json())
-    .then(userInfoStore.add)
+    .then((data: Partial<User>) => userInfoStore.add(data))
 })
 </script>
 
@@ -59,12 +73,11 @@ onUnmounted(async () => {
     <div class="w-full flex justify-center">
       <ImageSelector
         v-model="info.photos"
-        :model-value="info.photos"
         class="w-full max-w-sm"
       />
     </div>
 
-    <div class="flex flex-col gap-3 bg-base-300 rounded-box p-3">
+    <div class="flex flex-col gap-3 bg-muted rounded-box p-3">
       <span>Biography :</span>
       <textarea
         v-model="info.biography"
@@ -73,8 +86,8 @@ onUnmounted(async () => {
       ></textarea>
     </div>
 
-    <div class="flex flex-col gap-3 bg-base-300 rounded-box p-3">
-      <TagSelector v-model="info.tags" :model-value="info.tags" />
+    <div class="flex flex-col gap-3 bg-muted rounded-box p-3">
+      <TagSelector v-model="info.tags" />
     </div>
   </div>
 </template>

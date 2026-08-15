@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import Message from '@/components/chat/Message.vue'
 import RapidMessage from '@/components/chat/RapidMessage.vue'
 import { Api } from '@/utils/api'
@@ -6,16 +6,17 @@ import { ref, onMounted, computed } from 'vue'
 import router from '@/router'
 import { useRoute } from 'vue-router'
 import suggestMsg from '@/assets/suggestedMessage.json'
-import { getSocket } from '@/plugins/socket.js'
-import { useMessagesStore } from '@/store/messages.js'
+import { getSocket } from '@/plugins/socket'
+import { useMessagesStore } from '@/store/messages'
+import type { MessageData, MessagesResponse } from '@/types'
 
 const route = useRoute()
 
 const messages = computed(() => useMessagesStore().messages)
 
-const newMessageContent = ref()
+const newMessageContent = ref<string>()
 
-const scrollableDiv = ref()
+const scrollableDiv = ref<HTMLDivElement>()
 
 async function getConversation() {
   const response = await Api.get(
@@ -25,11 +26,11 @@ async function getConversation() {
   if (response.status !== 200) {
     router.back()
   } else {
-    useMessagesStore().set(await response.json())
+    useMessagesStore().set((await response.json()) as MessagesResponse)
   }
 }
 
-async function sendMessage(message) {
+async function sendMessage(message?: string) {
   getSocket().emit('send_message', route.params.username, message)
   scrollbarToEnd()
 }
@@ -40,11 +41,12 @@ function scrollbarToEnd() {
   }
 }
 
-function rapidMessageSend(element) {
-  sendMessage(element.target.innerText)
+function rapidMessageSend(element: Event) {
+  const target = element.target as HTMLElement
+  sendMessage(target.innerText)
 }
 
-function handleKeydown(event) {
+function handleKeydown(event: KeyboardEvent) {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault()
     sendMessage(newMessageContent.value)
@@ -52,12 +54,12 @@ function handleKeydown(event) {
   }
 }
 
-getSocket().on('receive_message', async message => {
+getSocket().on('receive_message', async (message: MessageData) => {
   if (route.params.username !== message.sender && !message.isMe) {
     return
   }
 
-  await (() => useMessagesStore().add(message))()
+  await useMessagesStore().add(message)
 
   scrollbarToEnd()
 })
@@ -69,10 +71,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <!-- ########## Conversation view ########## -->
-
   <div class="flex flex-col h-full">
-    <!-- Head -->
     <div class="flex items-center justify-between pt-4">
       <div @click="router.back()" class="rounded-lg cursor-pointer">
         <svg
@@ -132,13 +131,8 @@ onMounted(async () => {
           :is-me="content.sender !== route.params.username"
         />
       </div>
-
-      <!--          <div v-for="(content, index) in temporaryMsg" :key="index">-->
-      <!--            <Message :message="content" is-me tempo />-->
-      <!--          </div>-->
     </div>
 
-    <!-- Input -->
     <div class="flex items-center py-4">
       <textarea
         v-model="newMessageContent"
@@ -149,8 +143,8 @@ onMounted(async () => {
       ></textarea>
 
       <div
-        class="flex items-center h-full rounded-r-badge bg-base-100 bg-opacity-60 cursor-pointer hover:bg-base-300 p-4"
-        @click="sendMessage"
+        class="flex items-center h-full rounded-r-badge bg-background bg-opacity-60 cursor-pointer hover:bg-muted p-4"
+        @click="sendMessage()"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

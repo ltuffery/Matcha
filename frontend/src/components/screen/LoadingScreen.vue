@@ -1,4 +1,5 @@
-<script setup></script>
+<script setup lang="ts">
+</script>
 
 <template>
   <div class="absolute h-screen w-full flex justify-center items-center">

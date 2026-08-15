@@ -1,27 +1,40 @@
 <template>
   <main
-    class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-base-300 px-2"
+    class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-muted px-2"
   >
-    <div class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-      <div class="card-body">
-        <Tabs>
-          <Tab name="Login">
-            <!-- <h3 class="text-3xl font-bold my-5">Login !</h3> -->
+    <Card>
+      <Tabs defaultValue="login" className="w-full">
+        <CardHeader>
+          <TabsList class="w-full">
+            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="register">Register</TabsTrigger>
+          </TabsList>
+        </CardHeader>
+
+        <CardContent>
+          <TabsContent value="login">
             <LoginForm />
-          </Tab>
-          <Tab name="Register">
-            <h3 class="text-3xl font-bold my-5">Register !</h3>
+          </TabsContent>
+
+          <TabsContent value="register">
             <RegisterFrom />
-          </Tab>
-        </Tabs>
-      </div>
-    </div>
+          </TabsContent>
+        </CardContent>
+      </Tabs>
+    </Card>
   </main>
 </template>
 
-<script setup>
-import RegisterFrom from '@/components/RegisterForm.vue'
-import Tabs from '@/components/tabs/Tabs.vue'
-import Tab from '@/components/tabs/Tab.vue'
-import LoginForm from '@/components/LoginForm.vue'
+<script setup lang="ts">
+import RegisterFrom from '@/components/auth/RegisterForm.vue'
+import LoginForm from '@/components/auth/LoginForm.vue'
+import { TabsContent, TabsList, TabsTrigger, Tabs } from '@/components/ui/tabs'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 </script>

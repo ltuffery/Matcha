@@ -1,19 +1,17 @@
-<script setup>
+<script setup lang="ts">
 import Avatar from '@/components/Avatar.vue'
-import { Api } from '@/utils/api.js'
+import { Api } from '@/utils/api'
 import { computed } from 'vue'
-import { notificationsStore } from '@/store/notifications.js'
+import { notificationsStore } from '@/store/notifications'
+import type { NotificationData } from '@/types'
 
-const props = defineProps({
-  notification: {
-    type: Object,
-    required: true,
-  },
-})
+const props = defineProps<{
+  notification: NotificationData
+}>()
 
 const isNew = computed(() => !props.notification.data.view)
 
-const markAsRead = async notification => {
+const markAsRead = async (notification: NotificationData) => {
   const res = await Api.post(
     `/users/me/notifications/${notification.id}/view`,
   ).send()
