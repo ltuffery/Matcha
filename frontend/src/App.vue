@@ -2,12 +2,14 @@
 import { RouterView } from 'vue-router'
 import { isAuthenticated } from '@/services/auth'
 import { connectSocket } from '@/plugins/socket'
-import NavBar from '@/components/NavBar.vue'
+import NavBar from '@/components/core/NavBar.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
-import FooterView from '@/components/FooterView.vue'
+import Footer from '@/components/core/Footer.vue'
 import { Tracking } from '@/services/tracking'
-import Notification from '@/components/notifications/Notification.vue'
+import { type BasicColorSchema, useColorMode } from '@vueuse/core'
+import DateOfBirthPicker from '@/components/forms/DateOfBirthPicker.vue'
 
+const mode = useColorMode()
 const breakPointScreen = '(min-width: 70em)'
 
 const sizeScreen = ref<MediaQueryList>(window.matchMedia(breakPointScreen))
@@ -37,11 +39,8 @@ onMounted(async () => {
     sizeScreen.value = mediaQuery
   })
 
-  const theme = localStorage.getItem('theme')
-
-  if (theme !== null) {
-    document.querySelector('html')?.setAttribute('data-theme', theme)
-  }
+  const theme = localStorage.getItem('theme') as BasicColorSchema | null
+  mode.value = theme !== null ? theme : 'dark'
 })
 
 onUnmounted(() => {
@@ -53,17 +52,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <NavBar large-screen v-if="isAuth && sizeScreen.matches" />
-  <div
-    class="flex flex-col bg-muted h-dvh w-full justify-center items-center"
-  >
-    <div
-      class="overflow-y-auto relative bg-card h-full w-full max-w-3xl z-10"
-    >
-      <Notification v-if="isAuth" class="absolute" />
+  <div class="flex min-h-screen">
+    <NavBar large-screen v-if="isAuth" />
+
+    <main :class="{ 'flex-1 pb-16 md:pb-0': isAuth }">
       <RouterView />
-    </div>
-    <NavBar v-if="isAuth && !sizeScreen.matches" />
+    </main>
+
+    <!--  <Footer class="z-0" v-if="sizeScreen.matches" />-->
   </div>
-  <FooterView class="z-0" v-if="sizeScreen.matches" />
 </template>

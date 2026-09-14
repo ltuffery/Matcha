@@ -3,9 +3,26 @@ import UserCard from '@/components/chat/UserCard.vue'
 import { Api } from '@/utils/api'
 import { ref } from 'vue'
 import router from '@/router'
-import Avatar from '@/components/Avatar.vue'
-import Empty from '@/components/Empty.vue'
+import Empty from '@/components/core/Empty.vue'
 import type { User } from '@/types'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { SearchIcon } from 'lucide-vue-next'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@/components/ui/input-group'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemMedia,
+  ItemSeparator,
+  ItemTitle,
+} from '@/components/ui/item'
 
 interface ChatUser {
   username: string
@@ -27,8 +44,8 @@ interface ChatUser {
 }
 
 const matches = ref<ChatUser[]>([])
-const conversations = ref<ChatUser[]>([])
-const searchInput = ref<string>()
+const people = ref<ChatUser[]>([])
+const searchInput = ref<string>('')
 
 Api.get('/users/me/matches')
   .send()
@@ -42,9 +59,9 @@ Api.get('/users/me/matches')
   .then((data: ChatUser[]) => {
     for (const user of data) {
       if (!user.last_message) matches.value.push(user)
-      else conversations.value.push(user)
+      else people.value.push(user)
     }
-    conversations.value.sort(
+    people.value.sort(
       (a, b) =>
         new Date(b.last_message!.created_at).getTime() -
         new Date(a.last_message!.created_at).getTime(),
@@ -63,28 +80,18 @@ function containSearch(user: string): boolean {
 </script>
 
 <template>
-  <div class="flex flex-col h-full">
+  <div class="min-h-screen bg-background px-6 py-4 space-y-12">
     <div class="pt-5">
-      <label class="input input-bordered flex items-center gap-2">
-        <input
-          v-model="searchInput"
-          type="text"
-          class="grow"
-          placeholder="Search"
-        />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 16 16"
-          fill="currentColor"
-          class="h-4 w-4 opacity-70"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </label>
+      <InputGroup>
+        <InputGroupInput placeholder="Search..." v-model="searchInput" />
+        <InputGroupAddon>
+          <SearchIcon />
+        </InputGroupAddon>
+        <InputGroupAddon v-if="searchInput.length > 0" align="inline-end">
+          {{ people.filter(c => containSearch(c.first_name ?? '')).length }}
+          results
+        </InputGroupAddon>
+      </InputGroup>
     </div>
 
     <div
@@ -97,34 +104,42 @@ function containSearch(user: string): boolean {
         @click="convClick(content.username)"
         class="select-none cursor-pointer flex flex-col items-center"
       >
-        <Avatar
-          type="squircle"
-          :src="content.avatar"
-          :username="content.username"
-        />
+        <Avatar>
+          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
         {{ content.first_name }}
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <Empty v-if="!conversations.length" text="You don't have a match yet" />
+    <Empty v-if="!people.length" text="You don't have a match yet" />
 
     <div v-else class="flex flex-col gap-2 overflow-y-auto h-[90%]">
-      <div
-        v-for="(content, index) in conversations"
-        :key="index"
-        @click="convClick(content.username)"
-      >
-        <UserCard
-          v-if="containSearch(content.first_name ?? '')"
-          :label="content.unread"
-          :lastMessage="content.last_message?.content"
-          :firstName="content.first_name ?? ''"
-          :avatar="content.avatar"
-          :username="content.username"
-        />
-      </div>
+      <ItemGroup>
+        <template v-for="(person, index) in people" :key="person.username">
+          <Item
+            @click="convClick(person.username)"
+            class="group relative flex items-center gap-3 transition-all duration-200 ease-out hover:bg-muted/50 active:bg-muted/80 cursor-pointer rounded-lg pl-4 pr-3 py-2.5 overflow-hidden before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-0 before:w-[3px] before:rounded-r-full before:bg-primary before:transition-all before:duration-300 before:ease-out hover:before:h-4/5"
+          >
+            <ItemMedia>
+              <Avatar>
+                <AvatarImage
+                  :src="person.avatar ?? 'https://github.com/shadcn.png'"
+                  class="grayscale"
+                />
+                <AvatarFallback>{{ person.username.charAt(0) }}</AvatarFallback>
+              </Avatar>
+            </ItemMedia>
+            <ItemContent class="gap-1">
+              <ItemTitle>{{ person.first_name }} {{ person.last_name }}</ItemTitle>
+              <ItemDescription>{{ person.last_message?.content }}</ItemDescription>
+            </ItemContent>
+          </Item>
+          <ItemSeparator class="my-0!" v-if="index !== people.length - 1" />
+        </template>
+      </ItemGroup>
     </div>
   </div>
 </template>

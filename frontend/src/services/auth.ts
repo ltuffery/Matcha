@@ -6,31 +6,26 @@ import type { JwtPayload, LoginResponse } from '@/types'
 export const login = async (
   username: string,
   password: string,
-): Promise<LoginResponse | Response | null> => {
-  try {
-    const response = await Api.post('/auth/login').send({
-      username: username,
-      password: password,
-    })
+): Promise<LoginResponse | Response> => {
+  const response = await Api.post('/auth/login').send({
+    username: username,
+    password: password,
+  })
 
-    if (response.ok) {
-      const data = (await response.json()) as LoginResponse
+  if (response.ok) {
+    const data = (await response.json()) as LoginResponse
 
-      localStorage.setItem('jwt', data.token)
-      localStorage.setItem('refresh', data.refresh)
+    localStorage.setItem('jwt', data.token)
+    localStorage.setItem('refresh', data.refresh)
 
-      const event = new Event('login')
+    const event = new Event('login')
 
-      window.dispatchEvent(event)
+    window.dispatchEvent(event)
 
-      return data
-    }
-
-    return response
-  } catch (error) {
-    console.error('Erreur de connexion:', error)
-    return null
+    return data
   }
+
+  return response
 }
 
 export const getToken = (): string | null => {

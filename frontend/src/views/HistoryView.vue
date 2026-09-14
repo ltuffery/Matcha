@@ -5,7 +5,7 @@ import { computed, onMounted, ref } from 'vue'
 import { Api } from '@/utils/api'
 import Avatar from '@/components/Avatar.vue'
 import { likesStore } from '@/store/likes'
-import Empty from '@/components/Empty.vue'
+import Empty from '@/components/core/Empty.vue'
 import type { User } from '@/types'
 
 interface HistoryData {

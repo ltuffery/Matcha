@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ImageSelector from '@/components/userForm/ImageSelector.vue'
+import ImageSelector from '@/components/forms/ImageSelector.vue'
 import TagSelector from '@/components/TagSelector.vue'
 import { useUserInfoStore } from '@/store/userInfo'
 import { Api } from '@/utils/api'

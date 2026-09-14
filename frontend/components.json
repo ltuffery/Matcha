@@ -4,9 +4,9 @@
   "font": "inter",
   "typescript": true,
   "tailwind": {
-    "config": "tailwind.config.ts",
+    "config": "",
     "css": "src/assets/main.css",
-    "baseColor": "neutral",
+    "baseColor": "pink",
     "cssVariables": true,
     "prefix": ""
   },

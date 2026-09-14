@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import BirthdaySelector from '@/components/userForm/BirthdaySelector.vue'
+import DateOfBirthPicker from '@/components/forms/DateOfBirthPicker.vue'
 import { Api } from '@/utils/api'
 import { logout } from '@/services/auth'
 import type { User } from '@/types'
@@ -226,7 +226,7 @@ const deleteAccount = () => {
   <div>
     <div class="card bg-muted gap-3 w-full p-5">
       <label>Birthday :</label>
-      <birthday-selector @input="sendChange" id="birthday" />
+      <date-of-birth-picker @input="sendChange" id="birthday" />
     </div>
   </div>
 

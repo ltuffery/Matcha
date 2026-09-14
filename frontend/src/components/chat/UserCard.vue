@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Avatar from '@/components/Avatar.vue'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 const props = defineProps<{
   avatar?: string
@@ -11,8 +11,11 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="flex rounded-lg cursor-pointer select-none hover:bg-muted">
-    <Avatar type="squircle" :src="props.avatar" :username="props.username as string ?? ''" />
+  <div class="flex rounded-lg cursor-pointer select-none hover:bg-muted justify-center items-center">
+    <Avatar class="w-15 h-15 m-4">
+      <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+      <AvatarFallback>CN</AvatarFallback>
+    </Avatar>
 
     <div class="grow flex flex-col gap-2 justify-center p-2 w-[80%]">
       <div class="flex justify-between w-full">
@@ -20,8 +23,16 @@ const props = defineProps<{
           {{ props.firstName }}
         </div>
         <div>
-          <div v-if="props.label && props.label > 99" class="badge badge-primary">99+</div>
-          <div v-else-if="props.label && props.label > 0" class="badge badge-primary">
+          <div
+            v-if="props.label && props.label > 99"
+            class="badge badge-primary"
+          >
+            99+
+          </div>
+          <div
+            v-else-if="props.label && props.label > 0"
+            class="badge badge-primary"
+          >
             {{ props.label }}
           </div>
         </div>

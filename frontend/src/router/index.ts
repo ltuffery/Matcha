@@ -4,8 +4,7 @@ import ConvView from '@/views/ConvView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { isAuthenticated } from '@/services/auth'
-import HomeView from '@/views/HomeView.vue'
-import MainView from '@/views/BrowseView.vue'
+import AuthView from '@/views/AuthView.vue'
 import { authGuard } from '@/middlewares/auth'
 import SearchUsersView from '@/views/SearchUsersView.vue'
 import SettingsView from '@/views/SettingsView.vue'
@@ -15,16 +14,17 @@ import UserProfileView from '@/views/UserProfileView.vue'
 import NotificationsView from '@/views/NotificationsView.vue'
 import NotFound from '@/views/NotFound.vue'
 import EditProfileView from '@/views/EditProfileView.vue'
+import HomeView from '@/views/HomeView.vue'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView,
+    name: 'auth',
+    component: AuthView,
     beforeEnter: (to, from, next) => {
       isAuthenticated().then(value => {
         if (value) {
-          next({ name: 'browse' })
+          next({ name: 'home' })
         } else {
           next()
         }
@@ -32,9 +32,9 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: '/browse',
-    name: 'browse',
-    component: MainView,
+    path: '/home',
+    name: 'home',
+    component: HomeView,
     beforeEnter: [authGuard],
   },
   {
@@ -60,19 +60,19 @@ const routes: RouteRecordRaw[] = [
     beforeEnter: [authGuard],
   },
   {
-    path: '/history',
-    name: 'history',
+    path: '/matches',
+    name: 'matches',
     component: HistoryView,
     beforeEnter: [authGuard],
   },
   {
-    path: '/chat',
-    name: 'chat',
+    path: '/messages',
+    name: 'messages',
     component: ChatView,
     beforeEnter: [authGuard],
   },
   {
-    path: '/chat/:username',
+    path: '/messages/:username',
     name: 'conversation',
     component: ConvView,
     beforeEnter: [authGuard],
