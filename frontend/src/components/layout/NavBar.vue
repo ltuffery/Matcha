@@ -30,7 +30,7 @@ const goTo = (path: string) => router.push(path)
 <template>
   <!-- ===== Desktop / tablette : sidebar verticale ===== -->
   <nav
-    class="hidden md:flex md:flex-col md:justify-between md:w-20 lg:w-64 md:h-screen md:sticky md:top-0 border-r bg-background"
+    class="hidden md:flex md:flex-col md:justify-between md:items-center lg:items-stretch md:w-20 lg:w-64 md:h-screen md:sticky md:top-0 border-r bg-background"
   >
     <div class="flex flex-col gap-2 p-3 mt-4">
       <button
@@ -45,7 +45,7 @@ const goTo = (path: string) => router.push(path)
             : 'text-muted-foreground',
         ]"
       >
-        <component :is="item.icon" class="h-6 w-6 shrink-0" />
+        <component :is="item.icon" class="h-6 w-6 shrink-0 md:items-center" />
         <span class="hidden lg:inline text-sm">{{ item.label }}</span>
       </button>
     </div>

@@ -19,16 +19,13 @@ export const usePreferencesStore = defineStore('preferences', () => {
   }
 
   function isChanged(newPrefs: Preferences): boolean {
-    if (preferences.value.age_minimum !== newPrefs.age_minimum) return true
-    if (preferences.value.age_maximum !== newPrefs.age_maximum) return true
-    if (preferences.value.distance_maximum !== newPrefs.distance_maximum)
-      return true
-    if (preferences.value.sexual_preferences !== newPrefs.sexual_preferences)
-      return true
-    if (preferences.value.by_tags !== newPrefs.by_tags) return true
-    if (preferences.value.lat !== newPrefs.lat) return true
-    if (preferences.value.lon !== newPrefs.lon) return true
-    if (preferences.value.is_custom_loc !== newPrefs.is_custom_loc) return true
+    let p: keyof Preferences; // no compilo error
+    for (p in newPrefs) {
+      if (preferences.value[p] !== newPrefs[p]) {
+        return true
+      }
+    }
+
     return false
   }
 

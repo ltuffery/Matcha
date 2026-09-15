@@ -2,74 +2,74 @@
 import ProfileView from '@/components/ProfileView.vue'
 import PreferencesSettings from '@/components/settings/PreferencesSettings.vue'
 import AccountSettings from '@/components/settings/AccountSettings.vue'
-import { ref } from 'vue'
-import { Api } from '@/utils/api'
 import LoadingScreen from '@/components/screen/LoadingScreen.vue'
+import { ref, onMounted } from 'vue'
+import { Api } from '@/utils/api'
 import router from '@/router'
 import { usePreferencesStore } from '@/store/preferences'
 import { useUserInfoStore } from '@/store/userInfo'
 import type { JwtPayload, User } from '@/types'
 
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+
 const loading = ref(true)
-const settingsCategory = ref(1)
 const profile = ref<Partial<User>>({})
+const activeTab = ref<'preferences' | 'account'>('preferences')
+
 const preferencesStore = usePreferencesStore()
 const userInfoStore = useUserInfoStore()
 
-Api.get('/users/me')
-  .send()
-  .then(res => res.json())
-  .then((data: User & { preferences: User['preferences'] }) => {
+const fetchProfile = async () => {
+  try {
+    const res = await Api.get('/users/me').send()
+    const data: User & { preferences: User['preferences'] } = await res.json()
+
     profile.value = data
     preferencesStore.setPreferences(data.preferences!)
     userInfoStore.set(data)
+  } finally {
     loading.value = false
-  })
-
-const changeSettings = (e: Event) => {
-  const target = e.target as HTMLElement
-  if (target.id === 'ac') {
-    settingsCategory.value = 2
-    target.id = 'pr'
-    target.innerHTML = 'Preferences Settings'
-  } else {
-    settingsCategory.value = 1
-    target.id = 'ac'
-    target.innerHTML = 'Account Settings'
   }
 }
 
 const goToProfile = () => {
-  const decoded = JSON.parse(atob(localStorage.jwt!.split('.')[1])) as JwtPayload
-  const username = decoded.username
-  router.push({ name: 'profile', params: { username } })
+  const decoded = JSON.parse(
+    atob(localStorage.jwt!.split('.')[1]),
+  ) as JwtPayload
+  router.push({ name: 'profile', params: { username: decoded.username } })
 }
+
+onMounted(fetchProfile)
 </script>
 
 <template>
   <LoadingScreen v-if="loading" />
 
-  <div v-else class="flex w-full h-full flex-col gap-3">
-    <div class="flex w-full items-center flex-col gap-6">
-      <div class="pt-14">
-        <ProfileView
-          class="w-20 h-36 cursor-pointer"
-          :images="profile.photos ?? []"
-          @click="goToProfile"
-        />
-      </div>
-      <div class="text-xl">{{ profile.first_name }}</div>
+  <div v-else class="flex w-full h-full flex-col gap-6">
+    <!-- Header profil -->
+    <div class="flex w-full flex-col items-center gap-4 pt-14">
+<!--      <ProfileView-->
+<!--        class="w-20 h-36 cursor-pointer rounded-lg overflow-hidden"-->
+<!--        :images="profile.photos ?? []"-->
+<!--        @click="goToProfile"-->
+<!--      />-->
+<!--      <div class="text-xl font-semibold">{{ profile.first_name }}</div>-->
     </div>
 
-    <div>
-      <div class="card bg-muted gap-3 w-full p-5">
-        <button @click="changeSettings" id="ac" class="btn">
-          Account Settings
-        </button>
-      </div>
-    </div>
-    <PreferencesSettings v-if="settingsCategory === 1" />
+    <!-- Onglets settings -->
+    <Tabs v-model="activeTab" default-value="preferences" class="w-full flex-col">
+      <TabsList class="grid w-full grid-cols-2">
+        <TabsTrigger value="preferences">Préférences</TabsTrigger>
+        <TabsTrigger value="account">Compte</TabsTrigger>
+      </TabsList>
 
-    <AccountSettings :data="profile" v-else />
+      <TabsContent value="preferences">
+        <PreferencesSettings />
+      </TabsContent>
+
+      <TabsContent value="account">
+        <AccountSettings :data="profile" />
+      </TabsContent>
+    </Tabs>
   </div>
 </template>

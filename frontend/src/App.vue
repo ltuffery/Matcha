@@ -2,9 +2,9 @@
 import { RouterView } from 'vue-router'
 import { isAuthenticated } from '@/services/auth'
 import { connectSocket } from '@/plugins/socket'
-import NavBar from '@/components/core/NavBar.vue'
+import NavBar from '@/components/layout/NavBar.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
-import Footer from '@/components/core/Footer.vue'
+import Footer from '@/components/layout/Footer.vue'
 import { Tracking } from '@/services/tracking'
 import { type BasicColorSchema, useColorMode } from '@vueuse/core'
 import DateOfBirthPicker from '@/components/forms/DateOfBirthPicker.vue'
@@ -52,10 +52,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex min-h-screen">
-    <NavBar large-screen v-if="isAuth" />
+  <div :class="{ 'flex min-h-screen': isAuth }">
+    <NavBar v-if="isAuth" />
 
-    <main :class="{ 'flex-1 pb-16 md:pb-0': isAuth }">
+    <main :class="{ 'h-full flex-1 pb-16 md:pb-0 px-20': isAuth }">
       <RouterView />
     </main>
 
