@@ -1,75 +1,97 @@
 <script setup lang="ts">
-import ProfileView from '@/components/ProfileView.vue'
-import PreferencesSettings from '@/components/settings/PreferencesSettings.vue'
-import AccountSettings from '@/components/settings/AccountSettings.vue'
-import LoadingScreen from '@/components/screen/LoadingScreen.vue'
-import { ref, onMounted } from 'vue'
-import { Api } from '@/utils/api'
-import router from '@/router'
-import { usePreferencesStore } from '@/store/preferences'
-import { useUserInfoStore } from '@/store/userInfo'
-import type { JwtPayload, User } from '@/types'
+import { ref } from 'vue'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  User,
+  Shield,
+  Heart,
+  CreditCard,
+  AlertTriangle,
+  Lock,
+} from 'lucide-vue-next'
+import AccountSection from '@/components/settings/sections/AccountSection.vue'
+import ProfileSection from '@/components/settings/sections/ProfileSection.vue'
+import PrivacySection from '@/components/settings/sections/PrivacySection.vue'
+import MatchingPreferencesSection from '@/components/settings/sections/MatchingPreferencesSection.vue'
+import SubscriptionSection from '@/components/settings/sections/SubscriptionSection.vue'
+import DangerAreaSection from '@/components/settings/sections/DangerAreaSection.vue'
 
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+const activeTab = ref('profile')
 
-const loading = ref(true)
-const profile = ref<Partial<User>>({})
-const activeTab = ref<'preferences' | 'account'>('preferences')
-
-const preferencesStore = usePreferencesStore()
-const userInfoStore = useUserInfoStore()
-
-const fetchProfile = async () => {
-  try {
-    const res = await Api.get('/users/me').send()
-    const data: User & { preferences: User['preferences'] } = await res.json()
-
-    profile.value = data
-    preferencesStore.setPreferences(data.preferences!)
-    userInfoStore.set(data)
-  } finally {
-    loading.value = false
-  }
-}
-
-const goToProfile = () => {
-  const decoded = JSON.parse(
-    atob(localStorage.jwt!.split('.')[1]),
-  ) as JwtPayload
-  router.push({ name: 'profile', params: { username: decoded.username } })
-}
-
-onMounted(fetchProfile)
+const navItems = [
+  { value: 'profile', label: 'Profile', icon: User },
+  { value: 'account', label: 'Account', icon: Lock },
+  { value: 'privacy', label: 'Privacy', icon: Shield },
+  { value: 'matching', label: 'Preferences', icon: Heart },
+  { value: 'billing', label: 'Subscription', icon: CreditCard },
+  { value: 'danger', label: 'Danger area', icon: AlertTriangle },
+]
 </script>
 
 <template>
-  <LoadingScreen v-if="loading" />
+  <div class="min-h-screen">
+    <div class="mx-auto max-w-6xl px-4 py-10">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight">Settings</h1>
+        <p class="text-muted-foreground mt-1">
+          Manage your profile, privacy settings, and preferences.
+        </p>
+      </div>
 
-  <div v-else class="flex w-full h-full flex-col gap-6">
-    <!-- Header profil -->
-    <div class="flex w-full flex-col items-center gap-4 pt-14">
-<!--      <ProfileView-->
-<!--        class="w-20 h-36 cursor-pointer rounded-lg overflow-hidden"-->
-<!--        :images="profile.photos ?? []"-->
-<!--        @click="goToProfile"-->
-<!--      />-->
-<!--      <div class="text-xl font-semibold">{{ profile.first_name }}</div>-->
+      <Tabs
+        v-model="activeTab"
+        orientation="vertical"
+        class="flex flex-col md:flex-row gap-8"
+      >
+        <!-- Sidebar nav -->
+        <TabsList
+          class="flex md:flex-col h-auto bg-transparent p-0 gap-1 md:w-64 shrink-0"
+        >
+          <TabsTrigger
+            v-for="item in navItems"
+            :key="item.value"
+            :value="item.value"
+            class="w-full justify-start gap-2 px-3 py-2.5 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg font-medium"
+          >
+            <component :is="item.icon" class="h-4 w-4" />
+            {{ item.label }}
+          </TabsTrigger>
+        </TabsList>
+
+        <!-- Content -->
+        <div class="flex-1 space-y-6">
+          <!-- PROFILE -->
+          <TabsContent value="profile" class="mt-0 space-y-6">
+            <ProfileSection />
+          </TabsContent>
+
+          <!-- ACCOUNT -->
+          <TabsContent value="account" class="mt-0 space-y-6">
+            <AccountSection />
+          </TabsContent>
+
+          <!-- PRIVACY -->
+          <TabsContent value="privacy" class="mt-0 space-y-6">
+            <PrivacySection />
+          </TabsContent>
+
+          <!-- MATCHING PREFERENCES -->
+          <TabsContent value="matching" class="mt-0 space-y-6">
+            <MatchingPreferencesSection />
+          </TabsContent>
+
+          <!-- SUBSCRIPTION -->
+          <TabsContent value="billing" class="mt-0 space-y-6">
+            <SubscriptionSection />
+          </TabsContent>
+
+          <!-- DANGER AREA -->
+          <TabsContent value="danger" class="mt-0 space-y-6">
+            <DangerAreaSection />
+          </TabsContent>
+        </div>
+      </Tabs>
     </div>
-
-    <!-- Onglets settings -->
-    <Tabs v-model="activeTab" default-value="preferences" class="w-full flex-col">
-      <TabsList class="grid w-full grid-cols-2">
-        <TabsTrigger value="preferences">Préférences</TabsTrigger>
-        <TabsTrigger value="account">Compte</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="preferences">
-        <PreferencesSettings />
-      </TabsContent>
-
-      <TabsContent value="account">
-        <AccountSettings :data="profile" />
-      </TabsContent>
-    </Tabs>
   </div>
 </template>

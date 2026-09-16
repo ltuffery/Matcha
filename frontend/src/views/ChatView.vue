@@ -77,7 +77,7 @@ Api.get('/users/me/matches')
 </script>
 
 <template>
-  <div class="h-screen bg-background py-4 flex gap-12 overflow-hidden">
+  <div class="h-screen border-x p-4 flex gap-12 overflow-hidden">
     <div class="hidden lg:block shrink-0 max-w-sm">
       <PeopleList @change="console.log" :matches="matches" :people="people" />
     </div>
