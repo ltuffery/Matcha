@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Api } from '@/utils/api'
+import { FlagIcon } from '@lucide/vue'
+import { Button } from '@/components/ui/button'
 
 const props = defineProps<{
   username: string
@@ -16,13 +18,12 @@ const sendReport = () => {
 </script>
 
 <template>
-  <button onclick="report_modal.showModal()">
-    <img
-      src="@/assets/icons/flag.svg"
-      alt="more option btn"
-      class="size-10 my-2 cursor-pointer"
-    />
-  </button>
+  <Button
+    class="flex size-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-lg backdrop-blur-xl transition-all duration-200 hover:scale-110 hover:bg-white/20 active:scale-90"
+    onclick="report_modal.showModal()"
+  >
+    <FlagIcon class="size-6" />
+  </Button>
   <dialog id="report_modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box">
       <h3 class="text-lg font-bold">Report</h3>

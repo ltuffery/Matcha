@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Home, Search, Heart, MessageCircle, Settings } from 'lucide-vue-next'
+import {
+  PlayingCardsFan,
+  Search,
+  Heart,
+  MessageCircle,
+  Settings,
+} from '@lucide/vue'
 
 interface NavItem {
   label: string
@@ -10,7 +16,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Home', icon: Home, path: '/home' },
+  { label: 'Home', icon: PlayingCardsFan, path: '/home' },
   { label: 'Search', icon: Search, path: '/search' },
   { label: 'Likes', icon: Heart, path: '/matches' },
   { label: 'Chat', icon: MessageCircle, path: '/messages' },

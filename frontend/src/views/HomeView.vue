@@ -14,18 +14,21 @@ const swiperInstance = ref<SwiperType | null>(null)
 const sections = ref<User[]>([
   {
     username: 'test',
-    biography: "dsfsdfsdfsd",
+    biography: 'dsfsdfsdfsd',
+    age: 22,
     photos: [
-      'https://randomuser.me/api/portraits/men/75.jpg',
-      'https://randomuser.me/api/portraits/men/74.jpg',
+      'https://images.unsplash.com/photo-1643023234393-776f2624061b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8OHwxMTU0MDcyNnx8ZW58MHx8fHx8',
+      'https://images.unsplash.com/photo-1552134378-71b4a8333430?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MTR8MTE1NDA3MjZ8fGVufDB8fHx8fA%3D%3D',
     ],
   },
   {
     username: 'test2',
-    biography: "sgojdgiofjg",
+    biography: 'sgojdgiofjg',
+    age: 30,
     photos: [
-      'https://randomuser.me/api/portraits/men/75.jpg',
-      'https://randomuser.me/api/portraits/men/74.jpg',
+      'https://images.unsplash.com/photo-1718749861351-918524751a6b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+      'https://images.unsplash.com/photo-1701163802834-46d90f8b452a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8M3wxMTU0MDcyNnx8ZW58MHx8fHx8',
+      'https://images.unsplash.com/photo-1645441261871-e468b99a8d7c?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     ],
   },
 ])
@@ -47,13 +50,13 @@ const goToNextSlide = () => {
     console.log("Swiper instance n'est pas encore prête.")
   }
 }
-
-getSocket().on('browsing', (user: User) => {
-  if (user !== null) {
-    sections.value.push(user)
-    skeleton.value = false
-  }
-})
+//
+// getSocket().on('browsing', (user: User) => {
+//   if (user !== null) {
+//     sections.value.push(user)
+//     skeleton.value = false
+//   }
+// })
 
 onMounted(() => {
   // getSocket().emit('browsing')
@@ -62,20 +65,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <!--  <div class="h-full w-full" v-if="skeleton">-->
-  <!--    <div class="h-[85%] w-full skeleton"></div>-->
-  <!--    <div>-->
-  <!--      <div class="skeleton h-10 w-2/6 mt-5"></div>-->
-  <!--      <div class="skeleton w-full h-5 mt-1"></div>-->
-  <!--    </div>-->
-  <!--  </div>-->
-
-  <div class="h-full w-full flex justify-center items-center">
-    <!--    <Filter class="absolute top-2 right-2 z-20" />-->
-
-    <div class="w-full h-full rounded-lg max-w-lg">
-      <swiper
-        ref="swiperRef"
+  <div
+    class="flex h-dvh w-full justify-center overflow-hidden rounded-lg py-4 pb-22 md:py-16"
+  >
+    <div class="relative h-full w-full max-w-lg">
+      <Swiper
         :direction="'vertical'"
         :slides-per-view="1"
         :loop="false"
@@ -92,20 +86,22 @@ onMounted(() => {
           },
         }"
         :modules="modules"
-        class="w-full h-full"
+        class="h-full! w-full! rounded-lg"
         @swiper="onSwiperInit"
         @slideChange="onSlideChange"
       >
-        <swiper-slide
+        <SwiperSlide
           v-for="(content, index) in sections"
           :key="index"
-          class="flex items-center justify-center h-full bg-gray-100"
+          class="h-full! flex! items-center justify-center rounded-lg"
         >
-          <div class="bg-muted h-full shadow-lg">
-            <MainUser @nextSlide="goToNextSlide" :user="content" />
-          </div>
-        </swiper-slide>
-      </swiper>
+          <MainUser
+            class="h-full w-full"
+            @nextSlide="goToNextSlide"
+            :user="content"
+          />
+        </SwiperSlide>
+      </Swiper>
     </div>
   </div>
 </template>
