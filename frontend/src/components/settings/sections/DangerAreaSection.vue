@@ -20,15 +20,15 @@ import { Button } from '@/components/ui/button'
     </CardHeader>
     <CardContent class="space-y-4">
       <div
-        class="flex items-center justify-between rounded-lg border border-destructive/50 p-4"
+        class="flex items-center justify-between rounded-lg border border-destructive/50 p-4 flex-col gap-4 md:flex-row md:gap-0"
       >
         <div>
           <p class="font-medium text-sm">Delete my Account</p>
-          <p class="text-sm text-muted-foreground">
+          <p class="text-sm text-muted-foreground mt-1">
             All of your data will be permanently deleted.
           </p>
         </div>
-        <Button variant="destructive">
+        <Button variant="destructive" class="w-full md:w-auto">
           <Trash2 class="h-4 w-4 mr-2" />
           Delete
         </Button>

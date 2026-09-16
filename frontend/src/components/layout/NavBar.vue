@@ -16,7 +16,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Home', icon: PlayingCardsFan, path: '/home' },
+  { label: 'Swipe', icon: PlayingCardsFan, path: '/home' },
   { label: 'Search', icon: Search, path: '/search' },
   { label: 'Likes', icon: Heart, path: '/matches' },
   { label: 'Chat', icon: MessageCircle, path: '/messages' },
