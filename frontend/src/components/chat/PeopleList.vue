@@ -14,10 +14,18 @@ import {
   ItemSeparator,
   ItemTitle,
 } from '@/components/ui/item'
-import Empty from '@/components/core/Empty.vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { computed, ref } from 'vue'
 import router from '@/router'
+import { UserGroupIcon } from '@lucide/vue'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
+import { Separator } from '@/components/ui/separator'
 
 interface ChatUser {
   username: string
@@ -57,7 +65,7 @@ const filteredPeople = computed(() => {
 })
 
 function convClick(username: string) {
-  router.push({ name: 'conversation', params: { username } })
+  router.push({ name: 'messages.user', params: { username } })
 }
 </script>
 
@@ -75,25 +83,41 @@ function convClick(username: string) {
     </InputGroup>
   </div>
 
-  <div
-    v-if="matches.length"
-    class="flex gap-2 overflow-x-auto mt-3 h-36 items-center"
-  >
-    <div
-      v-for="(content, index) in matches"
-      :key="index"
-      @click="convClick(content.username)"
-      class="select-none cursor-pointer flex flex-col items-center"
-    >
-      <Avatar>
-        <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
-      {{ content.first_name }}
+  <div v-if="matches.length" class="flex flex-col gap-2 mt-4">
+    <div class="flex gap-4 overflow-x-auto items-center">
+      <div
+        v-for="(content, index) in matches"
+        :key="index"
+        @click="convClick(content.username)"
+        class="select-none cursor-pointer flex flex-col items-center"
+      >
+        <Avatar class="h-12 w-12 cursor-pointer">
+          <AvatarImage :src="content.avatar ?? ''" :alt="content.username" />
+          <AvatarFallback>{{
+            content.username.charAt(0).toUpperCase()
+          }}</AvatarFallback>
+        </Avatar>
+        {{ content.first_name }}
+      </div>
     </div>
+
+    <Separator class="my-4" />
   </div>
 
-  <div class="divider"></div>
+  <Empty v-if="!people.length" class="flex">
+    <EmptyHeader>
+      <EmptyMedia variant="icon">
+        <UserGroupIcon />
+      </EmptyMedia>
+      <EmptyTitle>No one here</EmptyTitle>
+      <EmptyDescription v-if="!people.length && !matches.length">
+        You don't have a match yet
+      </EmptyDescription>
+      <EmptyDescription v-else>
+        No conversations have started
+      </EmptyDescription>
+    </EmptyHeader>
+  </Empty>
 
   <Empty v-if="!people.length" text="You don't have a match yet" class="mt-3" />
 

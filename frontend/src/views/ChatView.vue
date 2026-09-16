@@ -1,28 +1,7 @@
 <script setup lang="ts">
-import UserCard from '@/components/chat/UserCard.vue'
 import { Api } from '@/utils/api'
 import { ref } from 'vue'
-import router from '@/router'
-import Empty from '@/components/core/Empty.vue'
 import type { User } from '@/types'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { SearchIcon } from 'lucide-vue-next'
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from '@/components/ui/input-group'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemSeparator,
-  ItemTitle,
-} from '@/components/ui/item'
 import PeopleList from '@/components/chat/PeopleList.vue'
 import Conversation from '@/components/chat/Conversation.vue'
 
@@ -77,8 +56,8 @@ Api.get('/users/me/matches')
 </script>
 
 <template>
-  <div class="h-screen border-x p-4 flex gap-12 overflow-hidden">
-    <div class="hidden lg:block shrink-0 max-w-sm">
+  <div class="h-screen flex gap-12 overflow-hidden p-4">
+    <div class="hidden lg:block shrink-0 max-w-sm border rounded-lg p-4">
       <PeopleList @change="console.log" :matches="matches" :people="people" />
     </div>
     <div class="w-full min-w-0 min-h-0 flex flex-col">

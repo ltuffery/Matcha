@@ -18,10 +18,18 @@ export interface User {
   preferences?: Preferences
 }
 
+export interface SmallUser {
+  avatar: string
+  username: string
+  first_name: string
+  last_name: string
+}
+
 export interface MessageData {
-  content: string
   sender: string
-  isMe?: boolean
+  avatar: string
+  content: string
+  view: boolean
   created_at: string
 }
 

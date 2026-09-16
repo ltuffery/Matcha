@@ -10,7 +10,7 @@ export const authGuard = (
     if (value) {
       next()
     } else {
-      next({ name: 'home' })
+      next({ name: 'auth' })
     }
   })
 }

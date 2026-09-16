@@ -24,7 +24,7 @@ const navItems = [
   { value: 'privacy', label: 'Privacy', icon: Shield },
   { value: 'matching', label: 'Preferences', icon: Heart },
   { value: 'billing', label: 'Subscription', icon: CreditCard },
-  { value: 'danger', label: 'Danger area', icon: AlertTriangle },
+  { value: 'danger', label: 'Danger zone', icon: AlertTriangle },
 ]
 </script>
 

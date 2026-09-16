@@ -84,7 +84,7 @@ async function loginUserAccount(values: {
     )
 
     connectSocket()
-    router.push({ name: 'browse' })
+    await router.push({ name: 'home' })
     return
   }
 

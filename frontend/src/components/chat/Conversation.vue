@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { SendHorizontalIcon } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import {
+  SendHorizontalIcon,
+  MessagesCircleIcon,
+  MessageCircleIcon,
+} from '@lucide/vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Bubble, BubbleContent } from '@/components/ui/bubble'
 import {
@@ -21,58 +25,41 @@ import {
 import { Button } from '@/components/ui/button'
 import { CalendarPlusIcon, ChevronLeftIcon } from 'lucide-vue-next'
 import MoreButton from '@/components/chat/header/MoreButton.vue'
-
-interface MockMessage {
-  content: string
-  isMe: boolean
-}
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
+import { useRoute } from 'vue-router'
+import { Api } from '@/utils/api'
+import type { MessageData, SmallUser } from '@/types'
 
 interface MessageGroup {
   isMe: boolean
-  messages: MockMessage[]
+  messages: MessageData[]
 }
 
-const mockUser = {
-  username: 'lea.martin',
-  first_name: 'Léa',
-  last_name: 'Martin',
-  avatar: '',
-}
+const route = useRoute()
 
-const displayName = 'Léa Martin'
+const messages = ref<MessageData[]>([])
+const user = ref<SmallUser>()
 
-const mockMessages = ref<MockMessage[]>([
-  { content: "Salut ! J'ai vu qu'on avait matché 😄", isMe: false },
-  { content: "Hello ! Oui trop cool, j'adore ton profil", isMe: true },
-  { content: 'Merci ! Tu fais quoi dans la vie ?', isMe: false },
-  { content: 'Je suis développeur, et toi ?', isMe: true },
-  { content: 'Je suis photographe, Aussi', isMe: false },
-  { content: 'Je suis photographe, freelance', isMe: false },
-  { content: 'Je suis photographe, freelance', isMe: false },
-  { content: 'Je suis photographe, freelance', isMe: false },
-  { content: 'Je suis photographe, freelance', isMe: false },
-  {
-    content: 'Ah trop stylé ça, tu photographies quoi principalement ?',
-    isMe: true,
-  },
-  { content: 'Surtout du portrait et un peu de mariage', isMe: false },
-  {
-    content: "On devrait se voir autour d'un café un de ces jours ☕",
-    isMe: true,
-  },
-  { content: 'Avec plaisir, tu es dispo ce weekend ?', isMe: false },
-])
-
+const displayName = computed(
+  () => user.value?.first_name + ' ' + user.value?.last_name,
+)
 const messageGroups = computed<MessageGroup[]>(() => {
   const groups: MessageGroup[] = []
 
-  for (const message of mockMessages.value) {
+  for (const message of messages.value) {
     const lastGroup = groups[groups.length - 1]
+    const isMe = message.sender !== route.params.username
 
-    if (lastGroup && lastGroup.isMe === message.isMe) {
+    if (lastGroup && lastGroup.isMe === isMe) {
       lastGroup.messages.push(message)
     } else {
-      groups.push({ isMe: message.isMe, messages: [message] })
+      groups.push({ isMe: isMe, messages: [message] })
     }
   }
 
@@ -80,21 +67,69 @@ const messageGroups = computed<MessageGroup[]>(() => {
 })
 
 const suggestMsg = ['Salut ! 👋', 'Comment ça va ?', 'On se lance un café ?']
-
 const draft = ref('')
 
-const hasMessages = ref(true) // passe à false pour voir l'état vide
+const fetchMessages = async () => {
+  if (route.params.username === undefined) {
+    return
+  }
+
+  const response = await Api.get(
+    `/users/me/matches/${route.params.username}`,
+  ).send()
+
+  if (response.ok) {
+    const data: SmallUser & {
+      messages: MessageData[]
+    } = await response.json()
+
+    user.value = {
+      username: data.username,
+      avatar: data.avatar,
+      first_name: data.first_name,
+      last_name: data.last_name,
+    }
+    messages.value = data.messages
+  }
+}
 
 function sendMessage(content?: string) {
   const text = (content ?? draft.value).trim()
   if (!text) return
-  mockMessages.value.push({ content: text, isMe: true })
   draft.value = ''
 }
+
+watch(
+  () => route.params.username,
+  async () => {
+    await fetchMessages()
+  },
+  { immediate: true },
+)
+
+onMounted(async () => {
+  await fetchMessages()
+})
 </script>
 
 <template>
-  <div class="flex h-full min-h-0 flex-col">
+  <div
+    v-if="route.params.username === undefined"
+    class="flex h-full min-h-0 flex-col"
+  >
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <MessagesCircleIcon />
+        </EmptyMedia>
+        <EmptyTitle>No conversation selected</EmptyTitle>
+        <EmptyDescription>
+          Select a conversation so that its content is displayed here
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  </div>
+  <div v-else class="flex h-full min-h-0 flex-col">
     <header class="flex items-center gap-3 border-b px-4 py-3">
       <Button variant="ghost" class="lg:hidden">
         <ChevronLeftIcon />
@@ -102,12 +137,12 @@ function sendMessage(content?: string) {
 
       <Avatar class="size-10">
         <AvatarImage
-          v-if="mockUser.avatar"
-          :src="mockUser.avatar"
-          :alt="mockUser.username"
+          v-if="user?.avatar"
+          :src="user?.avatar"
+          :alt="user?.username"
         />
         <AvatarFallback>{{
-          mockUser.username.charAt(0).toUpperCase()
+          user?.username.charAt(0).toUpperCase()
         }}</AvatarFallback>
       </Avatar>
       <div class="min-w-0">
@@ -115,7 +150,7 @@ function sendMessage(content?: string) {
           {{ displayName }}
         </p>
         <p class="text-muted-foreground truncate text-xs">
-          {{ mockUser.username }}
+          {{ user?.username }}
         </p>
       </div>
 
@@ -134,7 +169,7 @@ function sendMessage(content?: string) {
 
     <div class="min-h-0 flex-1">
       <MessageScrollerProvider
-        v-if="hasMessages && mockMessages.length"
+        v-if="messageGroups.length > 0"
         default-scroll-position="last-anchor"
       >
         <MessageScroller>
@@ -171,14 +206,12 @@ function sendMessage(content?: string) {
       <div v-else class="flex h-full flex-col justify-end gap-10 p-4">
         <div class="flex flex-1 flex-col items-center justify-center gap-3">
           <div
-            class="bg-muted flex size-24 items-center justify-center rounded-full text-4xl"
+            class="bg-muted flex items-center justify-center rounded-full p-6"
           >
-            💬
+            <MessageCircleIcon class="h-8 w-8" />
           </div>
-          <p class="text-2xl">Aucun message</p>
-          <p class="text-muted-foreground text-sm">
-            Dis bonjour à {{ displayName }} — choisis une suggestion
-          </p>
+          <p class="text-2xl">No messages</p>
+          <p class="text-muted-foreground text-sm">Post the first message!</p>
         </div>
         <div class="flex w-full gap-2 overflow-x-auto pb-1">
           <button

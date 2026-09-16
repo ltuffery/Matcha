@@ -1,140 +1,157 @@
-<script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { Api } from '@/utils/api'
-import { likesStore } from '@/store/likes'
-import type { User } from '@/types'
-
+<script setup>
+import { ref, computed } from 'vue'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Heart, HeartOff } from 'lucide-vue-next'
-import Empty from '@/components/core/Empty.vue'
+import { Badge } from '@/components/ui/badge'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Heart, Eye, Clock } from 'lucide-vue-next'
+import ProfileHistoryCard from '@/components/history/ProfileHistoryCard.vue'
 
-interface HistoryData {
-  views: User[]
-  likes: User[]
+const isLoading = ref(false)
+
+const viewedProfiles = ref([
+  {
+    id: 1,
+    name: 'Emma',
+    age: 27,
+    avatar: 'https://i.pravatar.cc/150?img=32',
+    viewedAt: '2026-09-16T09:30:00',
+    city: 'Paris',
+  },
+  {
+    id: 2,
+    name: 'Léa',
+    age: 24,
+    avatar: 'https://i.pravatar.cc/150?img=45',
+    viewedAt: '2026-09-15T18:12:00',
+    city: 'Lyon',
+  },
+  {
+    id: 3,
+    name: 'Chloé',
+    age: 29,
+    avatar: 'https://i.pravatar.cc/150?img=47',
+    viewedAt: '2026-09-14T21:05:00',
+    city: 'Marseille',
+  },
+])
+
+const likedProfiles = ref([
+  {
+    id: 4,
+    name: 'Manon',
+    age: 26,
+    avatar: 'https://i.pravatar.cc/150?img=36',
+    likedAt: '2026-09-16T08:10:00',
+    city: 'Toulouse',
+    matched: true,
+  },
+  {
+    id: 5,
+    name: 'Camille',
+    age: 31,
+    avatar: 'https://i.pravatar.cc/150?img=38',
+    likedAt: '2026-09-13T14:45:00',
+    city: 'Nice',
+    matched: false,
+  },
+])
+
+function formatRelativeDate(dateString) {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now - date
+  const diffMin = Math.floor(diffMs / 60000)
+  const diffH = Math.floor(diffMin / 60)
+  const diffDays = Math.floor(diffH / 24)
+
+  if (diffMin < 60) return `There are ${diffMin} min`
+  if (diffH < 24) return `There are ${diffH} h`
+  if (diffDays === 1) return 'Yesterday'
+  return `There are ${diffDays} days`
 }
 
-const views = ref<User[]>()
-const loading = ref(true)
-const openDialogUsername = ref<string | null>(null)
-
-onMounted(async () => {
-  try {
-    const res = await Api.get('/users/me/history').send()
-    const data = (await res.json()) as HistoryData
-
-    views.value = data.views
-    likesStore().set(data.likes)
-  } finally {
-    loading.value = false
-  }
-})
-
-const likes = computed(() => likesStore().users)
-
-const confirmDeleteLike = (username: string) => {
-  likesStore().remove(username)
-  Api.delete(`/users/${username}/unlike`).send()
-  openDialogUsername.value = null
-}
+const viewedCount = computed(() => viewedProfiles.value.length)
+const likedCount = computed(() => likedProfiles.value.length)
 </script>
 
 <template>
-  <Tabs default-value="likes" class="max-w-3xl h-full m-auto pt-8">
-    <TabsList class="grid w-full grid-cols-2">
-      <TabsTrigger value="likes">Likes</TabsTrigger>
-      <TabsTrigger value="views">Vues</TabsTrigger>
-    </TabsList>
+  <div class="max-w-2xl mx-auto p-4 space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">History</h1>
+      <p class="text-sm text-muted-foreground">
+        See the profiles you've recently viewed and liked
+      </p>
+    </div>
 
-    <!-- LIKES -->
-    <TabsContent value="likes">
-      <Empty v-if="likes.length === 0" text="Aucun like" class="mt-12" />
+    <Tabs default-value="viewed" class="w-full">
+      <TabsList class="grid w-full grid-cols-2">
+        <TabsTrigger value="viewed" class="flex items-center gap-2">
+          <Eye class="h-4 w-4" />
+          Vus
+          <Badge variant="secondary">{{ viewedCount }}</Badge>
+        </TabsTrigger>
+        <TabsTrigger value="liked" class="flex items-center gap-2">
+          <Heart class="h-4 w-4" />
+          Likés
+          <Badge variant="secondary">{{ likedCount }}</Badge>
+        </TabsTrigger>
+      </TabsList>
 
-      <ul v-else class="divide-y">
-        <li
-          v-for="u in likes"
-          :key="u.username"
-          class="flex items-center justify-between p-4"
-        >
-          <div class="flex items-center gap-4 font-medium text-xl">
-            <Avatar class="rounded-lg h-12 w-12">
-              <AvatarImage :src="u.avatar ?? ''" :alt="u.username" />
-              <AvatarFallback>{{ u.first_name?.[0] }}</AvatarFallback>
-            </Avatar>
-            {{ u.first_name }}
+      <!-- VIEW -->
+      <TabsContent value="viewed">
+        <ScrollArea class="h-[70vh] pr-2">
+          <div v-if="isLoading" class="space-y-3">
+            <Skeleton v-for="i in 4" :key="i" class="h-20 w-full rounded-xl" />
           </div>
 
-          <Dialog
-            :open="openDialogUsername === u.username"
-            @update:open="v => (openDialogUsername = v ? u.username : null)"
+          <div
+            v-else-if="viewedProfiles.length === 0"
+            class="text-center py-16"
           >
-            <DialogTrigger as-child>
-              <Button
-                variant="ghost"
-                size="icon"
-                class="text-muted-foreground hover:text-destructive"
-              >
-                <Heart class="w-6 h-6" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent class="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Es-tu sûr ?</DialogTitle>
-                <DialogDescription>
-                  Cette action supprimera le like de {{ u.first_name }}.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter class="gap-2">
-                <Button variant="outline" @click="openDialogUsername = null">
-                  Annuler
-                </Button>
-                <Button
-                  variant="destructive"
-                  @click="confirmDeleteLike(u.username)"
-                >
-                  <HeartOff class="w-4 h-4 mr-2" />
-                  Supprimer
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </li>
-      </ul>
-    </TabsContent>
-
-    <!-- VIEWS -->
-    <TabsContent value="views">
-      <Empty
-        v-if="!views || views.length === 0"
-        text="Aucune vue"
-        class="mt-12"
-      />
-
-      <ul v-else class="divide-y">
-        <li
-          v-for="u in views"
-          :key="u.username"
-          class="flex items-center justify-between p-4"
-        >
-          <div class="flex items-center gap-4 font-medium text-xl">
-            <Avatar class="rounded-lg h-12 w-12">
-              <AvatarImage :src="u.avatar ?? ''" :alt="u.username" />
-              <AvatarFallback>{{ u.first_name?.[0] }}</AvatarFallback>
-            </Avatar>
-            {{ u.first_name }}
+            <Eye class="mx-auto h-10 w-10 text-muted-foreground mb-2" />
+            <p class="text-muted-foreground">
+              No profiles have been viewed yet
+            </p>
           </div>
-        </li>
-      </ul>
-    </TabsContent>
-  </Tabs>
+
+          <div v-else class="space-y-3">
+            <ProfileHistoryCard
+              v-for="profile in viewedProfiles"
+              :key="profile.id"
+              :profile="profile"
+              type="viewed"
+              :date-label="formatRelativeDate(profile.viewedAt)"
+            />
+          </div>
+        </ScrollArea>
+      </TabsContent>
+
+      <!-- LIKES -->
+      <TabsContent value="liked">
+        <ScrollArea class="h-[70vh] pr-2">
+          <div v-if="isLoading" class="space-y-3">
+            <Skeleton v-for="i in 4" :key="i" class="h-20 w-full rounded-xl" />
+          </div>
+
+          <div v-else-if="likedProfiles.length === 0" class="text-center py-16">
+            <Heart class="mx-auto h-10 w-10 text-muted-foreground mb-2" />
+            <p class="text-muted-foreground">
+              You haven't liked any profiles yet
+            </p>
+          </div>
+
+          <div v-else class="space-y-3">
+            <ProfileHistoryCard
+              v-for="profile in likedProfiles"
+              :key="profile.id"
+              :profile="profile"
+              type="liked"
+              :date-label="formatRelativeDate(profile.likedAt)"
+            />
+          </div>
+        </ScrollArea>
+      </TabsContent>
+    </Tabs>
+  </div>
 </template>

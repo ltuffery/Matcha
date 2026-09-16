@@ -1,6 +1,5 @@
 import HistoryView from '@/views/HistoryView.vue'
 import ChatView from '@/views/ChatView.vue'
-import ConvView from '@/views/ConvView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { isAuthenticated } from '@/services/auth'
@@ -73,8 +72,8 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/messages/:username',
-    name: 'conversation',
-    component: ConvView,
+    name: 'messages.user',
+    component: ChatView,
     beforeEnter: [authGuard],
   },
   {
