@@ -171,6 +171,7 @@ onMounted(async () => {
       <MessageScrollerProvider
         v-if="messageGroups.length > 0"
         default-scroll-position="last-anchor"
+        auto-scroll
       >
         <MessageScroller>
           <MessageScrollerViewport class="overflow-x-hidden">

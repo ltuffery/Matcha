@@ -15,7 +15,7 @@ import {
   ItemTitle,
 } from '@/components/ui/item'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import router from '@/router'
 import { UserGroupIcon } from '@lucide/vue'
 import {
@@ -26,6 +26,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { Separator } from '@/components/ui/separator'
+import { useRoute } from 'vue-router'
 
 interface ChatUser {
   username: string
@@ -55,6 +56,9 @@ const emit = defineEmits<{
   (e: 'change', value: string): void
 }>()
 
+const route = useRoute()
+
+const selectedUser = ref<string>('')
 const search = ref<string>('')
 const filteredPeople = computed(() => {
   const query = search.value.trim().toLowerCase()
@@ -67,6 +71,14 @@ const filteredPeople = computed(() => {
 function convClick(username: string) {
   router.push({ name: 'messages.user', params: { username } })
 }
+
+onMounted(() => {
+  selectedUser.value = route.params.username as string
+
+  watch(() => route.params.username, (newUsername) => {
+    selectedUser.value = newUsername as string
+  })
+})
 </script>
 
 <template>
@@ -128,8 +140,11 @@ function convClick(username: string) {
         :key="person.username"
       >
         <Item
-          @click="emit('change', person.username)"
-          class="group relative flex items-center gap-3 transition-all duration-200 ease-out hover:bg-muted/50 active:bg-muted/80 cursor-pointer rounded-lg pl-4 pr-3 py-2.5 overflow-hidden before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-0 before:w-0.75 before:rounded-r-full before:bg-primary before:transition-all before:duration-300 before:ease-out hover:before:h-4/5"
+          @click="convClick(person.username)"
+          class="group relative flex items-center gap-3 transition-all duration-200 ease-out hover:bg-muted/50 cursor-pointer rounded-lg pl-4 pr-3 py-2.5 overflow-hidden before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-0 before:w-0.75 before:rounded-r-full before:bg-primary before:transition-all before:duration-300 before:ease-out hover:before:h-4/5"
+          :class="{
+            'bg-muted before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-0.75 before:rounded-r-full before:bg-primary before:transition-all before:duration-300 before:ease-out before:h-4/5': route.params.username === person.username,
+          }"
         >
           <ItemMedia>
             <Avatar>
