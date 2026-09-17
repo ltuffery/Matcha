@@ -10,7 +10,8 @@
         "php": "^8.0",
         "chrisullyott/php-ip-api": "^1.0",
         "bluemmb/faker-picsum-photos-provider": "^2.0",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "predis/predis": "^3.6"
     },
     "require-dev": {
         "phpunit/phpunit": "*",

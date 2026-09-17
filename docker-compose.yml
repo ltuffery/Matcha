@@ -7,12 +7,11 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.address=:8011"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websocket.address=:3001"
+      - "--entrypoints.websocket.address=:4000"
     ports:
-      - "8011:80"
-      - "8443:443"
+      - "8011:8011"
       - "8081:8080"  # Dashboard Traefik
     volumes:
       - ${XDG_RUNTIME_DIR}/docker.sock:/var/run/docker.sock:ro
@@ -74,6 +73,12 @@ services:
       - "traefik.http.middlewares.api-stripprefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.api.middlewares=api-stripprefix"
 
+  redis:
+    image: redis:8.10-alpine
+    restart: unless-stopped
+    networks:
+      - matchaNetwork
+
   websocket:
     build:
       context: ./websocket/
@@ -84,14 +89,14 @@ services:
     networks:
       - matchaNetwork
     depends_on:
-      - mysql
+      - redis
     env_file:
       - .env
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.websocket.rule=Host(`localhost`) && PathPrefix(`/ws`)"
       - "traefik.http.routers.websocket.entrypoints=web"
-      - "traefik.http.services.websocket.loadbalancer.server.port=3001"
+      - "traefik.http.services.websocket.loadbalancer.server.port=4000"
       - "traefik.http.middlewares.ws-stripprefix.stripprefix.prefixes=/ws"
       - "traefik.http.routers.websocket.middlewares=ws-stripprefix"
 

@@ -36,6 +36,7 @@ import { useRoute } from 'vue-router'
 import { Api } from '@/utils/api'
 import type { MessageData, SmallUser } from '@/types'
 import router from '@/router'
+import { getSocket } from '@/plugins/socket'
 
 interface MessageGroup {
   isMe: boolean
@@ -97,6 +98,7 @@ const fetchMessages = async () => {
 function sendMessage(content?: string) {
   const text = (content ?? draft.value).trim()
   if (!text) return
+  getSocket().emit("send_message", {to_username: user.value?.username, content: text});
   draft.value = ''
 }
 

@@ -14,12 +14,10 @@ export async function connectSocket(): Promise<void> {
   const token = getToken()
   if (!token) return
 
-  const decoded = JSON.parse(atob(token.split('.')[1])) as JwtPayload
-
-  socket = io(`${location.hostname}/ws`, {
+  socket = io(`${location.hostname}`, {
     auth: {
-      username: decoded.username,
-      token: token,
+      path: "/ws/socket.io/",
+      auth: { token: token },
     },
   })
 
