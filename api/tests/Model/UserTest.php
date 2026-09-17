@@ -31,7 +31,8 @@ class UserTest extends TestCase
         $users = User::factory()->create();
 
         $users->birthday = "2000-01-01";
+        $currentYear = (int)date('Y');
 
-        $this->assertEquals(25, $users->getAge());
+        $this->assertEquals($currentYear - 2000, $users->getAge());
     }
 }

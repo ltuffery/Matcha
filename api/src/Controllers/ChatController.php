@@ -94,6 +94,7 @@ class ChatController
 
     public function delete(string $username, int $id): void
     {
+        echo $id;
         $message = Message::find([
             'id' => $id,
         ]);

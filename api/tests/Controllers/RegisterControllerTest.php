@@ -118,11 +118,12 @@ class RegisterControllerTest extends TestCase
 
     public function testPreferencesIsCreated(): void
     {
+        $currentYear = (int)date('Y');
         $response = $this->post('/auth/register', [
             'username' => "teste",
             'email' => 'email@test.com',
             'password' => "password",
-            'birthday' => "2004-12-04",
+            'birthday' => ($currentYear - 21) . "-12-04",
             'first_name' => 'John',
             'last_name' => 'Doe',
             'gender' => 'M',
