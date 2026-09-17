@@ -1,6 +1,13 @@
 <script lang="ts">
-import { defineComponent, inject, onBeforeMount, ref, VNode, watch } from 'vue'
-import { TabProps } from './Tabs.vue'
+import {
+  defineComponent,
+  inject,
+  onBeforeMount,
+  ref,
+  watch,
+  type VNode,
+} from 'vue'
+import type { TabProps } from './Tabs.vue'
 
 export default defineComponent({
   name: 'Tab',

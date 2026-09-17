@@ -1,73 +1,97 @@
-<script setup>
-import ProfileView from '@/components/ProfileView.vue'
-import PreferencesSettings from '@/components/settings/PreferencesSettings.vue'
-import AccountSettings from '@/components/settings/AccountSettings.vue'
+<script setup lang="ts">
 import { ref } from 'vue'
-import { Api } from '@/utils/api.js'
-import LoadingScreen from '@/components/screen/LoadingScreen.vue'
-import router from '@/router'
-import { usePreferencesStore } from '@/store/preferences.js'
-import { useUserInfoStore } from '@/store/userInfo.js'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  User,
+  Shield,
+  Heart,
+  CreditCard,
+  AlertTriangle,
+  Lock,
+} from 'lucide-vue-next'
+import AccountSection from '@/components/settings/sections/AccountSection.vue'
+import ProfileSection from '@/components/settings/sections/ProfileSection.vue'
+import PrivacySection from '@/components/settings/sections/PrivacySection.vue'
+import MatchingPreferencesSection from '@/components/settings/sections/MatchingPreferencesSection.vue'
+import SubscriptionSection from '@/components/settings/sections/SubscriptionSection.vue'
+import DangerAreaSection from '@/components/settings/sections/DangerAreaSection.vue'
 
-const loading = ref(true)
-const settingsCategory = ref(1)
-const profile = ref({})
-const preferencesStore = usePreferencesStore()
-const userInfoStore = useUserInfoStore()
+const activeTab = ref('profile')
 
-Api.get('/users/me')
-  .send()
-  .then(res => res.json())
-  .then(data => {
-    profile.value = data
-    preferencesStore.setPreferences(profile.value.preferences)
-    userInfoStore.set(profile.value)
-    loading.value = false
-  })
-
-const changeSettings = e => {
-  if (e.target.id === 'ac') {
-    settingsCategory.value = 2
-    e.target.id = 'pr'
-    e.target.innerHTML = 'Preferences Settings'
-  } else {
-    settingsCategory.value = 1
-    e.target.id = 'ac'
-    e.target.innerHTML = 'Account Settings'
-  }
-}
-
-const goToProfile = () => {
-  const decoded = JSON.parse(atob(localStorage.jwt.split('.')[1]))
-  const username = decoded.username
-  router.push({ name: 'profile', params: { username } })
-}
+const navItems = [
+  { value: 'profile', label: 'Profile', icon: User },
+  { value: 'account', label: 'Account', icon: Lock },
+  { value: 'privacy', label: 'Privacy', icon: Shield },
+  { value: 'matching', label: 'Preferences', icon: Heart },
+  { value: 'billing', label: 'Subscription', icon: CreditCard },
+  { value: 'danger', label: 'Danger zone', icon: AlertTriangle },
+]
 </script>
 
 <template>
-  <LoadingScreen v-if="loading" />
-
-  <div v-else class="flex w-full h-full flex-col gap-3">
-    <div class="flex w-full items-center flex-col gap-6">
-      <div class="pt-14">
-        <ProfileView
-          class="w-20 h-36 cursor-pointer"
-          :images="profile.photos"
-          @click="goToProfile"
-        />
+  <div class="min-h-screen">
+    <div class="mx-auto max-w-6xl px-4 py-10">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight">Settings</h1>
+        <p class="text-muted-foreground mt-1">
+          Manage your profile, privacy settings, and preferences.
+        </p>
       </div>
-      <div class="text-xl">{{ profile.first_name }}</div>
-    </div>
 
-    <div>
-      <div class="card bg-base-300 gap-3 w-full p-5">
-        <button @click="changeSettings" id="ac" class="btn">
-          Account Settings
-        </button>
-      </div>
-    </div>
-    <PreferencesSettings v-if="settingsCategory === 1" />
+      <Tabs
+        v-model="activeTab"
+        orientation="vertical"
+        class="flex flex-col md:flex-row gap-8"
+      >
+        <!-- Sidebar nav -->
+        <TabsList
+          class="flex md:flex-col h-auto bg-transparent p-0 gap-1 md:w-64 shrink-0"
+        >
+          <TabsTrigger
+            v-for="item in navItems"
+            :key="item.value"
+            :value="item.value"
+            class="w-full justify-start gap-2 px-3 py-2.5 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg font-medium"
+          >
+            <component :is="item.icon" class="h-4 w-4" />
+            {{ item.label }}
+          </TabsTrigger>
+        </TabsList>
 
-    <AccountSettings :data="profile" v-else />
+        <!-- Content -->
+        <div class="flex-1 space-y-6">
+          <!-- PROFILE -->
+          <TabsContent value="profile" class="mt-0 space-y-6">
+            <ProfileSection />
+          </TabsContent>
+
+          <!-- ACCOUNT -->
+          <TabsContent value="account" class="mt-0 space-y-6">
+            <AccountSection />
+          </TabsContent>
+
+          <!-- PRIVACY -->
+          <TabsContent value="privacy" class="mt-0 space-y-6">
+            <PrivacySection />
+          </TabsContent>
+
+          <!-- MATCHING PREFERENCES -->
+          <TabsContent value="matching" class="mt-0 space-y-6">
+            <MatchingPreferencesSection />
+          </TabsContent>
+
+          <!-- SUBSCRIPTION -->
+          <TabsContent value="billing" class="mt-0 space-y-6">
+            <SubscriptionSection />
+          </TabsContent>
+
+          <!-- DANGER AREA -->
+          <TabsContent value="danger" class="mt-0 space-y-6">
+            <DangerAreaSection />
+          </TabsContent>
+        </div>
+      </Tabs>
+    </div>
   </div>
 </template>

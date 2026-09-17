@@ -1,16 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { isAuthenticated } from './services/auth'
-import { connectSocket } from '@/plugins/socket.js'
-import NavBar from '@/components/NavBar.vue'
+import { isAuthenticated } from '@/services/auth'
+import { connectSocket } from '@/plugins/socket'
+import NavBar from '@/components/layout/NavBar.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
-import FooterView from '@/components/FooterView.vue'
-import { Tracking } from '@/services/tracking.js'
-import Notification from '@/components/notifications/Notification.vue'
+import Footer from '@/components/layout/Footer.vue'
+import { Tracking } from '@/services/tracking'
+import { type BasicColorSchema, useColorMode } from '@vueuse/core'
+import DateOfBirthPicker from '@/components/forms/DateOfBirthPicker.vue'
 
+const mode = useColorMode()
 const breakPointScreen = '(min-width: 70em)'
 
-const sizeScreen = ref(window.matchMedia(breakPointScreen))
+const sizeScreen = ref<MediaQueryList>(window.matchMedia(breakPointScreen))
 
 const isAuth = ref(false)
 
@@ -33,37 +35,34 @@ window.addEventListener('logout', () => {
 onMounted(async () => {
   const mediaQuery = window.matchMedia(breakPointScreen)
 
-  mediaQuery.addEventListener('change', e => {
-    sizeScreen.value = e
+  mediaQuery.addEventListener('change', () => {
+    sizeScreen.value = mediaQuery
   })
 
-  const theme = localStorage.getItem('theme')
-
-  if (theme !== null) {
-    document.querySelector('html').setAttribute('data-theme', theme)
-  }
+  const theme = localStorage.getItem('theme') as BasicColorSchema | null
+  mode.value = theme !== null ? theme : 'dark'
 })
 
 onUnmounted(() => {
   const mediaQuery = window.matchMedia(breakPointScreen)
-  mediaQuery.removeEventListener('change', e => {
-    sizeScreen.value = e
+  mediaQuery.removeEventListener('change', () => {
+    sizeScreen.value = mediaQuery
   })
 })
 </script>
 
 <template>
-  <NavBar large-screen v-if="isAuth && sizeScreen.matches" />
-  <div
-    class="flex flex-col bg-base-300 h-dvh w-full justify-center items-center"
-  >
-    <div
-      class="overflow-y-auto relative bg-base-200 h-full w-full max-w-3xl z-10"
+  <div :class="{ 'flex h-screen': isAuth }">
+    <NavBar v-if="isAuth" />
+
+    <main
+      :class="{
+        'flex w-full pb-20 md:pb-0 px-6 md:px-20 bg-muted/30': isAuth,
+      }"
     >
-      <Notification v-if="isAuth" class="absolute" />
       <RouterView />
-    </div>
-    <NavBar v-if="isAuth && !sizeScreen.matches" />
+    </main>
+
+    <!--  <Footer class="z-0" v-if="sizeScreen.matches" />-->
   </div>
-  <FooterView class="z-0" v-if="sizeScreen.matches" />
 </template>

@@ -1,19 +1,21 @@
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { Api } from '@/utils/api.js'
-import { notificationsStore } from '@/store/notifications.js'
-import { getSocket } from '@/plugins/socket.js'
+import { Api } from '@/utils/api'
+import { notificationsStore } from '@/store/notifications'
+import { getSocket } from '@/plugins/socket'
 import NotificationItem from '@/components/notifications/NotificationItem.vue'
-import router from '@/router/index.js'
+import router from '@/router'
+import type { NotificationData } from '@/types'
 
 const notifications = computed(() => {
+  const store = notificationsStore()
   const orderedNotification = [
     ...new Set(
-      notificationsStore()
+      store
         .getNotificationNotView()
-        .concat(notificationsStore().notifications),
+        .concat(store.notifications),
     ),
-  ]
+  ] as NotificationData[]
 
   return orderedNotification.slice(0, Math.min(orderedNotification.length, 5))
 })
@@ -26,15 +28,15 @@ const notificationNotViewed = computed(() =>
 
 onMounted(async () => {
   const res = await Api.get('/users/me/notifications').send()
-  const data = await res.json()
+  const data = (await res.json()) as NotificationData[]
 
   notificationsStore().set(
     data.sort(
-      (a, b) => new Date(b.data.created_at) - new Date(a.data.created_at),
+      (a, b) => new Date(b.data.created_at).getTime() - new Date(a.data.created_at).getTime(),
     ),
   )
 
-  getSocket().on('notification', notification => {
+  getSocket().on('notification', (notification: NotificationData) => {
     notificationsStore().add(notification)
   })
 })
@@ -75,7 +77,7 @@ onMounted(async () => {
     </button>
     <div
       tabindex="0"
-      class="menu dropdown-content bg-base-100 rounded-box z-20 max-w-96 p-2 shadow"
+      class="menu dropdown-content bg-background rounded-box z-20 max-w-96 p-2 shadow"
     >
       <h3 class="font-bold text-center py-2">Notification</h3>
       <div class="divider my-0"></div>

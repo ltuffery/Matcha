@@ -1,29 +1,31 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue'
 
-const toasts = ref([]),
-  stack = ref([])
+interface ToastData {
+  type: string
+  message: string
+  data?: {
+    title?: string
+    timeout?: number
+    action?: () => void
+    typebtn?: number
+  }
+}
 
-const props = defineProps({
-  maxToasts: {
-    type: Number,
-    default: 3,
-  },
-  posX: {
-    type: String,
-    default: 'center',
-  },
-  posY: {
-    type: String,
-    default: 'top',
-  },
-})
+const toasts = ref<ToastData[]>([])
+const stack = ref<ToastData[]>([])
 
-function selfDestroy(index) {
+const props = defineProps<{
+  maxToasts?: number
+  posX?: string
+  posY?: string
+}>()
+
+function selfDestroy(index: number) {
   toasts.value.splice(index, 1)
 }
 
-function setTimeOutItem(toast, timeout = 3000) {
+function setTimeOutItem(toast: ToastData, timeout = 3000) {
   setTimeout(() => {
     const index = toasts.value.indexOf(toast)
     if (index !== -1) {
@@ -34,8 +36,8 @@ function setTimeOutItem(toast, timeout = 3000) {
 
 watch(
   toasts,
-  (newToasts, oldToasts) => {
-    if (newToasts.length < props.maxToasts && stack.value.length > 0) {
+  newToasts => {
+    if (newToasts.length < (props.maxToasts ?? 3) && stack.value.length > 0) {
       const nextToast = stack.value.shift()
       if (nextToast) {
         toasts.value.push(nextToast)
@@ -46,10 +48,10 @@ watch(
   { deep: true },
 )
 
-function createToast(content, type, data) {
-  const toast = { type: type, message: content, data }
+function createToast(content: string, type: string, data?: ToastData['data']) {
+  const toast: ToastData = { type, message: content, data }
 
-  if (toasts.value.length < props.maxToasts) {
+  if (toasts.value.length < (props.maxToasts ?? 3)) {
     toasts.value.push(toast)
     setTimeOutItem(toast, data?.timeout || 3000)
   } else {
@@ -57,19 +59,19 @@ function createToast(content, type, data) {
   }
 }
 
-function addError(content, data = null) {
+function addError(content: string, data: ToastData['data'] = undefined) {
   createToast(content, 'error', data)
 }
 
-function addSuccess(content, data = null) {
+function addSuccess(content: string, data: ToastData['data'] = undefined) {
   createToast(content, 'success', data)
 }
 
-function addInfo(content, data = null) {
+function addInfo(content: string, data: ToastData['data'] = undefined) {
   createToast(content, 'info', data)
 }
 
-function addWarning(content, data = null) {
+function addWarning(content: string, data: ToastData['data'] = undefined) {
   createToast(content, 'warning', data)
 }
 
@@ -85,8 +87,8 @@ defineExpose({
   <div
     :class="[
       'toast',
-      `toast-${props.posY}`,
-      `toast-${props.posX}`,
+      `toast-${props.posY ?? 'top'}`,
+      `toast-${props.posX ?? 'center'}`,
       'overflow-y-auto',
     ]"
   >

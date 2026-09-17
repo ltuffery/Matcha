@@ -1,107 +1,160 @@
 <script setup>
-import Tabs from '@/components/tabs/Tabs.vue'
-import Tab from '@/components/tabs/Tab.vue'
-import { computed, onMounted, ref } from 'vue'
-import { Api } from '@/utils/api.js'
-import Avatar from '@/components/Avatar.vue'
-import { likesStore } from '@/store/likes.js'
-import Empty from '@/components/Empty.vue'
+import { ref, computed } from 'vue'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Badge } from '@/components/ui/badge'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Heart, Eye } from 'lucide-vue-next'
+import UserItem from '@/components/users/UserItem.vue'
 
-const views = ref()
+const isLoading = ref(false)
 
-onMounted(async () => {
-  const res = await Api.get('/users/me/history').send()
-  const data = await res.json()
+const viewedProfiles = ref([
+  {
+    id: 1,
+    first_name: 'Emma',
+    last_name: 'Martinez',
+    age: 27,
+    avatar: 'https://i.pravatar.cc/150?img=32',
+    viewedAt: '2026-09-16T09:30:00',
+    city: 'Paris',
+  },
+  {
+    id: 2,
+    first_name: 'Léa',
+    last_name: 'Martinez',
+    age: 24,
+    avatar: 'https://i.pravatar.cc/150?img=45',
+    viewedAt: '2026-09-15T18:12:00',
+    city: 'Lyon',
+  },
+  {
+    id: 3,
+    first_name: 'Chloé',
+    last_name: 'Martinez',
+    age: 29,
+    avatar: 'https://i.pravatar.cc/150?img=47',
+    viewedAt: '2026-09-14T21:05:00',
+    city: 'Marseille',
+  },
+])
 
-  views.value = data.views
-  likesStore().set(data.likes)
-})
+const likedProfiles = ref([
+  {
+    id: 4,
+    first_name: 'Manon',
+    last_name: 'Martinez',
+    age: 26,
+    avatar: 'https://i.pravatar.cc/150?img=36',
+    likedAt: '2026-09-16T08:10:00',
+    city: 'Toulouse',
+    matched: true,
+  },
+  {
+    id: 5,
+    first_name: 'Camille',
+    last_name: 'Martinez',
+    age: 31,
+    avatar: 'https://i.pravatar.cc/150?img=38',
+    likedAt: '2026-09-13T14:45:00',
+    city: 'Nice',
+    matched: false,
+  },
+])
 
-const likes = computed(() => likesStore().users)
+function formatRelativeDate(dateString) {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now - date
+  const diffMin = Math.floor(diffMs / 60000)
+  const diffH = Math.floor(diffMin / 60)
+  const diffDays = Math.floor(diffH / 24)
 
-const validDeleteLikeHandler = username => {
-  likesStore().remove(username)
-
-  Api.delete(`/users/${username}/unlike`).send()
+  if (diffMin < 60) return `There are ${diffMin} min`
+  if (diffH < 24) return `There are ${diffH} h`
+  if (diffDays === 1) return 'Yesterday'
+  return `There are ${diffDays} days`
 }
+
+const viewedCount = computed(() => viewedProfiles.value.length)
+const likedCount = computed(() => likedProfiles.value.length)
 </script>
 
 <template>
-  <Tabs class="max-w-3xl h-full m-auto pt-8">
-    <Tab name="Likes">
-      <Empty
-        v-if="likesStore().users.length === 0"
-        text="No likes"
-        class="mt-12"
-      />
+  <div class="w-full mx-auto p-4 space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight">History</h1>
+      <p class="text-sm text-muted-foreground">
+        See the profiles you've recently viewed and liked
+      </p>
+    </div>
 
-      <ul v-else>
-        <li
-          v-for="(u, index) in likes"
-          class="flex items-center justify-between p-4"
-          :key="index"
-        >
-          <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
-            <div class="modal-box">
-              <h3 class="text-lg font-bold">Are you sure ?</h3>
-              <p class="py-4">Are you sure you want to delete this like?</p>
-              <div class="modal-action">
-                <form method="dialog" class="flex gap-2">
-                  <button class="btn">No</button>
-                  <button
-                    @click="validDeleteLikeHandler(u.username)"
-                    class="btn btn-primary"
-                  >
-                    Yes
-                  </button>
-                </form>
-              </div>
-            </div>
-          </dialog>
-          <div class="flex items-center gap-4 font-medium text-xl">
-            <Avatar type="squircle" :src="u.avatar" :username="u.username" />
-            {{ u.first_name }}
+    <Tabs default-value="viewed" class="w-full">
+      <TabsList class="grid w-full grid-cols-2">
+        <TabsTrigger value="viewed" class="flex items-center gap-2">
+          <Eye class="h-4 w-4" />
+          Vus
+          <Badge variant="secondary">{{ viewedCount }}</Badge>
+        </TabsTrigger>
+        <TabsTrigger value="liked" class="flex items-center gap-2">
+          <Heart class="h-4 w-4" />
+          Likés
+          <Badge variant="secondary">{{ likedCount }}</Badge>
+        </TabsTrigger>
+      </TabsList>
+
+      <!-- VIEW -->
+      <TabsContent value="viewed">
+        <ScrollArea class="h-[70vh]">
+          <div v-if="isLoading" class="space-y-3">
+            <Skeleton v-for="i in 4" :key="i" class="h-20 w-full rounded-xl" />
           </div>
-          <svg
-            onclick="my_modal_5.showModal()"
-            class="w-12 cursor-pointer"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+
+          <div
+            v-else-if="viewedProfiles.length === 0"
+            class="text-center py-16"
           >
-            <g stroke-width="0"></g>
-            <g stroke-linecap="round" stroke-linejoin="round"></g>
-            <g>
-              <path
-                d="M8.96173 18.9109L9.42605 18.3219L8.96173 18.9109ZM12 5.50063L11.4596 6.02073C11.601 6.16763 11.7961 6.25063 12 6.25063C12.2039 6.25063 12.399 6.16763 12.5404 6.02073L12 5.50063ZM15.0383 18.9109L15.5026 19.4999L15.0383 18.9109ZM7.00061 16.4209C6.68078 16.1577 6.20813 16.2036 5.94491 16.5234C5.68169 16.8432 5.72758 17.3159 6.04741 17.5791L7.00061 16.4209ZM2.34199 13.4115C2.54074 13.7749 2.99647 13.9084 3.35988 13.7096C3.7233 13.5108 3.85677 13.0551 3.65801 12.6917L2.34199 13.4115ZM2.75 9.1371C2.75 6.98623 3.96537 5.18252 5.62436 4.42419C7.23607 3.68748 9.40166 3.88258 11.4596 6.02073L12.5404 4.98053C10.0985 2.44352 7.26409 2.02539 5.00076 3.05996C2.78471 4.07292 1.25 6.42503 1.25 9.1371H2.75ZM8.49742 19.4999C9.00965 19.9037 9.55954 20.3343 10.1168 20.6599C10.6739 20.9854 11.3096 21.25 12 21.25V19.75C11.6904 19.75 11.3261 19.6293 10.8736 19.3648C10.4213 19.1005 9.95208 18.7366 9.42605 18.3219L8.49742 19.4999ZM15.5026 19.4999C16.9292 18.3752 18.7528 17.0866 20.1833 15.4758C21.6395 13.8361 22.75 11.8026 22.75 9.1371H21.25C21.25 11.3345 20.3508 13.0282 19.0617 14.4798C17.7469 15.9603 16.0896 17.1271 14.574 18.3219L15.5026 19.4999ZM22.75 9.1371C22.75 6.42503 21.2153 4.07292 18.9992 3.05996C16.7359 2.02539 13.9015 2.44352 11.4596 4.98053L12.5404 6.02073C14.5983 3.88258 16.7639 3.68748 18.3756 4.42419C20.0346 5.18252 21.25 6.98623 21.25 9.1371H22.75ZM14.574 18.3219C14.0479 18.7366 13.5787 19.1005 13.1264 19.3648C12.6739 19.6293 12.3096 19.75 12 19.75V21.25C12.6904 21.25 13.3261 20.9854 13.8832 20.6599C14.4405 20.3343 14.9903 19.9037 15.5026 19.4999L14.574 18.3219ZM9.42605 18.3219C8.63014 17.6945 7.82129 17.0963 7.00061 16.4209L6.04741 17.5791C6.87768 18.2624 7.75472 18.9144 8.49742 19.4999L9.42605 18.3219ZM3.65801 12.6917C3.0968 11.6656 2.75 10.5033 2.75 9.1371H1.25C1.25 10.7746 1.66995 12.1827 2.34199 13.4115L3.65801 12.6917Z"
-                fill="currentColor"
-              ></path>
-              <path
-                d="M12 5.50073L10.5 8.5001L14 11.0001L11 14.5001L13 16.5001L12 20.5001"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              ></path>
-            </g>
-          </svg>
-        </li>
-      </ul>
-    </Tab>
-    <Tab name="Views">
-      <Empty v-if="views?.length === 0" text="No views" class="mt-12" />
-      <div v-else>
-        <div
-          v-for="(u, index) in views"
-          class="flex items-center justify-between p-4"
-          :key="index"
-        >
-          <div class="flex items-center gap-4 font-medium text-xl">
-            <Avatar type="squircle" :src="u.avatar" :username="u.username" />
-            {{ u.first_name }}
+            <Eye class="mx-auto h-10 w-10 text-muted-foreground mb-2" />
+            <p class="text-muted-foreground">
+              No profiles have been viewed yet
+            </p>
           </div>
-        </div>
-      </div>
-    </Tab>
-  </Tabs>
+
+          <div v-else class="space-y-3">
+            <UserItem
+              v-for="profile in viewedProfiles"
+              :key="profile.id"
+              :profile="profile"
+              :description="formatRelativeDate(profile.viewedAt)"
+            />
+          </div>
+        </ScrollArea>
+      </TabsContent>
+
+      <!-- LIKES -->
+      <TabsContent value="liked">
+        <ScrollArea class="h-[70vh]">
+          <div v-if="isLoading" class="space-y-3">
+            <Skeleton v-for="i in 4" :key="i" class="h-20 w-full rounded-xl" />
+          </div>
+
+          <div v-else-if="likedProfiles.length === 0" class="text-center py-16">
+            <Heart class="mx-auto h-10 w-10 text-muted-foreground mb-2" />
+            <p class="text-muted-foreground">
+              You haven't liked any profiles yet
+            </p>
+          </div>
+
+          <div v-else class="space-y-3">
+            <UserItem
+              v-for="profile in likedProfiles"
+              :key="profile.id"
+              :profile="profile"
+              :description="formatRelativeDate(profile.viewedAt)"
+            />
+          </div>
+        </ScrollArea>
+      </TabsContent>
+    </Tabs>
+  </div>
 </template>
