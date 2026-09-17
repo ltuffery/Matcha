@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { notificationsStore } from '@/store/notifications'
-import Avatar from '@/components/Avatar.vue'
 import { Api } from '@/utils/api'
 import type { NotificationData } from '@/types'
 
@@ -37,12 +36,6 @@ const markAsRead = async (notification: NotificationData) => {
         <tr v-for="(notification, index) in notifications" :key="index">
           <td>
             <div class="flex items-center gap-3">
-              <Avatar
-                type="squircle"
-                :username="notification.data.username"
-                :src="notification.data.avatar"
-                width="12"
-              />
               <div>
                 <div class="font-bold">{{ notification.data.username }}</div>
                 <div class="text-sm opacity-50">

@@ -4,15 +4,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Heart, Eye, Clock } from 'lucide-vue-next'
-import ProfileHistoryCard from '@/components/history/ProfileHistoryCard.vue'
+import { Heart, Eye } from 'lucide-vue-next'
+import UserItem from '@/components/users/UserItem.vue'
 
 const isLoading = ref(false)
 
 const viewedProfiles = ref([
   {
     id: 1,
-    name: 'Emma',
+    first_name: 'Emma',
+    last_name: 'Martinez',
     age: 27,
     avatar: 'https://i.pravatar.cc/150?img=32',
     viewedAt: '2026-09-16T09:30:00',
@@ -20,7 +21,8 @@ const viewedProfiles = ref([
   },
   {
     id: 2,
-    name: 'Léa',
+    first_name: 'Léa',
+    last_name: 'Martinez',
     age: 24,
     avatar: 'https://i.pravatar.cc/150?img=45',
     viewedAt: '2026-09-15T18:12:00',
@@ -28,7 +30,8 @@ const viewedProfiles = ref([
   },
   {
     id: 3,
-    name: 'Chloé',
+    first_name: 'Chloé',
+    last_name: 'Martinez',
     age: 29,
     avatar: 'https://i.pravatar.cc/150?img=47',
     viewedAt: '2026-09-14T21:05:00',
@@ -39,7 +42,8 @@ const viewedProfiles = ref([
 const likedProfiles = ref([
   {
     id: 4,
-    name: 'Manon',
+    first_name: 'Manon',
+    last_name: 'Martinez',
     age: 26,
     avatar: 'https://i.pravatar.cc/150?img=36',
     likedAt: '2026-09-16T08:10:00',
@@ -48,7 +52,8 @@ const likedProfiles = ref([
   },
   {
     id: 5,
-    name: 'Camille',
+    first_name: 'Camille',
+    last_name: 'Martinez',
     age: 31,
     avatar: 'https://i.pravatar.cc/150?img=38',
     likedAt: '2026-09-13T14:45:00',
@@ -116,12 +121,11 @@ const likedCount = computed(() => likedProfiles.value.length)
           </div>
 
           <div v-else class="space-y-3">
-            <ProfileHistoryCard
+            <UserItem
               v-for="profile in viewedProfiles"
               :key="profile.id"
               :profile="profile"
-              type="viewed"
-              :date-label="formatRelativeDate(profile.viewedAt)"
+              :description="formatRelativeDate(profile.viewedAt)"
             />
           </div>
         </ScrollArea>
@@ -142,12 +146,11 @@ const likedCount = computed(() => likedProfiles.value.length)
           </div>
 
           <div v-else class="space-y-3">
-            <ProfileHistoryCard
+            <UserItem
               v-for="profile in likedProfiles"
               :key="profile.id"
               :profile="profile"
-              type="liked"
-              :date-label="formatRelativeDate(profile.likedAt)"
+              :description="formatRelativeDate(profile.viewedAt)"
             />
           </div>
         </ScrollArea>
