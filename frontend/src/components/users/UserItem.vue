@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import type { User } from '@/types'
 import { onMounted, ref } from 'vue'
+import router from '@/router'
 
 const props = defineProps<{
   profile: User
@@ -27,6 +28,15 @@ const getInitials = (name: string) =>
     .join('')
     .slice(0, 2)
     .toUpperCase()
+
+const toProfile = () => {
+  router.push({
+    name: 'profile',
+    params: {
+      username: props.profile.username,
+    },
+  })
+}
 
 onMounted(() => {
   displayName.value = props.profile.first_name + ' ' + props.profile.last_name
@@ -51,6 +61,7 @@ onMounted(() => {
         variant="outline"
         class="rounded-full"
         aria-label="Invite"
+        @click="toProfile()"
       >
         <ArrowRightIcon />
       </Button>
