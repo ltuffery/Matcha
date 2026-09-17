@@ -66,7 +66,7 @@ onMounted(() => {
 
 <template>
   <div
-    class="flex h-dvh w-full justify-center overflow-hidden rounded-lg py-4"
+    class="flex w-full justify-center overflow-hidden rounded-lg py-4"
   >
     <div class="relative h-full w-full max-w-lg">
       <Swiper
