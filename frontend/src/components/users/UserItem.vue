@@ -34,7 +34,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Item variant="outline">
+  <Item variant="outline" class="w-full">
     <ItemMedia>
       <Avatar class="size-10">
         <AvatarImage :src="profile.avatar ?? ''" />

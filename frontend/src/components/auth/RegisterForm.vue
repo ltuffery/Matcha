@@ -43,14 +43,14 @@ const images = ref<ImageItem[]>([])
 
 const formSchema = [
   z.object({
-    username: z.string().min(2, 'Username requis'),
-    email: z.string().email('Email invalide'),
-    password: z.string().min(8, 'Minimum 8 caractères'),
+    username: z.string().min(2, 'Username required'),
+    email: z.string().email('Invalid email'),
+    password: z.string().min(8, 'Minimum 8 character'),
   }),
   z.object({
-    first_name: z.string().min(2, 'Prénom requis'),
-    last_name: z.string().min(2, 'Nom requis'),
-    birthday: z.string().min(1, 'Date de naissance requise'),
+    first_name: z.string().min(2, 'First name required'),
+    last_name: z.string().min(2, 'Last name required'),
+    birthday: z.string().min(1, 'Date of birthday required'),
   }),
   z.object({
     gender: z.enum(['M', 'F', 'O'], {
@@ -62,10 +62,7 @@ const formSchema = [
     tags: z.array(z.string()).optional(),
   }),
   z.object({
-    photos: z.custom(
-      () => images.value.length > 0,
-      'Ajoute au moins une photo',
-    ),
+    photos: z.custom(() => images.value.length > 0, 'Add at least one photo'),
   }),
 ]
 

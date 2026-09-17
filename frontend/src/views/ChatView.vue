@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import type { User } from '@/types'
 import PeopleList from '@/components/chat/PeopleList.vue'
 import Conversation from '@/components/chat/Conversation.vue'
+import { useRoute } from 'vue-router'
 
 interface ChatUser {
   username: string
@@ -23,6 +24,8 @@ interface ChatUser {
   last_message?: { content: string; created_at: string }
   unread?: number
 }
+
+const route = useRoute()
 
 const matches = ref<ChatUser[]>([])
 const people = ref<ChatUser[]>([])
@@ -56,11 +59,23 @@ Api.get('/users/me/matches')
 </script>
 
 <template>
-  <div class="h-screen flex gap-12 overflow-hidden p-4">
-    <div class="hidden lg:block shrink-0 max-w-sm border rounded-lg p-4">
+  <div class="h-full flex gap-12 py-4">
+    <div
+      class="w-full h-full overflow-y-hidden max-w-sm border rounded-lg p-4 lg:flex"
+      :class="{
+        flex: route.params.username == null,
+        hidden: route.params.username != null,
+      }"
+    >
       <PeopleList @change="console.log" :matches="matches" :people="people" />
     </div>
-    <div class="w-full min-w-0 min-h-0 flex flex-col">
+    <div
+      class="w-full min-w-0 min-h-0 flex-col lg:flex"
+      :class="{
+        flex: route.params.username != null,
+        hidden: route.params.username == null,
+      }"
+    >
       <Conversation
         :user="selectedUser"
         class="min-w-0 overflow-x-hidden flex min-h-0"

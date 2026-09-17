@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/empty'
 import { Separator } from '@/components/ui/separator'
 import { useRoute } from 'vue-router'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface ChatUser {
   username: string
@@ -75,14 +76,17 @@ function convClick(username: string) {
 onMounted(() => {
   selectedUser.value = route.params.username as string
 
-  watch(() => route.params.username, (newUsername) => {
-    selectedUser.value = newUsername as string
-  })
+  watch(
+    () => route.params.username,
+    newUsername => {
+      selectedUser.value = newUsername as string
+    },
+  )
 })
 </script>
 
 <template>
-  <div class="pt-5">
+  <div class="h-full flex flex-col gap-2">
     <InputGroup>
       <InputGroupInput placeholder="Search..." v-model="search" />
       <InputGroupAddon>
@@ -93,7 +97,6 @@ onMounted(() => {
         results
       </InputGroupAddon>
     </InputGroup>
-  </div>
 
   <div v-if="matches.length" class="flex flex-col gap-2 mt-4">
     <div class="flex gap-4 overflow-x-auto items-center">
@@ -113,62 +116,66 @@ onMounted(() => {
       </div>
     </div>
 
-    <Separator class="my-4" />
+    <Separator />
   </div>
 
-  <Empty v-if="!people.length" class="flex">
-    <EmptyHeader>
-      <EmptyMedia variant="icon">
-        <UserGroupIcon />
-      </EmptyMedia>
-      <EmptyTitle>No one here</EmptyTitle>
-      <EmptyDescription v-if="!people.length && !matches.length">
-        You don't have a match yet
-      </EmptyDescription>
-      <EmptyDescription v-else>
-        No conversations have started
-      </EmptyDescription>
-    </EmptyHeader>
-  </Empty>
+    <Empty v-if="!people.length" class="flex">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <UserGroupIcon />
+        </EmptyMedia>
+        <EmptyTitle>No one here</EmptyTitle>
+        <EmptyDescription v-if="!people.length && !matches.length">
+          You don't have a match yet
+        </EmptyDescription>
+        <EmptyDescription v-else>
+          No conversations have started
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>
 
-  <Empty v-if="!people.length" text="You don't have a match yet" class="mt-3" />
-
-  <div v-else class="flex flex-col gap-2 overflow-y-auto h-[90%] mt-3">
-    <ItemGroup>
-      <template
-        v-for="(person, index) in filteredPeople"
-        :key="person.username"
-      >
-        <Item
-          @click="convClick(person.username)"
-          class="group relative flex items-center gap-3 transition-all duration-200 ease-out hover:bg-muted/50 cursor-pointer rounded-lg pl-4 pr-3 py-2.5 overflow-hidden before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-0 before:w-0.75 before:rounded-r-full before:bg-primary before:transition-all before:duration-300 before:ease-out hover:before:h-4/5"
-          :class="{
-            'bg-muted before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-0.75 before:rounded-r-full before:bg-primary before:transition-all before:duration-300 before:ease-out before:h-4/5': route.params.username === person.username,
-          }"
-        >
-          <ItemMedia>
-            <Avatar>
-              <AvatarImage
-                :src="person.avatar ?? 'https://github.com/shadcn.png'"
-                class="grayscale"
-              />
-              <AvatarFallback>{{ person.username.charAt(0) }}</AvatarFallback>
-            </Avatar>
-          </ItemMedia>
-          <ItemContent class="gap-1">
-            <ItemTitle
-              >{{ person.first_name }} {{ person.last_name }}</ItemTitle
+    <div v-else class="flex-1 min-h-0">
+      <ScrollArea class="h-full w-full">
+        <ItemGroup>
+          <template
+            v-for="(person, index) in filteredPeople"
+            :key="person.username"
+          >
+            <Item
+              @click="convClick(person.username)"
+              class="group relative flex items-center gap-3 transition-all duration-200 ease-out hover:bg-muted/50 cursor-pointer rounded-lg pl-4 pr-3 py-2.5 overflow-hidden before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-0 before:w-0.75 before:rounded-r-full before:bg-primary before:transition-all before:duration-300 before:ease-out hover:before:h-4/5"
+              :class="{
+                'bg-muted before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-0.75 before:rounded-r-full before:bg-primary before:transition-all before:duration-300 before:ease-out before:h-4/5':
+                  route.params.username === person.username,
+              }"
             >
-            <ItemDescription>{{
-              person.last_message?.content
-            }}</ItemDescription>
-          </ItemContent>
-        </Item>
-        <ItemSeparator
-          class="my-0!"
-          v-if="index !== filteredPeople.length - 1"
-        />
-      </template>
-    </ItemGroup>
+              <ItemMedia>
+                <Avatar>
+                  <AvatarImage
+                    :src="person.avatar ?? 'https://github.com/shadcn.png'"
+                    class="grayscale"
+                  />
+                  <AvatarFallback>{{
+                    person.username.charAt(0)
+                  }}</AvatarFallback>
+                </Avatar>
+              </ItemMedia>
+              <ItemContent class="gap-1">
+                <ItemTitle
+                  >{{ person.first_name }} {{ person.last_name }}</ItemTitle
+                >
+                <ItemDescription>{{
+                  person.last_message?.content
+                }}</ItemDescription>
+              </ItemContent>
+            </Item>
+            <ItemSeparator
+              class="my-0!"
+              v-if="index < filteredPeople.length - 1"
+            />
+          </template>
+        </ItemGroup>
+      </ScrollArea>
+    </div>
   </div>
 </template>

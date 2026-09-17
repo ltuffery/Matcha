@@ -35,6 +35,7 @@ import {
 import { useRoute } from 'vue-router'
 import { Api } from '@/utils/api'
 import type { MessageData, SmallUser } from '@/types'
+import router from '@/router'
 
 interface MessageGroup {
   isMe: boolean
@@ -131,7 +132,7 @@ onMounted(async () => {
   </div>
   <div v-else class="flex h-full min-h-0 flex-col">
     <header class="flex items-center gap-3 border-b px-4 py-3">
-      <Button variant="ghost" class="lg:hidden">
+      <Button @click="router.push({ name: 'messages' })" variant="ghost" class="lg:hidden">
         <ChevronLeftIcon />
       </Button>
 

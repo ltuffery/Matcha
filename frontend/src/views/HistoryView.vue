@@ -81,7 +81,7 @@ const likedCount = computed(() => likedProfiles.value.length)
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto p-4 space-y-6">
+  <div class="mx-auto p-4 space-y-6">
     <div>
       <h1 class="text-2xl font-bold tracking-tight">History</h1>
       <p class="text-sm text-muted-foreground">
@@ -105,7 +105,7 @@ const likedCount = computed(() => likedProfiles.value.length)
 
       <!-- VIEW -->
       <TabsContent value="viewed">
-        <ScrollArea class="h-[70vh] pr-2">
+        <ScrollArea class="h-[70vh]">
           <div v-if="isLoading" class="space-y-3">
             <Skeleton v-for="i in 4" :key="i" class="h-20 w-full rounded-xl" />
           </div>
@@ -133,7 +133,7 @@ const likedCount = computed(() => likedProfiles.value.length)
 
       <!-- LIKES -->
       <TabsContent value="liked">
-        <ScrollArea class="h-[70vh] pr-2">
+        <ScrollArea class="h-[70vh]">
           <div v-if="isLoading" class="space-y-3">
             <Skeleton v-for="i in 4" :key="i" class="h-20 w-full rounded-xl" />
           </div>
