@@ -81,7 +81,7 @@ const likedCount = computed(() => likedProfiles.value.length)
 </script>
 
 <template>
-  <div class="mx-auto p-4 space-y-6">
+  <div class="w-full mx-auto p-4 space-y-6">
     <div>
       <h1 class="text-2xl font-bold tracking-tight">History</h1>
       <p class="text-sm text-muted-foreground">

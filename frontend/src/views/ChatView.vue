@@ -59,7 +59,7 @@ Api.get('/users/me/matches')
 </script>
 
 <template>
-  <div class="h-full flex gap-12 py-4">
+  <div class="w-full h-full flex gap-12 py-4">
     <div
       class="w-full h-full overflow-y-hidden max-w-sm border rounded-lg p-4 lg:flex"
       :class="{

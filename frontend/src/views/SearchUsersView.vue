@@ -53,7 +53,7 @@ const clearSearch = () => {
 </script>
 
 <template>
-  <div class="max-w-3xl h-full m-auto pt-8 px-4">
+  <div class="w-full h-full m-auto pt-8 px-4">
     <div class="relative">
       <Search
         class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
