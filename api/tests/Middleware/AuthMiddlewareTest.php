@@ -1,16 +1,16 @@
 <?php
 
+namespace Middleware;
+
 use Firebase\JWT\JWT;
 use Flight;
 use Matcha\Api\Middleware\AuthMiddleware;
 use Matcha\Api\Testing\Cases\HttpTestCase;
 use Matcha\Api\Testing\TestResponse;
-use PHPUnit\Framework\TestCase;
+use Tests\MatchaTestCase;
 
-class AuthMiddlewareTest extends TestCase
+class AuthMiddlewareTest extends MatchaTestCase
 {
-    use HttpTestCase;
-
     private AuthMiddleware $middleware;
     private TestResponse $response;
 
@@ -21,12 +21,6 @@ class AuthMiddlewareTest extends TestCase
         $this->response = new TestResponse();
 
         // ob_start();
-    }
-
-    public function tearDown(): void
-    {
-        // ob_end_clean();
-        Flight::response()->clear();
     }
 
     public function testNoAuthorizationHeaderGiven(): void

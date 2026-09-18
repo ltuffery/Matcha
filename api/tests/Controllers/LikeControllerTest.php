@@ -1,15 +1,17 @@
 <?php
 
+namespace Controllers;
+
 use Matcha\Api\Controllers\LikeController;
 use Matcha\Api\Exceptions\UniqueConstraintException;
 use Matcha\Api\Model\Like;
 use Matcha\Api\Model\User;
-use PHPUnit\Framework\TestCase;
+use Tests\MatchaTestCase;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
 use Matcha\Api\Testing\Cases\HttpTestCase;
 use Matcha\Api\Testing\TestResponse;
 
-class LikeControllerTest extends TestCase
+class LikeControllerTest extends MatchaTestCase
 {
     use DatabaseTestCase;
     use HttpTestCase;
@@ -20,14 +22,9 @@ class LikeControllerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->setUpDatabase();
+        parent::setUp();
 
         $this->user = User::factory()->create();
-    }
-
-    public function tearDown(): void
-    {
-        Flight::response()->clear();
     }
 
     public function testLikeUserNotFound(): void

@@ -1,15 +1,19 @@
-FROM composer:2.0
+FROM dunglas/frankenphp:latest-alpine
 
 WORKDIR /app
 
 RUN apk add --no-cache \
-    php8-pdo \
-    php8-pdo_mysql \
-    php8-mysqli \
-    mysql-client \
-    libpng-dev
+    git \
+    unzip \
+    libpng-dev \
+    mysql-client
 
-RUN docker-php-ext-install pdo pdo_mysql gd
+RUN install-php-extensions \
+    pdo_mysql \
+    mysqli \
+    gd
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY --chmod=777 ./entrypoint_docker.sh .
 ENTRYPOINT ["sh", "entrypoint_docker.sh"]

@@ -1,13 +1,12 @@
 <?php
 
+namespace Model;
+
 use Matcha\Api\Model\User;
-use Matcha\Api\Testing\Cases\DatabaseTestCase;
-use PHPUnit\Framework\TestCase;
+use Tests\MatchaTestCase;
 
-class ModelTest extends TestCase
+class ModelTest extends MatchaTestCase
 {
-    use DatabaseTestCase;
-
     private User $user;
 
     public function setUp(): void
@@ -21,7 +20,7 @@ class ModelTest extends TestCase
     {
         $this->user = new User();
 
-        $this->user->username = "test";
+        $this->user->username = "example";
         $this->user->email = "test@test.com";
         $this->user->password = "pass";
         $this->user->birthday = "2000-05-21";
@@ -54,7 +53,7 @@ class ModelTest extends TestCase
         $user = $this->createUser();
 
         $this->assertEquals(1, $user->id);
-        $this->assertEquals("test", $user->username);
+        $this->assertEquals("example", $user->username);
         $this->assertEquals("pass", $user->password);
     }
 
@@ -71,7 +70,7 @@ class ModelTest extends TestCase
 
     public function testSaveWhenModelIsNew(): void
     {
-        $this->user->username = "test";
+        $this->user->username = "testaaa";
         $this->user->email = "test@test.com";
         $this->user->password = "pass";
         $this->user->birthday = "2000-05-21";
@@ -82,7 +81,7 @@ class ModelTest extends TestCase
         $user = $this->user->save();
 
         $this->assertEquals(1, $user->id);
-        $this->assertEquals("test", $user->username);
+        $this->assertEquals("testaaa", $user->username);
         $this->assertEquals("pass", $user->password);
     }
 
@@ -105,23 +104,23 @@ class ModelTest extends TestCase
     public function testFillModel(): void
     {
         $this->user->fill([
-            'username' => "test",
+            'username' => "testaaa",
         ]);
 
-        $this->assertEquals("test", $this->user->username);
+        $this->assertEquals("testaaa", $this->user->username);
         $this->assertFalse(isset($this->user->email));
     }
 
     public function testMorphModel(): void
     {
         $user = User::morph([
-            'username' => 'test',
+            'username' => 'testaaa',
             'email' => 'test@test.com',
             'password' => 'pass',
         ]);
 
         $this->assertEquals(0, $user->id);
-        $this->assertEquals("test", $user->username);
+        $this->assertEquals("testaaa", $user->username);
         $this->assertEquals("test@test.com", $user->email);
         $this->assertEquals("pass", $user->password);
         $this->assertFalse(isset($user->first_name));
@@ -143,12 +142,12 @@ class ModelTest extends TestCase
         $this->createUser();
 
         $user = User::find([
-            'username' => "test",
+            'username' => "example",
         ]);
 
         $this->assertNotNull($user);
         $this->assertEquals(1, $user->id);
-        $this->assertEquals("test", $user->username);
+        $this->assertEquals("example", $user->username);
         $this->assertEquals("test@test.com", $user->email);
         $this->assertEquals("pass", $user->password);
     }
@@ -158,14 +157,14 @@ class ModelTest extends TestCase
         $this->createUser();
 
         $user = User::find([
-            'username' => "test",
+            'username' => "example",
             'email' => "test@test.com",
             'password' => "pass",
         ]);
 
         $this->assertNotNull($user);
         $this->assertEquals(1, $user->id);
-        $this->assertEquals("test", $user->username);
+        $this->assertEquals("example", $user->username);
         $this->assertEquals("test@test.com", $user->email);
         $this->assertEquals("pass", $user->password);
     }
@@ -184,7 +183,7 @@ class ModelTest extends TestCase
         $users = User::all();
 
         $this->assertCount(3, $users);
-        
+
         foreach ($users as $k => $u) {
             $this->assertEquals($k + 1, $u->id);
         }

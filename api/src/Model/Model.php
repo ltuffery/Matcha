@@ -2,6 +2,7 @@
 
 namespace Matcha\Api\Model;
 
+use AllowDynamicProperties;
 use Exception;
 use Flight;
 use Matcha\Api\Builder\QueryBuilder;
@@ -12,6 +13,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 
+#[AllowDynamicProperties]
 abstract class Model
 {
     public int $id = 0;
@@ -89,15 +91,18 @@ abstract class Model
         foreach ($reflexion->getProperties() as $property) {
             $attributes = $property->getAttributes();
 
-            if (count($attributes) == 0) {
-                break;
+            if (count($attributes) == 0 || !$property->isInitialized($this)) {
+                continue;
             }
 
             foreach ($attributes as $attribute) {
                 $instance = $attribute->newInstance();
+                $value = $property->getValue($this);
 
-                if (!$instance->assert($property->getValue($this))) {
-                    throw new Exception("test");
+                if (!$instance->assert($value)) {
+                    throw new Exception(
+                        sprintf($instance->getErrorMessage(), $value, $property->getName())
+                    );
                 }
             }
         }

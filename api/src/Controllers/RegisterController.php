@@ -15,8 +15,6 @@ class RegisterController
 {
     /**
      * Register new user
-     * @throws InvalidDataException
-     * @throws Exception
      */
     public function store(): void
     {
@@ -63,22 +61,28 @@ class RegisterController
         $user->gender = $request->data->gender;
         $user->biography = $request->data->biography;
 
-        $saved = $user->save();
+        try {
+            $saved = $user->save();
 
-        if ($saved) {
-            $this->createPreferences($saved);
+            if ($saved) {
+                $this->createPreferences($saved);
 
-            if (isset($request->data->tags) && !empty($request->data->tags)) {
-                $this->saveTags($saved, $request->data->tags);
+                if (isset($request->data->tags) && !empty($request->data->tags)) {
+                    $this->saveTags($saved, $request->data->tags);
+                }
+
+                if (!getenv("PHPUNIT_TEST")) {
+                    $this->uploadPhotos($saved, $photos);
+                }
+
+                Flight::json([
+                    'user' => json_encode($user),
+                ], 201);
             }
-
-            if (!getenv("PHPUNIT_TEST")) {
-                $this->uploadPhotos($saved, $photos);
-            }
-
+        } catch (Exception $e) {
             Flight::json([
-                'user' => json_encode($user),
-            ], 201);
+                'message' => $e->getMessage(),
+            ], 400);
         }
     }
 
