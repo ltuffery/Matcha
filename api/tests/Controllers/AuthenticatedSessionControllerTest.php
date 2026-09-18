@@ -1,7 +1,5 @@
 <?php
 
-use Exception;
-use Flight;
 use flight\util\Collection;
 use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Model\User;

@@ -92,11 +92,10 @@ class ChatController
         Flight::json(new MessageResource($saved), 201);
     }
 
-    public function delete(string $username, int $id): void
+    public function delete(string $username, string $id): void
     {
-        echo $id;
         $message = Message::find([
-            'id' => $id,
+            'id' => (int)$id,
         ]);
 
         if (is_null($message)) {

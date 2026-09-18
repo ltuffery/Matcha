@@ -1,7 +1,6 @@
 <?php
 
 use Firebase\JWT\JWT;
-use Flight;
 use Matcha\Api\Middleware\AuthMiddleware;
 use Matcha\Api\Testing\Cases\HttpTestCase;
 use Matcha\Api\Testing\TestResponse;

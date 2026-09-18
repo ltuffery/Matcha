@@ -2,6 +2,7 @@
 
 namespace Matcha\Api\Model;
 
+use AllowDynamicProperties;
 use Exception;
 use Flight;
 use Matcha\Api\Builder\QueryBuilder;
@@ -12,6 +13,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 
+#[AllowDynamicProperties]
 abstract class Model
 {
     public int $id = 0;
