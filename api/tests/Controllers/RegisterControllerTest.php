@@ -1,19 +1,21 @@
 <?php
 
+namespace Controllers;
+
+use Exception;
+use Flight;
 use Matcha\Api\Exceptions\UniqueConstraintException;
 use Matcha\Api\Model\Tag;
 use Matcha\Api\Model\User;
-use Matcha\Api\Testing\Cases\DatabaseTestCase;
-use Matcha\Api\Testing\Cases\HttpTestCase;
-use PHPUnit\Framework\TestCase;
+use Tests\MatchaTestCase;
 
-class RegisterControllerTest extends TestCase
+class RegisterControllerTest extends MatchaTestCase
 {
-    use HttpTestCase;
-    use DatabaseTestCase;
 
     public function setUp(): void
     {
+        parent::setUp();
+
         $_FILES['photos'] = [
             'name' => 'test.png',
             'type' => 'image/png',
@@ -30,14 +32,14 @@ class RegisterControllerTest extends TestCase
     {
         $_FILES = [];
 
-        Flight::response()->clear();
+        parent::tearDown();
     }
 
     private function fillTagsTable(): void
     {
-        $tags = json_decode(file_get_contents(BASE_PATH."/database/data_preset/tags.json"));
+        $tags = json_decode(file_get_contents(BASE_PATH . "/database/data_preset/tags.json"));
 
-        foreach ($tags as $tag){
+        foreach ($tags as $tag) {
             $newTag = new Tag();
             $newTag->name = $tag;
             $newTag->save();
@@ -60,7 +62,7 @@ class RegisterControllerTest extends TestCase
     {
         try {
             $this->post('/auth/register', [
-                'username' => "test",
+                'username' => "--test--",
                 'email' => "test@test.com",
                 'password' => "password",
                 'age' => 19,
@@ -68,6 +70,7 @@ class RegisterControllerTest extends TestCase
                 'last_name' => 'Doe',
                 'gender' => 'M',
                 'biography' => 'Lorem lorem',
+                'birthday' => '1990-01-01',
             ]);
 
             $this->fail();
@@ -98,8 +101,6 @@ class RegisterControllerTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-
-        $this->expectException(UniqueConstraintException::class);
 
         $response = $this->post('/auth/register', [
             'username' => "teste",

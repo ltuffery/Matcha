@@ -1,27 +1,19 @@
 <?php
 
+namespace Controllers;
+
 use Matcha\Api\Model\User;
-use Matcha\Api\Testing\Cases\DatabaseTestCase;
-use Matcha\Api\Testing\Cases\HttpTestCase;
-use PHPUnit\Framework\TestCase;
+use Tests\MatchaTestCase;
 
-class RefreshTokenControllerTest extends TestCase
+class RefreshTokenControllerTest extends MatchaTestCase
 {
-    use HttpTestCase;
-    use DatabaseTestCase;
-
     private User $user;
 
     public function setUp(): void
     {
-        $this->setUpDatabase();
+        parent::setUp();
 
         $this->user = User::factory()->create();
-    }
-
-    public function tearDown(): void
-    {
-        Flight::response()->clear();
     }
 
     public function testWithInvalidRefreshToken(): void

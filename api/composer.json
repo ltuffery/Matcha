@@ -20,7 +20,8 @@
     "autoload": {
         "psr-4": {
             "Matcha\\Api\\": "src/",
-            "Matcha\\Database\\Seeders\\": "database/seeders"
+            "Matcha\\Database\\Seeders\\": "database/seeders",
+            "Tests\\": "tests/"
         },
         "files": [
             "src/config.php",

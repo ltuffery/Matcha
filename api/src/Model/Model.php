@@ -91,15 +91,18 @@ abstract class Model
         foreach ($reflexion->getProperties() as $property) {
             $attributes = $property->getAttributes();
 
-            if (count($attributes) == 0) {
-                break;
+            if (count($attributes) == 0 || !$property->isInitialized($this)) {
+                continue;
             }
 
             foreach ($attributes as $attribute) {
                 $instance = $attribute->newInstance();
+                $value = $property->getValue($this);
 
-                if (!$instance->assert($property->getValue($this))) {
-                    throw new Exception("test");
+                if (!$instance->assert($value)) {
+                    throw new Exception(
+                        sprintf($instance->getErrorMessage(), $value, $property->getName())
+                    );
                 }
             }
         }

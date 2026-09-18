@@ -11,4 +11,9 @@ class NotBlank implements Assert
     {
         return !empty($value);
     }
+
+    public function getErrorMessage(): string
+    {
+        return "%s is not blank";
+    }
 }

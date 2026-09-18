@@ -1,34 +1,30 @@
 <?php
 
+namespace Controllers;
+
+use Exception;
+use Flight;
 use flight\util\Collection;
 use Matcha\Api\Controllers\AuthenticatedSessionController;
 use Matcha\Api\Model\User;
-use Matcha\Api\Testing\Cases\DatabaseTestCase;
 use Matcha\Api\Testing\TestResponse;
-use PHPUnit\Framework\TestCase;
+use Tests\MatchaTestCase;
 
-class AuthenticatedSessionControllerTest extends TestCase
+class AuthenticatedSessionControllerTest extends MatchaTestCase
 {
 
-    use DatabaseTestCase;
-    
     private TestResponse $response;
     private AuthenticatedSessionController $controller;
     private User $user;
 
     public function setUp(): void
     {
+        parent::setUp();
+
         $this->response = new TestResponse();
         $this->controller = new AuthenticatedSessionController();
 
-        $this->setUpDatabase();
-
         $this->user = User::factory()->create();
-    }
-
-    public function tearDown(): void
-    {
-        Flight::response()->clear();
     }
 
     public function testLoginWithNoData()

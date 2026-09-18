@@ -1,9 +1,11 @@
 <?php
 
-use Matcha\Api\Validator\Validator;
-use PHPUnit\Framework\TestCase;
+namespace Tests\Validator;
 
-class ValidatorTest extends TestCase
+use Matcha\Api\Validator\Validator;
+use Tests\MatchaTestCase;
+
+class ValidatorTest extends MatchaTestCase
 {
 
     public function testEmptyMake()
