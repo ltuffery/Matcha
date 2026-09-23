@@ -103,6 +103,7 @@ function sendMessage(content?: string) {
   const text = (content ?? draft.value).trim()
   if (!text) return
   getSocket().emit("stop_typing", { to_username: user.value?.username });
+  const res = Api.post(`/users/me/matches/${user.value?.username}`).send({content: text});
   // getSocket().emit("send_message", {to_username: user.value?.username, content: text});
   draft.value = ''
 }

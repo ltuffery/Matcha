@@ -47,7 +47,7 @@ export function initRedisSubscriber(io: Server) {
       console.error("[redis] malformed event:", event);
       return;
     }
-
+    console.log("[redis] new message received")
     io.to(`user:${event.target_username}`).emit(event.type, event.payload);
   });
 

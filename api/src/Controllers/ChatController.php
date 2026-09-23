@@ -89,6 +89,28 @@ class ChatController
 
         $saved = $message->save();
 
+        $redis = new \Predis\Client([
+                'scheme' => 'tcp',
+                'host'   => 'redis',
+                'port'   => 6379,
+        ]);
+
+        try {
+            $redis->publish('app_events', json_encode([
+                    'type' => 'new_message',
+                    'target_username' => $receiver->username,
+                    'payload' => [
+                        'id' => $saved->id,
+                        'sender_username' => $user->username,
+                        'receiver_username' => $receiver->username,
+                        'content' => $message->content,
+                        'created_at' => $saved->created_at,
+                    ],
+            ]));
+        } catch (\Exception $e) {
+            error_log('Redis publish failed: ' . $e->getMessage());
+        }
+
         Flight::json(new MessageResource($saved), 201);
     }
 

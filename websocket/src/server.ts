@@ -21,7 +21,7 @@ io.on("connection", (socket) => {
 	// console.log(`[socket] connected: ${socket.id}`);
   socket.join(`user:${socket.username}`);
   console.log(`[socket] ${socket.username} joined room user:${socket.username} on socketId: ${socket.id}`);
-	registerSocketHandlers(io, socket);
+	// registerSocketHandlers(io, socket);
   isTypingTo(io, socket);
 
 	socket.on("disconnect", () => {

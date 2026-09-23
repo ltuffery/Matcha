@@ -32,6 +32,10 @@ export async function connectSocket(): Promise<void> {
       typingStore.stopTyping(from_username);
     })
 
+    socket!.on("new_message", (message) => {
+      console.log("message recived :", message);
+    })
+
     // socket!.on('online_users', (users: string[]) => {
     //   onlineUsersStore.setOnlineUsers(users)
     // })
