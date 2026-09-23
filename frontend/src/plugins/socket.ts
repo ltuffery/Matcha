@@ -14,15 +14,14 @@ export async function connectSocket(): Promise<void> {
   const token = getToken()
   if (!token) return
 
-  socket = io(`${location.hostname}`, {
-    auth: {
-      path: "/ws/socket.io/",
-      auth: { token: token },
-    },
+  socket = io(location.origin, {
+    path: "/ws/socket.io/",
+    auth: { token: token },
   })
 
   socket.on('connect', () => {
     const onlineUsersStore = useOnlineUsersStore()
+    console.log("WS Connected");
 
     socket!.on('online_users', (users: string[]) => {
       onlineUsersStore.setOnlineUsers(users)
@@ -39,7 +38,9 @@ export async function connectSocket(): Promise<void> {
   })
 
   socket.on('disconnect', () => {})
+socket.on("connect_error", (err) => console.log("erreur:", err.message));
 }
+
 
 export function getSocket(): Socket {
   if (!socket) {

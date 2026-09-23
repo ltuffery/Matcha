@@ -4,6 +4,7 @@ import { config } from "./config";
 import { socketAuthMiddleware } from "./auth";
 import { initRedisSubscriber } from "./redis";
 import { registerSocketHandlers } from "./socketHandlers";
+import { isTypingTo, cleanIsTyping } from "./isTyping";
 
 const httpServer = createServer();
 
@@ -17,12 +18,15 @@ const io = new Server(httpServer, {
 io.use(socketAuthMiddleware);
 
 io.on("connection", (socket) => {
-	console.log(`[socket] connected: ${socket.id}`);
+	// console.log(`[socket] connected: ${socket.id}`);
   socket.join(`user:${socket.username}`);
+  console.log(`[socket] ${socket.username} joined room user:${socket.username} on socketId: ${socket.id}`);
 	registerSocketHandlers(io, socket);
+  isTypingTo(io, socket);
 
 	socket.on("disconnect", () => {
-		console.log(`[socket] disconnected: ${socket.id}`);
+    console.log(`[socket] disconnected: ${socket.id}`);
+    cleanIsTyping(socket.id);
 	});
 });
 

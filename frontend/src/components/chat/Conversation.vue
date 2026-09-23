@@ -47,6 +47,7 @@ const route = useRoute()
 
 const messages = ref<MessageData[]>([])
 const user = ref<SmallUser>()
+const isOtherTyping = ref(false);
 
 const displayName = computed(
   () => user.value?.first_name + ' ' + user.value?.last_name,
@@ -98,8 +99,22 @@ const fetchMessages = async () => {
 function sendMessage(content?: string) {
   const text = (content ?? draft.value).trim()
   if (!text) return
-  getSocket().emit("send_message", {to_username: user.value?.username, content: text});
+  getSocket().emit("stop_typing", { to_username: user.value?.username });
+  // getSocket().emit("send_message", {to_username: user.value?.username, content: text});
   draft.value = ''
+}
+
+let typingTimeoutMs: NodeJS.Timeout;
+
+function onChatInput() {
+  getSocket().emit("typing", { to_username: user.value?.username });
+  console.log("Typing Sended to ", user.value?.username)
+
+  clearTimeout(typingTimeoutMs);
+  typingTimeoutMs = setTimeout(() => {
+    getSocket().emit("stop_typing", { to_username: user.value?.username });
+    console.log("Stop Typing Sended")
+  }, 2000); // 2s sans frappe -> on considère que l'user a arrêté
 }
 
 watch(
@@ -112,6 +127,24 @@ watch(
 
 onMounted(async () => {
   await fetchMessages()
+  let typingIndicatorTimeout: NodeJS.Timeout;
+
+  getSocket().on("typing", ({ from_username }) => {
+    // showTypingIndicator(from_username);
+    if (from_username !== user.value?.username) return;
+     isOtherTyping.value = true;
+
+    clearTimeout(typingIndicatorTimeout);
+    typingIndicatorTimeout = setTimeout(() => {
+      isOtherTyping.value = false;
+    }, 4000); // sécurité si jamais stop_typing n'arrive jamais
+  });
+
+  getSocket().on("stop_typing", ({ from_username }) => {
+    if (from_username !== user.value?.username) return;
+    clearTimeout(typingIndicatorTimeout);
+    isOtherTyping.value = false;
+  });
 })
 </script>
 
@@ -230,12 +263,16 @@ onMounted(async () => {
       </div>
     </div>
 
+    <div v-if="isOtherTyping" class="px-4 pb-1 text-xs text-muted-foreground">
+      {{ user?.username }} is typing...
+    </div>
     <form class="border-t p-3" @submit.prevent="sendMessage()">
       <InputGroup>
         <InputGroupTextarea
           v-model="draft"
           placeholder="Votre message"
           class="max-h-40"
+          @input="onChatInput"
           @keydown.enter.exact.prevent="sendMessage()"
         />
         <InputGroupAddon align="inline-end">
