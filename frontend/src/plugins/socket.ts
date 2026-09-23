@@ -2,6 +2,7 @@ import { io, type Socket } from 'socket.io-client'
 import { getToken, isAuthenticated } from '@/services/auth'
 import { useOnlineUsersStore } from '@/store/onlineUsers'
 import type { JwtPayload } from '@/types'
+import { useTypingStore } from '@/store/isTyping'
 
 let socket: Socket | null = null
 
@@ -20,21 +21,29 @@ export async function connectSocket(): Promise<void> {
   })
 
   socket.on('connect', () => {
-    const onlineUsersStore = useOnlineUsersStore()
+    // const onlineUsersStore = useOnlineUsersStore()
     console.log("WS Connected");
-
-    socket!.on('online_users', (users: string[]) => {
-      onlineUsersStore.setOnlineUsers(users)
+    const typingStore = useTypingStore()
+    socket!.on("typing", ({ from_username }) => {
+      typingStore.addTypingUser(from_username);
     })
 
-    socket!.on('user_online', (username: string) => {
-      if (!onlineUsersStore.isOnlineUser(username))
-        onlineUsersStore.addOnlineUser(username)
+    socket!.on("stop_typing", ({ from_username }) => {
+      typingStore.stopTyping(from_username);
     })
 
-    socket!.on('user_offline', (username: string) => {
-      onlineUsersStore.removeOnlineUser(username)
-    })
+    // socket!.on('online_users', (users: string[]) => {
+    //   onlineUsersStore.setOnlineUsers(users)
+    // })
+
+    // socket!.on('user_online', (username: string) => {
+    //   if (!onlineUsersStore.isOnlineUser(username))
+    //     onlineUsersStore.addOnlineUser(username)
+    // })
+
+    // socket!.on('user_offline', (username: string) => {
+    //   onlineUsersStore.removeOnlineUser(username)
+    // })
   })
 
   socket.on('disconnect', () => {})

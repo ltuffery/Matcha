@@ -37,6 +37,7 @@ import { Api } from '@/utils/api'
 import type { MessageData, SmallUser } from '@/types'
 import router from '@/router'
 import { getSocket } from '@/plugins/socket'
+import { useTypingStore } from '@/store/isTyping'
 
 interface MessageGroup {
   isMe: boolean
@@ -47,7 +48,9 @@ const route = useRoute()
 
 const messages = ref<MessageData[]>([])
 const user = ref<SmallUser>()
-const isOtherTyping = ref(false);
+
+const typingStore = useTypingStore();
+const isOtherTyping = computed(() => typingStore.isTyping(user.value?.username));
 
 const displayName = computed(
   () => user.value?.first_name + ' ' + user.value?.last_name,
@@ -114,7 +117,7 @@ function onChatInput() {
   typingTimeoutMs = setTimeout(() => {
     getSocket().emit("stop_typing", { to_username: user.value?.username });
     console.log("Stop Typing Sended")
-  }, 2000); // 2s sans frappe -> on considère que l'user a arrêté
+  }, 2000);
 }
 
 watch(
@@ -127,24 +130,6 @@ watch(
 
 onMounted(async () => {
   await fetchMessages()
-  let typingIndicatorTimeout: NodeJS.Timeout;
-
-  getSocket().on("typing", ({ from_username }) => {
-    // showTypingIndicator(from_username);
-    if (from_username !== user.value?.username) return;
-     isOtherTyping.value = true;
-
-    clearTimeout(typingIndicatorTimeout);
-    typingIndicatorTimeout = setTimeout(() => {
-      isOtherTyping.value = false;
-    }, 4000); // sécurité si jamais stop_typing n'arrive jamais
-  });
-
-  getSocket().on("stop_typing", ({ from_username }) => {
-    if (from_username !== user.value?.username) return;
-    clearTimeout(typingIndicatorTimeout);
-    isOtherTyping.value = false;
-  });
 })
 </script>
 
