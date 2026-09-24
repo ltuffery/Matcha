@@ -1,8 +1,9 @@
 import { io, type Socket } from 'socket.io-client'
 import { getToken, isAuthenticated } from '@/services/auth'
 import { useOnlineUsersStore } from '@/store/onlineUsers'
-import type { JwtPayload } from '@/types'
+import type { JwtPayload, MessageData } from '@/types'
 import { useTypingStore } from '@/store/isTyping'
+import { useMessagesStore } from '@/store/messages'
 
 let socket: Socket | null = null
 
@@ -23,7 +24,9 @@ export async function connectSocket(): Promise<void> {
   socket.on('connect', () => {
     // const onlineUsersStore = useOnlineUsersStore()
     console.log("WS Connected");
-    const typingStore = useTypingStore()
+    const typingStore = useTypingStore();
+    const messageStore = useMessagesStore();
+
     socket!.on("typing", ({ from_username }) => {
       typingStore.addTypingUser(from_username);
     })
@@ -32,8 +35,9 @@ export async function connectSocket(): Promise<void> {
       typingStore.stopTyping(from_username);
     })
 
-    socket!.on("new_message", (message) => {
+    socket!.on("new_message", (message: MessageData) => {
       console.log("message recived :", message);
+      messageStore.addMessage(message.sender, message);
     })
 
     // socket!.on('online_users', (users: string[]) => {

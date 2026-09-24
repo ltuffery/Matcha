@@ -3,15 +3,29 @@ import type { MessagesResponse, MessageData } from '@/types'
 
 export const useMessagesStore = defineStore('messagesStore', {
   state: () => ({
-    messages: { messages: [] } as MessagesResponse,
+    conversations: new Map<string, MessageData[]>(),
   }),
   actions: {
-    set(messages: MessagesResponse) {
-      this.messages = messages
-      this.messages.messages = this.messages.messages.reverse()
+    async sendMessage(toUsername: string, content: string) {
+      const res = await Api.post(`/users/me/matches/${toUsername}`).send({ content });
+      if (res.ok) {
+        const saved: MessageData = await res.json();
+        this.addMessage(toUsername, saved);
+      }
+      return res;
     },
-    add(message: MessageData) {
-      this.messages.messages.push(message)
+    addMessage(otherUsername: string, message: MessageData) {
+      if (!this.conversations.has(otherUsername)) {
+        this.conversations.set(otherUsername, []);
+      }
+      this.conversations.get(otherUsername)!.push(message);
+    },
+    getMessages(otherUsername: string): MessageData[] {
+      return this.conversations.get(otherUsername) ?? [];
+    },
+
+    setMessages(otherUsername: string, messages: MessageData[]) {
+      this.conversations.set(otherUsername, messages);
     },
   },
 })

@@ -38,6 +38,7 @@ import type { MessageData, SmallUser } from '@/types'
 import router from '@/router'
 import { getSocket } from '@/plugins/socket'
 import { useTypingStore } from '@/store/isTyping'
+import { useMessagesStore } from '@/store/messages'
 
 interface MessageGroup {
   isMe: boolean
@@ -46,7 +47,9 @@ interface MessageGroup {
 
 const route = useRoute()
 
-const messages = ref<MessageData[]>([])
+const messagesStore = useMessagesStore();
+// const messages = ref<MessageData[]>([])
+const messages = computed(() => messagesStore.getMessages(route.params.username as string));
 const user = ref<SmallUser>()
 
 const typingStore = useTypingStore();
@@ -95,15 +98,17 @@ const fetchMessages = async () => {
       first_name: data.first_name,
       last_name: data.last_name,
     }
-    messages.value = data.messages
+    // messages.value = data.messages
+    messagesStore.setMessages(data.username, data.messages);
   }
 }
 
 function sendMessage(content?: string) {
   const text = (content ?? draft.value).trim()
-  if (!text) return
-  getSocket().emit("stop_typing", { to_username: user.value?.username });
-  const res = Api.post(`/users/me/matches/${user.value?.username}`).send({content: text});
+  if (!text || !user.value?.username) return
+  getSocket().emit("stop_typing", { to_username: user.value.username });
+  messagesStore.sendMessage(user.value.username, text);
+  // const res = Api.post(`/users/me/matches/${user.value?.username}`).send({content: text});
   // getSocket().emit("send_message", {to_username: user.value?.username, content: text});
   draft.value = ''
 }
