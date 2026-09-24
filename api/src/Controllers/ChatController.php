@@ -101,8 +101,8 @@ class ChatController
                     'target_username' => $receiver->username,
                     'payload' => [
                         'id' => $saved->id,
-                        'sender_username' => $user->username,
-                        'receiver_username' => $receiver->username,
+                        'sender' => $user->username,
+                        'receiver' => $receiver->username,
                         'content' => $message->content,
                         'created_at' => $saved->created_at,
                     ],
