@@ -1,22 +1,19 @@
 <?php
 
+namespace Controllers;
+
 use Matcha\Api\Model\Message;
 use Matcha\Api\Model\User;
-use Matcha\Api\Testing\Cases\DatabaseTestCase;
-use Matcha\Api\Testing\Cases\HttpTestCase;
-use PHPUnit\Framework\TestCase;
+use Tests\MatchaTestCase;
 
-class ChatControllerTest extends TestCase
+class ChatControllerTest extends MatchaTestCase
 {
-    use HttpTestCase;
-    use DatabaseTestCase;
-
     private User $me;
     private User $other;
 
     public function setUp(): void
     {
-        $this->setUpDatabase();
+        parent::setUp();
 
         $users = User::factory()->count(2)->create();
 
@@ -25,11 +22,6 @@ class ChatControllerTest extends TestCase
 
         $this->me->like($this->other);
         $this->other->like($this->me);
-    }
-
-    public function tearDown(): void
-    {
-        Flight::response()->clear();
     }
 
     /**

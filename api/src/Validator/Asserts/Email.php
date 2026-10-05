@@ -13,4 +13,9 @@ class Email implements Assert
             filter_var($value, FILTER_VALIDATE_EMAIL)
         );
     }
+
+    public function getErrorMessage(): string
+    {
+        return "%s is not a valid email address";
+    }
 }

@@ -10,6 +10,7 @@ use ReflectionException;
 
 /**
  * @method static Message find(array $where)
+ * @method Message save()
  */
 class Message extends Model
 {

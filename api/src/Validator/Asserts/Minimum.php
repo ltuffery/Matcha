@@ -28,4 +28,9 @@ class Minimum implements Assert
                 || (is_string($value) && strlen($value) > $this->n)
                 || (is_array($value) && count($value) > $this->n);
     }
+
+    public function getErrorMessage(): string
+    {
+        return "%s < {$this->n}";
+    }
 }

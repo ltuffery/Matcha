@@ -41,7 +41,7 @@ export class Api {
   }
 
   async send(body?: Body) {
-    return await fetch(`http://api:3000/${this._path}`, {
+    return await fetch(`http://api:80/${this._path}`, {
       method: this._method,
       headers: this._headers,
       body: JSON.stringify(body),

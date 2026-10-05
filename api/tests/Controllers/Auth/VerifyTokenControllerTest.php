@@ -2,27 +2,11 @@
 
 namespace Controllers\Auth;
 
-use Flight;
 use Matcha\Api\Model\User;
-use Matcha\Api\Testing\Cases\DatabaseTestCase;
-use Matcha\Api\Testing\Cases\HttpTestCase;
-use PHPUnit\Framework\TestCase;
+use Tests\MatchaTestCase;
 
-class VerifyTokenControllerTest extends TestCase
+class VerifyTokenControllerTest extends MatchaTestCase
 {
-    use HttpTestCase;
-    use DatabaseTestCase;
-
-    protected function setUp(): void
-    {
-        $this->setUpDatabase();
-    }
-
-    protected function tearDown(): void
-    {
-        Flight::response()->clear();
-    }
-
     public function testVerifyTokenSuccess(): void
     {
         /** @var User $user */

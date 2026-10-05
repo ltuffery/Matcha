@@ -11,4 +11,9 @@ class Number implements Assert
     {
         return is_numeric($value);
     }
+
+    public function getErrorMessage(): string
+    {
+        return "%s is not a number";
+    }
 }

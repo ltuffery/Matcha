@@ -23,4 +23,8 @@ class Regex implements Assert
         return count($matches) > 0;
     }
 
+    public function getErrorMessage(): string
+    {
+        return "The property %s does not match the regex {$this->regex}";
+    }
 }
