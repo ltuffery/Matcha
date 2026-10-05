@@ -8,6 +8,9 @@ import Footer from '@/components/layout/Footer.vue'
 import { Tracking } from '@/services/tracking'
 import { type BasicColorSchema, useColorMode } from '@vueuse/core'
 import DateOfBirthPicker from '@/components/forms/DateOfBirthPicker.vue'
+import { toast, Toaster } from 'vue-sonner'
+import 'vue-sonner/style.css'
+import { useUserInfoStore } from '@/store/userInfo'
 
 const mode = useColorMode()
 const breakPointScreen = '(min-width: 70em)'
@@ -21,6 +24,23 @@ isAuthenticated().then(value => {
   if (value) {
     Tracking.setAtCurrentLocation()
     connectSocket()
+
+    const eventSource = new EventSource(
+      `/api/.well-known/mercure?topic=${encodeURIComponent("user/gcummerata/notifications")}`,
+    )
+    eventSource.onmessage = function (event) {
+      const data = JSON.parse(event.data)
+
+      toast(data.type, {
+        description: data.message,
+        action: {
+          label: 'Undo',
+          onClick: () => console.log('Undo'),
+        },
+      })
+
+      console.log('New message:', event.data)
+    }
   }
 })
 
@@ -52,6 +72,8 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <Toaster position="top-right" :theme="mode == 'auto' ? 'system' : mode" />
+
   <div :class="{ 'flex h-screen': isAuth }">
     <NavBar v-if="isAuth" />
 

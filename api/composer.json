@@ -10,7 +10,8 @@
         "php": "^8.3",
         "chrisullyott/php-ip-api": "^1.0",
         "bluemmb/faker-picsum-photos-provider": "^2.0",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "ext-frankenphp": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
@@ -44,5 +45,10 @@
         "migrate": "php database/migrate.php",
         "format": "vendor/bin/php-cs-fixer fix src",
         "seeder": "php database/seeder.php"
+    },
+    "config": {
+        "platform": {
+            "ext-frankenphp": "1.0"
+        }
     }
 }

@@ -21,7 +21,13 @@ class LikeController
             return;
         }
 
+        Flight::notifier()->publish("user/gcummerata/notifications", [
+            'type'    => 'like',
+            'message' => Flight::user()->username . " a aimé ton profil",
+        ], private: true);
+
         Flight::user()->like($user);
+
         Flight::json([], 203);
     }
 
