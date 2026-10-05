@@ -19,8 +19,6 @@ class AuthMiddlewareTest extends MatchaTestCase
         $_SERVER = [];
         $this->middleware = new AuthMiddleware();
         $this->response = new TestResponse();
-
-        // ob_start();
     }
 
     public function testNoAuthorizationHeaderGiven(): void

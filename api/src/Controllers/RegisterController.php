@@ -36,8 +36,7 @@ class RegisterController
                 'code' => 0,
                 'message' => "Photos is required.",
             ], 400);
-
-            throw new InvalidDataException(0, 'Photos is required.');
+            return;
         }
 
 

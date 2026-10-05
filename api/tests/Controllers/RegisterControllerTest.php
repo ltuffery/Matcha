@@ -54,7 +54,6 @@ class RegisterControllerTest extends MatchaTestCase
             $this->fail();
         } catch (\Exception) {
             $this->assertEquals(400, Flight::response()->status());
-            ob_end_clean();
         }
     }
 
@@ -76,7 +75,6 @@ class RegisterControllerTest extends MatchaTestCase
             $this->fail();
         } catch (Exception) {
             $this->assertEquals(400, Flight::response()->status());
-            ob_end_clean();
         }
     }
 
