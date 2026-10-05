@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-    beStrictAboutOutputDuringTests="true"
-    beStrictAboutTodoAnnotatedTests="true"
-    bootstrap="tests/bootstrap.php"
-    convertDeprecationsToExceptions="true"
-    stopOnError="false"
-    stopOnFailure="false"
-    verbose="true"
-    colors="true">
-    <testsuites>
-        <testsuite name="default">
-            <directory>tests/</directory>
-        </testsuite>
-    </testsuites>
-    <logging />
-    <php>
-        <ini name="error_reporting" value="-1"/>
-        <env name="PHPUNIT_TEST" value="true" force="true" />
-    </php>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.5/phpunit.xsd" beStrictAboutOutputDuringTests="true" bootstrap="tests/bootstrap.php" stopOnError="false" stopOnFailure="false" colors="true" cacheDirectory=".phpunit.cache">
+  <testsuites>
+    <testsuite name="default">
+      <directory>tests/</directory>
+    </testsuite>
+  </testsuites>
+  <logging/>
+  <php>
+    <ini name="error_reporting" value="-1"/>
+    <env name="PHPUNIT_TEST" value="true" force="true"/>
+  </php>
 </phpunit>
