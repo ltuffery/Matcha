@@ -5,6 +5,16 @@
       <directory>tests/</directory>
     </testsuite>
   </testsuites>
+  <source>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+    <exclude>
+      <directory>src/Testing</directory>
+      <file>src/config.php</file>
+      <file>src/routes.php</file>
+    </exclude>
+  </source>
   <logging/>
   <php>
     <ini name="error_reporting" value="-1"/>
