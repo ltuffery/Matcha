@@ -1,229 +1,305 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { Heart, MapPin, MessageCircle, Pencil, Sparkles } from 'lucide-vue-next'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
-  Heart,
-  MessageCircle,
-  MapPin,
-  Briefcase,
-  GraduationCap,
-  Ruler,
-  Flag,
-  MoreVertical,
-} from 'lucide-vue-next'
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import { Api } from '@/utils/api'
 
 interface Profile {
-  id: string
-  firstName: string
+  id: number
+  username: string
   age: number
-  city: string
-  distance: number
-  job: string
-  education: string
-  height: number
-  bio: string
-  photos: string[]
-  interests: string[]
-  isOnline: boolean
-  lastSeen?: string
+  city: string | null
+  biography: string | null
+  avatar: string | null
+  photos: { id: number; path: string }[]
+  tags: string[]
+  liked_by_me: boolean
+  is_match: boolean
+  is_online: boolean
+  is_me: boolean
+  created_at: string
 }
 
-const profile = ref<Profile>({
-  id: '1',
-  firstName: 'Emma',
-  age: 27,
-  city: 'Paris',
-  distance: 5,
-  job: 'UX Designer',
-  education: 'École des Beaux-Arts',
-  height: 168,
-  bio: "Passionnée de voyages, de bons restaurants et de randonnées le week-end. À la recherche de quelqu'un pour partager de belles aventures ✨",
-  photos: [
-    'https://picsum.photos/seed/emma1/600/800',
-    'https://picsum.photos/seed/emma2/600/800',
-    'https://picsum.photos/seed/emma3/600/800',
-  ],
-  interests: ['Voyages', 'Photographie', 'Randonnée', 'Cuisine', 'Cinéma', 'Yoga'],
-  isOnline: true,
-})
+const route = useRoute()
+const router = useRouter()
+const profile = ref<Profile | null>(null)
+const loading = ref(true)
+const error = ref('')
+const showMatch = ref(false)
+const editing = ref(false)
+const form = ref({ bio: '', city: '', tags: '' })
 
-const currentPhotoIndex = ref(0)
-
-function nextPhoto() {
-  currentPhotoIndex.value =
-    (currentPhotoIndex.value + 1) % profile.value.photos.length
+async function load() {
+  loading.value = true
+  error.value = ''
+  try {
+    const res = await Api.get(`/users/${route.params.username}`).send()
+    if (!res.ok)
+      throw new Error(
+        res.status === 404 ? 'Profil introuvable' : 'Erreur de chargement',
+      )
+    profile.value = await res.json()
+  } catch (e: any) {
+    error.value = e.message
+  } finally {
+    loading.value = false
+  }
 }
 
-function prevPhoto() {
-  currentPhotoIndex.value =
-    (currentPhotoIndex.value - 1 + profile.value.photos.length) %
-    profile.value.photos.length
+async function toggleLike() {
+  if (!profile.value) return
+  const res = await fetch(`/api/profile/${profile.value.id}/like`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+  const data = await res.json()
+  profile.value.liked_by_me = data.liked
+  if (data.is_match && !profile.value.is_match) showMatch.value = true
+  profile.value.is_match = data.is_match
 }
 
-function handleLike() {
-  console.log('Like envoyé à', profile.value.firstName)
+function openEdit() {
+  if (!profile.value) return
+  form.value = {
+    bio: profile.value.biography ?? '',
+    city: profile.value.city ?? '',
+    tags: profile.value.tags.join(', '),
+  }
+  editing.value = true
 }
 
-function handleMessage() {
-  console.log('Ouvrir la messagerie avec', profile.value.firstName)
+async function saveProfile() {
+  const interests = form.value.tags
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
+  await fetch('/api/profile', {
+    method: 'PUT',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      bio: form.value.bio,
+      city: form.value.city,
+      interests,
+    }),
+  })
+  editing.value = false
+  load()
 }
+
+const initials = (name: string) => name.slice(0, 2).toUpperCase()
+
+onMounted(load)
+watch(() => route.params.id, load)
 </script>
 
 <template>
-  <div class="max-w-md mx-auto min-h-screen bg-background">
-    <Card class="overflow-hidden border-0 rounded-none sm:rounded-xl sm:border sm:my-6">
-      <!-- Galerie photo -->
-      <div class="relative aspect-[3/4] bg-muted">
-        <img
-          :src="profile.photos[currentPhotoIndex]"
-          :alt="profile.firstName"
-          class="w-full h-full object-cover"
-        />
+  <div class="container max-w-4xl mx-auto py-8 px-4">
+    <div v-if="loading" class="space-y-4">
+      <Skeleton class="h-80 w-full rounded-xl" />
+      <Skeleton class="h-8 w-1/3" />
+      <Skeleton class="h-24 w-full" />
+    </div>
 
-        <!-- Indicateurs de photos -->
-        <div class="absolute top-2 left-2 right-2 flex gap-1">
-          <div
-            v-for="(photo, i) in profile.photos"
-            :key="i"
-            class="h-1 flex-1 rounded-full transition-colors"
-            :class="i === currentPhotoIndex ? 'bg-white' : 'bg-white/40'"
-          />
-        </div>
-
-        <!-- Zones cliquables pour naviguer -->
-        <button
-          class="absolute left-0 top-0 h-full w-1/2"
-          @click="prevPhoto"
-        />
-        <button
-          class="absolute right-0 top-0 h-full w-1/2"
-          @click="nextPhoto"
-        />
-
-        <!-- Badge en ligne -->
-        <Badge
-          v-if="profile.isOnline"
-          class="absolute top-4 right-4 bg-green-500 hover:bg-green-500 text-white gap-1"
-        >
-          <span class="h-2 w-2 rounded-full bg-white animate-pulse" />
-          En ligne
-        </Badge>
-
-        <!-- Overlay dégradé + nom -->
-        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-          <div class="flex items-end justify-between">
-            <div>
-              <h1 class="text-2xl font-bold text-white">
-                {{ profile.firstName }}, {{ profile.age }}
-              </h1>
-              <p class="flex items-center gap-1 text-white/90 text-sm mt-1">
-                <MapPin class="h-4 w-4" />
-                {{ profile.city }} · à {{ profile.distance }} km
-              </p>
-            </div>
-            <Button
-              size="icon"
-              variant="ghost"
-              class="text-white hover:bg-white/20 hover:text-white"
-            >
-              <MoreVertical class="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <CardContent class="p-4 space-y-5">
-        <!-- Infos rapides -->
-        <div class="flex flex-wrap gap-2">
-          <Badge variant="secondary" class="gap-1 py-1.5">
-            <Briefcase class="h-3.5 w-3.5" />
-            {{ profile.job }}
-          </Badge>
-          <Badge variant="secondary" class="gap-1 py-1.5">
-            <GraduationCap class="h-3.5 w-3.5" />
-            {{ profile.education }}
-          </Badge>
-          <Badge variant="secondary" class="gap-1 py-1.5">
-            <Ruler class="h-3.5 w-3.5" />
-            {{ profile.height }} cm
-          </Badge>
-        </div>
-
-        <Separator />
-
-        <!-- Bio -->
-        <div>
-          <h2 class="font-semibold mb-2">À propos</h2>
-          <p class="text-sm text-muted-foreground leading-relaxed">
-            {{ profile.bio }}
-          </p>
-        </div>
-
-        <Separator />
-
-        <!-- Centres d'intérêt -->
-        <div>
-          <h2 class="font-semibold mb-2">Centres d'intérêt</h2>
-          <div class="flex flex-wrap gap-2">
-            <Badge
-              v-for="interest in profile.interests"
-              :key="interest"
-              variant="outline"
-              class="rounded-full"
-            >
-              {{ interest }}
-            </Badge>
-          </div>
-        </div>
-
-        <Separator />
-
-        <!-- Photos supplémentaires en grille -->
-        <div>
-          <h2 class="font-semibold mb-2">Photos</h2>
-          <div class="grid grid-cols-3 gap-2">
-            <button
-              v-for="(photo, i) in profile.photos"
-              :key="i"
-              class="aspect-square rounded-lg overflow-hidden ring-2 ring-transparent"
-              :class="{ 'ring-primary': i === currentPhotoIndex }"
-              @click="currentPhotoIndex = i"
-            >
-              <img :src="photo" class="w-full h-full object-cover" />
-            </button>
-          </div>
-        </div>
-      </CardContent>
+    <Card v-else-if="error" class="text-center py-12">
+      <p class="text-muted-foreground mb-4">{{ error }}</p>
+      <Button variant="outline" @click="router.back()">Retour</Button>
     </Card>
 
-    <!-- Barre d'actions flottante -->
-    <div class="sticky bottom-0 bg-background/95 backdrop-blur border-t p-4 flex justify-center gap-4">
-      <Button
-        size="icon"
-        variant="outline"
-        class="h-14 w-14 rounded-full border-destructive/30 text-destructive hover:bg-destructive/10"
-      >
-        <Flag class="h-6 w-6" />
-      </Button>
-      <Button
-        size="icon"
-        class="h-16 w-16 rounded-full bg-pink-500 hover:bg-pink-600 shadow-lg"
-        @click="handleLike"
-      >
-        <Heart class="h-7 w-7" />
-      </Button>
-      <Button
-        size="icon"
-        variant="outline"
-        class="h-14 w-14 rounded-full"
-        @click="handleMessage"
-      >
-        <MessageCircle class="h-6 w-6" />
-      </Button>
+    <!-- Profile -->
+    <div v-else-if="profile" class="grid gap-6 md:grid-cols-[1.2fr_1fr]">
+      <!-- Photos -->
+      <Card class="overflow-hidden">
+        <Carousel v-if="profile.photos.length" class="w-full">
+          <CarouselContent>
+            <CarouselItem v-for="p in profile.photos" :key="p.id">
+              <img
+                :src="p.path"
+                :alt="profile.username"
+                class="w-full aspect-3/4 object-cover"
+              />
+            </CarouselItem>
+          </CarouselContent>
+          <template v-if="profile.photos.length > 1">
+            <CarouselPrevious class="left-2" />
+            <CarouselNext class="right-2" />
+          </template>
+        </Carousel>
+        <div
+          v-else
+          class="aspect-3/4 flex items-center justify-center bg-muted"
+        >
+          <Avatar class="h-32 w-32">
+            <AvatarImage v-if="profile.avatar" :src="profile.avatar" />
+            <AvatarFallback class="text-3xl">{{
+              initials(profile.username)
+            }}</AvatarFallback>
+          </Avatar>
+        </div>
+      </Card>
+
+      <!-- Infos -->
+      <div class="space-y-4">
+        <Card>
+          <CardHeader>
+            <div class="flex items-center gap-3">
+              <Avatar class="h-14 w-14">
+                <AvatarImage v-if="profile.avatar" :src="profile.avatar" />
+                <AvatarFallback>{{
+                  initials(profile.username)
+                }}</AvatarFallback>
+              </Avatar>
+              <div>
+                <CardTitle class="text-2xl">
+                  {{ profile.username }}, {{ profile.age }}
+                </CardTitle>
+                <div
+                  class="flex items-center gap-2 text-sm text-muted-foreground mt-1"
+                >
+                  <span v-if="profile.city" class="flex items-center gap-1">
+                    <MapPin class="h-4 w-4" /> {{ profile.city }}
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <span
+                      class="h-2 w-2 rounded-full"
+                      :class="
+                        profile.is_online ? 'bg-green-500' : 'bg-gray-400'
+                      "
+                    />
+                    {{ profile.is_online ? 'En ligne' : 'Hors ligne' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <Badge
+              v-if="profile.is_match"
+              class="w-fit mt-3 bg-pink-500 hover:bg-pink-500"
+            >
+              <Sparkles class="h-3 w-3 mr-1" /> C'est un match !
+            </Badge>
+          </CardHeader>
+
+          <CardContent class="flex gap-2">
+            <template v-if="profile.is_me">
+              <Button class="flex-1" @click="openEdit">
+                <Pencil class="h-4 w-4 mr-2" /> Modifier mon profil
+              </Button>
+            </template>
+            <template v-else>
+              <Button
+                class="flex-1"
+                :variant="profile.liked_by_me ? 'default' : 'outline'"
+                :class="profile.liked_by_me && 'bg-pink-500 hover:bg-pink-600'"
+                @click="toggleLike"
+              >
+                <Heart
+                  class="h-4 w-4 mr-2"
+                  :class="profile.liked_by_me && 'fill-current'"
+                />
+                {{ profile.liked_by_me ? 'Liké' : 'Liker' }}
+              </Button>
+              <Button
+                variant="secondary"
+                class="flex-1"
+                :disabled="!profile.is_match"
+                @click="router.push(`/messages/${profile.id}`)"
+              >
+                <MessageCircle class="h-4 w-4 mr-2" /> Message
+              </Button>
+            </template>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader
+            ><CardTitle class="text-lg">About</CardTitle></CardHeader
+          >
+          <CardContent>
+            <p class="whitespace-pre-line text-sm">
+              {{
+                profile.biography ||
+                "Cet utilisateur n'a pas encore rédigé de bio."
+              }}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card v-if="profile.tags.length">
+          <CardHeader
+            ><CardTitle class="text-lg"
+              >Centres d'intérêt</CardTitle
+            ></CardHeader
+          >
+          <CardContent class="flex flex-wrap gap-2">
+            <Badge v-for="i in profile.tags" :key="i" variant="secondary">{{
+              i
+            }}</Badge>
+          </CardContent>
+        </Card>
+      </div>
     </div>
+
+    <!-- Popup de match -->
+    <Dialog v-model:open="showMatch">
+      <DialogContent class="text-center">
+        <DialogHeader>
+          <DialogTitle class="text-3xl text-pink-500"
+            >Match ! 💘</DialogTitle
+          >
+        </DialogHeader>
+        <p>{{ profile?.username }} also liked you.</p>
+        <DialogFooter class="sm:justify-center">
+          <Button
+            class="bg-pink-500 hover:bg-pink-600"
+            @click="router.push(`/messages/${profile?.id}`)"
+          >
+            Send a message
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Fenêtre de modification -->
+    <Dialog v-model:open="editing">
+      <DialogContent>
+        <DialogHeader
+          ><DialogTitle>Edit my profile</DialogTitle></DialogHeader
+        >
+        <div class="space-y-3">
+          <Input v-model="form.city" placeholder="City" />
+          <Textarea
+            v-model="form.bio"
+            placeholder="About you..."
+            maxlength="500"
+            rows="5"
+          />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" @click="editing = false">Cancel</Button>
+          <Button @click="saveProfile">Save</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
