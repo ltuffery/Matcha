@@ -52,12 +52,12 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div :class="{ 'flex h-screen': isAuth }">
+  <div :class="{ 'flex h-screen': isAuth }" class="bg-muted/30">
     <NavBar v-if="isAuth" />
 
     <main
       :class="{
-        'flex w-full pb-20 md:pb-0 px-6 md:px-20 bg-muted/30': isAuth,
+        'flex w-full pb-20 md:pb-0 px-6 md:px-20 overflow-auto-y': isAuth,
       }"
     >
       <RouterView />

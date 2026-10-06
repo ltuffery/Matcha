@@ -27,17 +27,17 @@ import {
 import { Button } from '@/components/ui/button'
 import { TagsInput, TagsInputInput } from '@/components/ui/tags-input'
 import { Badge } from '@/components/ui/badge'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import CircleLayer from '@/components/settings/sections/preferences/CircleLayer.vue'
+import LocationSubSection from '@/components/settings/sections/preferences/LocationSubSection.vue'
 
 const distanceRange = ref([50])
 const ageRange = ref([22, 35])
 const fameRatingRange = ref([100])
+const locations = [{ id: 1, name: 'Times Square', lng: -74.006, lat: 40.7128 }]
 
-const locations = [
-  { id: 1, name: 'Empire State Building', lng: -73.9857, lat: 40.7484 },
-  { id: 2, name: 'Central Park', lng: -73.9654, lat: 40.7829 },
-  { id: 3, name: 'Times Square', lng: -73.9855, lat: 40.758 },
-]
+onMounted(() => {
+})
 </script>
 
 <template>
@@ -107,37 +107,7 @@ const locations = [
       </div>
 
       <div class="space-y-3">
-        <div class="flex justify-between text-sm">
-          <Label>Localisation</Label>
-        </div>
-
-        <div class="h-80 overflow-hidden rounded-lg border">
-          <Map :center="[-74.006, 40.7128]" :zoom="11">
-            <MapMarker
-              v-for="loc in locations"
-              :key="loc.id"
-              :longitude="loc.lng"
-              :latitude="loc.lat"
-            >
-              <MarkerContent>
-                <div
-                  class="bg-primary size-4 rounded-full border-2 border-white shadow-lg"
-                />
-              </MarkerContent>
-              <MarkerTooltip>{{ loc.name }}</MarkerTooltip>
-              <MarkerPopup>
-                <div class="space-y-1">
-                  <p class="text-foreground font-medium">
-                    {{ loc.name }}
-                  </p>
-                  <p class="text-muted-foreground text-xs">
-                    {{ loc.lat.toFixed(4) }}, {{ loc.lng.toFixed(4) }}
-                  </p>
-                </div>
-              </MarkerPopup>
-            </MapMarker>
-          </Map>
-        </div>
+        <LocationSubSection />
       </div>
 
       <div class="flex justify-end">
