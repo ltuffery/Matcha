@@ -6,6 +6,7 @@ use Flight;
 use Matcha\Api\Model\User;
 use Matcha\Api\Model\UserTag;
 use Matcha\Api\Resources\ProfileResource;
+use Matcha\Api\Resources\UserResource;
 use Matcha\Api\Services\Photo;
 
 class ProfileController
@@ -13,7 +14,7 @@ class ProfileController
     public function index(): void
     {
         Flight::json(
-            new ProfileResource(Flight::user())
+            new UserResource(Flight::user())
         );
     }
 

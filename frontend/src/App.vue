@@ -11,6 +11,8 @@ import DateOfBirthPicker from '@/components/forms/DateOfBirthPicker.vue'
 import { toast, Toaster } from 'vue-sonner'
 import 'vue-sonner/style.css'
 import { useUserInfoStore } from '@/store/userInfo'
+import { useAuthStore } from '@/store/useAuthStore'
+import { PanelBottomCloseIcon } from '@lucide/vue'
 
 const mode = useColorMode()
 const breakPointScreen = '(min-width: 70em)'
@@ -19,24 +21,28 @@ const sizeScreen = ref<MediaQueryList>(window.matchMedia(breakPointScreen))
 
 const isAuth = ref(false)
 
-isAuthenticated().then(value => {
+isAuthenticated().then(async value => {
   isAuth.value = value
   if (value) {
-    Tracking.setAtCurrentLocation()
+    // Tracking.setAtCurrentLocation()
     connectSocket()
 
+    const authStore = useAuthStore()
+
+    if (authStore.user === null) {
+      await authStore.fetchMe()
+    }
+
     const eventSource = new EventSource(
-      `/api/.well-known/mercure?topic=${encodeURIComponent("user/gcummerata/notifications")}`,
+      `/api/.well-known/mercure?topic=${encodeURIComponent(`user/${authStore.user?.id}/notifications`)}`,
     )
     eventSource.onmessage = function (event) {
       const data = JSON.parse(event.data)
 
-      toast(data.type, {
+      toast.info(data.type, {
         description: data.message,
-        action: {
-          label: 'Undo',
-          onClick: () => console.log('Undo'),
-        },
+        closeButton: true,
+        closeButtonPosition: "top-right",
       })
 
       console.log('New message:', event.data)
