@@ -5,7 +5,6 @@ import {
   User,
   Shield,
   Heart,
-  CreditCard,
   AlertTriangle,
   Lock,
 } from 'lucide-vue-next'
@@ -13,7 +12,6 @@ import AccountSection from '@/components/settings/sections/AccountSection.vue'
 import ProfileSection from '@/components/settings/sections/ProfileSection.vue'
 import PrivacySection from '@/components/settings/sections/PrivacySection.vue'
 import MatchingPreferencesSection from '@/components/settings/sections/MatchingPreferencesSection.vue'
-import SubscriptionSection from '@/components/settings/sections/SubscriptionSection.vue'
 import DangerAreaSection from '@/components/settings/sections/DangerAreaSection.vue'
 
 const activeTab = ref('profile')
@@ -23,13 +21,12 @@ const navItems = [
   { value: 'account', label: 'Account', icon: Lock },
   { value: 'privacy', label: 'Privacy', icon: Shield },
   { value: 'matching', label: 'Preferences', icon: Heart },
-  { value: 'billing', label: 'Subscription', icon: CreditCard },
   { value: 'danger', label: 'Danger zone', icon: AlertTriangle },
 ]
 </script>
 
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen w-full">
     <div class="mx-auto max-w-6xl px-4 py-10">
       <!-- Header -->
       <div class="mb-8">
@@ -60,7 +57,7 @@ const navItems = [
         </TabsList>
 
         <!-- Content -->
-        <div class="flex-1 space-y-6">
+        <div class="flex-1 space-y-6 w-full">
           <!-- PROFILE -->
           <TabsContent value="profile" class="mt-0 space-y-6">
             <ProfileSection />
@@ -79,11 +76,6 @@ const navItems = [
           <!-- MATCHING PREFERENCES -->
           <TabsContent value="matching" class="mt-0 space-y-6">
             <MatchingPreferencesSection />
-          </TabsContent>
-
-          <!-- SUBSCRIPTION -->
-          <TabsContent value="billing" class="mt-0 space-y-6">
-            <SubscriptionSection />
           </TabsContent>
 
           <!-- DANGER AREA -->
