@@ -57,7 +57,7 @@ watch([map, isLoaded], ([m, loaded]) => {
       layers: ['parks-fill'],
     })
     const f = features[0]
-    if (f) hoveredPark.value = 'test ?'
+    if (f) hoveredPark.value = 'Zone de recherche'
   }
 
   m.on('mouseenter', 'parks-fill', onEnter)

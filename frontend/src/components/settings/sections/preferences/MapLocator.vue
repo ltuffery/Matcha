@@ -57,7 +57,7 @@ const error = ref('')
 const mapKey = ref(0)
 const open = ref(false)
 const searchTerm = ref('')
-const selected = ref<string>()
+const currentLabel = computed(() => model.value?.city || undefined)
 const addresses = ref<GeoAddress[]>([])
 let debounceTimer: ReturnType<typeof setTimeout> | undefined
 let controller: AbortController | undefined
@@ -74,8 +74,11 @@ async function reverseGeocode(lat: number, lng: number): Promise<string> {
     const d = await r.json()
     const address = d.features[0]
 
+    console.log(address.properties.label)
+
     return address.properties.label
   } catch (e: any) {
+    console.log(e.message)
     return ''
   }
 }
@@ -87,7 +90,6 @@ async function setPosition(
   city?: string,
 ) {
   model.value = { lat, lng, city: city ?? (await reverseGeocode(lat, lng)) }
-  selected.value = model.value.city ?? ''
 
   if (recenter) mapKey.value++
 }
@@ -159,7 +161,6 @@ async function onSelectAddress(value: unknown) {
   if (!a) return
   open.value = false
   searchTerm.value = ''
-  selected.value = a.fulltext
   try {
     await setPosition(a.y, a.x, true, a.city || a.fulltext)
   } catch (e: any) {
@@ -183,7 +184,7 @@ async function onSelectAddress(value: unknown) {
     <div class="flex gap-3">
       <Popover v-model:open="open">
         <ListboxRoot
-          :model-value="selected"
+          :model-value="currentLabel"
           highlight-on-hover
           class="w-full"
           @update:model-value="onSelectAddress"
@@ -195,7 +196,7 @@ async function onSelectAddress(value: unknown) {
 
             <Input
               v-model="searchTerm"
-              :placeholder="selected ?? 'Choisir une adresse manuellement'"
+              :placeholder="currentLabel ?? 'Choisir une adresse manuellement'"
               class="pl-9 pr-10"
               @focus="open = true"
               @input="open = true"
@@ -221,14 +222,14 @@ async function onSelectAddress(value: unknown) {
             @open-auto-focus.prevent
           >
             <ListboxContent
-              class="max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto empty:after:content-['No_options'] empty:p-1 empty:after:block"
+              class="max-h-75 scroll-py-1 overflow-x-hidden overflow-y-auto empty:after:content-['No_options'] empty:p-1 empty:after:block"
               tabindex="0"
             >
               <ListboxItem
                 v-for="address in addresses"
                 :key="address.fulltext"
                 :value="address.fulltext"
-                class="data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground [&_svg:not([class*=\'text-\'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*=\'size-\'])]:size-4"
+                class="data-highlighted:bg-accent data-highlighted:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:shrink-0 [&_svg:not([class*=\'size-\'])]:size-4"
               >
                 <MapPin class="text-muted-foreground" />
                 <span class="truncate">{{ address.fulltext }}</span>
@@ -260,12 +261,7 @@ async function onSelectAddress(value: unknown) {
       <Map :key="mapKey" :center="center" :zoom="15" class="rounded">
         <CircleMapLayer v-if="model" />
 
-        <MapMarker
-          v-if="model"
-          :longitude="model.lng"
-          :latitude="model.lat"
-          draggable
-        >
+        <MapMarker v-if="model" :longitude="model.lng" :latitude="model.lat">
           <MarkerContent>
             <div class="relative">
               <div
