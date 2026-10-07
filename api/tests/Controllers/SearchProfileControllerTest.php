@@ -1,28 +1,19 @@
 <?php
 
-use Matcha\Api\Model\Block;
+namespace Controllers;
+
 use Matcha\Api\Model\User;
-use Matcha\Api\Testing\Cases\DatabaseTestCase;
-use Matcha\Api\Testing\Cases\HttpTestCase;
-use PHPUnit\Framework\TestCase;
+use Tests\MatchaTestCase;
 
-class SearchProfileControllerTest extends TestCase
+class SearchProfileControllerTest extends MatchaTestCase
 {
-    use HttpTestCase;
-    use DatabaseTestCase;
-
     private User $user;
 
     public function setUp(): void
     {
-        $this->setUpDatabase();
+        parent::setUp();
 
         $this->user = User::factory()->create();
-    }
-
-    public function tearDown(): void
-    {
-        Flight::response()->clear();
     }
 
     public function testEmptyQuery(): void
@@ -38,7 +29,7 @@ class SearchProfileControllerTest extends TestCase
     public function testQueryLengthLessThanTwo(): void
     {
         $users = User::factory()->count(10)->create();
-    
+
         for ($i = 1; $i < 2; $i++) {
             $response = $this->withHeader([
                 'Authorization' => 'Bearer ' . $this->user->generateJWT(),
@@ -56,8 +47,8 @@ class SearchProfileControllerTest extends TestCase
     {
         $users = User::factory()->count(10)->create();
         $subUsername = substr($users[0]->username, 0, 5);
-        $finds = array_filter($users, fn (User $user) => str_starts_with($user->username, $subUsername));
-    
+        $finds = array_filter($users, fn(User $user) => str_starts_with($user->username, $subUsername));
+
         $response = $this->withHeader([
             'Authorization' => 'Bearer ' . $this->user->generateJWT(),
         ])->get('/search/users', [
@@ -72,7 +63,7 @@ class SearchProfileControllerTest extends TestCase
     {
         $users = User::factory()->count(10)->create();
         $subUsername = substr($users[0]->username, 0, 5);
-        $finds = array_filter($users, fn (User $user) => str_starts_with($user->username, $subUsername));
+        $finds = array_filter($users, fn(User $user) => str_starts_with($user->username, $subUsername));
 
         $this->user->block($finds[0]);
 

@@ -1,18 +1,12 @@
 <?php
 
+namespace Model;
+
 use Matcha\Api\Model\User;
-use Matcha\Api\Testing\Cases\DatabaseTestCase;
-use PHPUnit\Framework\TestCase;
+use Tests\MatchaTestCase;
 
-class UserTest extends TestCase
+class UserTest extends MatchaTestCase
 {
-    use DatabaseTestCase;
-
-    public function setUp(): void
-    {
-        $this->setUpDatabase();
-    }
-
     public function testMatches()
     {
         /** @var User[] $users */
@@ -31,7 +25,8 @@ class UserTest extends TestCase
         $users = User::factory()->create();
 
         $users->birthday = "2000-01-01";
+        $currentYear = (int)date('Y');
 
-        $this->assertEquals(25, $users->getAge());
+        $this->assertEquals($currentYear - 2000, $users->getAge());
     }
 }

@@ -74,7 +74,16 @@ trait HttpTestCase
             'files' => new Collection($_FILES),
         ]);
 
-        Flight::start();
+        $level = ob_get_level();
+        ob_start();
+        try {
+            Flight::start();
+        } finally {
+            while (ob_get_level() > $level) ob_end_clean();
+            restore_error_handler();
+            restore_exception_handler();
+        }
+
         Flight::router()->reset();
 
         return new TestResponse();

@@ -30,6 +30,7 @@ class UserResource extends JsonResource
         }
 
         $data['avatar'] = $this->model->getAvatar();
+        $data['id'] = $this->model->id;
 
         return $data;
     }

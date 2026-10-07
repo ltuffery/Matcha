@@ -5,6 +5,7 @@ use Firebase\JWT\Key;
 use Matcha\Api\Exceptions\InvalidDataException;
 use Matcha\Api\Exceptions\UniqueConstraintException;
 use Matcha\Api\Model\User;
+use Matcha\Api\Services\MercurePublisher;
 
 $_SERVER['SCRIPT_NAME'] = 'index.php';
 
@@ -13,6 +14,8 @@ Flight::register('db', PDO::class, [
     getenv('MYSQL_USER'),
     getenv('MYSQL_PASSWORD'),
 ]);
+
+Flight::register('notifier', MercurePublisher::class, [getenv('MERCURE_PUBLISHER_JWT_KEY')]);
 
 Flight::map('user', function () {
     $token = Flight::request()->header('Authorization');

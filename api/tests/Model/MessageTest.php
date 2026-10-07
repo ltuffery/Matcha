@@ -1,20 +1,17 @@
 <?php
 
+namespace Model;
+
 use Matcha\Api\Model\Message;
 use Matcha\Api\Model\User;
 use Matcha\Api\Testing\Cases\DatabaseTestCase;
+use Tests\MatchaTestCase;
 use PHPUnit\Framework\TestCase;
 
-class MessageTest extends TestCase
+class MessageTest extends MatchaTestCase
 {
-    use DatabaseTestCase;
-
-    public function setUp(): void
+    public function testGetLastOfMessage()
     {
-        $this->setUpDatabase();
-    }
-
-    public function testGetLastOfMessage() {
         /** @var User[] $users */
         $users = User::factory()->count(2)->create();
 
