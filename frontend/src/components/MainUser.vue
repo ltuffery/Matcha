@@ -6,11 +6,19 @@ import 'swiper/swiper-bundle.css'
 import { Api } from '@/utils/api'
 import { EffectCreative, Pagination } from 'swiper/modules'
 import ReportModal from '@/components/report/ReportModal.vue'
-import { Heart, X, MapPin, BadgeCheck, ChevronUp } from 'lucide-vue-next'
+import {
+  Heart,
+  X,
+  MapPin,
+  BadgeCheck,
+  ChevronUp,
+  TrendingUpIcon,
+} from 'lucide-vue-next'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import type { User } from '@/types'
 import { Button } from '@/components/ui/button'
+import router from '@/router'
 
 const props = defineProps<{
   user: User
@@ -139,12 +147,27 @@ function btnLike() {
 
     <div class="absolute bottom-0 left-0 z-20 w-full p-5 pb-24 text-white">
       <div class="flex items-baseline gap-2">
-        <h2 class="truncate text-5xl font-bold tracking-tight drop-shadow-sm">
+        <h2
+          class="truncate text-5xl font-bold tracking-tight drop-shadow-sm"
+          @click="
+            router.push({
+              name: 'profile',
+              params: {
+                username: user.username,
+              },
+            })
+          "
+        >
           {{ props.user.username }}
         </h2>
         <span v-if="props.user.age" class="text-xl font-light text-white/85">
           {{ props.user.age }}
         </span>
+
+        <Badge variant="outline" class="ml-1">
+          1400
+          <TrendingUpIcon />
+        </Badge>
       </div>
       <p
         class="mt-1.5 line-clamp-2 text-sm leading-snug text-white/90 drop-shadow-sm"
@@ -179,7 +202,7 @@ function btnLike() {
         <Heart class="size-8" :fill="isLiked ? 'currentColor' : 'none'" />
       </Button>
 
-      <ReportModal :username="props.user.username" />
+      <ReportModal :userId="props.user.username" />
     </div>
 
     <Heart
