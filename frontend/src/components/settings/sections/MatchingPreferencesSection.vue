@@ -8,13 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  Map,
-  MapMarker,
-  MarkerContent,
-  MarkerPopup,
-  MarkerTooltip,
-} from '@/components/ui/map'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import {
@@ -28,16 +21,16 @@ import { Button } from '@/components/ui/button'
 import { TagsInput, TagsInputInput } from '@/components/ui/tags-input'
 import { Badge } from '@/components/ui/badge'
 import { onMounted, ref } from 'vue'
-import CircleMapLayer from '@/components/settings/sections/preferences/CircleMapLayer.vue'
-import MapLocator from '@/components/settings/sections/preferences/MapLocator.vue'
+import MapLocator, {
+  type Location,
+} from '@/components/settings/sections/preferences/MapLocator.vue'
 
 const distanceRange = ref([50])
 const ageRange = ref([22, 35])
 const fameRatingRange = ref([100])
-const locations = [{ id: 1, name: 'Times Square', lng: -74.006, lat: 40.7128 }]
+const locations = ref<Location | null>(null)
 
-onMounted(() => {
-})
+onMounted(() => {})
 </script>
 
 <template>
@@ -107,7 +100,7 @@ onMounted(() => {
       </div>
 
       <div class="space-y-3">
-        <MapLocator />
+        <MapLocator v-model="locations" />
       </div>
 
       <div class="flex justify-end">
