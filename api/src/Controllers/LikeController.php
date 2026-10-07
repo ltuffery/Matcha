@@ -22,6 +22,12 @@ class LikeController
         }
 
         Flight::user()->like($user);
+
+        Flight::notifier()->publish("user/" . $user->id . "/notifications", [
+            'type' => 'like',
+            'message' => Flight::user()->username . " a aimé ton profil",
+        ], private: false);
+
         Flight::json([], 203);
     }
 

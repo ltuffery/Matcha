@@ -14,6 +14,7 @@ RUN install-php-extensions \
     gd
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
+COPY Caddyfile /etc/caddy/Caddyfile
 COPY --chmod=777 ./entrypoint_docker.sh .
+
 ENTRYPOINT ["sh", "entrypoint_docker.sh"]

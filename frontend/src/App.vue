@@ -8,6 +8,11 @@ import Footer from '@/components/layout/Footer.vue'
 import { Tracking } from '@/services/tracking'
 import { type BasicColorSchema, useColorMode } from '@vueuse/core'
 import DateOfBirthPicker from '@/components/forms/DateOfBirthPicker.vue'
+import { toast, Toaster } from 'vue-sonner'
+import 'vue-sonner/style.css'
+import { useUserInfoStore } from '@/store/userInfo'
+import { useAuthStore } from '@/store/useAuthStore'
+import { PanelBottomCloseIcon } from '@lucide/vue'
 
 const mode = useColorMode()
 const breakPointScreen = '(min-width: 70em)'
@@ -16,11 +21,32 @@ const sizeScreen = ref<MediaQueryList>(window.matchMedia(breakPointScreen))
 
 const isAuth = ref(false)
 
-isAuthenticated().then(value => {
+isAuthenticated().then(async value => {
   isAuth.value = value
   if (value) {
-    Tracking.setAtCurrentLocation()
+    // Tracking.setAtCurrentLocation()
     connectSocket()
+
+    const authStore = useAuthStore()
+
+    if (authStore.user === null) {
+      await authStore.fetchMe()
+    }
+
+    const eventSource = new EventSource(
+      `/api/.well-known/mercure?topic=${encodeURIComponent(`user/${authStore.user?.id}/notifications`)}`,
+    )
+    eventSource.onmessage = function (event) {
+      const data = JSON.parse(event.data)
+
+      toast.info(data.type, {
+        description: data.message,
+        closeButton: true,
+        closeButtonPosition: "top-right",
+      })
+
+      console.log('New message:', event.data)
+    }
   }
 })
 
@@ -52,7 +78,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div :class="{ 'flex h-screen': isAuth }" class="bg-muted/30">
+  <Toaster position="top-right" :theme="mode == 'auto' ? 'system' : mode" />
+
+  <div :class="{ 'flex h-screen': isAuth }">
     <NavBar v-if="isAuth" />
 
     <main

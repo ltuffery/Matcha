@@ -11,7 +11,7 @@ class MatchesSeeder implements SeederInterface
         $users = User::all();
 
         for ($i = 0; $i < count($users); $i++) {
-            foreach (faker()->randomElements($users, rand(0, count($users) / 2)) as $user) {
+            foreach (faker()->randomElements($users, rand(0, intval(count($users) / 2))) as $user) {
                 try {
                     if ($user->id === $users[$i]->id) {
                         continue;
