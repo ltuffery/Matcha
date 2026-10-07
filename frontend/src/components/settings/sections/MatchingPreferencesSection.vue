@@ -28,8 +28,8 @@ import { Button } from '@/components/ui/button'
 import { TagsInput, TagsInputInput } from '@/components/ui/tags-input'
 import { Badge } from '@/components/ui/badge'
 import { onMounted, ref } from 'vue'
-import CircleLayer from '@/components/settings/sections/preferences/CircleLayer.vue'
-import LocationSubSection from '@/components/settings/sections/preferences/LocationSubSection.vue'
+import CircleMapLayer from '@/components/settings/sections/preferences/CircleMapLayer.vue'
+import MapLocator from '@/components/settings/sections/preferences/MapLocator.vue'
 
 const distanceRange = ref([50])
 const ageRange = ref([22, 35])
@@ -107,7 +107,7 @@ onMounted(() => {
       </div>
 
       <div class="space-y-3">
-        <LocationSubSection />
+        <MapLocator />
       </div>
 
       <div class="flex justify-end">

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import {
   LocateFixed,
-  Navigation,
   Search,
   Loader2,
   MapPin,
@@ -19,30 +18,34 @@ import {
   MarkerTooltip,
   MarkerPopup,
 } from '@/components/ui/map'
-import CircleLayer from '@/components/settings/sections/preferences/CircleLayer.vue'
-import { ButtonGroup } from '@/components/ui/button-group'
-import {
-  Combobox,
-  ComboboxAnchor,
-  ComboboxEmpty,
-  ComboboxGroup,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxItemIndicator,
-  ComboboxList,
-  ComboboxTrigger,
-} from '@/components/ui/combobox'
+import CircleMapLayer from '@/components/settings/sections/preferences/CircleMapLayer.vue'
 import {
   Popover,
   PopoverAnchor,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import {
+  ListboxRoot,
+  ListboxContent,
+  ListboxItemIndicator,
+  ListboxItem,
+} from 'reka-ui'
 
 export interface Location {
   lat: number
   lng: number
   city: string
+}
+
+interface GeoAddress {
+  fulltext: string
+  x: number // lon
+  y: number // lat
+  city?: string
+  zipcode?: string
+  street?: string
+  kind?: string
 }
 
 const model = defineModel<Location | null>({ default: null })
@@ -51,30 +54,28 @@ const DEFAULT: [number, number] = [2.3522, 48.8566] // Paris [lng, lat]
 const loading = ref(false)
 const tracking = ref(false)
 const error = ref('')
-const query = ref('')
 const mapKey = ref(0)
-const timeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
-let watchId: number | null = null
+const open = ref(false)
+const searchTerm = ref('')
+const selected = ref<string>()
+const addresses = ref<GeoAddress[]>([])
+let debounceTimer: ReturnType<typeof setTimeout> | undefined
+let controller: AbortController | undefined
 
 const center = computed<[number, number]>(() =>
   model.value ? [model.value.lng, model.value.lat] : DEFAULT,
 )
 
-// Retrouver la ville à partir des coordonnées
 async function reverseGeocode(lat: number, lng: number): Promise<string> {
   try {
     const r = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&accept-language=fr`,
+      `https://data.geopf.fr/geocodage/reverse?lon=${lng}&lat=${lat}&index=address&limit=10&returntruegeometry=false&type=housenumber`,
     )
     const d = await r.json()
-    return (
-      d.address?.city ||
-      d.address?.town ||
-      d.address?.village ||
-      d.address?.municipality ||
-      ''
-    )
-  } catch {
+    const address = d.features[0]
+
+    return address.properties.label
+  } catch (e: any) {
     return ''
   }
 }
@@ -86,6 +87,8 @@ async function setPosition(
   city?: string,
 ) {
   model.value = { lat, lng, city: city ?? (await reverseGeocode(lat, lng)) }
+  selected.value = model.value.city ?? ''
+
   if (recenter) mapKey.value++
 }
 
@@ -117,52 +120,12 @@ function locateMe() {
       error.value = geoErrorMessage(e)
       loading.value = false
     },
-    { enableHighAccuracy: true, timeout: 10000 },
+    { enableHighAccuracy: true, timeout: 15000 },
   )
 }
 
-async function searchAddress() {
-  if (!query.value.trim()) return
-  loading.value = true
-  error.value = ''
-  try {
-    const r = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&limit=1&addressdetails=1&accept-language=fr&q=${encodeURIComponent(query.value)}`,
-    )
-    const [res] = await r.json()
-    if (!res) throw new Error('Adresse introuvable')
-    const a = res.address ?? {}
-    await setPosition(
-      +res.lat,
-      +res.lon,
-      true,
-      a.city || a.town || a.village || query.value,
-    )
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
-}
-interface GeoAddress {
-  fulltext: string
-  x: number // longitude
-  y: number // latitude
-  city?: string
-  zipcode?: string
-  street?: string
-  kind?: string
-}
-
-const open = ref(false)
-const searchTerm = ref('')
-const selected = ref<string>()
-const addresses = ref<GeoAddress[]>([])
-let debounceTimer: ReturnType<typeof setTimeout> | undefined
-let controller: AbortController | undefined
-
 async function autoCompleteAddress(address: string) {
-  controller?.abort() // annule la requête précédente
+  controller?.abort()
   controller = new AbortController()
   loading.value = true
   error.value = ''
@@ -234,7 +197,6 @@ async function onSelectAddress(value: unknown) {
               v-model="searchTerm"
               :placeholder="selected ?? 'Choisir une adresse manuellement'"
               class="pl-9 pr-10"
-              autocomplete="off"
               @focus="open = true"
               @input="open = true"
               @keydown.esc="open = false"
@@ -295,8 +257,8 @@ async function onSelectAddress(value: unknown) {
     <p v-if="error" class="text-sm text-destructive">{{ error }}</p>
 
     <div class="h-80 overflow-hidden rounded-lg border">
-      <Map :key="mapKey" :center="center" :zoom="model ? 13 : 5">
-        <CircleLayer />
+      <Map :key="mapKey" :center="center" :zoom="15" class="rounded">
+        <CircleMapLayer v-if="model" />
 
         <MapMarker
           v-if="model"
