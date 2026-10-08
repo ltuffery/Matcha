@@ -11,6 +11,7 @@
         "chrisullyott/php-ip-api": "^1.0",
         "bluemmb/faker-picsum-photos-provider": "^2.0",
         "ext-gd": "*",
+        "predis/predis": "^3.6",
         "ext-frankenphp": "*"
     },
     "require-dev": {

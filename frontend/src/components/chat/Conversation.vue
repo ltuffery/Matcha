@@ -36,6 +36,9 @@ import { useRoute } from 'vue-router'
 import { Api } from '@/utils/api'
 import type { MessageData, SmallUser } from '@/types'
 import router from '@/router'
+import { getSocket } from '@/plugins/socket'
+import { useTypingStore } from '@/store/isTyping'
+import { useMessagesStore } from '@/store/messages'
 
 interface MessageGroup {
   isMe: boolean
@@ -44,8 +47,13 @@ interface MessageGroup {
 
 const route = useRoute()
 
-const messages = ref<MessageData[]>([])
+const messagesStore = useMessagesStore();
+// const messages = ref<MessageData[]>([])
+const messages = computed(() => messagesStore.getMessages(route.params.username as string));
 const user = ref<SmallUser>()
+
+const typingStore = useTypingStore();
+const isOtherTyping = computed(() => typingStore.isTyping(user.value?.username));
 
 const displayName = computed(
   () => user.value?.first_name + ' ' + user.value?.last_name,
@@ -90,14 +98,32 @@ const fetchMessages = async () => {
       first_name: data.first_name,
       last_name: data.last_name,
     }
-    messages.value = data.messages
+    // messages.value = data.messages
+    messagesStore.setMessages(data.username, data.messages);
   }
 }
 
 function sendMessage(content?: string) {
   const text = (content ?? draft.value).trim()
-  if (!text) return
+  if (!text || !user.value?.username) return
+  getSocket().emit("stop_typing", { to_username: user.value.username });
+  messagesStore.sendMessage(user.value.username, text);
+  // const res = Api.post(`/users/me/matches/${user.value?.username}`).send({content: text});
+  // getSocket().emit("send_message", {to_username: user.value?.username, content: text});
   draft.value = ''
+}
+
+let typingTimeoutMs: NodeJS.Timeout;
+
+function onChatInput() {
+  getSocket().emit("typing", { to_username: user.value?.username });
+  console.log("Typing Sended to ", user.value?.username)
+
+  clearTimeout(typingTimeoutMs);
+  typingTimeoutMs = setTimeout(() => {
+    getSocket().emit("stop_typing", { to_username: user.value?.username });
+    console.log("Stop Typing Sended")
+  }, 2000);
 }
 
 watch(
@@ -228,12 +254,16 @@ onMounted(async () => {
       </div>
     </div>
 
+    <div v-if="isOtherTyping" class="px-4 pb-1 text-xs text-muted-foreground">
+      {{ user?.username }} is typing...
+    </div>
     <form class="border-t p-3" @submit.prevent="sendMessage()">
       <InputGroup>
         <InputGroupTextarea
           v-model="draft"
           placeholder="Votre message"
           class="max-h-40"
+          @input="onChatInput"
           @keydown.enter.exact.prevent="sendMessage()"
         />
         <InputGroupAddon align="inline-end">

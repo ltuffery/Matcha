@@ -28,6 +28,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { useRoute } from 'vue-router'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { useTypingStore } from '@/store/isTyping'
 
 interface ChatUser {
   username: string
@@ -58,6 +59,8 @@ const emit = defineEmits<{
 }>()
 
 const route = useRoute()
+
+const typingStore = useTypingStore();
 
 const selectedUser = ref<string>('')
 const search = ref<string>('')
@@ -164,7 +167,9 @@ onMounted(() => {
                 <ItemTitle
                   >{{ person.first_name }} {{ person.last_name }}</ItemTitle
                 >
-                <ItemDescription>{{
+                <ItemDescription v-if="typingStore.isTyping(person.username)">
+                  {{person.username}} is typing...</ItemDescription>
+                <ItemDescription v-else>{{
                   person.last_message?.content
                 }}</ItemDescription>
               </ItemContent>
