@@ -14,10 +14,10 @@ interface JwtPayload {
   iat: number;
 }
 
-export function socketAuthMiddleware(
-  socket: Socket,
-  next: (err?: Error) => void
-) {
+// #######################################################
+// ## Verify the presence and validity of the JWT token ##
+// #######################################################
+export function socketAuthMiddleware(socket: Socket, next: (err?: Error) => void) {
   const token = socket.handshake.auth?.token;
 
   if (!token || typeof token !== "string") {

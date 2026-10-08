@@ -15,21 +15,25 @@ const io = new Server(httpServer, {
 	},
 });
 
+// Use middleware to verify token (if is connected)
 io.use(socketAuthMiddleware);
 
 io.on("connection", (socket) => {
-	// console.log(`[socket] connected: ${socket.id}`);
   socket.join(`user:${socket.username}`);
   console.log(`[socket] ${socket.username} joined room user:${socket.username} on socketId: ${socket.id}`);
-	// registerSocketHandlers(io, socket);
+
+  // Listen typing and stop typing (in chat msg)
   isTypingTo(io, socket);
 
+  // Client disconnect
 	socket.on("disconnect", () => {
     console.log(`[socket] disconnected: ${socket.id}`);
     cleanIsTyping(socket.id);
 	});
 });
 
+// Init and subscribe to chall redis (API -> WS)
+// Verify and redistribute the redis message to user
 initRedisSubscriber(io);
 
 httpServer.listen(config.port, () => {
