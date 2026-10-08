@@ -20,5 +20,7 @@
     "lib": "@/lib",
     "composables": "@/composables"
   },
-  "registries": {}
+  "registries": {
+    "@shadcnblocks": "https://www.shadcnblocks.com/r/{style}/{name}"
+  }
 }
