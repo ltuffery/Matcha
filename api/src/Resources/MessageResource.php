@@ -20,6 +20,7 @@ class MessageResource extends JsonResource
         $user = User::find(['id' => $this->model->sender_id]);
 
         return [
+            'id' => $this->model->id,
             'sender' => $user->username,
             'avatar' => $user->getAvatar(),
             'content' => htmlspecialchars_decode($this->model->content),

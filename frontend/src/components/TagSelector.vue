@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Api } from '@/utils/api'
+import { ApiClient } from '@/api/apiClient'
 
 interface Tag {
   name: string
@@ -25,7 +25,7 @@ function addTagSelected(tag: Tag) {
 }
 
 onMounted(async () => {
-  const response = await Api.get('/tags').send()
+  const response = await ApiClient.get('/tags').send()
   const data = (await response.json()) as string[]
   tags.value = data.map(item => {
     if (

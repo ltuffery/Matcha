@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Avatar from '@/components/Avatar.vue'
-import { Api } from '@/utils/api'
+import { ApiClient } from '@/api/apiClient'
 import { computed } from 'vue'
 import { notificationsStore } from '@/store/notifications'
 import type { NotificationData } from '@/types'
@@ -12,7 +12,7 @@ const props = defineProps<{
 const isNew = computed(() => !props.notification.data.view)
 
 const markAsRead = async (notification: NotificationData) => {
-  const res = await Api.post(
+  const res = await ApiClient.post(
     `/users/me/notifications/${notification.id}/view`,
   ).send()
 

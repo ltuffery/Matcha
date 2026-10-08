@@ -99,8 +99,8 @@
 </template>
 
 <script setup lang="ts">
-import { Api } from '@/utils/api'
 import { ref } from 'vue'
+import { ApiClient } from '@/api/client'
 
 const pageState = ref<'badToken' | 'goodToken' | 'updatePwdSuccess'>('badToken')
 const skeleton = ref(true)
@@ -115,7 +115,7 @@ const confirmPassword = ref<string>()
 const urlParams = new URLSearchParams(window.location.search)
 
 function printBack(state: boolean, info: string) {
-  if (state == false) errorContent.value = info
+  if (!state) errorContent.value = info
   else successContent.value = info
   successed.value = state
   setTimeout(() => {
@@ -133,9 +133,7 @@ async function changePassword() {
       confirmPassword: confirmPassword.value,
       token: tokenPwd.value,
     }
-    const req = await Api.post('forgot/change-password').send(
-      info as unknown as Record<string, unknown>,
-    )
+    const req = await ApiClient.post('forgot/change-password', info)
     const data = (await req.json()) as { success: boolean; error?: string }
     if (data.success) {
       printBack(true, 'The password is changed')
@@ -151,9 +149,7 @@ const checkToken = async () => {
     username: urlParams.get('user'),
     token: urlParams.get('token'),
   }
-  const req = await Api.post('forgot/token-verify').send(
-    info as unknown as Record<string, unknown>,
-  )
+  const req = await ApiClient.post('forgot/token-verify', info)
   const data = (await req.json()) as { success: boolean; token?: string }
   if (data.success) {
     pageState.value = 'goodToken'

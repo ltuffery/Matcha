@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { Api } from '@/utils/api'
 import { ref, watch } from 'vue'
-import type { User } from '@/types'
 
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Search, X } from 'lucide-vue-next'
 import UserItem from '@/components/users/UserItem.vue'
+import { ApiClient } from '@/api/client'
+import type { User } from '@/api/auth'
 
 const SEARCH_MIN_LENGTH = 3
 
@@ -23,7 +23,7 @@ const fetchUsers = async (query: string) => {
 
   console.log(query)
 
-  const res = await Api.get(`search/users?q=${query}`).send()
+  const res = await ApiClient.get<User[]>(`search/users?q=${query}`)
 
   users.value = await res.json()
   loading.value = false

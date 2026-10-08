@@ -1,96 +1,76 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { isAuthenticated } from '@/services/auth'
-import { connectSocket } from '@/plugins/socket'
-import NavBar from '@/components/layout/NavBar.vue'
-import { onMounted, onUnmounted, ref } from 'vue'
-import Footer from '@/components/layout/Footer.vue'
-import { Tracking } from '@/services/tracking'
+import { onMounted, onUnmounted, watch } from 'vue'
 import { type BasicColorSchema, useColorMode } from '@vueuse/core'
-import DateOfBirthPicker from '@/components/forms/DateOfBirthPicker.vue'
 import { toast, Toaster } from 'vue-sonner'
 import 'vue-sonner/style.css'
-import { useUserInfoStore } from '@/store/userInfo'
+import NavBar from '@/components/layout/NavBar.vue'
 import { useAuthStore } from '@/store/useAuthStore'
-import { PanelBottomCloseIcon } from '@lucide/vue'
+import { storeToRefs } from 'pinia'
 
 const mode = useColorMode()
-const breakPointScreen = '(min-width: 70em)'
+const authStore = useAuthStore()
+const { isAuthenticated, user } = storeToRefs(authStore)
 
-const sizeScreen = ref<MediaQueryList>(window.matchMedia(breakPointScreen))
+let eventSource: EventSource | null = null
 
-const isAuth = ref(false)
+function openNotifications(userId: number | string) {
+  closeNotifications()
+  eventSource = new EventSource(
+    `/api/.well-known/mercure?topic=${encodeURIComponent(`user/${userId}/notifications`)}`,
+  )
+  eventSource.onmessage = event => {
+    const data = JSON.parse(event.data)
+    toast.info(data.type, {
+      description: data.message,
+      closeButton: true,
+    })
+  }
+}
 
-isAuthenticated().then(async value => {
-  isAuth.value = value
-  if (value) {
-    // Tracking.setAtCurrentLocation()
-    connectSocket()
+function closeNotifications() {
+  eventSource?.close()
+  eventSource = null
+}
 
-    const authStore = useAuthStore()
+watch(
+  isAuthenticated,
+  authenticated => {
+    if (authenticated && user.value) openNotifications(user.value.id)
+    else closeNotifications()
+  },
+  { immediate: true },
+)
 
-    if (authStore.user === null) {
+onMounted(async () => {
+  const theme = localStorage.getItem('theme') as BasicColorSchema | null
+  mode.value = theme ?? 'dark'
+
+  if (!authStore.user) {
+    try {
       await authStore.fetchMe()
-    }
-
-    const eventSource = new EventSource(
-      `/api/.well-known/mercure?topic=${encodeURIComponent(`user/${authStore.user?.id}/notifications`)}`,
-    )
-    eventSource.onmessage = function (event) {
-      const data = JSON.parse(event.data)
-
-      toast.info(data.type, {
-        description: data.message,
-        closeButton: true,
-        closeButtonPosition: "top-right",
-      })
-
-      console.log('New message:', event.data)
+    } catch {
+      /* no connect */
     }
   }
 })
 
-window.addEventListener('login', () => {
-  isAuth.value = true
-})
-
-window.addEventListener('logout', () => {
-  isAuth.value = false
-})
-
-onMounted(async () => {
-  const mediaQuery = window.matchMedia(breakPointScreen)
-
-  mediaQuery.addEventListener('change', () => {
-    sizeScreen.value = mediaQuery
-  })
-
-  const theme = localStorage.getItem('theme') as BasicColorSchema | null
-  mode.value = theme !== null ? theme : 'dark'
-})
-
-onUnmounted(() => {
-  const mediaQuery = window.matchMedia(breakPointScreen)
-  mediaQuery.removeEventListener('change', () => {
-    sizeScreen.value = mediaQuery
-  })
-})
+onUnmounted(closeNotifications)
 </script>
 
 <template>
   <Toaster position="top-right" :theme="mode == 'auto' ? 'system' : mode" />
 
-  <div :class="{ 'flex h-screen': isAuth }">
-    <NavBar v-if="isAuth" />
+  <div :class="{ 'flex h-screen overflow-y-auto': isAuthenticated }">
+    <NavBar v-if="isAuthenticated" />
 
     <main
       :class="{
-        'flex w-full pb-20 md:pb-0 px-6 md:px-20 overflow-auto-y': isAuth,
+        'flex w-full pb-20 md:pb-0 px-6 md:px-20 overflow-y-auto':
+          isAuthenticated,
       }"
     >
       <RouterView />
     </main>
-
-    <!--  <Footer class="z-0" v-if="sizeScreen.matches" />-->
   </div>
 </template>

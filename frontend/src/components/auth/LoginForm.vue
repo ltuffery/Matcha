@@ -1,21 +1,28 @@
 <script setup lang="ts">
-import { h, ref } from 'vue'
+import { ref } from 'vue'
 import { toTypedSchema } from '@vee-validate/zod'
-import { Field as VeeField, Form as VeeForm } from 'vee-validate'
+import {
+  Field as VeeField,
+  Form as VeeForm,
+  type GenericObject,
+} from 'vee-validate'
 import * as z from 'zod'
 
 import router from '@/router'
-import { login } from '@/services/auth'
-import { Api } from '@/utils/api'
 import { connectSocket } from '@/plugins/socket'
 
 import FeedbackToast from '@/components/FeedbackToast.vue'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
+import { useAuth } from '@/composable/useAuth'
+import { toast } from 'vue-sonner'
+import { useAuthStore } from '@/store/useAuthStore'
+
+const auth = useAuth()
+const profile = useAuthStore()
 
 const forgotPwd = ref(false)
-const toastsRef = ref<InstanceType<typeof FeedbackToast>>()
 
 const loginSchema = toTypedSchema(
   z.object({
@@ -46,70 +53,43 @@ function forgotSwitch() {
   forgotPwd.value = !forgotPwd.value
 }
 
-async function forgetPassword(values: { email: string }) {
-  try {
-    const response = await Api.post('forgot/credencial').send({
-      email: values.email,
-    })
+async function forgetPassword(values: GenericObject) {
+  const email = values.email as string
 
-    if (response.status === 200) {
-      toastsRef.value?.addSuccess('Email sent!')
+  try {
+    const isSend = await auth.forgotPassword(email)
+
+    if (isSend) {
+      toast.success('Email sent!')
     } else {
-      toastsRef.value?.addError('Error!')
+      toast.error('Error!')
     }
   } catch {
-    toastsRef.value?.addError('An unexpected error occurred')
+    toast.error('An unexpected error occurred')
   }
 }
 
-async function loginUserAccount(values: {
-  username: string
-  password: string
-}) {
-  const res = await login(values.username, values.password)
+async function loginUserAccount(values: GenericObject) {
+  const username = values.username as string
+  const password = values.password as string
+  const res = await auth.login(username, password)
 
-  if (res == null) return
-
-  if (!(res instanceof Response)) {
-    navigator.geolocation.getCurrentPosition(
-      loc => {
-        Api.put('/users/me/localisation').send({
-          lat: loc.coords.latitude,
-          lon: loc.coords.longitude,
-        })
-      },
-      () => {
-        Api.put('/users/me/localisation').send()
-      },
-    )
-
-    connectSocket()
+  if (!res.success) {
+    toast.error(res.error as string)
+  } else {
+    toast.success(`Welcome ${username}`)
     await router.push({ name: 'home' })
-    return
-  }
-
-  switch (res.status) {
-    case 400:
-      toastsRef.value?.addError('Bad credentials')
-      break
-    case 401:
-      toastsRef.value?.addWarning("Your email isn't verified")
-      break
-    default:
-      toastsRef.value?.addError('Unexpected error occurred')
   }
 }
 </script>
 
 <template>
-  <FeedbackToast ref="toastsRef" posX="end" class="h-2/6" />
-
   <!-- Mot de passe oublié -->
   <VeeForm
     v-if="forgotPwd"
     v-slot="{ isSubmitting }"
     :validation-schema="forgotSchema"
-    @submit="forgetPassword"
+    @submit="values => forgetPassword(values)"
   >
     <h3 class="my-5 text-3xl font-bold">Forgot credential</h3>
 
@@ -156,7 +136,7 @@ async function loginUserAccount(values: {
     v-else
     class="flex flex-col gap-3"
     :validation-schema="loginSchema"
-    @submit="loginUserAccount"
+    @submit="values => loginUserAccount(values)"
   >
     <h3 class="my-5 text-3xl font-bold">Login!</h3>
 

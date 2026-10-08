@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { MessagesResponse, MessageData } from '@/types'
-import { Api } from '@/utils/api';
+import { ApiClient } from '@/api/client'
 
 export const useMessagesStore = defineStore('messagesStore', {
   state: () => ({
@@ -8,8 +8,10 @@ export const useMessagesStore = defineStore('messagesStore', {
   }),
   actions: {
     async sendMessage(toUsername: string, content: string) {
-      const res = await Api.post(`/users/me/matches/${toUsername}`).send({ content: content });
-      if (res.ok) {
+      const res = await ApiClient.post(`/users/me/matches/${toUsername}`, {
+        content: content,
+      })
+      if (res.ok()) {
         const saved: MessageData = await res.json();
         this.addMessage(toUsername, saved);
       }

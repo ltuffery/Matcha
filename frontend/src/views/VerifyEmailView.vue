@@ -9,7 +9,7 @@
     </div>
   </main>
 
-  <main
+  <mainco
     v-else
     class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-muted px-2"
   >
@@ -19,12 +19,12 @@
         <span v-else>Bad email verify link, or email already verified.</span>
       </div>
     </div>
-  </main>
+  </mainco>
 </template>
 
 <script setup lang="ts">
-import { Api } from '@/utils/api'
 import { ref } from 'vue'
+import { ApiClient } from '@/api/client'
 
 const responseOK = ref(false)
 const skeleton = ref(true)
@@ -36,7 +36,7 @@ const checkToken = async () => {
     username: urlParams.get('user'),
     token: urlParams.get('token'),
   }
-  const req = await Api.post('email/token').send(info as unknown as Record<string, unknown>)
+  const req = await ApiClient.post('email/token', info)
   const data = (await req.json()) as { success: boolean }
   if (data.success) responseOK.value = true
   else responseOK.value = false

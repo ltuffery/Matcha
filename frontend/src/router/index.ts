@@ -2,7 +2,6 @@ import HistoryView from '@/views/HistoryView.vue'
 import ChatView from '@/views/ChatView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import { isAuthenticated } from '@/services/auth'
 import AuthView from '@/views/AuthView.vue'
 import { authGuard } from '@/middlewares/auth'
 import SearchUsersView from '@/views/SearchUsersView.vue'
@@ -12,8 +11,8 @@ import NewPasswordView from '@/views/NewPasswordView.vue'
 import UserProfileView from '@/views/UserProfileView.vue'
 import NotificationsView from '@/views/NotificationsView.vue'
 import NotFound from '@/views/NotFound.vue'
-import EditProfileView from '@/views/EditProfileView.vue'
 import HomeView from '@/views/HomeView.vue'
+import { useAuth } from '@/composable/useAuth'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -21,7 +20,7 @@ const routes: RouteRecordRaw[] = [
     name: 'auth',
     component: AuthView,
     beforeEnter: (to, from, next) => {
-      isAuthenticated().then(value => {
+      useAuth().isAuthenticated().then(value => {
         if (value) {
           next({ name: 'home' })
         } else {
@@ -86,12 +85,6 @@ const routes: RouteRecordRaw[] = [
     path: '/notifications',
     name: 'notifications',
     component: NotificationsView,
-    beforeEnter: [authGuard],
-  },
-  {
-    path: '/profile/:username/edit',
-    name: 'profile.edit',
-    component: EditProfileView,
     beforeEnter: [authGuard],
   },
   {

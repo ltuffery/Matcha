@@ -23,7 +23,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Api } from '@/utils/api'
+import { ApiClient } from '@/api/client'
 
 interface Profile {
   id: number
@@ -54,10 +54,10 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    const res = await Api.get(`/users/${route.params.username}`).send()
-    if (!res.ok)
+    const res = await ApiClient.get<Profile>(`/users/${route.params.username}`)
+    if (!res.ok())
       throw new Error(
-        res.status === 404 ? 'Profil introuvable' : 'Erreur de chargement',
+        res.status() === 404 ? 'Profil introuvable' : 'Erreur de chargement',
       )
     profile.value = await res.json()
   } catch (e: any) {
@@ -232,9 +232,7 @@ watch(() => route.params.id, load)
         </Card>
 
         <Card>
-          <CardHeader
-            ><CardTitle class="text-lg">About</CardTitle></CardHeader
-          >
+          <CardHeader><CardTitle class="text-lg">About</CardTitle></CardHeader>
           <CardContent>
             <p class="whitespace-pre-line text-sm">
               {{
@@ -264,9 +262,7 @@ watch(() => route.params.id, load)
     <Dialog v-model:open="showMatch">
       <DialogContent class="text-center">
         <DialogHeader>
-          <DialogTitle class="text-3xl text-pink-500"
-            >Match ! 💘</DialogTitle
-          >
+          <DialogTitle class="text-3xl text-pink-500">Match ! 💘</DialogTitle>
         </DialogHeader>
         <p>{{ profile?.username }} also liked you.</p>
         <DialogFooter class="sm:justify-center">
@@ -283,9 +279,7 @@ watch(() => route.params.id, load)
     <!-- Fenêtre de modification -->
     <Dialog v-model:open="editing">
       <DialogContent>
-        <DialogHeader
-          ><DialogTitle>Edit my profile</DialogTitle></DialogHeader
-        >
+        <DialogHeader><DialogTitle>Edit my profile</DialogTitle></DialogHeader>
         <div class="space-y-3">
           <Input v-model="form.city" placeholder="City" />
           <Textarea

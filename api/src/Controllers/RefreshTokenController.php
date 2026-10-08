@@ -23,7 +23,8 @@ class RefreshTokenController
 
             if (!$this->validIp($token)) {
                 Flight::json([
-                    'message' => 'Unauthorized',
+                    'success' => false,
+                    'error' => 'Unauthorized',
                 ], 401);
 
                 return;
@@ -34,11 +35,13 @@ class RefreshTokenController
             ]);
 
             Flight::json([
+                'success' => true,
                 'token' => $user->generateJWT(),
             ]);
         } catch (Exception) {
             Flight::json([
-                'message' => 'Unauthorized',
+                'success' => false,
+                'error' => 'Unauthorized',
             ], 401);
         }
     }

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { Api } from '@/utils/api'
 import { ref } from 'vue'
-import type { User } from '@/types'
 import PeopleList from '@/components/chat/PeopleList.vue'
 import Conversation from '@/components/chat/Conversation.vue'
 import { useRoute } from 'vue-router'
+import { ApiClient } from '@/api/client'
+import type { User } from '@/api/auth'
 
 interface ChatUser {
   username: string
@@ -36,10 +36,9 @@ const selectedUser = ref<User>({
   last_name: 'Tuffery',
 })
 
-Api.get('/users/me/matches')
-  .send()
+ApiClient.get('/users/me/matches')
   .then(res => {
-    if (res.status === 401) {
+    if (res.status() === 401) {
       return []
     }
 

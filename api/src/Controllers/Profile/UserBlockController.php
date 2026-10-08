@@ -10,6 +10,7 @@ class UserBlockController
 {
     public function index(): void
     {
+        // TODO: Use resource (security!!!)
         Flight::json(
             array_map(
                 fn ($id) => User::find(['id' => $id]),

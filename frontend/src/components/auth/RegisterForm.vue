@@ -31,11 +31,15 @@ import {
   StepperTrigger,
 } from '@/components/ui/stepper'
 import DateOfBirthPicker from '@/components/forms/DateOfBirthPicker.vue'
+import { useAuth } from '@/composable/useAuth'
+import { TagsInput, TagsInputInput } from '@/components/ui/tags-input'
 
 interface ImageItem {
   file: File
   url: string
 }
+
+const auth = useAuth()
 
 const stepIndex = ref(1)
 const inputImage = ref<HTMLInputElement | null>(null)
@@ -132,18 +136,10 @@ async function handleSubmit(values: Record<string, unknown>) {
       form.append('photos[]', image.file, image.file.name)
     })
 
-    const response = await fetch(
-      `https://${location.hostname}/api/auth/register`,
-      {
-        method: 'POST',
-        body: form,
-      },
-    )
+    const response = await auth.register(form)
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      toast.error(data.message ?? 'Une erreur est survenue')
+    if (!auth.error) {
+      toast.error(auth.error ?? 'Une erreur est survenue')
       return
     }
 
@@ -357,7 +353,17 @@ async function handleSubmit(values: Record<string, unknown>) {
               </Field>
             </VeeField>
 
-            <!--            TODO: Add Tag selector -->
+            <VeeField v-slot="{ componentField, errors }" name="tags">
+              <Field :data-invalid="!!errors.length">
+                <FieldLabel>Tags</FieldLabel>
+
+                <TagsInput class="w-75">
+                  <TagsInputInput placeholder="Tags..." />
+                </TagsInput>
+
+                <FieldError :errors="errors" />
+              </Field>
+            </VeeField>
           </template>
 
           <!-- Step 5 : photos -->
@@ -398,7 +404,7 @@ async function handleSubmit(values: Record<string, unknown>) {
                 </div>
               </div>
 
-              <input
+              <Input
                 ref="inputImage"
                 type="file"
                 accept="image/*"

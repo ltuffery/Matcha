@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import vDoubleTap from '@/directives/doubleTap'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import 'swiper/swiper-bundle.css'
-import { Api } from '@/utils/api'
 import { EffectCreative, Pagination } from 'swiper/modules'
 import ReportModal from '@/components/report/ReportModal.vue'
 import {
@@ -16,12 +15,15 @@ import {
 } from 'lucide-vue-next'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
-import type { User } from '@/types'
 import { Button } from '@/components/ui/button'
 import router from '@/router'
+import { ApiClient } from '@/api/client'
+import type { User } from '@/api/auth'
+import { useUsers } from '@/composable/useUsers'
+import type { Profile } from '@/api/users'
 
 const props = defineProps<{
-  user: User
+  user: Profile
 }>()
 
 const isLiked = ref(false)
@@ -37,11 +39,11 @@ const emit = defineEmits<{
 
 const photosCount = computed(() => props.user.photos?.length ?? 0)
 
-function likeUser() {
+function userLike() {
   isLiked.value = true
   animated.value = true
 
-  Api.post(`/users/${props.user.username}/like`).send()
+  useUsers().like(props.user.username)
 
   setTimeout(() => {
     animated.value = false
@@ -62,14 +64,9 @@ function btnLike() {
   isLiked.value = !isLiked.value
 
   if (isLiked.value) {
-    animated.value = true
-    Api.post(`/users/${props.user.username}/like`).send()
-    setTimeout(() => {
-      animated.value = false
-      emit('nextSlide')
-    }, 350)
+    userLike()
   } else {
-    Api.delete(`/users/${props.user.username}/unlike`).send()
+    ApiClient.delete(`/users/${props.user.username}/unlike`)
   }
 }
 </script>
@@ -116,7 +113,7 @@ function btnLike() {
           :src="image"
           alt="Photo de profil"
           class="h-full w-full object-cover rounded-lg"
-          v-double-tap="likeUser"
+          v-double-tap="userLike"
         />
       </swiper-slide>
     </swiper>
@@ -158,21 +155,21 @@ function btnLike() {
             })
           "
         >
-          {{ props.user.username }}
+          {{ user.first_name }}
         </h2>
         <span v-if="props.user.age" class="text-xl font-light text-white/85">
-          {{ props.user.age }}
+          {{ user.age }}
         </span>
 
         <Badge variant="outline" class="ml-1">
-          1400
+          {{ user.fame_rating }}
           <TrendingUpIcon />
         </Badge>
       </div>
       <p
         class="mt-1.5 line-clamp-2 text-sm leading-snug text-white/90 drop-shadow-sm"
       >
-        {{ props.user.biography }}
+        {{ user.biography }}
       </p>
     </div>
 
