@@ -219,14 +219,26 @@ onMounted(fetchUsers)
 
     <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <template v-if="loading">
-        <Card v-for="i in 6" :key="i">
-          <CardContent class="flex items-center gap-4 p-4">
-            <Skeleton class="h-12 w-12 rounded-full" />
-            <div class="flex flex-col gap-2 flex-1">
-              <Skeleton class="h-4 w-1/3" />
-              <Skeleton class="h-3 w-1/2" />
+        <Card
+          v-for="i in 6"
+          :key="i"
+          class="relative overflow-hidden p-0 gap-0 aspect-[3/4] border-0 shadow-md"
+        >
+          <Skeleton class="absolute inset-0 h-full w-full rounded-none" />
+
+          <Skeleton
+            class="absolute top-3 right-3 h-6 w-12 rounded-full bg-foreground/10"
+          />
+
+          <div class="absolute bottom-0 inset-x-0 p-4 flex flex-col gap-2">
+            <Skeleton class="h-5 w-2/3 bg-foreground/10" />
+            <Skeleton class="h-3 w-1/2 bg-foreground/10" />
+            <div class="flex gap-1 mt-1">
+              <Skeleton class="h-4 w-12 rounded-full bg-foreground/10" />
+              <Skeleton class="h-4 w-10 rounded-full bg-foreground/10" />
+              <Skeleton class="h-4 w-14 rounded-full bg-foreground/10" />
             </div>
-          </CardContent>
+          </div>
         </Card>
       </template>
 
@@ -261,7 +273,7 @@ onMounted(fetchUsers)
                 <MapPin class="h-3 w-3" /> {{ u.city }} · {{ u.distanceKm }} km
               </p>
               <div class="flex flex-wrap gap-1 mt-2">
-                <Badge v-for="t in u.tags" :key="t" variant="secondary">
+                <Badge v-for="t in u.tags" :key="t" variant="outline">
                   #{{ t }}
                 </Badge>
               </div>
