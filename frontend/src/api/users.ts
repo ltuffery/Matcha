@@ -22,6 +22,16 @@ export interface Profile {
   email?: string
 }
 
+export interface SuggestionParams {
+  sort?: string
+}
+
+export interface SuggestionProfile {
+  profiles: Profile[]
+  count: number
+  has_more: boolean
+}
+
 export const usersApi = {
   // --- View ---
   async getProfile(username: string) {
@@ -58,6 +68,12 @@ export const usersApi = {
 
   async report(username: string, reason: string) {
     return ApiClient.post(`/users/${username}/report`, { reason }).then(res =>
+      res.json(),
+    )
+  },
+
+  async suggestion(params: SuggestionParams) {
+    return ApiClient.get<SuggestionProfile>(`/users/me/suggestions`, params).then(res =>
       res.json(),
     )
   },

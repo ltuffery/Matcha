@@ -8,6 +8,9 @@ import Filter from '@/components/main/Filter.vue'
 import { EffectCreative } from 'swiper/modules'
 import type { Swiper as SwiperType } from 'swiper/types'
 import type { Profile } from '@/api/users'
+import { useUsers } from '@/composable/useUsers'
+
+const users = useUsers()
 
 const swiperInstance = ref<SwiperType | null>(null)
 const sections = ref<Profile[]>([
@@ -77,9 +80,13 @@ const goToNextSlide = () => {
 //   }
 // })
 
-onMounted(() => {
+onMounted(async () => {
   // getSocket().emit('browsing')
   // getSocket().emit('browsing')
+
+  await users.suggestion({})
+  sections.value = users.suggestedProfiles.value;
+  console.log(users.suggestedProfiles.value)
 })
 </script>
 
@@ -108,7 +115,7 @@ onMounted(() => {
         @slideChange="onSlideChange"
       >
         <SwiperSlide
-          v-for="(content, index) in sections"
+          v-for="(content, index) in users.suggestedProfiles.value"
           :key="index"
           class="h-full! flex! items-center justify-center rounded-lg"
         >
