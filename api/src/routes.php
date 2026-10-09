@@ -7,6 +7,7 @@ use Matcha\Api\Controllers\EmailController;
 use Matcha\Api\Controllers\ForgotController;
 use Matcha\Api\Controllers\HistoryController;
 use Matcha\Api\Controllers\LikeController;
+use Matcha\Api\Controllers\PassController;
 use Matcha\Api\Controllers\LocalisationController;
 use Matcha\Api\Controllers\Notifications\NotificationsController;
 use Matcha\Api\Controllers\Profile\PreferencesController;
@@ -55,6 +56,8 @@ Flight::group('/users', function () {
         Flight::route('GET /', [ProfileController::class, 'show']);
         Flight::route('POST /like', [LikeController::class, 'store']);
         Flight::route('DELETE /unlike', [LikeController::class, 'destroy']);
+
+        Flight::route('POST /pass', [PassController::class, 'store']);
 
         Flight::route('POST /block', [UserBlockController::class, 'store']);
         Flight::route('DELETE /unblock', [UserBlockController::class, 'destroy']);

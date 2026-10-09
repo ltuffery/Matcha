@@ -1,11 +1,15 @@
-CREATE TABLE IF NOT EXISTS passes (
-    user_id    INTEGER     NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    target_id  INTEGER     NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+CREATE TABLE passes (
+    user_id    INT       NOT NULL,
+    target_id  INT       NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (user_id, target_id),
+    INDEX passes_target_id_idx (target_id),
+    INDEX passes_created_at_idx (created_at),
+
+    CONSTRAINT passes_user_fk
+        FOREIGN KEY (user_id)   REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT passes_target_fk
+        FOREIGN KEY (target_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT passes_no_self_pass CHECK (user_id <> target_id)
 );
-
-CREATE INDEX IF NOT EXISTS passes_target_id_idx ON passes (target_id);
-CREATE INDEX IF NOT EXISTS passes_created_at_idx ON passes (created_at);

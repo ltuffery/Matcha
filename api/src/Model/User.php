@@ -6,6 +6,7 @@ use Firebase\JWT\JWT;
 use Flight;
 use Matcha\Api\Builder\JoinBuilder;
 use Matcha\Api\Exceptions\AutoLikeException;
+use Matcha\Api\Exceptions\AutoPassException;
 use Matcha\Api\Validator\Asserts\Email;
 use Matcha\Api\Validator\Asserts\Minimum;
 use Matcha\Api\Validator\Asserts\NotBlank;
@@ -103,6 +104,25 @@ class User extends Model
         }
 
         return "https://" . trim(getenv('APP_HOST') ?? 'localhost', '/') . "/api/medias/p/" . $photo->name;
+    }
+
+    /**
+     * Create a pass from the user to the user passed as a parameter
+     *
+     * @param User $user
+     * @return void
+     */
+    public function pass(User $user): void
+    {
+        if ($this->id === $user->id) {
+            throw new AutoPassException();
+        }
+
+        $pass = new Pass();
+        $pass->user_id = $this->id;
+        $pass->target_id = $user->id;
+
+        $pass->save();
     }
 
     /**
@@ -277,7 +297,7 @@ class User extends Model
     {
         $stmt = Flight::db()->prepare("
             DELETE FROM user_tags
-            WHERE `user_id` = :user_id 
+            WHERE `user_id` = :user_id
               AND `tag_id` = (SELECT tags.id FROM tags WHERE tags.name = :name);
         ");
 
