@@ -496,7 +496,7 @@ class User extends Model
 
 
         if (empty($rows)) {
-            return [];
+            return ['profiles' => [], 'has_more' => false];
         }
 
         $hasMore = count($rows) > $limit;
