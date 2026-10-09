@@ -9,6 +9,7 @@ use Matcha\Api\Exceptions\InvalidDataException;
 use Matcha\Api\Model\Photo;
 use Matcha\Api\Model\Preference;
 use Matcha\Api\Model\User;
+use Matcha\Api\Resources\UserResource;
 use Matcha\Api\Validator\Validator;
 
 class RegisterController
@@ -33,8 +34,8 @@ class RegisterController
 
         if (count($request->getUploadedFiles()) == 0) {
             Flight::json([
-                'code' => 0,
-                'message' => "Photos is required.",
+                'success' => false,
+                'error' => "Photos is required.",
             ], 400);
             return;
         }
@@ -44,8 +45,8 @@ class RegisterController
 
         if (!is_array($photos)) {
             Flight::json([
-                'code' => 0,
-                'message' => "Photos is not valid.",
+                'success' => 0,
+                'error' => "Photos is not valid.",
             ], 400);
             return;
         }
@@ -74,13 +75,12 @@ class RegisterController
                     $this->uploadPhotos($saved, $photos);
                 }
 
-                Flight::json([
-                    'user' => json_encode($user),
-                ], 201);
+                Flight::json(new UserResource($saved), 201);
             }
         } catch (Exception $e) {
             Flight::json([
-                'message' => $e->getMessage(),
+                'success' => false,
+                'error' => $e->getMessage(),
             ], 400);
         }
     }

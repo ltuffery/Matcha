@@ -1,12 +1,12 @@
-import { Api } from '@/utils/api'
+import { ApiClient } from '@/api/apiClient'
 import type { GeoPositionInfo, CityInfo } from '@/types'
 
 export class Tracking {
   static setAtCurrentLocation = async (): Promise<void> => {
-    await Api.put('/users/me/localisation').send()
+    await ApiClient.put('/users/me/localisation').send()
 
     navigator.geolocation.getCurrentPosition(loc => {
-      Api.put('/users/me/localisation').send({
+      ApiClient.put('/users/me/localisation').send({
         lat: loc.coords.latitude,
         lon: loc.coords.longitude,
       })

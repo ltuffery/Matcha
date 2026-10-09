@@ -1,12 +1,12 @@
 import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
-import { isAuthenticated } from '@/services/auth'
+import { useAuth } from '@/composable/useAuth'
 
 export const authGuard = (
   _to: RouteLocationNormalized,
   _from: RouteLocationNormalized,
   next: NavigationGuardNext,
 ) => {
-  isAuthenticated().then(value => {
+  useAuth().isAuthenticated().then(value => {
     if (value) {
       next()
     } else {

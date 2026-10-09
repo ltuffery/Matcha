@@ -1,19 +1,21 @@
 import { io, type Socket } from 'socket.io-client'
-import { getToken, isAuthenticated } from '@/services/auth'
 import { useOnlineUsersStore } from '@/store/onlineUsers'
-import type { JwtPayload, MessageData } from '@/types'
+import type { MessageData } from '@/types'
 import { useTypingStore } from '@/store/isTyping'
 import { useMessagesStore } from '@/store/messages'
+import { useAuth } from '@/composable/useAuth'
 
 let socket: Socket | null = null
 
 export async function connectSocket(): Promise<void> {
   if (socket) return
 
-  const authed = await isAuthenticated()
+  const auth = useAuth()
+
+  const authed = await auth.isAuthenticated()
   if (!authed) return
 
-  const token = getToken()
+  const token = auth.getToken()
   if (!token) return
 
   socket = io(location.origin, {

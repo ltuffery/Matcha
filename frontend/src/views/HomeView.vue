@@ -7,29 +7,48 @@ import { getSocket } from '@/plugins/socket'
 import Filter from '@/components/main/Filter.vue'
 import { EffectCreative } from 'swiper/modules'
 import type { Swiper as SwiperType } from 'swiper/types'
-import type { User } from '@/types'
+import type { Profile } from '@/api/users'
 
-const swiperRef = ref(null)
 const swiperInstance = ref<SwiperType | null>(null)
-const sections = ref<User[]>([
+const sections = ref<Profile[]>([
   {
     username: 'test',
+    first_name: 'Pablo',
+    last_name: 'test_name',
     biography: 'dsfsdfsdfsd',
     age: 22,
+    avatar:
+      'https://images.unsplash.com/photo-1643023234393-776f2624061b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8OHwxMTU0MDcyNnx8ZW58MHx8fHx8',
     photos: [
       'https://images.unsplash.com/photo-1643023234393-776f2624061b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8OHwxMTU0MDcyNnx8ZW58MHx8fHx8',
       'https://images.unsplash.com/photo-1552134378-71b4a8333430?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MTR8MTE1NDA3MjZ8fGVufDB8fHx8fA%3D%3D',
     ],
+    tags: ['tags', 'tegs'],
+    common_tags: [],
+    fame_rating: 1400,
+    distance: 100,
+    me: false,
+    gender: 'M',
   },
   {
     username: 'test2',
-    biography: 'sgojdgiofjg',
-    age: 30,
+    first_name: 'John',
+    last_name: 'Doe',
+    biography: 'Unsiojghoihfoighjofighjoifhg',
+    age: 23,
+    avatar:
+      'https://images.unsplash.com/photo-1718749861351-918524751a6b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     photos: [
       'https://images.unsplash.com/photo-1718749861351-918524751a6b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       'https://images.unsplash.com/photo-1701163802834-46d90f8b452a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8M3wxMTU0MDcyNnx8ZW58MHx8fHx8',
       'https://images.unsplash.com/photo-1645441261871-e468b99a8d7c?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     ],
+    tags: ['tagsss', 'tegs'],
+    common_tags: [],
+    fame_rating: 1560,
+    distance: 2000,
+    me: false,
+    gender: 'M',
   },
 ])
 const skeleton = ref(true)
@@ -40,7 +59,7 @@ const onSwiperInit = (swiper: SwiperType) => {
 }
 
 const onSlideChange = () => {
-  getSocket().emit('browsing')
+  // getSocket().emit('browsing')
 }
 
 const goToNextSlide = () => {
@@ -65,9 +84,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    class="flex w-full justify-center overflow-hidden rounded-lg py-4"
-  >
+  <div class="flex w-full justify-center overflow-hidden rounded-lg py-4">
     <div class="relative h-full w-full max-w-lg">
       <Swiper
         :direction="'vertical'"

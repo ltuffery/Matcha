@@ -104,7 +104,6 @@ function geoErrorMessage(e: GeolocationPositionError) {
   )
 }
 
-// 1. Localisation ponctuelle
 function locateMe() {
   if (!('geolocation' in navigator)) {
     error.value =
@@ -146,7 +145,6 @@ async function autoCompleteAddress(address: string) {
   }
 }
 
-// Délai de 300 ms pour ne pas envoyer une requête à chaque touche
 watch(searchTerm, q => {
   clearTimeout(debounceTimer)
   if (q.trim().length < 3) {
@@ -171,16 +169,6 @@ async function onSelectAddress(value: unknown) {
 
 <template>
   <div class="space-y-3">
-    <div class="flex items-center justify-between text-sm">
-      <Label>Localisation</Label>
-      <span
-        v-if="model?.city"
-        class="flex items-center gap-1 text-muted-foreground"
-      >
-        <MapPin class="h-3 w-3" /> {{ model.city }}
-      </span>
-    </div>
-
     <div class="flex gap-3">
       <Popover v-model:open="open">
         <ListboxRoot
@@ -197,6 +185,7 @@ async function onSelectAddress(value: unknown) {
             <Input
               v-model="searchTerm"
               :placeholder="currentLabel ?? 'Choisir une adresse manuellement'"
+              :disabled="loading || tracking"
               class="pl-9 pr-10"
               @focus="open = true"
               @input="open = true"
@@ -210,6 +199,7 @@ async function onSelectAddress(value: unknown) {
                 size="icon"
                 variant="ghost"
                 class="absolute right-1 size-7"
+                :disabled="loading || tracking"
               >
                 <ChevronDown class="size-3.5" />
               </Button>

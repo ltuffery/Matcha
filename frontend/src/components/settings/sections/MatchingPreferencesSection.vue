@@ -24,6 +24,7 @@ import { onMounted, ref } from 'vue'
 import MapLocator, {
   type Location,
 } from '@/components/settings/sections/preferences/MapLocator.vue'
+import { MapPin } from 'lucide-vue-next'
 
 const distanceRange = ref([50])
 const ageRange = ref([22, 35])
@@ -100,6 +101,15 @@ onMounted(() => {})
       </div>
 
       <div class="space-y-3">
+        <div class="flex items-center justify-between text-sm">
+          <Label>Localisation</Label>
+          <span
+            v-if="locations?.city"
+            class="flex items-center gap-1 text-muted-foreground"
+          >
+            <MapPin class="h-3 w-3" /> {{ locations.city }}
+          </span>
+        </div>
         <MapLocator v-model="locations" />
       </div>
 

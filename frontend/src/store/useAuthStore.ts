@@ -1,135 +1,95 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { Api } from '@/utils/api'
-
-interface LoginCredentials {
-  email: string
-  password: string
-}
-
-interface RegisterCredentials {
-  name: string
-  email: string
-  password: string
-}
+import { apiProfile } from '@/api/profile'
+import type { User } from '@/api/auth'
 
 export const useAuthStore = defineStore('auth', () => {
-  const router = useRouter()
-
-  // State
-  const user = ref<object | null>(null)
-  const token = ref<string | null>(localStorage.getItem('token'))
+  const user = ref<User | null>(null)
   const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
 
-  // Getters
-  const isAuthenticated = computed(
-    () => token.value !== null && user.value !== null,
-  )
-  const fullName = computed(() => user.value?.name ?? null)
-  const userRole = computed(() => user.value?.role ?? null)
-
-  // Private helper
-  function persistToken(value: string | null): void {
-    token.value = value
-
-    if (value) {
-      localStorage.setItem('token', value)
-    } else {
-      localStorage.removeItem('token')
-    }
-  }
-
-  // Actions
-
-  async function fetchMe(): Promise<void> {
-    loading.value = true
-    error.value = null
-
-    try {
-      user.value = await (await Api.get('/users/me').send()).json()
-    } catch (err: unknown) {
-      error.value =
-        (err as { message?: string }).message ??
-        'Impossible de recuperer le profil.'
-      clearSession()
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function login(credentials: LoginCredentials): Promise<void> {
-    loading.value = true
-    error.value = null
-
-    try {
-      const data = await (
-        await Api.post('/auth/login').send(credentials)
-      ).json()
-      persistToken(data.token)
-      user.value = data.user
-      await router.push('/')
-    } catch (err: unknown) {
-      error.value =
-        (err as { message?: string }).message ?? 'Identifiants incorrects.'
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function register(credentials: RegisterCredentials): Promise<void> {
-    loading.value = true
-    error.value = null
-
-    try {
-      const data = await (
-        await Api.post('/auth/register').send(credentials)
-      ).json()
-      persistToken(data.token)
-      user.value = data.user
-      await router.push('/')
-    } catch (err: unknown) {
-      error.value =
-        (err as { message?: string }).message ?? "Erreur lors de l'inscription."
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function logout(): Promise<void> {
-    loading.value = true
-
-    try {
-      await Api.post('/auth/logout').send()
-    } finally {
-      clearSession()
-      loading.value = false
-      await router.push('/login')
-    }
-  }
+  const isAuthenticated = computed(() => user.value !== null)
+  const fullName = computed(() => {
+    if (!user.value) return ''
+    return `${user.value.first_name} ${user.value.last_name}`
+  })
 
   function clearSession(): void {
     user.value = null
-    persistToken(null)
     error.value = null
   }
 
+  // GET /users/me
+  async function fetchMe(): Promise<User | null> {
+    loading.value = true
+    error.value = null
+    try {
+      const data = await apiProfile.getProfile()
+      user.value = data
+      return data
+    } catch (err: unknown) {
+      error.value =
+        (err as { message?: string }).message ??
+        'Unable to retrieve the profile.'
+      clearSession()
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // PUT|PATCH /users/me
+  async function updateProfile(data: Partial<User>): Promise<User | null> {
+    loading.value = true
+    error.value = null
+    try {
+      const updatedUser = await apiProfile.updateProfile(data)
+      user.value = updatedUser
+      return updatedUser
+    } catch (err: unknown) {
+      error.value =
+        (err as { message?: string }).message ?? 'Unable to update the profile.'
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // DELETE /users/me
+  async function deleteAccount(): Promise<void> {
+    loading.value = true
+    error.value = null
+    try {
+      await apiProfile.deleteAccount()
+      clearSession()
+    } catch (err: unknown) {
+      error.value =
+        (err as { message?: string }).message ?? 'Unable to delete the account.'
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // PUT|PATCH /users/me/localisation
+  async function updateLocalisation(lon: number, lat: number): Promise<void> {
+    try {
+      await apiProfile.updateLocalisation(lat, lon)
+    } catch (err: unknown) {
+      console.error('Geolocation error:', err)
+    }
+  }
+
   return {
-    // State
     user,
-    token,
     loading,
     error,
-    // Getters
     isAuthenticated,
     fullName,
-    userRole,
-    // Actions
-    fetchMe,
-    login,
-    register,
-    logout,
+
     clearSession,
+    fetchMe,
+    updateProfile,
+    deleteAccount,
+    updateLocalisation,
   }
 })

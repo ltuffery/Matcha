@@ -26,8 +26,6 @@ class PreferencesController
             $preferences->{$name} = $value;
         }
 
-
-
         $preferences->save();
     }
 }

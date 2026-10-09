@@ -33,12 +33,12 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { useRoute } from 'vue-router'
-import { Api } from '@/utils/api'
 import type { MessageData, SmallUser } from '@/types'
 import router from '@/router'
 import { getSocket } from '@/plugins/socket'
 import { useTypingStore } from '@/store/isTyping'
 import { useMessagesStore } from '@/store/messages'
+import { ApiClient } from '@/api/client'
 
 interface MessageGroup {
   isMe: boolean
@@ -83,11 +83,11 @@ const fetchMessages = async () => {
     return
   }
 
-  const response = await Api.get(
+  const response = await ApiClient.get(
     `/users/me/matches/${route.params.username}`,
-  ).send()
+  )
 
-  if (response.ok) {
+  if (response.ok()) {
     const data: SmallUser & {
       messages: MessageData[]
     } = await response.json()

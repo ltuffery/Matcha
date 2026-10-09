@@ -1,23 +1,3 @@
-export interface User {
-  username: string
-  email?: string
-  first_name?: string
-  last_name?: string
-  gender?: 'M' | 'F' | 'O'
-  biography?: string
-  birthday?: string
-  age?: number
-  photos?: string[]
-  tags?: string[]
-  avatar?: string
-  distance?: number
-  fame_rating?: number
-  me?: boolean
-  last_message?: MessageData
-  unread?: number
-  preferences?: Preferences
-}
-
 export interface SmallUser {
   avatar: string
   username: string
@@ -57,16 +37,6 @@ export interface Preferences {
   lat: number
   lon: number
   is_custom_loc: number
-}
-
-export interface JwtPayload {
-  username: string
-  exp: number
-}
-
-export interface LoginResponse {
-  token: string
-  refresh: string
 }
 
 export interface GeoPositionInfo {

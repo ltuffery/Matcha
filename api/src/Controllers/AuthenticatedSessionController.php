@@ -3,16 +3,14 @@
 namespace Matcha\Api\Controllers;
 
 use Flight;
-use InvalidDataException;
+use Matcha\Api\Exceptions\InvalidDataException;
 use Matcha\Api\Model\User;
 use Matcha\Api\Validator\Validator;
-use ReflectionException;
 
 class AuthenticatedSessionController
 {
     /**
      * @throws InvalidDataException
-     * @throws ReflectionException
      */
     public function store(): void
     {
@@ -22,9 +20,7 @@ class AuthenticatedSessionController
         ]);
 
         $request = Flight::request();
-
         $user = User::authenticate($request->data->username, $request->data->password);
-
 
         if (is_object($user)) {
             if (!$user->email_verified) {
@@ -44,6 +40,7 @@ class AuthenticatedSessionController
         } else {
             Flight::json([
                 'success' => false,
+                'error' => "Invalid username or password",
             ], 400);
         }
     }

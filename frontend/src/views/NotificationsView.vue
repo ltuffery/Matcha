@@ -1,23 +1,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { notificationsStore } from '@/store/notifications'
-import { Api } from '@/utils/api'
 import type { NotificationData } from '@/types'
+import { useNotificationStore } from '@/store/useNotificationStore'
 
 const notifications = computed(() =>
-  [...notificationsStore().notifications].sort((a, b) => {
-    return new Date(b.data.created_at).getTime() - new Date(a.data.created_at).getTime()
+  [...useNotificationStore().notifications].sort((a, b) => {
+    return (
+      new Date(b.data.created_at).getTime() -
+      new Date(a.data.created_at).getTime()
+    )
   }),
 )
 
 const markAsRead = async (notification: NotificationData) => {
-  const res = await Api.post(
-    `/users/me/notifications/${notification.id}/view`,
-  ).send()
-
-  if (res.ok) {
-    notificationsStore().updateView(notification)
-  }
+  await useNotificationStore().markAsViewed(notification.id as number)
 }
 </script>
 

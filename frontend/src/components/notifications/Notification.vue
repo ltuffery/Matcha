@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { Api } from '@/utils/api'
+import { ApiClient } from '@/api/apiClient'
 import { notificationsStore } from '@/store/notifications'
 import { getSocket } from '@/plugins/socket'
 import NotificationItem from '@/components/notifications/NotificationItem.vue'
@@ -27,7 +27,7 @@ const notificationNotViewed = computed(() =>
 )
 
 onMounted(async () => {
-  const res = await Api.get('/users/me/notifications').send()
+  const res = await ApiClient.get('/users/me/notifications').send()
   const data = (await res.json()) as NotificationData[]
 
   notificationsStore().set(
