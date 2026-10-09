@@ -27,7 +27,7 @@ const navItems = [
 
 <template>
   <div class="min-h-screen w-full">
-    <div class="mx-auto max-w-6xl px-4 py-10">
+    <div>
       <!-- Header -->
       <div class="mb-8">
         <h1 class="text-3xl font-bold tracking-tight">Settings</h1>
