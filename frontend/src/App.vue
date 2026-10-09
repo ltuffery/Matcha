@@ -66,7 +66,7 @@ onUnmounted(closeNotifications)
 
     <main
       :class="{
-        'flex w-full pb-20 md:pb-0 px-6 md:px-20 overflow-y-auto':
+        'flex w-full pb-20 md:pb-0 px-6 md:px-20 mx-auto max-w-6xl py-10':
           isAuthenticated,
       }"
     >

@@ -81,10 +81,11 @@ const likedCount = computed(() => likedProfiles.value.length)
 </script>
 
 <template>
-  <div class="w-full mx-auto p-4 space-y-6">
-    <div>
-      <h1 class="text-2xl font-bold tracking-tight">History</h1>
-      <p class="text-sm text-muted-foreground">
+  <div class="w-full">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight">History</h1>
+      <p class="text-muted-foreground mt-1">
         See the profiles you've recently viewed and liked
       </p>
     </div>

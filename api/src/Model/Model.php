@@ -284,6 +284,23 @@ abstract class Model
         return $users;
     }
 
+    /**
+     * Execute request SELECT prepare and return models.
+     *
+     * @return static[]
+     * @throws ReflectionException
+     */
+    public static function raw(string $sql, array $params = []): array
+    {
+        $stmt = self::db()->prepare($sql);
+        $stmt->execute($params);
+
+        return array_map(
+            fn ($row) => static::morph($row),
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+
     public static function factory(): Factory
     {
         $split = explode("\\", get_called_class());

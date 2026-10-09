@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -11,14 +11,22 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
-import { Search, X, MapPin, Star, Cake, Tags, Check } from 'lucide-vue-next'
+import { Search, X, MapPin, TrendingUp, Cake, Tags, Check } from '@lucide/vue'
 import {
-  MOCK_LOCATIONS,
   MOCK_TAGS,
   mockSearchUsers,
   type MockUser,
   type SearchFilters,
 } from '@/mocks/users'
+import FilterMenuButton, {
+  type FilterSubContent,
+  type FilterSubMenu,
+} from '@/components/search/FilterMenuButton.vue'
+import SortMenuButton, {
+  type Sort,
+} from '@/components/search/SortMenuButton.vue'
+import type { Profile } from '@/api/users'
+import MapLocator from '@/components/settings/sections/preferences/MapLocator.vue'
 
 const DEFAULTS: SearchFilters = {
   age: [18, 99],
@@ -32,30 +40,56 @@ const filters = reactive<SearchFilters>(structuredClone(DEFAULTS))
 const users = ref<MockUser[]>([])
 const loading = ref(false)
 
-// --- Labels affichés dans la barre ---
-const ageLabel = computed(() =>
-  filters.age[0] === DEFAULTS.age[0] && filters.age[1] === DEFAULTS.age[1]
-    ? 'Tous âges'
-    : `${filters.age[0]} - ${filters.age[1]} ans`,
-)
-const fameLabel = computed(() =>
-  filters.fame[0] === 0 && filters.fame[1] === 100
-    ? 'Peu importe'
-    : `${filters.fame[0]} - ${filters.fame[1]}`,
-)
-const locationLabel = computed(() => {
-  if (!filters.location) return 'Partout'
-  if (filters.location === 'nearby') return `< ${filters.distance} km`
-  return filters.location
-})
-const tagsLabel = computed(() => {
-  if (!filters.tags.length) return 'Aucun'
-  if (filters.tags.length <= 2) return filters.tags.map(t => `#${t}`).join(', ')
-  return `${filters.tags.length} tags`
-})
-
 const hasActiveFilters = computed(
   () => JSON.stringify(filters) !== JSON.stringify(DEFAULTS),
+)
+
+const uniqueOptions = <T extends string | number>(
+  values: T[],
+  format: (v: T) => string = v => String(v),
+): FilterSubContent[] =>
+  [...new Set(values)]
+    .sort((a, b) =>
+      typeof a === 'number'
+        ? a - (b as number)
+        : String(a).localeCompare(String(b)),
+    )
+    .map(v => ({ label: format(v), value: String(v) }))
+
+const subFilters = computed<FilterSubMenu>(() => ({
+  year: uniqueOptions(
+    users.value.map(u => u.age),
+    t => `${t} years`,
+  ),
+  localisation: uniqueOptions(users.value.map(u => u.city)),
+  fame_rating: uniqueOptions(users.value.map(u => u.fameRating)),
+  tags: uniqueOptions(
+    users.value.flatMap(u => u.tags),
+    t => `#${t}`,
+  ),
+}))
+
+const sorts = ref<Sort[]>([])
+const me = { city: 'Paris', tags: ['geek', 'sport'] }
+
+const commonTags = (u: Profile) =>
+  u.tags.filter(t => me.tags.includes(t)).length
+
+const comparators: Record<Sort, (a: Profile, b: Profile) => number> = {
+  year: (a, b) => a.age - b.age,
+  fame_rating: (a, b) => b.fame_rating - a.fame_rating,
+  localisation: (a, b) => a.distance - b.distance,
+  common_tags: (a, b) => commonTags(b) - commonTags(a),
+}
+
+const sortedUsers = computed(() =>
+  [...users.value].sort((a, b) => {
+    for (const s of sorts.value) {
+      const diff = comparators[s](a, b)
+      if (diff !== 0) return diff
+    }
+    return 0
+  }),
 )
 
 // --- Actions ---
@@ -87,12 +121,17 @@ onMounted(fetchUsers)
 </script>
 
 <template>
-  <div class="w-full h-full m-auto pt-8 px-4 max-w-4xl">
-    <!-- ===== Barre de recherche façon Airbnb ===== -->
+  <div class="w-full h-full">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight">Search</h1>
+      <p class="text-muted-foreground mt-1">Search all profile</p>
+    </div>
+
     <div
       class="w-full flex items-center rounded-full border bg-background shadow-md hover:shadow-lg transition-shadow"
     >
-      <!-- Âge -->
+      <!-- Year -->
       <Popover>
         <PopoverTrigger as-child>
           <Button variant="ghost" size="lg" class="flex-1 rounded-l-full py-6">
@@ -114,7 +153,7 @@ onMounted(fetchUsers)
       <Popover>
         <PopoverTrigger as-child>
           <Button variant="ghost" size="lg" class="flex-1 rounded-none py-6">
-            <Star class="h-3.5 w-3.5" /> Fame rating
+            <TrendingUp class="h-3.5 w-3.5" /> Fame rating
           </Button>
         </PopoverTrigger>
         <PopoverContent class="w-80">
@@ -137,21 +176,10 @@ onMounted(fetchUsers)
         </PopoverTrigger>
         <PopoverContent class="w-80">
           <p class="font-semibold mb-3">Où ?</p>
-          <div class="grid grid-cols-2 gap-2">
-            <Button
-              v-for="loc in MOCK_LOCATIONS"
-              :key="loc.value"
-              size="sm"
-              :variant="filters.location === loc.value ? 'default' : 'outline'"
-              @click="
-                filters.location =
-                  filters.location === loc.value ? null : loc.value
-              "
-            >
-              {{ loc.label }}
-            </Button>
-          </div>
-          <div v-if="filters.location === 'nearby'" class="mt-5">
+
+          <MapLocator />
+
+          <div class="mt-5">
             <p class="text-sm text-muted-foreground mb-4">
               Distance max : {{ filters.distance }} km
             </p>
@@ -192,7 +220,7 @@ onMounted(fetchUsers)
         </PopoverContent>
       </Popover>
 
-      <!-- Bouton rond -->
+      <!-- Bouton clear / search -->
       <div class="flex items-center pl-2">
         <Button
           v-if="hasActiveFilters"
@@ -210,12 +238,18 @@ onMounted(fetchUsers)
       </div>
     </div>
 
-    <!-- ===== Résultats ===== -->
-    <p v-if="!loading" class="mt-6 text-sm text-muted-foreground">
-      {{ users.length }} profil{{ users.length > 1 ? 's' : '' }} trouvé{{
-        users.length > 1 ? 's' : ''
-      }}
-    </p>
+    <div v-if="!loading" class="flex justify-between items-center mt-6">
+      <p class="text-sm text-muted-foreground">
+        {{ users.length }} profil{{ users.length > 1 ? 's' : '' }} trouvé{{
+          users.length > 1 ? 's' : ''
+        }}
+      </p>
+
+      <div>
+        <FilterMenuButton :filter="subFilters" />
+        <SortMenuButton />
+      </div>
+    </div>
 
     <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <template v-if="loading">
@@ -260,7 +294,7 @@ onMounted(fetchUsers)
           <span
             class="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-black/50 backdrop-blur px-2 py-1 text-xs"
           >
-            <Star class="h-3 w-3 fill-yellow-400 text-yellow-400" />
+            <TrendingUp class="h-3 w-3" />
             {{ u.fameRating }}
           </span>
 
@@ -279,7 +313,7 @@ onMounted(fetchUsers)
               </div>
             </div>
 
-            <Button variant="secondary" class="w-full">Voir le profile</Button>
+            <Button variant="outline" class="w-full">Voir le profile</Button>
           </div>
         </Card>
       </template>
