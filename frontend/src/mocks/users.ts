@@ -62,31 +62,3 @@ export const MOCK_USERS: MockUser[] = Array.from({ length: 40 }, (_, i) => {
     avatar: `https://i.pravatar.cc/150?img=${(i % 70) + 1}`,
   }
 })
-
-export interface SearchFilters {
-  age: [number, number]
-  fame: [number, number]
-  location: string | null
-  distance: number
-  tags: string[]
-}
-
-// Simule l'appel API avec un délai
-export function mockSearchUsers(f: SearchFilters): Promise<MockUser[]> {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(
-        MOCK_USERS.filter(u => {
-          if (u.age < f.age[0] || u.age > f.age[1]) return false
-          if (u.fameRating < f.fame[0] || u.fameRating > f.fame[1]) return false
-          if (f.location === 'nearby' && u.distanceKm > f.distance) return false
-          if (f.location && f.location !== 'nearby' && u.city !== f.location)
-            return false
-          if (f.tags.length && !f.tags.some(t => u.tags.includes(t)))
-            return false
-          return true
-        }),
-      )
-    }, 400)
-  })
-}

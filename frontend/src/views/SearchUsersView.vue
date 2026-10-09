@@ -12,12 +12,7 @@ import {
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { Search, X, MapPin, TrendingUp, Cake, Tags, Check } from '@lucide/vue'
-import {
-  MOCK_TAGS,
-  mockSearchUsers,
-  type MockUser,
-  type SearchFilters,
-} from '@/mocks/users'
+import { MOCK_TAGS } from '@/mocks/users'
 import FilterMenuButton, {
   type FilterSubContent,
   type FilterSubMenu,
@@ -27,6 +22,15 @@ import SortMenuButton, {
 } from '@/components/search/SortMenuButton.vue'
 import type { Profile } from '@/api/users'
 import MapLocator from '@/components/settings/sections/preferences/MapLocator.vue'
+import { useSearch } from '@/composable/useSearch'
+
+export interface SearchFilters {
+  age: [number, number]
+  fame: [number, number]
+  location: string | null
+  distance: number
+  tags: string[]
+}
 
 const DEFAULTS: SearchFilters = {
   age: [18, 99],
@@ -36,9 +40,10 @@ const DEFAULTS: SearchFilters = {
   tags: [],
 }
 
+const search = useSearch()
+
 const filters = reactive<SearchFilters>(structuredClone(DEFAULTS))
-const users = ref<MockUser[]>([])
-const loading = ref(false)
+const users = ref<Profile[]>([])
 
 const hasActiveFilters = computed(
   () => JSON.stringify(filters) !== JSON.stringify(DEFAULTS),
@@ -61,8 +66,8 @@ const subFilters = computed<FilterSubMenu>(() => ({
     users.value.map(u => u.age),
     t => `${t} years`,
   ),
-  localisation: uniqueOptions(users.value.map(u => u.city)),
-  fame_rating: uniqueOptions(users.value.map(u => u.fameRating)),
+  localisation: uniqueOptions(users.value.map(u => u.distance)),
+  fame_rating: uniqueOptions(users.value.map(u => u.fame_rating)),
   tags: uniqueOptions(
     users.value.flatMap(u => u.tags),
     t => `#${t}`,
@@ -102,10 +107,13 @@ const resetFilters = () => Object.assign(filters, structuredClone(DEFAULTS))
 
 let debounce: ReturnType<typeof setTimeout>
 const fetchUsers = async () => {
-  loading.value = true
-  // Plus tard : ApiClient.get<User[]>(`search/users?${buildQuery(filters)}`)
-  users.value = await mockSearchUsers(filters)
-  loading.value = false
+  users.value = (await search.fetch({
+    years: filters.age,
+    fame_rating: filters.fame,
+    distance: filters.distance,
+    tags: filters.tags,
+    sorts: sorts.value,
+  })) ?? []
 }
 
 watch(
@@ -238,7 +246,7 @@ onMounted(fetchUsers)
       </div>
     </div>
 
-    <div v-if="!loading" class="flex justify-between items-center mt-6">
+    <div v-if="!search.isLoading.value" class="flex justify-between items-center mt-6">
       <p class="text-sm text-muted-foreground">
         {{ users.length }} profil{{ users.length > 1 ? 's' : '' }} trouvé{{
           users.length > 1 ? 's' : ''
@@ -252,7 +260,7 @@ onMounted(fetchUsers)
     </div>
 
     <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <template v-if="loading">
+      <template v-if="search.isLoading.value">
         <Card
           v-for="i in 6"
           :key="i"
@@ -284,7 +292,7 @@ onMounted(fetchUsers)
         >
           <img
             :src="u.avatar"
-            :alt="u.firstName"
+            :alt="u.first_name"
             class="absolute inset-0 h-full w-full object-cover transition-transform duration-500"
           />
 
@@ -295,19 +303,19 @@ onMounted(fetchUsers)
             class="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-black/50 backdrop-blur px-2 py-1 text-xs"
           >
             <TrendingUp class="h-3 w-3" />
-            {{ u.fameRating }}
+            {{ u.fame_rating }}
           </span>
 
           <div class="absolute bottom-0 flex flex-col w-full p-4 gap-4">
             <div class="inset-x-0">
               <p class="text-lg font-semibold">
-                {{ u.firstName }}, {{ u.age }}
+                {{ u.first_name }}, {{ u.age }}
               </p>
               <p class="text-xs text-white/80 flex items-center gap-1">
-                <MapPin class="h-3 w-3" /> {{ u.city }} · {{ u.distanceKm }} km
+                <MapPin class="h-3 w-3" /> {{ u.distance }} · {{ u.distance }} km
               </p>
               <div class="flex flex-wrap gap-1 mt-2">
-                <Badge v-for="t in u.tags" :key="t" variant="outline">
+                <Badge v-for="t in u.tags.slice(0, 6)" :key="t" variant="outline">
                   #{{ t }}
                 </Badge>
               </div>
