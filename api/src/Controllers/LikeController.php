@@ -9,26 +9,22 @@ class LikeController
 {
     public function store(string $username)
     {
-        $user = User::find([
-            'username' => $username,
-        ]);
+        $target = User::find(['username' => $username]);
+        $me = Flight::user();
 
-        if (is_null($user)) {
-            Flight::json([
-                'message' => 'User not found',
-            ], 404);
-
+        if (is_null($target) || $target->isBlocking($me)) {
+            Flight::json(['message' => 'User not found'], 404)
             return;
         }
 
-        Flight::user()->like($user);
+        Flight::user()->like($target);
 
-        Flight::notifier()->publish("user/" . $user->id . "/notifications", [
+        Flight::notifier()->publish("user/" . $target->id . "/notifications", [
             'type' => 'like',
-            'message' => Flight::user()->username . " a aimé ton profil",
+            'message' => Flight::user()->username . " has liked your profile",
         ], private: false);
 
-        Flight::json([], 203);
+        Flight::json([], 201);
     }
 
     public function destroy(string $username)

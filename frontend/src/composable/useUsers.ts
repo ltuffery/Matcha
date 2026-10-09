@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { usersApi } from '@/api/users'
+import type { Profile, SuggestionParams } from '@/api/users'
 
 export function useUsers() {
   const isLoading = ref(false)
@@ -7,6 +8,7 @@ export function useUsers() {
 
   const userProfile = ref<any>(null)
   const blockedUsers = ref<any[]>([])
+  const suggestedProfiles = ref<Profile[]>([])
 
   // --- Consultation ---
   const fetchProfile = async (username: string) => {
@@ -120,12 +122,27 @@ export function useUsers() {
     }
   }
 
+  const suggestion = async (params: SuggestionParams) => {
+    isLoading.value = true
+    error.value = null
+    try {
+      const data = await usersApi.suggestion(params);
+      suggestedProfiles.value = data.profiles;
+    } catch (err: any) {
+      error.value =
+        err.response?.data?.message || 'suggestion error'
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     // États réactifs
     isLoading,
     error,
     userProfile,
     blockedUsers,
+    suggestedProfiles,
 
     // Méthodes
     fetchProfile,
@@ -136,5 +153,6 @@ export function useUsers() {
     block,
     unblock,
     report,
+    suggestion,
   }
 }

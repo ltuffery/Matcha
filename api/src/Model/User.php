@@ -6,11 +6,14 @@ use Firebase\JWT\JWT;
 use Flight;
 use Matcha\Api\Builder\JoinBuilder;
 use Matcha\Api\Exceptions\AutoLikeException;
+use Matcha\Api\Exceptions\AutoPassException;
+use Matcha\Api\Resources\ProfileResource;
 use Matcha\Api\Validator\Asserts\Email;
 use Matcha\Api\Validator\Asserts\Minimum;
 use Matcha\Api\Validator\Asserts\NotBlank;
 use Matcha\Api\Validator\Asserts\Regex;
 use PDO;
+use DateTimeImmutable;
 
 /**
  * @method static User find(array $data)
@@ -103,6 +106,25 @@ class User extends Model
         }
 
         return "https://" . trim(getenv('APP_HOST') ?? 'localhost', '/') . "/api/medias/p/" . $photo->name;
+    }
+
+    /**
+     * Create a pass from the user to the user passed as a parameter
+     *
+     * @param User $user
+     * @return void
+     */
+    public function pass(User $user): void
+    {
+        if ($this->id === $user->id) {
+            throw new AutoPassException();
+        }
+
+        $pass = new Pass();
+        $pass->user_id = $this->id;
+        $pass->target_id = $user->id;
+
+        $pass->save();
     }
 
     /**
@@ -277,7 +299,7 @@ class User extends Model
     {
         $stmt = Flight::db()->prepare("
             DELETE FROM user_tags
-            WHERE `user_id` = :user_id 
+            WHERE `user_id` = :user_id
               AND `tag_id` = (SELECT tags.id FROM tags WHERE tags.name = :name);
         ");
 
@@ -364,5 +386,124 @@ class User extends Model
         }
 
         return false;
+    }
+    /**
+     * Suggested profiles for this user, based on their stored preferences.
+     *
+     * @param string|null $sort  distance|fame|common_tags|age, null for the default order
+     * @param string $order      asc|desc (ignored when $sort is null)
+     * @return array
+     */
+    public function suggestions(?string $sort, string $order, int $offset, int $limit): array
+    {
+        $prefs = Preference::find(['user_id' => $this->id]);
+
+        // --- Paramètres calculés une seule fois ---
+        $distMax = (int) $prefs->distance_maximum;
+        $lat     = (float) $prefs->lat;
+        $lon     = (float) $prefs->lon;
+
+        $today    = new DateTimeImmutable('today');
+        $ageMin   = (int) ($prefs->age_minimum ?? 18);
+        $ageMax   = (int) ($prefs->age_maximum ?? 100);
+        $birthMax = $today->modify("-{$ageMin} years")->format('Y-m-d');
+        $birthMin = $today->modify('-' . ($ageMax + 1) . ' years')->format('Y-m-d');
+
+        $deltaLat = $distMax / 111.2;
+        $deltaLon = $distMax / (111.2 * max(cos(deg2rad($lat)), 0.01));
+
+        // fame_gap = 0 signifie "désactivé"
+        $fameGap = (int) $prefs->fame_gap > 0 ? (int) $prefs->fame_gap : 1000000;
+
+        $fetch = $limit + 1;
+
+        $dir = $order === 'asc' ? 'ASC' : 'DESC';
+        $orderBy = match ($sort) {
+            'distance'    => "distance_km $dir, id ASC",
+            'fame'        => "fame_rating $dir, id ASC",
+            'common_tags' => "common_tags $dir, id ASC",
+            'age'         => 'birthday ' . ($order === 'asc' ? 'DESC' : 'ASC') . ', id ASC',
+            default       => $prefs->by_tags
+                ? 'tier ASC, common_tags DESC, fame_rating DESC, id ASC'
+                : 'tier ASC, fame_rating DESC, id ASC',
+        };
+
+        $sql = "
+            WITH candidates AS (
+                SELECT
+                    u.*,
+                    ST_Distance_Sphere(POINT(p.lon, p.lat), POINT(:me_lon, :me_lat)) / 1000 AS distance_km,
+                    (SELECT COUNT(*) FROM user_tags ut
+                       JOIN user_tags mine ON mine.tag_id = ut.tag_id AND mine.user_id = :me_id_tags
+                      WHERE ut.user_id = u.id) AS common_tags
+                FROM users u
+                JOIN preferences p ON p.user_id = u.id
+                WHERE u.id <> :me_id
+                  AND u.email_verified = 1
+                  AND (:me_pref = 'A' OR :me_pref2 = u.gender)
+                  AND (p.sexual_preferences = 'A' OR p.sexual_preferences = :me_gender)
+                  AND u.birthday <= :birth_max
+                  AND u.birthday >  :birth_min
+                  AND p.lat BETWEEN :lat_min AND :lat_max
+                  AND p.lon BETWEEN :lon_min AND :lon_max
+                  AND ABS(u.fame_rating - :me_fame) <= :fame_gap
+                  AND NOT EXISTS (SELECT 1 FROM likes l
+                                   WHERE l.user_id = :me_id_l AND l.liked_id = u.id)
+                  AND NOT EXISTS (SELECT 1 FROM passes ps
+                                   WHERE ps.user_id = :me_id_p AND ps.target_id = u.id
+                                     AND ps.created_at > NOW() - INTERVAL 7 DAY)
+                  AND NOT EXISTS (SELECT 1 FROM user_blocked b
+                                   WHERE (b.user_id = :me_id_b1 AND b.blocked_id = u.id)
+                                      OR (b.user_id = u.id AND b.blocked_id = :me_id_b2))
+            )
+            SELECT
+                *,
+                ROUND(distance_km) AS distance_km,
+                CASE WHEN distance_km < 10 THEN 0
+                     WHEN distance_km < 50 THEN 1
+                     ELSE 2 END AS tier
+            FROM candidates
+            WHERE distance_km <= :dist_max
+            ORDER BY $orderBy
+            LIMIT $fetch OFFSET $offset
+        ";
+
+        $stmt = Flight::db()->prepare($sql);
+        $stmt->execute([
+            'me_lon'      => $lon,
+            'me_lat'      => $lat,
+            'me_id_tags'  => $this->id,
+            'me_id'       => $this->id,
+            'me_pref'     => $prefs->sexual_preferences,
+            'me_pref2'    => $prefs->sexual_preferences,
+            'me_gender'   => $this->gender,
+            'birth_max'   => $birthMax,
+            'birth_min'   => $birthMin,
+            'lat_min'     => $lat - $deltaLat,
+            'lat_max'     => $lat + $deltaLat,
+            'lon_min'     => $lon - $deltaLon,
+            'lon_max'     => $lon + $deltaLon,
+            'me_fame'     => $this->fame_rating,
+            'fame_gap'    => $fameGap,
+            'me_id_l'     => $this->id,
+            'me_id_p'     => $this->id,
+            'me_id_b1'    => $this->id,
+            'me_id_b2'    => $this->id,
+            'dist_max'    => $distMax,
+        ]);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+        if (empty($rows)) {
+            return ['profiles' => [], 'has_more' => false];
+        }
+
+        $hasMore = count($rows) > $limit;
+        $rows = array_slice($rows, 0, $limit);
+
+        $rows = array_map(fn ($r) => User::morph($r), $rows);
+
+        return ['profiles' => ProfileResource::collection($rows), 'has_more' => $hasMore];
     }
 }
