@@ -12,8 +12,8 @@ import {
 } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { Search, X, MapPin, TrendingUp, Cake, Tags, Check } from '@lucide/vue'
-import { MOCK_TAGS } from '@/mocks/users'
 import FilterMenuButton, {
+  type FilterSelection,
   type FilterSubContent,
   type FilterSubMenu,
 } from '@/components/search/FilterMenuButton.vue'
@@ -75,6 +75,12 @@ const subFilters = computed<FilterSubMenu>(() => ({
 }))
 
 const sorts = ref<Sort[]>([])
+const subSelection = ref<FilterSelection>({
+  year: [],
+  localisation: [],
+  fame_rating: [],
+  tags: [],
+})
 const me = { city: 'Paris', tags: ['geek', 'sport'] }
 
 const commonTags = (u: Profile) =>
@@ -87,8 +93,22 @@ const comparators: Record<Sort, (a: Profile, b: Profile) => number> = {
   common_tags: (a, b) => commonTags(b) - commonTags(a),
 }
 
+const matches = (selected: string[], value: string | number) =>
+  selected.length === 0 || selected.includes(String(value))
+
+const filteredUsers = computed(() =>
+  users.value.filter(
+    u =>
+      matches(subSelection.value.year, u.age) &&
+      matches(subSelection.value.localisation, u.distance) &&
+      matches(subSelection.value.fame_rating, u.fame_rating) &&
+      (subSelection.value.tags.length === 0 ||
+        u.tags.some(t => subSelection.value.tags.includes(t))),
+  ),
+)
+
 const sortedUsers = computed(() =>
-  [...users.value].sort((a, b) => {
+  [...filteredUsers.value].sort((a, b) => {
     for (const s of sorts.value) {
       const diff = comparators[s](a, b)
       if (diff !== 0) return diff
@@ -107,13 +127,14 @@ const resetFilters = () => Object.assign(filters, structuredClone(DEFAULTS))
 
 let debounce: ReturnType<typeof setTimeout>
 const fetchUsers = async () => {
-  users.value = (await search.fetch({
-    years: filters.age,
-    fame_rating: filters.fame,
-    distance: filters.distance,
-    tags: filters.tags,
-    sorts: sorts.value,
-  })) ?? []
+  users.value =
+    (await search.fetch({
+      years: filters.age,
+      fame_rating: filters.fame,
+      distance: filters.distance,
+      tags: filters.tags,
+      sorts: sorts.value,
+    })) ?? []
 }
 
 watch(
@@ -215,7 +236,7 @@ onMounted(fetchUsers)
           <p class="font-semibold mb-3">Centres d'intérêt</p>
           <div class="flex flex-wrap gap-2">
             <Badge
-              v-for="tag in MOCK_TAGS"
+              v-for="tag in []"
               :key="tag"
               :variant="filters.tags.includes(tag) ? 'default' : 'outline'"
               class="cursor-pointer select-none px-3 py-1"
@@ -246,7 +267,10 @@ onMounted(fetchUsers)
       </div>
     </div>
 
-    <div v-if="!search.isLoading.value" class="flex justify-between items-center mt-6">
+    <div
+      v-if="!search.isLoading.value"
+      class="flex justify-between items-center mt-6"
+    >
       <p class="text-sm text-muted-foreground">
         {{ users.length }} profil{{ users.length > 1 ? 's' : '' }} trouvé{{
           users.length > 1 ? 's' : ''
@@ -254,8 +278,8 @@ onMounted(fetchUsers)
       </p>
 
       <div>
-        <FilterMenuButton :filter="subFilters" />
-        <SortMenuButton />
+        <FilterMenuButton v-model="subSelection" :filter="subFilters" />
+        <SortMenuButton v-model="sorts" />
       </div>
     </div>
 
@@ -286,7 +310,7 @@ onMounted(fetchUsers)
 
       <template v-else-if="users.length">
         <Card
-          v-for="u in users"
+          v-for="u in sortedUsers"
           :key="u.username"
           class="relative overflow-hidden p-0 gap-0 aspect-[3/4] cursor-pointer border-0 shadow-md hover:shadow-xl"
         >
@@ -312,10 +336,15 @@ onMounted(fetchUsers)
                 {{ u.first_name }}, {{ u.age }}
               </p>
               <p class="text-xs text-white/80 flex items-center gap-1">
-                <MapPin class="h-3 w-3" /> {{ u.distance }} · {{ u.distance }} km
+                <MapPin class="h-3 w-3" /> {{ u.distance }} ·
+                {{ u.distance }} km
               </p>
               <div class="flex flex-wrap gap-1 mt-2">
-                <Badge v-for="t in u.tags.slice(0, 6)" :key="t" variant="outline">
+                <Badge
+                  v-for="t in u.tags.slice(0, 6)"
+                  :key="t"
+                  variant="outline"
+                >
                   #{{ t }}
                 </Badge>
               </div>

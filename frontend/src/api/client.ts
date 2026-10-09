@@ -78,6 +78,11 @@ export class ApiClient<T> {
     })
 
     if (res.status === 401) {
+      if (this.path == 'auth/refresh') {
+        useAuth().logout()
+        return new ApiResponse<T>(res)
+      }
+
       await useAuth().refreshSession()
       return await this.send(body)
     }
@@ -89,10 +94,8 @@ export class ApiClient<T> {
     const search = new URLSearchParams()
 
     for (const [key, value] of Object.entries(params)) {
-      // On ignore les valeurs vides
       if (value === null || value === undefined || value === '') continue
 
-      // Les tableaux deviennent "a,b,c" (ce que votre backend attend avec explode(','))
       if (Array.isArray(value)) {
         if (value.length === 0) continue
         search.append(key, value.join(','))

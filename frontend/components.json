@@ -21,6 +21,5 @@
     "composables": "@/composables"
   },
   "registries": {
-    "@shadcnblocks": "https://www.shadcnblocks.com/r/{style}/{name}"
   }
 }
