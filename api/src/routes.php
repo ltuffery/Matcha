@@ -12,7 +12,8 @@ use Matcha\Api\Controllers\LocalisationController;
 use Matcha\Api\Controllers\Notifications\NotificationsController;
 use Matcha\Api\Controllers\Profile\PreferencesController;
 use Matcha\Api\Controllers\Profile\ProfileController;
-use Matcha\Api\Controllers\Profile\ProfileSuggestionController;
+// use Matcha\Api\Controllers\Profile\ProfileSuggestionController;
+use Matcha\Api\Controllers\SuggestionController;
 use Matcha\Api\Controllers\Profile\ReportController;
 use Matcha\Api\Controllers\Profile\UserBlockController;
 use Matcha\Api\Controllers\RefreshTokenController;
@@ -82,7 +83,8 @@ Flight::group('/users', function () {
         Flight::route('GET /preferences', [PreferencesController::class, 'index']);
 
         Flight::route('GET /history', [HistoryController::class, 'index']);
-        Flight::route('GET /suggestions', [ProfileSuggestionController::class, 'index']);
+        // Flight::route('GET /suggestions', [ProfileSuggestionController::class, 'index']);
+        Flight::route('GET /suggestions', [SuggestionController::class, 'index']);
         Flight::route('GET /blocks', [UserBlockController::class, 'index']);
 
         Flight::route('POST /notifications/@id/view', [NotificationsController::class, 'viewed']);
