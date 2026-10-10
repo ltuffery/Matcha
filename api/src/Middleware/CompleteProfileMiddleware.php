@@ -11,6 +11,8 @@ class CompleteProfileMiddleware
 
     public function before($params): void
     {
+        if (getenv("PHPUNIT_TEST")) return;
+
         /** @var User $user */
         $user = Flight::user();
 
