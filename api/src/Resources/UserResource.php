@@ -31,6 +31,7 @@ class UserResource extends JsonResource
 
         $data['avatar'] = $this->model->getAvatar();
         $data['id'] = $this->model->id;
+        $data['complete_profile'] = $this->model->hasCompleteProfile();
 
         return $data;
     }

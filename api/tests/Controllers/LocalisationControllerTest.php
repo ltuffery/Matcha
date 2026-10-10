@@ -23,7 +23,7 @@ class LocalisationControllerTest extends MatchaTestCase
         )
             ->put('/users/me/localisation');
 
-        $response->assertStatus(202);
+        $response->assertStatus(200);
     }
 
     public function testWithValidData(): void
@@ -36,6 +36,6 @@ class LocalisationControllerTest extends MatchaTestCase
                 'lon' => 2.555,
             ]);
 
-        $response->assertStatus(204);
+        $response->assertStatus(200);
     }
 }

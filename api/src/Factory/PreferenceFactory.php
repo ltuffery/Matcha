@@ -17,6 +17,8 @@ class PreferenceFactory extends Factory
             "sexual_preferences" => faker()->randomElement(['A', 'M', 'F', 'O']),
             "distance_maximum" => rand(1, 20),
             "by_tags" => (bool)rand(0, 1),
+            'lon' => 10,
+            'lat' => 10,
         ];
     }
 }

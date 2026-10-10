@@ -8,7 +8,6 @@
         "firebase/php-jwt": "^7.1.1",
         "fakerphp/faker": "^1.24",
         "php": "^8.3",
-        "chrisullyott/php-ip-api": "^1.0",
         "bluemmb/faker-picsum-photos-provider": "^2.0",
         "ext-gd": "*",
         "predis/predis": "^3.6",
