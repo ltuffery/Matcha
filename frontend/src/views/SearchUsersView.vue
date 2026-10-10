@@ -127,14 +127,19 @@ const resetFilters = () => Object.assign(filters, structuredClone(DEFAULTS))
 
 let debounce: ReturnType<typeof setTimeout>
 const fetchUsers = async () => {
-  users.value =
-    (await search.fetch({
-      years: filters.age,
-      fame_rating: filters.fame,
-      distance: filters.distance,
-      tags: filters.tags,
-      sorts: sorts.value,
-    })) ?? []
+  const data = await search.fetch({
+    years: filters.age,
+    fame_rating: filters.fame,
+    distance: filters.distance,
+    tags: filters.tags,
+    sorts: sorts.value,
+  })
+
+  if (data === null || 'code' in data) {
+    return
+  }
+
+  users.value = data
 }
 
 watch(

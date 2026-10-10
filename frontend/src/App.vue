@@ -7,6 +7,7 @@ import 'vue-sonner/style.css'
 import NavBar from '@/components/layout/NavBar.vue'
 import { useAuthStore } from '@/store/useAuthStore'
 import { storeToRefs } from 'pinia'
+import CompleteProfileDialog from '@/components/CompleteProfileDialog.vue'
 
 const mode = useColorMode()
 const authStore = useAuthStore()
@@ -46,12 +47,8 @@ onMounted(async () => {
   const theme = localStorage.getItem('theme') as BasicColorSchema | null
   mode.value = theme ?? 'dark'
 
-  if (!authStore.user) {
-    try {
-      await authStore.fetchMe()
-    } catch {
-      /* no connect */
-    }
+  if (!authStore.user && localStorage.getItem('jwt')) {
+    await authStore.fetchMe()
   }
 })
 
@@ -71,6 +68,7 @@ onUnmounted(closeNotifications)
       }"
     >
       <RouterView />
+      <CompleteProfileDialog />
     </main>
   </div>
 </template>

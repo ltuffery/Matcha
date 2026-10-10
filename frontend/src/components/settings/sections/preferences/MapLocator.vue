@@ -185,7 +185,6 @@ async function onSelectAddress(value: unknown) {
             <Input
               v-model="searchTerm"
               :placeholder="currentLabel ?? 'Choisir une adresse manuellement'"
-              :disabled="loading || tracking"
               class="pl-9 pr-10"
               @focus="open = true"
               @input="open = true"

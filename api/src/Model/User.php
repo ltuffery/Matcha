@@ -353,6 +353,13 @@ class User extends Model
         ]);
     }
 
+    public function hasCompleteProfile(): bool
+    {
+        $preferences = $this->getPreferences();
+
+        return !($preferences->lat == 0 && $preferences->lon == 0);
+    }
+
     public static function authenticate(string $username, string $password): User|false
     {
         $user = User::find([
