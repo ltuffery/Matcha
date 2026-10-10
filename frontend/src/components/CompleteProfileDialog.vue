@@ -23,8 +23,13 @@ async function submit(): Promise<void> {
   submitting.value = true
   errorMessage.value = null
   try {
-    if (localisation.value != null)
-      await auth.updateLocalisation(localisation.value.lng, localisation.value.lat)
+    if (localisation.value != null) {
+      await auth.updateLocalisation(
+        localisation.value.lng,
+        localisation.value.lat,
+      )
+      await auth.fetchMe()
+    }
   } catch (err: unknown) {
     errorMessage.value =
       err instanceof Error ? err.message : 'Unable to save the address.'

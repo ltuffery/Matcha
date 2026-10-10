@@ -20,7 +20,7 @@ class LocalisationController
         $userPreferences->save();
 
         Flight::json([
-            'success' => true,
-        ], 204);
+            'message' => 'Location updated',
+        ]);
     }
 }
