@@ -35,7 +35,7 @@ const pref = ref<UserPreferences>({
   age_maximum: 27,
   by_tags: false,
   sexual_preferences: 'A',
-  lat: 48,
+  lat: 50,
   lon: 11,
   is_custom_loc: false,
 })
@@ -59,8 +59,10 @@ const sexualPref = computed({
 })
 
 const locations = computed<Location | null>({
-  get: () => ({ lat: pref.value.lat, lng: pref.value.lon }) as Location,
+  get: () =>
+    ({ lat: pref.value.lat, lng: pref.value.lon, city: 'Paris' }) as Location,
   set: loc => {
+    console.log(loc)
     if (!loc) return
     pref.value.lat = loc.lat
     pref.value.lon = loc.lng
@@ -80,7 +82,7 @@ onMounted(async () => {
 
 async function save() {
   saved.value = false
-  pref.value = await preference.updatePreferences(pref.value)
+  await preference.updatePreferences(pref.value)
   saved.value = true
 }
 </script>
@@ -99,7 +101,7 @@ async function save() {
           <Label>Maximum distance</Label>
           <Badge variant="secondary">{{ distanceRange[0] }} km</Badge>
         </div>
-        <Slider v-model="distanceRange" :max="200" :step="5" />
+        <Slider v-model="distanceRange" :min="1" :max="100" :step="5" />
       </div>
 
       <div class="space-y-3">
@@ -151,7 +153,7 @@ async function save() {
             <MapPin class="h-3 w-3" /> {{ locations.city }}
           </span>
         </div>
-        <MapLocator v-model="locations" />
+        <MapLocator :distance_max="distanceRange[0] * 1000" v-model="locations" />
       </div>
 
       <div class="flex justify-end">
