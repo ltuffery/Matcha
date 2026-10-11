@@ -82,22 +82,14 @@ const likedCount = computed(() => likedProfiles.value.length)
 
 <template>
   <div class="w-full">
-    <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold tracking-tight">History</h1>
-      <p class="text-muted-foreground mt-1">
-        See the profiles you've recently viewed and liked
-      </p>
-    </div>
-
-    <Tabs default-value="viewed" class="w-full">
-      <TabsList class="grid w-full grid-cols-2">
+    <Tabs default-value="viewed" orientation="horizontal">
+      <TabsList class="grid w-full grid-cols-2 items-center">
         <TabsTrigger value="viewed" class="flex items-center gap-2">
           <Eye class="h-4 w-4" />
           Vus
           <Badge variant="secondary">{{ viewedCount }}</Badge>
         </TabsTrigger>
-        <TabsTrigger value="liked" class="flex items-center gap-2">
+        <TabsTrigger value="liked">
           <Heart class="h-4 w-4" />
           Likés
           <Badge variant="secondary">{{ likedCount }}</Badge>
