@@ -7,18 +7,21 @@ import {
   Heart,
   AlertTriangle,
   Lock,
-} from 'lucide-vue-next'
+  ListClock,
+} from '@lucide/vue'
 import AccountSection from '@/components/settings/sections/AccountSection.vue'
 import ProfileSection from '@/components/settings/sections/ProfileSection.vue'
 import PrivacySection from '@/components/settings/sections/PrivacySection.vue'
 import MatchingPreferencesSection from '@/components/settings/sections/MatchingPreferencesSection.vue'
 import DangerAreaSection from '@/components/settings/sections/DangerAreaSection.vue'
+import HistorySection from '@/components/settings/sections/HistorySection.vue'
 
 const activeTab = ref('profile')
 
 const navItems = [
   { value: 'profile', label: 'Profile', icon: User },
   { value: 'account', label: 'Account', icon: Lock },
+  { value: 'history', label: 'History', icon: ListClock },
   { value: 'privacy', label: 'Privacy', icon: Shield },
   { value: 'matching', label: 'Preferences', icon: Heart },
   { value: 'danger', label: 'Danger zone', icon: AlertTriangle },
@@ -66,6 +69,10 @@ const navItems = [
           <!-- ACCOUNT -->
           <TabsContent value="account" class="mt-0 space-y-6">
             <AccountSection />
+          </TabsContent>
+
+          <TabsContent value="history" class="mt-0 space-y-6">
+            <HistorySection />
           </TabsContent>
 
           <!-- PRIVACY -->

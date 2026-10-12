@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@geoql/v-maplibre": "^3.0.0",
-    "@lucide/vue": "^1.52.0",
+    "@lucide/vue": "^1.55.0",
     "@turf/circle": "^7.4.0",
     "@turf/helpers": "^7.4.0",
     "@vee-validate/zod": "^4.15.1",

@@ -20,6 +20,7 @@ use Matcha\Api\Controllers\SearchProfileController;
 use Matcha\Api\Controllers\TagsController;
 use Matcha\Api\Controllers\ViewController;
 use Matcha\Api\Middleware\AuthMiddleware;
+use Matcha\Api\Middleware\CompleteProfileMiddleware;
 
 Flight::route('GET /', function () {
     $content = file_get_contents(dirname(__DIR__) . '/composer.json');
@@ -50,6 +51,15 @@ Flight::group('/forgot', function () {
 });
 
 Flight::group('/users', function () {
+    Flight::group('/me', function () {
+        Flight::route('DELETE /', ProfileController::class . 'destroy');
+
+        Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
+
+    });
+}, [AuthMiddleware::class]);
+
+Flight::group('/users', function () {
 
     Flight::group('/@username:[a-zA-Z0-9\.]{5,25}', function () {
         Flight::route('GET /', [ProfileController::class, 'show']);
@@ -67,11 +77,8 @@ Flight::group('/users', function () {
     });
 
     Flight::group('/me', function () {
-        Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
-
         Flight::route('GET /', [ProfileController::class, 'index']);
         Flight::route('PUT|PATCH /', [ProfileController::class, 'update']);
-        Flight::route('DELETE /', ProfileController::class . 'destroy');
 
         Flight::route('POST /offline', [ProfileController::class, 'offline']);
 
@@ -93,13 +100,13 @@ Flight::group('/users', function () {
         });
     });
 
-}, [AuthMiddleware::class]);
+}, [AuthMiddleware::class, CompleteProfileMiddleware::class]);
 
 Flight::route('GET /tags', [TagsController::class, 'index']);
 
 Flight::group('/search', function () {
     Flight::route('GET /users', [SearchProfileController::class, 'index']);
-}, [AuthMiddleware::class]);
+}, [AuthMiddleware::class, CompleteProfileMiddleware::class]);
 
 Flight::group('/medias', function () {
     Flight::route('GET /p/@name', function (string $name) {

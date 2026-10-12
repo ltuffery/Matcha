@@ -1,6 +1,19 @@
 import type { User } from '@/api/auth'
 import { ApiClient } from '@/api/client'
 
+export interface SmallProfile {
+  avatar: string
+  username: string
+  first_name: string
+  last_name: string
+  created_at: string
+}
+
+export interface HistoryResponse {
+  likes: SmallProfile[]
+  views: SmallProfile[]
+}
+
 export const apiProfile = {
   async getProfile() {
     return ApiClient.get<User>('/users/me').then(res => res.json())
@@ -20,8 +33,14 @@ export const apiProfile = {
 
   async updateLocalisation(latitude: number, longitude: number) {
     return ApiClient.put('/users/me/localisation', {
-      latitude,
-      longitude,
+      lat: latitude,
+      lon: longitude,
     }).then(res => res.json())
+  },
+
+  async getHistory() {
+    return ApiClient.get<HistoryResponse>(`/users/me/history`).then(res =>
+      res.json(),
+    )
   },
 }
