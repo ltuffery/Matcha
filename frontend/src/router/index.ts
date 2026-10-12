@@ -1,4 +1,3 @@
-import HistoryView from '@/views/HistoryView.vue'
 import ChatView from '@/views/ChatView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
@@ -55,12 +54,6 @@ const routes: RouteRecordRaw[] = [
     path: '/settings',
     name: 'settings',
     component: SettingsView,
-    beforeEnter: [authGuard],
-  },
-  {
-    path: '/matches',
-    name: 'matches',
-    component: HistoryView,
     beforeEnter: [authGuard],
   },
   {
