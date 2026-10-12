@@ -1,66 +1,19 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Heart, Eye } from 'lucide-vue-next'
 import UserItem from '@/components/users/UserItem.vue'
+import { useMe } from '@/composable/useMe.ts'
+
+const me = useMe()
 
 const isLoading = ref(false)
 
-const viewedProfiles = ref([
-  {
-    id: 1,
-    first_name: 'Emma',
-    last_name: 'Martinez',
-    age: 27,
-    avatar: 'https://i.pravatar.cc/150?img=32',
-    viewedAt: '2026-09-16T09:30:00',
-    city: 'Paris',
-  },
-  {
-    id: 2,
-    first_name: 'Léa',
-    last_name: 'Martinez',
-    age: 24,
-    avatar: 'https://i.pravatar.cc/150?img=45',
-    viewedAt: '2026-09-15T18:12:00',
-    city: 'Lyon',
-  },
-  {
-    id: 3,
-    first_name: 'Chloé',
-    last_name: 'Martinez',
-    age: 29,
-    avatar: 'https://i.pravatar.cc/150?img=47',
-    viewedAt: '2026-09-14T21:05:00',
-    city: 'Marseille',
-  },
-])
-
-const likedProfiles = ref([
-  {
-    id: 4,
-    first_name: 'Manon',
-    last_name: 'Martinez',
-    age: 26,
-    avatar: 'https://i.pravatar.cc/150?img=36',
-    likedAt: '2026-09-16T08:10:00',
-    city: 'Toulouse',
-    matched: true,
-  },
-  {
-    id: 5,
-    first_name: 'Camille',
-    last_name: 'Martinez',
-    age: 31,
-    avatar: 'https://i.pravatar.cc/150?img=38',
-    likedAt: '2026-09-13T14:45:00',
-    city: 'Nice',
-    matched: false,
-  },
-])
+const viewedProfiles = ref([])
+const likedProfiles = ref([])
 
 function formatRelativeDate(dateString) {
   const date = new Date(dateString)
@@ -78,6 +31,13 @@ function formatRelativeDate(dateString) {
 
 const viewedCount = computed(() => viewedProfiles.value.length)
 const likedCount = computed(() => likedProfiles.value.length)
+
+onMounted(async () => {
+  const history = await me.fetchHistory()
+
+  viewedProfiles.value = history.views
+  likedProfiles.value = history.likes
+})
 </script>
 
 <template>
@@ -118,7 +78,7 @@ const likedCount = computed(() => likedProfiles.value.length)
               v-for="profile in viewedProfiles"
               :key="profile.id"
               :profile="profile"
-              :description="formatRelativeDate(profile.viewedAt)"
+              :description="formatRelativeDate(profile.created_at)"
             />
           </div>
         </ScrollArea>
@@ -143,7 +103,7 @@ const likedCount = computed(() => likedProfiles.value.length)
               v-for="profile in likedProfiles"
               :key="profile.id"
               :profile="profile"
-              :description="formatRelativeDate(profile.viewedAt)"
+              :description="formatRelativeDate(profile.created_at)"
             />
           </div>
         </ScrollArea>
