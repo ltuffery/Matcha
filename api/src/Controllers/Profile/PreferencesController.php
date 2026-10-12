@@ -27,5 +27,10 @@ class PreferencesController
         }
 
         $preferences->save();
+
+        Flight::json([
+            'success' => true,
+            'message' => 'Preferences updated.'
+        ]);
     }
 }

@@ -1,4 +1,6 @@
 import { useAuth } from '@/composable/useAuth'
+import { ApiError, type ApiErrorBody, ApiErrorCode } from '@/api/errors'
+import { useAuthStore } from '@/store/useAuthStore'
 
 export class ApiClient<T> {
   method = ''
@@ -6,6 +8,7 @@ export class ApiClient<T> {
   headers: Record<string, string> = {
     'Content-Type': 'application/json',
   }
+  private refreshPromise: Promise<boolean> | null = null
 
   static get<T>(
     path: string,
@@ -77,14 +80,25 @@ export class ApiClient<T> {
       body: body != null && this.method !== 'GET' ? JSON.stringify(body) : null,
     })
 
-    if (res.status === 401) {
-      if (this.path == 'auth/refresh') {
-        useAuth().logout()
-        return new ApiResponse<T>(res)
-      }
-
-      await useAuth().refreshSession()
+    if (res.status === 401 && this.path !== 'auth/refresh') {
+      this.refreshPromise ??= useAuth()
+        .refreshSession()
+        .finally(() => {
+          this.refreshPromise = null
+        })
+      await this.refreshPromise
       return await this.send(body)
+    }
+
+    if (res.status === 403) {
+      const body = await res
+        .clone()
+        .json()
+        .catch(() => null)
+
+      if (body?.code === ApiErrorCode.ProfileIncomplete) {
+        useAuthStore().profileIncomplete = true
+      }
     }
 
     return new ApiResponse<T>(res)
@@ -109,11 +123,18 @@ export class ApiClient<T> {
 }
 
 class ApiResponse<T> {
-  constructor(private response: Response) {
-  }
+  constructor(private response: Response) {}
 
   async json(): Promise<T> {
-    return await this.response.json()
+    if (!this.response.ok) {
+      const body = (await this.response
+        .json()
+        .catch(() => ({ message: this.response.statusText }))) as ApiErrorBody
+
+      throw new ApiError(this.response.status, body.code ?? null, body.message)
+    }
+
+    return (await this.response.json()) as T
   }
 
   status(): number {

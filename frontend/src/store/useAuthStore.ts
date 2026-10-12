@@ -2,13 +2,17 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { apiProfile } from '@/api/profile'
 import type { User } from '@/api/auth'
+import { ApiError, ApiErrorCode } from '@/api/errors'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const loading = ref<boolean>(false)
   const error = ref<string | null>(null)
+  const profileIncomplete = ref<boolean>(false)
 
-  const isAuthenticated = computed(() => user.value !== null)
+  const isAuthenticated = computed(
+    () => user.value !== null || profileIncomplete,
+  )
   const fullName = computed(() => {
     if (!user.value) return ''
     return `${user.value.first_name} ${user.value.last_name}`
@@ -25,12 +29,15 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
     try {
       const data = await apiProfile.getProfile()
+      profileIncomplete.value = false
       user.value = data
       return data
     } catch (err: unknown) {
+      if (err instanceof ApiError && err.is(ApiErrorCode.ProfileIncomplete)) {
+        return null
+      }
       error.value =
-        (err as { message?: string }).message ??
-        'Unable to retrieve the profile.'
+        err instanceof Error ? err.message : 'Unable to retrieve the profile.'
       clearSession()
       return null
     } finally {
@@ -44,6 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null
     try {
       const updatedUser = await apiProfile.updateProfile(data)
+      profileIncomplete.value = false
       user.value = updatedUser
       return updatedUser
     } catch (err: unknown) {
@@ -85,6 +93,7 @@ export const useAuthStore = defineStore('auth', () => {
     error,
     isAuthenticated,
     fullName,
+    profileIncomplete,
 
     clearSession,
     fetchMe,

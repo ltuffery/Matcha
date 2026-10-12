@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import {
   LocateFixed,
   Search,
@@ -48,6 +48,10 @@ interface GeoAddress {
   kind?: string
 }
 
+const props = defineProps<{
+  distance_max?: number
+}>()
+
 const model = defineModel<Location | null>({ default: null })
 
 const DEFAULT: [number, number] = [2.3522, 48.8566] // Paris [lng, lat]
@@ -73,8 +77,6 @@ async function reverseGeocode(lat: number, lng: number): Promise<string> {
     )
     const d = await r.json()
     const address = d.features[0]
-
-    console.log(address.properties.label)
 
     return address.properties.label
   } catch (e: any) {
@@ -154,6 +156,10 @@ watch(searchTerm, q => {
   debounceTimer = setTimeout(() => autoCompleteAddress(q), 300)
 })
 
+watch(model, l => {
+  mapKey.value++
+})
+
 async function onSelectAddress(value: unknown) {
   const a = addresses.value.find(ad => ad.fulltext === value)
   if (!a) return
@@ -185,7 +191,6 @@ async function onSelectAddress(value: unknown) {
             <Input
               v-model="searchTerm"
               :placeholder="currentLabel ?? 'Choisir une adresse manuellement'"
-              :disabled="loading || tracking"
               class="pl-9 pr-10"
               @focus="open = true"
               @input="open = true"
@@ -249,7 +254,11 @@ async function onSelectAddress(value: unknown) {
 
     <div class="h-80 overflow-hidden rounded-lg border">
       <Map :key="mapKey" :center="center" :zoom="15" class="rounded">
-        <CircleMapLayer v-if="model" />
+        <CircleMapLayer
+          :center="[model.lng, model.lat]"
+          :distance_meters="distance_max"
+          v-if="model"
+        />
 
         <MapMarker v-if="model" :longitude="model.lng" :latitude="model.lat">
           <MarkerContent>

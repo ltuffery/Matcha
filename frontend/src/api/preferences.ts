@@ -1,14 +1,16 @@
 import { ApiClient } from '@/api/client'
 
+export type SexualPreference = 'M' | 'W' | 'O' | 'A'
+
 export interface UserPreferences {
   age_minimum: number
   age_maximum: number
   distance_maximum: number
-  by_tags: string
-  sexual_preferences: string
+  by_tags: boolean
+  sexual_preferences: SexualPreference
   lat: number
   lon: number
-  is_custom_loc: number
+  is_custom_loc: boolean
 }
 
 export const apiPreferences = {
