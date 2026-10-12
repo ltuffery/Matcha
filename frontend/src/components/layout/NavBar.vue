@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   PlayingCardsFan,
   Search,
-  Heart,
   MessageCircle,
   Settings,
 } from '@lucide/vue'
+import NotificationIcon from '@/components/notifications/NotificationIcon.vue'
 
 interface NavItem {
   label: string
@@ -20,6 +19,7 @@ const navItems: NavItem[] = [
   { label: 'Search', icon: Search, path: '/search' },
   { label: 'Chat', icon: MessageCircle, path: '/messages' },
   { label: 'Settings', icon: Settings, path: '/settings' },
+  { label: 'Notifications', icon: NotificationIcon, path: '/notifications' },
 ]
 
 const route = useRoute()

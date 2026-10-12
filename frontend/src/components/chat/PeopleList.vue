@@ -60,7 +60,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 
-const typingStore = useTypingStore();
+const typingStore = useTypingStore()
 
 const selectedUser = ref<string>('')
 const search = ref<string>('')
@@ -89,7 +89,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-full flex flex-col gap-2">
+  <div class="w-full h-full flex flex-col gap-2">
     <InputGroup>
       <InputGroupInput placeholder="Search..." v-model="search" />
       <InputGroupAddon>
@@ -101,26 +101,26 @@ onMounted(() => {
       </InputGroupAddon>
     </InputGroup>
 
-  <div v-if="matches.length" class="flex flex-col gap-2 mt-4">
-    <div class="flex gap-4 overflow-x-auto items-center">
-      <div
-        v-for="(content, index) in matches"
-        :key="index"
-        @click="convClick(content.username)"
-        class="select-none cursor-pointer flex flex-col items-center"
-      >
-        <Avatar class="h-12 w-12 cursor-pointer">
-          <AvatarImage :src="content.avatar ?? ''" :alt="content.username" />
-          <AvatarFallback>{{
-            content.username.charAt(0).toUpperCase()
-          }}</AvatarFallback>
-        </Avatar>
-        {{ content.first_name }}
+    <div v-if="matches.length" class="flex flex-col gap-2 mt-4 overflow-x-auto">
+      <div class="flex gap-4 overflow-x-auto items-center">
+        <div
+          v-for="(content, index) in matches"
+          :key="index"
+          @click="convClick(content.username)"
+          class="select-none cursor-pointer flex flex-col items-center"
+        >
+          <Avatar class="h-12 w-12 cursor-pointer">
+            <AvatarImage :src="content.avatar ?? ''" :alt="content.username" />
+            <AvatarFallback>{{
+              content.username.charAt(0).toUpperCase()
+            }}</AvatarFallback>
+          </Avatar>
+          {{ content.first_name }}
+        </div>
       </div>
-    </div>
 
-    <Separator />
-  </div>
+      <Separator />
+    </div>
 
     <Empty v-if="!people.length" class="flex">
       <EmptyHeader>
@@ -168,7 +168,8 @@ onMounted(() => {
                   >{{ person.first_name }} {{ person.last_name }}</ItemTitle
                 >
                 <ItemDescription v-if="typingStore.isTyping(person.username)">
-                  {{person.username}} is typing...</ItemDescription>
+                  {{ person.username }} is typing...</ItemDescription
+                >
                 <ItemDescription v-else>{{
                   person.last_message?.content
                 }}</ItemDescription>

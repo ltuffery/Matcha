@@ -3,6 +3,7 @@
 namespace Matcha\Api\Controllers;
 
 use Flight;
+use Matcha\Api\Enums\NotificationType;
 use Matcha\Api\Model\User;
 
 class LikeController
@@ -23,8 +24,8 @@ class LikeController
 
         Flight::user()->like($user);
 
-        Flight::notifier()->publish("user/" . $user->id . "/notifications", [
-            'type' => 'like',
+        Flight::notifier()->notify($user, [
+            'type' => NotificationType::LIKE,
             'message' => Flight::user()->username . " a aimé ton profil",
         ], private: false);
 

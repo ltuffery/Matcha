@@ -29,7 +29,7 @@ const route = useRoute()
 
 const matches = ref<ChatUser[]>([])
 const people = ref<ChatUser[]>([])
-const selectedUser = ref<User>({
+const selectedUser = ref<ChatUser>({
   username: 'test',
   avatar: 'https://github.com/shadcn.png',
   first_name: 'Leo',

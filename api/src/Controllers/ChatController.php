@@ -3,14 +3,11 @@
 namespace Matcha\Api\Controllers;
 
 use Flight;
-use Matcha\Api\Controllers\Notifications\NotificationType;
 use Matcha\Api\Model\Message;
-use Matcha\Api\Model\Notification;
 use Matcha\Api\Model\User;
 use Matcha\Api\Resources\MatchUserResource;
 use Matcha\Api\Resources\MessageResource;
 use Matcha\Api\Validator\Validator;
-use PDO;
 
 class ChatController
 {
