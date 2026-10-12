@@ -11,7 +11,7 @@ export const useAuthStore = defineStore('auth', () => {
   const profileIncomplete = ref<boolean>(false)
 
   const isAuthenticated = computed(
-    () => user.value !== null || profileIncomplete,
+    () => user.value !== null || profileIncomplete.value,
   )
   const fullName = computed(() => {
     if (!user.value) return ''
