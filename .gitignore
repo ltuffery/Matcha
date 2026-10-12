@@ -159,3 +159,5 @@ vendor
 /api/storage/photos
 bun.lock
 composer.lock
+
+websocket/core.1
