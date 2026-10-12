@@ -105,7 +105,7 @@ class User extends Model
             return null;
         }
 
-        return "https://" . trim(getenv('APP_HOST') ?? 'localhost', '/') . "/api/medias/p/" . $photo->name;
+        return "http://" . trim(getenv('APP_HOST') ?? 'localhost', '/') . ":8011/api/medias/p/" . $photo->name;
     }
 
     /**
@@ -268,16 +268,45 @@ class User extends Model
 
         $host = getenv('APP_HOST') ?: "localhost";
 
-        return array_map(fn (Photo $photo) => "https://" . trim($host, '/') .  "/api/medias/p/" . $photo->name, $photos);
+        return array_map(fn (Photo $photo) => "http://" . trim($host, '/') .  ":8011/api/medias/p/" . $photo->name, $photos);
     }
+
 
     public function getAge(): ?int
     {
-        $birthDate = explode("-", $this->birthday);
+        if (empty($this->birthday)) {
+            return null;
+        }
 
-        return (date("md", date("U", mktime(0, 0, 0, $birthDate[2], $birthDate[1], $birthDate[0]))) > date("md")
-            ? ((date("Y") - $birthDate[0]) - 1)
-            : (date("Y") - $birthDate[0]));
+        try {
+            $birthDate = DateTimeImmutable::createFromFormat(
+                '!Y-m-d',
+                $this->birthday
+            );
+
+            $errors = DateTimeImmutable::getLastErrors();
+
+            if (
+                $birthDate === false
+                || ($errors !== false && (
+                    $errors['warning_count'] > 0
+                    || $errors['error_count'] > 0
+                ))
+                || $birthDate->format('Y-m-d') !== $this->birthday
+            ) {
+                return null;
+            }
+
+            $today = new DateTimeImmutable('today');
+
+            if ($birthDate > $today) {
+                return null;
+            }
+
+            return $birthDate->diff($today)->y;
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**

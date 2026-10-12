@@ -24,6 +24,9 @@ export interface Profile {
 
 export interface SuggestionParams {
   sort?: string
+  order?: string
+  offset?: number
+  limit?: number
 }
 
 export interface SuggestionProfile {
