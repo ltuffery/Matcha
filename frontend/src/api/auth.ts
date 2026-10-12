@@ -28,6 +28,7 @@ export interface User {
   biography: string
   created_at: string
   last_connection: string
+  profile_complete: boolean
 }
 
 export interface LoginCredentials {

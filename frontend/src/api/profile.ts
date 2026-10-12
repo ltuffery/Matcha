@@ -33,8 +33,8 @@ export const apiProfile = {
 
   async updateLocalisation(latitude: number, longitude: number) {
     return ApiClient.put('/users/me/localisation', {
-      latitude,
-      longitude,
+      lat: latitude,
+      lon: longitude,
     }).then(res => res.json())
   },
 
