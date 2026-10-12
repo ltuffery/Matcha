@@ -26,6 +26,7 @@ import MapLocator, {
 import { MapPin } from 'lucide-vue-next'
 import { usePreferences } from '@/composable/usePreferences'
 import type { SexualPreference, UserPreferences } from '@/api/preferences'
+import { Switch } from '@/components/ui/switch'
 
 const preference = usePreferences()
 
@@ -62,7 +63,6 @@ const locations = computed<Location | null>({
   get: () =>
     ({ lat: pref.value.lat, lng: pref.value.lon, city: 'Paris' }) as Location,
   set: loc => {
-    console.log(loc)
     if (!loc) return
     pref.value.lat = loc.lat
     pref.value.lon = loc.lng
@@ -71,8 +71,13 @@ const locations = computed<Location | null>({
   },
 })
 const city = ref('')
-
 const fameRatingRange = ref([100])
+const byTags = computed({
+  get: () => pref.value.by_tags,
+  set: v => {
+    pref.value.by_tags = v
+  },
+})
 
 const saved = ref(false)
 
@@ -143,6 +148,11 @@ async function save() {
         </Select>
       </div>
 
+      <div class="flex items-center space-x-2">
+        <Switch v-model="byTags" />
+        <Label>Use tags correspondence</Label>
+      </div>
+
       <div class="space-y-3">
         <div class="flex items-center justify-between text-sm">
           <Label>Localisation</Label>
@@ -153,7 +163,10 @@ async function save() {
             <MapPin class="h-3 w-3" /> {{ locations.city }}
           </span>
         </div>
-        <MapLocator :distance_max="distanceRange[0] * 1000" v-model="locations" />
+        <MapLocator
+          :distance_max="distanceRange[0] * 1000"
+          v-model="locations"
+        />
       </div>
 
       <div class="flex justify-end">
