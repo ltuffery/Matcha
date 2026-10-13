@@ -3,6 +3,20 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/compon
 import { Button } from "./ui/button";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { ArrowDown, ArrowUp, Cake, Hash, MapPin, TrendingUp, SlidersHorizontal } from "@lucide/vue";
+import { Toggle } from "./ui/toggle";
+import { ref, computed } from 'vue'
+
+const order = ref<'asc' | 'dsc'>('asc')
+
+const toggleOrder = () => {
+  order.value = order.value === 'asc' ? 'dsc' : 'asc'
+}
+
+const orderClass = computed(() =>
+  order.value === 'asc'
+    ? 'bg-slate-400/20 text-slate-400 border-slate-400/50'
+    : 'bg-cyan-200/20 text-cyan-200 border-cyan-200/50'
+)
 </script>
 
 <template>
@@ -27,10 +41,20 @@ import { ArrowDown, ArrowUp, Cake, Hash, MapPin, TrendingUp, SlidersHorizontal }
       >
 
         <div class="flex items-center justify-between px-2 pb-2 pt-1">
-          <span class="text-sm font-semibold tracking-tight"
+           <span class="text-sm font-semibold tracking-tight"
             >Trier par</span
           >
-          <Button variant="link" > Réinitialiser </Button>
+          <button
+              type="button"
+              :class="[
+                'rounded-md border px-1 py-0.5 transition-colors',
+                orderClass
+              ]"
+              @click="toggleOrder"
+            >
+              {{ order === 'asc' ? 'asc ↑' : 'desc ↓' }}
+            </button>
+          <!-- <Button variant="link" > Réinitialiser </Button> -->
         </div>
 
 
@@ -124,6 +148,19 @@ import { ArrowDown, ArrowUp, Cake, Hash, MapPin, TrendingUp, SlidersHorizontal }
             </div>
           </ToggleGroupItem>
         </ToggleGroup>
+        <div class="w-full flex justify-end">
+          <!-- <button
+              type="button"
+              :class="[
+                'rounded-md border px-2 py-1 transition-colors',
+                orderClass
+              ]"
+              @click="toggleOrder"
+            >
+              {{ order === 'asc' ? 'ASC ↑' : 'DESC ↓' }}
+            </button> -->
+            <Button variant="link" > Réinitialiser </Button>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   </div>

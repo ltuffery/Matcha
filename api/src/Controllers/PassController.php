@@ -12,12 +12,15 @@ class PassController
         $target = User::find(['username' => $username]);
 
         if (is_null($target)) {
-            Flight::json(['message' => 'User not found'], 404);
+            Flight::json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
             return;
         }
 
         Flight::user()->pass($target);
 
-        Flight::json([], 204);
+        Flight::json(['success' => true,], 204);
     }
 }

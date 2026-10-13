@@ -80,4 +80,10 @@ export const usersApi = {
       res.json(),
     )
   },
+
+  async pass(username: string) {
+    return ApiClient.post(`/users/${username}/pass`).then(res =>
+      res.json(),
+    )
+  },
 }
