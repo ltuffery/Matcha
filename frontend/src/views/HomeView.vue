@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import MainUser from '@/components/MainUser.vue'
-import { onMounted, ref, nextTick } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
-import { getSocket } from '@/plugins/socket'
-import Filter from '@/components/main/Filter.vue'
 import { EffectCreative } from 'swiper/modules'
 import type { Swiper as SwiperType } from 'swiper/types'
 import type { Profile, SuggestionParams } from '@/api/users'
@@ -13,10 +11,12 @@ import SortDropdown from '@/components/SortDropdown.vue'
 
 const users = useUsers()
 
+const usedSort = ref<'age' | 'distance' | 'fame' | 'common_tags' | null>(null)
+const order = ref<'asc' | 'desc'>('asc')
+
 const swiperInstance = ref<SwiperType | null>(null)
 const MAX_PROFILES = 50
 const PRELOAD_THRESHOLD = 0
-const params: SuggestionParams = { limit: 5 }
 
 const skeleton = ref(true)
 const modules = ref([EffectCreative])
@@ -25,12 +25,19 @@ const onSwiperInit = (swiper: SwiperType) => {
   swiperInstance.value = swiper
 }
 
+const buildParams = (): SuggestionParams => ({
+  limit: 5,
+  ...(usedSort.value && { sort: usedSort.value }),
+  ...(usedSort.value && { order: order.value }),
+})
+
 const loadMore = async () => {
   if (!users.hasMore.value) return
   console.log("Je charge nouveau copain")
   const swiper = swiperInstance.value
 
-  params.offset = swiper!.activeIndex;
+  const params = buildParams()
+  params.offset = swiper!.activeIndex
   await users.suggestion(params)
 
   // On supprime les plus anciens si on dépasse le max
@@ -69,26 +76,26 @@ const goToNextSlide = () => {
     console.log("Swiper instance n'est pas encore prête.")
   }
 }
-//
-// getSocket().on('browsing', (user: User) => {
-//   if (user !== null) {
-//     sections.value.push(user)
-//     skeleton.value = false
-//   }
-// })
+
+watch([usedSort, order], async ([newSort], [oldSort]) => {
+  if (!newSort && !oldSort) return
+  users.suggestionReset()
+  await users.suggestion(buildParams())
+  swiperInstance.value?.slideTo(0, 0, false)
+})
 
 onMounted(async () => {
   // getSocket().emit('browsing')
   // getSocket().emit('browsing')
 
-  await users.suggestion(params)
+  await users.suggestion(buildParams())
 })
 </script>
 
 <template>
   <div class="flex w-full justify-center overflow-hidden rounded-lg py-4">
     <div class="relative h-full w-full max-w-lg">
-      <SortDropdown/>
+      <SortDropdown v-model:sort="usedSort" v-model:order="order"/>
 
       <Swiper
         v-if="users.suggestedProfiles.value.length"

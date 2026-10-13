@@ -4,12 +4,21 @@ import { Button } from "./ui/button";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 import { ArrowDown, ArrowUp, Cake, Hash, MapPin, TrendingUp, SlidersHorizontal } from "@lucide/vue";
 import { Toggle } from "./ui/toggle";
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 
-const order = ref<'asc' | 'dsc'>('asc')
+type Sort = 'age' | 'distance' | 'fame' | 'common_tags'
+type Order = 'asc' | 'desc'
+
+const sort = defineModel<Sort | null>('sort', { default: null })
+const order = defineModel<Order>('order', { default: 'asc' })
+
+const reset = () => {
+  sort.value = null
+  order.value = 'asc'
+}
 
 const toggleOrder = () => {
-  order.value = order.value === 'asc' ? 'dsc' : 'asc'
+  order.value = order.value === 'asc' ? 'desc' : 'asc'
 }
 
 const orderClass = computed(() =>
@@ -59,7 +68,7 @@ const orderClass = computed(() =>
 
 
 
-        <ToggleGroup class="flex flex-col w-full gap-3" type="single">
+        <ToggleGroup v-model="sort" class="flex flex-col w-full gap-3" type="single">
           <ToggleGroupItem
             className="
               w-full rounded-xl border border-transparent
@@ -91,7 +100,7 @@ const orderClass = computed(() =>
                 data-[state=on]:bg-white/10
                 data-[state=on]:text-white
               "
-            value="dist">
+            value="distance">
             <div class="flex w-full items-center justify-between rounded-xl px-2 py-2 transition-colors hover:bg-white/5">
               <div class="flex items-center gap-3">
                 <div
@@ -135,7 +144,7 @@ const orderClass = computed(() =>
                 data-[state=on]:bg-white/10
                 data-[state=on]:text-white
               "
-              value="tags">
+              value="common_tags">
             <div class="flex w-full items-center justify-between rounded-xl px-2 py-2 transition-colors hover:bg-white/5">
               <div class="flex items-center gap-3">
                 <div
@@ -149,17 +158,7 @@ const orderClass = computed(() =>
           </ToggleGroupItem>
         </ToggleGroup>
         <div class="w-full flex justify-end">
-          <!-- <button
-              type="button"
-              :class="[
-                'rounded-md border px-2 py-1 transition-colors',
-                orderClass
-              ]"
-              @click="toggleOrder"
-            >
-              {{ order === 'asc' ? 'ASC ↑' : 'DESC ↓' }}
-            </button> -->
-            <Button variant="link" > Réinitialiser </Button>
+            <Button variant="link" @click="reset"> Réinitialiser </Button>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

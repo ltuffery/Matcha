@@ -141,6 +141,10 @@ export function useUsers() {
     }
   }
 
+  const suggestionReset = () => {
+    suggestedProfiles.value = []
+  }
+
   const pass = async (username: string) => {
     if (isLoading.value) return
     isLoading.value = true
@@ -174,6 +178,7 @@ export function useUsers() {
     unblock,
     report,
     suggestion,
+    suggestionReset,
     pass,
   }
 }
