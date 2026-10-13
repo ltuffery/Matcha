@@ -13,6 +13,11 @@ const users = useUsers()
 
 const usedSort = ref<'age' | 'distance' | 'fame' | 'common_tags' | null>(null)
 const order = ref<'asc' | 'desc'>('asc')
+const buildParams = (): SuggestionParams => ({
+  limit: 5,
+  ...(usedSort.value && { sort: usedSort.value }),
+  ...(usedSort.value && { order: order.value }),
+})
 
 const swiperInstance = ref<SwiperType | null>(null)
 const MAX_PROFILES = 50
@@ -25,12 +30,6 @@ const onSwiperInit = (swiper: SwiperType) => {
   swiperInstance.value = swiper
 }
 
-const buildParams = (): SuggestionParams => ({
-  limit: 5,
-  ...(usedSort.value && { sort: usedSort.value }),
-  ...(usedSort.value && { order: order.value }),
-})
-
 const loadMore = async () => {
   if (!users.hasMore.value) return
   console.log("Je charge nouveau copain")
@@ -40,19 +39,11 @@ const loadMore = async () => {
   params.offset = swiper!.activeIndex
   await users.suggestion(params)
 
-  // On supprime les plus anciens si on dépasse le max
+  // Delete old profiles (if > max)
   const list = users.suggestedProfiles.value
   if (list.length > MAX_PROFILES) {
     const removed = list.length - MAX_PROFILES
     list.splice(0, removed)
-
-    // Les slides ont changé de position : on recale Swiper sans animation
-    // await nextTick()
-
-    // if (swiper) {
-    //   swiper.update()
-    //   swiper.slideTo(swiper.activeIndex - removed, 0, false)
-    // }
   }
 }
 
@@ -64,7 +55,6 @@ const onSlideChange = (swiper: SwiperType) => {
       }
     }
 
-    // 2. Préchargement
     const remaining = users.suggestedProfiles.value.length - 1 - swiper.activeIndex
     if (remaining <= PRELOAD_THRESHOLD) loadMore()
 }
@@ -72,8 +62,6 @@ const onSlideChange = (swiper: SwiperType) => {
 const goToNextSlide = () => {
   if (swiperInstance.value) {
     swiperInstance.value.slideNext()
-  } else {
-    console.log("Swiper instance n'est pas encore prête.")
   }
 }
 
@@ -85,9 +73,6 @@ watch([usedSort, order], async ([newSort], [oldSort]) => {
 })
 
 onMounted(async () => {
-  // getSocket().emit('browsing')
-  // getSocket().emit('browsing')
-
   await users.suggestion(buildParams())
 })
 </script>

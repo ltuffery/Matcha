@@ -2,8 +2,7 @@
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu"
 import { Button } from "./ui/button";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
-import { ArrowDown, ArrowUp, Cake, Hash, MapPin, TrendingUp, SlidersHorizontal } from "@lucide/vue";
-import { Toggle } from "./ui/toggle";
+import { Cake, Hash, MapPin, TrendingUp, SlidersHorizontal } from "@lucide/vue";
 import { computed } from 'vue'
 
 type Sort = 'age' | 'distance' | 'fame' | 'common_tags'
@@ -63,7 +62,6 @@ const orderClass = computed(() =>
             >
               {{ order === 'asc' ? 'asc ↑' : 'desc ↓' }}
             </button>
-          <!-- <Button variant="link" > Réinitialiser </Button> -->
         </div>
 
 
