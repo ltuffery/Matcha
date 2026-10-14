@@ -1,19 +1,27 @@
 <script setup lang="ts">
 import router from '@/router'
+import { Button } from '@/components/ui/button'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from '@/components/ui/empty'
 </script>
 
 <template>
-  <div class="hero bg-muted min-h-screen">
-    <div class="hero-content text-center">
-      <div class="max-w-md">
-        <h1 class="text-5xl font-bold">404</h1>
-        <p class="py-6">
-          Sorry, we couldn't find the page you were looking for.
-        </p>
-        <button @click="router.push({ name: 'home' })" class="btn btn-primary">
-          Back to Home
-        </button>
-      </div>
-    </div>
-  </div>
+  <Empty>
+    <EmptyHeader>
+      <EmptyTitle>404 - Not Found</EmptyTitle>
+      <EmptyDescription>
+        The page you're looking for doesn't exist.
+      </EmptyDescription>
+    </EmptyHeader>
+    <EmptyContent>
+      <EmptyDescription>
+        <Button @click="() => router.push({ name: 'home' })">Back to home</Button>
+      </EmptyDescription>
+    </EmptyContent>
+  </Empty>
 </template>
