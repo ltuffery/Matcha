@@ -33,7 +33,7 @@ class LikeController
             ];
         } else {
             $notif = [
-                'type' => NotificationType::MATCH,
+                'type' => NotificationType::LIKE,
                 'message' => ucfirst($me->first_name) . ' vous a like !',
             ];
         }
