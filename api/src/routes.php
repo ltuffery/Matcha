@@ -18,6 +18,7 @@ use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
 use Matcha\Api\Controllers\SearchProfileController;
 use Matcha\Api\Controllers\TagsController;
+use Matcha\Api\Controllers\User\PhotoController;
 use Matcha\Api\Controllers\ViewController;
 use Matcha\Api\Middleware\AuthMiddleware;
 use Matcha\Api\Middleware\CompleteProfileMiddleware;
@@ -91,6 +92,10 @@ Flight::group('/users', function () {
 
         Flight::route('POST /notifications/@id/view', [NotificationsController::class, 'viewed']);
         Flight::route('GET /notifications', [NotificationsController::class, 'index']);
+
+        Flight::route('POST /photos', [PhotoController::class, 'store']);
+        Flight::route('GET /photos', [PhotoController::class, 'index']);
+        Flight::route('DELETE /photos/@id', [PhotoController::class, 'delete']);
 
         Flight::group('/matches', function () {
             Flight::route('GET /', [ChatController::class, 'index']);

@@ -58,6 +58,10 @@ class ProfileController
                 continue;
             }
 
+            if ($key === 'password') {
+                $value = password_hash($value, PASSWORD_DEFAULT);
+            }
+
             $user->{$key} = $value;
         }
 

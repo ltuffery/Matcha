@@ -20,8 +20,6 @@ class UserResource extends JsonResource
             'password',
             'email_verified',
             'temporary_email_token',
-            'lat',
-            'lon',
         ];
         $data = $this->model->getData();
 
@@ -32,6 +30,7 @@ class UserResource extends JsonResource
         $data['avatar'] = $this->model->getAvatar();
         $data['id'] = $this->model->id;
         $data['complete_profile'] = $this->model->hasCompleteProfile();
+        $data['verified'] = $this->model->email_verified;
 
         return $data;
     }

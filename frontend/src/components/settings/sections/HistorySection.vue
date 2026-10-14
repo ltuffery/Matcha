@@ -7,6 +7,13 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Heart, Eye } from 'lucide-vue-next'
 import UserItem from '@/components/users/UserItem.vue'
 import { useMe } from '@/composable/useMe.ts'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card/index.ts'
 
 const me = useMe()
 
@@ -41,73 +48,93 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-full">
-    <Tabs default-value="viewed" orientation="horizontal">
-      <TabsList class="grid w-full grid-cols-2 items-center">
-        <TabsTrigger value="viewed" class="flex items-center gap-2">
-          <Eye class="h-4 w-4" />
-          Vus
-          <Badge variant="secondary">{{ viewedCount }}</Badge>
-        </TabsTrigger>
-        <TabsTrigger value="liked">
-          <Heart class="h-4 w-4" />
-          Likés
-          <Badge variant="secondary">{{ likedCount }}</Badge>
-        </TabsTrigger>
-      </TabsList>
+  <div class="">
+    <Card>
+      <CardHeader>
+        <CardTitle>History</CardTitle>
+        <CardDescription>Votre historique de vues et likes.</CardDescription>
+      </CardHeader>
 
-      <!-- VIEW -->
-      <TabsContent value="viewed">
-        <ScrollArea class="h-[70vh]">
-          <div v-if="isLoading" class="space-y-3">
-            <Skeleton v-for="i in 4" :key="i" class="h-20 w-full rounded-xl" />
-          </div>
+      <CardContent>
+        <Tabs default-value="viewed" orientation="horizontal">
+          <TabsList class="grid w-full grid-cols-2 items-center">
+            <TabsTrigger value="viewed" class="flex items-center gap-2">
+              <Eye class="h-4 w-4" />
+              Vus
+              <Badge variant="secondary">{{ viewedCount }}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="liked">
+              <Heart class="h-4 w-4" />
+              Likés
+              <Badge variant="secondary">{{ likedCount }}</Badge>
+            </TabsTrigger>
+          </TabsList>
 
-          <div
-            v-else-if="viewedProfiles.length === 0"
-            class="text-center py-16"
-          >
-            <Eye class="mx-auto h-10 w-10 text-muted-foreground mb-2" />
-            <p class="text-muted-foreground">
-              No profiles have been viewed yet
-            </p>
-          </div>
+          <!-- VIEW -->
+          <TabsContent value="viewed">
+            <ScrollArea>
+              <div v-if="isLoading" class="space-y-3">
+                <Skeleton
+                  v-for="i in 4"
+                  :key="i"
+                  class="h-20 w-full rounded-xl"
+                />
+              </div>
 
-          <div v-else class="space-y-3">
-            <UserItem
-              v-for="profile in viewedProfiles"
-              :key="profile.id"
-              :profile="profile"
-              :description="formatRelativeDate(profile.created_at)"
-            />
-          </div>
-        </ScrollArea>
-      </TabsContent>
+              <div
+                v-else-if="viewedProfiles.length === 0"
+                class="text-center py-16"
+              >
+                <Eye class="mx-auto h-10 w-10 text-muted-foreground mb-2" />
+                <p class="text-muted-foreground">
+                  No profiles have been viewed yet
+                </p>
+              </div>
 
-      <!-- LIKES -->
-      <TabsContent value="liked">
-        <ScrollArea class="h-[70vh]">
-          <div v-if="isLoading" class="space-y-3">
-            <Skeleton v-for="i in 4" :key="i" class="h-20 w-full rounded-xl" />
-          </div>
+              <div v-else class="space-y-3">
+                <UserItem
+                  v-for="profile in viewedProfiles"
+                  :key="profile.id"
+                  :profile="profile"
+                  :description="formatRelativeDate(profile.created_at)"
+                />
+              </div>
+            </ScrollArea>
+          </TabsContent>
 
-          <div v-else-if="likedProfiles.length === 0" class="text-center py-16">
-            <Heart class="mx-auto h-10 w-10 text-muted-foreground mb-2" />
-            <p class="text-muted-foreground">
-              You haven't liked any profiles yet
-            </p>
-          </div>
+          <!-- LIKES -->
+          <TabsContent value="liked">
+            <ScrollArea>
+              <div v-if="isLoading" class="space-y-3">
+                <Skeleton
+                  v-for="i in 4"
+                  :key="i"
+                  class="h-20 w-full rounded-xl"
+                />
+              </div>
 
-          <div v-else class="space-y-3">
-            <UserItem
-              v-for="profile in likedProfiles"
-              :key="profile.id"
-              :profile="profile"
-              :description="formatRelativeDate(profile.created_at)"
-            />
-          </div>
-        </ScrollArea>
-      </TabsContent>
-    </Tabs>
+              <div
+                v-else-if="likedProfiles.length === 0"
+                class="text-center py-16"
+              >
+                <Heart class="mx-auto h-10 w-10 text-muted-foreground mb-2" />
+                <p class="text-muted-foreground">
+                  You haven't liked any profiles yet
+                </p>
+              </div>
+
+              <div v-else class="space-y-3">
+                <UserItem
+                  v-for="profile in likedProfiles"
+                  :key="profile.id"
+                  :profile="profile"
+                  :description="formatRelativeDate(profile.created_at)"
+                />
+              </div>
+            </ScrollArea>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   </div>
 </template>

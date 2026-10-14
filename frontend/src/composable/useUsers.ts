@@ -1,11 +1,11 @@
 import { ref } from 'vue'
-import { usersApi } from '@/api/users'
+import { type Profile, usersApi } from '@/api/users'
 
 export function useUsers() {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
-  const userProfile = ref<any>(null)
+  const userProfile = ref<Profile | null>(null)
   const blockedUsers = ref<any[]>([])
 
   // --- Consultation ---
