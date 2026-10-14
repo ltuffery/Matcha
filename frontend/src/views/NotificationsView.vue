@@ -3,74 +3,179 @@ import { computed } from 'vue'
 import type { NotificationData } from '@/types'
 import { useNotificationStore } from '@/store/useNotificationStore'
 
-const notifications = computed(() =>
-  [...useNotificationStore().notifications].sort((a, b) => {
-    return (
-      new Date(b.data.created_at).getTime() -
-      new Date(a.data.created_at).getTime()
-    )
-  }),
-)
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Separator } from '@/components/ui/separator'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { Eye, BellOff } from 'lucide-vue-next'
+
+const store = useNotificationStore()
+
+/** Parse une date PHP "YYYY-MM-DD HH:mm:ss" de façon fiable (Safari compris) */
+const parseDate = (value: string) => new Date(value.replace(' ', 'T'))
+
+/** Clé du jour en heure locale : YYYY-MM-DD */
+const dayKey = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+
+const dayLabel = (date: Date) => {
+  const today = new Date()
+  const yesterday = new Date()
+  yesterday.setDate(today.getDate() - 1)
+
+  if (dayKey(date) === dayKey(today)) return "Aujourd'hui"
+  if (dayKey(date) === dayKey(yesterday)) return 'Hier'
+
+  const label = date.toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined,
+  })
+  return label.charAt(0).toUpperCase() + label.slice(1)
+}
+
+const formatTime = (date: Date) =>
+  date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+
+const initials = (username?: string) =>
+  (username ?? '?').slice(0, 2).toUpperCase()
+
+interface DayGroup {
+  key: string
+  label: string
+  items: NotificationData[]
+  unread: number
+}
+
+const groupedNotifications = computed<DayGroup[]>(() => {
+  const sorted = [...store.notifications].sort(
+    (a, b) =>
+      parseDate(b.data.created_at).getTime() -
+      parseDate(a.data.created_at).getTime(),
+  )
+
+  const groups = new Map<string, DayGroup>()
+
+  for (const notification of sorted) {
+    const date = parseDate(notification.data.created_at)
+    const key = dayKey(date)
+
+    if (!groups.has(key)) {
+      groups.set(key, { key, label: dayLabel(date), items: [], unread: 0 })
+    }
+
+    const group = groups.get(key)!
+    group.items.push(notification)
+    if (!notification.data.view) group.unread++
+  }
+
+  return [...groups.values()]
+})
 
 const markAsRead = async (notification: NotificationData) => {
-  await useNotificationStore().markAsViewed(notification.id as number)
+  await store.markAsViewed(notification.id as number)
 }
 </script>
 
 <template>
-  <div class="overflow-x-auto">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Profile</th>
-          <th>Content</th>
-          <th></th>
-        </tr>
-      </thead>
+  <TooltipProvider>
+    <div class="w-full space-y-6 p-4">
+      <h1 class="text-2xl font-bold tracking-tight">Notifications</h1>
 
-      <tbody>
-        <tr v-for="(notification, index) in notifications" :key="index">
-          <td>
-            <div class="flex items-center gap-3">
-              <div>
-                <div class="font-bold">{{ notification.data.username }}</div>
-                <div class="text-sm opacity-50">
-                  {{ notification.data.created_at }}
+      <!-- État vide -->
+      <Card v-if="groupedNotifications.length === 0">
+        <CardContent
+          class="flex flex-col items-center justify-center gap-2 py-12 text-muted-foreground"
+        >
+          <BellOff class="h-10 w-10" />
+          <p>Aucune notification pour le moment</p>
+        </CardContent>
+      </Card>
+
+      <!-- Sections par jour -->
+      <Card v-for="group in groupedNotifications" :key="group.key">
+        <CardHeader
+          class="flex flex-row items-center justify-between space-y-0 pb-2"
+        >
+          <CardTitle class="text-base font-semibold">
+            {{ group.label }}
+          </CardTitle>
+          <Badge v-if="group.unread > 0" variant="secondary">
+            {{ group.unread }} non lue{{ group.unread > 1 ? 's' : '' }}
+          </Badge>
+        </CardHeader>
+
+        <CardContent class="p-0">
+          <template
+            v-for="(notification, i) in group.items"
+            :key="notification.id"
+          >
+            <Separator v-if="i > 0" />
+
+            <div
+              class="flex items-center gap-4 px-6 py-4 transition-colors hover:bg-muted/50"
+              :class="{ 'bg-primary/5': !notification.data.view }"
+            >
+              <!-- Point non lu -->
+              <span
+                class="h-2 w-2 shrink-0 rounded-full"
+                :class="
+                  notification.data.view ? 'bg-transparent' : 'bg-primary'
+                "
+              />
+
+              <Avatar>
+                <AvatarFallback>
+                  {{ initials(notification.data.username) }}
+                </AvatarFallback>
+              </Avatar>
+
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-semibold">{{
+                    notification.data.username
+                  }}</span>
+                  <span class="text-xs text-muted-foreground">
+                    {{ formatTime(parseDate(notification.data.created_at)) }}
+                  </span>
                 </div>
+                <p
+                  class="truncate text-sm"
+                  :class="
+                    notification.data.view
+                      ? 'text-muted-foreground'
+                      : 'text-foreground'
+                  "
+                >
+                  {{ notification.data.content }}
+                </p>
               </div>
+
+              <Tooltip v-if="!notification.data.view">
+                <TooltipTrigger as-child>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    @click="markAsRead(notification)"
+                  >
+                    <Eye class="h-5 w-5" />
+                    <span class="sr-only">Marquer comme lu</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Marquer comme lu</TooltipContent>
+              </Tooltip>
             </div>
-          </td>
-          <td>
-            {{ notification.data.content }}
-          </td>
-          <th class="text-end" v-if="!notification.data.view">
-            <button class="btn btn-ghost" @click="markAsRead(notification)">
-              <svg
-                class="w-8"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g stroke-width="0"></g>
-                <g stroke-linecap="round" stroke-linejoin="round"></g>
-                <g>
-                  <path
-                    d="M9 4.45962C9.91153 4.16968 10.9104 4 12 4C16.1819 4 19.028 6.49956 20.7251 8.70433C21.575 9.80853 22 10.3606 22 12C22 13.6394 21.575 14.1915 20.7251 15.2957C19.028 17.5004 16.1819 20 12 20C7.81811 20 4.97196 17.5004 3.27489 15.2957C2.42496 14.1915 2 13.6394 2 12C2 10.3606 2.42496 9.80853 3.27489 8.70433C3.75612 8.07914 4.32973 7.43025 5 6.82137"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                  ></path>
-                  <path
-                    d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                  ></path>
-                </g>
-              </svg>
-            </button>
-          </th>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+          </template>
+        </CardContent>
+      </Card>
+    </div>
+  </TooltipProvider>
 </template>

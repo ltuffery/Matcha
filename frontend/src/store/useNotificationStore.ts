@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { notificationsApi } from '@/api/notifications'
+import { type Notifications, notificationsApi } from '@/api/notifications'
 
 export const useNotificationStore = defineStore('notifications', () => {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
-  const notifications = ref<any[]>([])
+  const notifications = ref<Notifications[]>([])
   const unreadCount = computed(() => {
-    return notifications.value.filter(notif => !notif.is_viewed).length
+    return notifications.value.filter(notif => !notif.data.view).length
   })
 
   const fetchNotifications = async () => {
@@ -36,7 +36,7 @@ export const useNotificationStore = defineStore('notifications', () => {
         notif => notif.id === notificationId,
       )
       if (target) {
-        target.is_viewed = true
+        target.data.view = true
       }
     } catch (err: any) {
       error.value =

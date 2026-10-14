@@ -7,6 +7,7 @@ import {
   Settings,
   LogOut,
 } from '@lucide/vue'
+import NotificationIcon from '@/components/notifications/NotificationIcon.vue'
 import { useAuth } from '@/composable/useAuth'
 
 interface NavItem {
@@ -20,6 +21,7 @@ const navItems: NavItem[] = [
   { label: 'Search', icon: Search, path: '/search' },
   { label: 'Chat', icon: MessageCircle, path: '/messages' },
   { label: 'Settings', icon: Settings, path: '/settings' },
+  { label: 'Notifications', icon: NotificationIcon, path: '/notifications' },
 ]
 
 const route = useRoute()

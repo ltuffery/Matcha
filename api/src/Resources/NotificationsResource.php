@@ -18,6 +18,8 @@ class NotificationsResource extends JsonResource
             'type' => $this->model->type,
             'data' => [
                 'username' => $user->username,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
                 'avatar' => $user->getAvatar(),
                 'content' => $this->model->content,
                 'view' => $this->model->view,

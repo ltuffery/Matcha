@@ -1,8 +1,8 @@
 <?php
 
-namespace Matcha\Api\Controllers\Notifications;
+namespace Matcha\Api\Enums;
 
-class NotificationType
+enum NotificationType: string
 {
     public const MESSAGE = 'MESSAGE';
     public const LIKE = 'LIKE';

@@ -74,8 +74,6 @@ Flight::group('/users', function () {
 
         Flight::route('POST /view', [ViewController::class, 'store']);
 
-        Flight::route('POST /notifications', [NotificationsController::class, 'store']);
-
         Flight::route('POST /report', [ReportController::class, 'store']);
     });
 

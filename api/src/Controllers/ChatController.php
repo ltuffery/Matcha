@@ -3,14 +3,13 @@
 namespace Matcha\Api\Controllers;
 
 use Flight;
-use Matcha\Api\Controllers\Notifications\NotificationType;
+use Matcha\Api\Enums\NotificationType;
 use Matcha\Api\Model\Message;
-use Matcha\Api\Model\Notification;
 use Matcha\Api\Model\User;
 use Matcha\Api\Resources\MatchUserResource;
 use Matcha\Api\Resources\MessageResource;
 use Matcha\Api\Validator\Validator;
-use PDO;
+use Predis\Client;
 
 class ChatController
 {
@@ -89,7 +88,7 @@ class ChatController
 
         $saved = $message->save();
 
-        $redis = new \Predis\Client([
+        $redis = new Client([
                 'scheme' => 'tcp',
                 'host'   => 'redis',
                 'port'   => 6379,
@@ -107,6 +106,11 @@ class ChatController
                         'created_at' => $saved->created_at,
                     ],
             ]));
+
+            Flight::notifier()->notify($user, [
+                'type' => NotificationType::MESSAGE,
+                'message' => "Vous avez recus un message de " . ucfirst(Flight::user()->first_name),
+            ], private: false);
         } catch (\Exception $e) {
             error_log('Redis publish failed: ' . $e->getMessage());
         }

@@ -3,13 +3,16 @@
 namespace Matcha\Api\Controllers;
 
 use Flight;
+use Matcha\Api\Enums\NotificationType;
 use Matcha\Api\Model\User;
 
 class ViewController
 {
     public function store(string $username)
     {
-        if (Flight::user()->username == $username) {
+        /** @var User $me */
+        $me = Flight::user();
+        if ($me->username == $username) {
             Flight::json([], 422);
             return;
         }
@@ -26,7 +29,13 @@ class ViewController
             return;
         }
 
-        Flight::user()->view($user);
+        $me->view($user);
+
+        Flight::notifier()->notify($user, [
+            'type' => NotificationType::VIEW,
+            'message' => ucfirst($me->first_name) . " a consulter votre profile."
+        ], private: false);
+
         Flight::json([], 204);
     }
 }

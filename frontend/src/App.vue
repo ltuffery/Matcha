@@ -8,9 +8,12 @@ import NavBar from '@/components/layout/NavBar.vue'
 import { useAuthStore } from '@/store/useAuthStore'
 import { storeToRefs } from 'pinia'
 import CompleteProfileDialog from '@/components/CompleteProfileDialog.vue'
+import { useNotificationStore } from '@/store/useNotificationStore'
+import type { Notifications } from '@/api/notifications'
 
 const mode = useColorMode()
 const authStore = useAuthStore()
+const notifications = useNotificationStore()
 const { isAuthenticated, user } = storeToRefs(authStore)
 
 let eventSource: EventSource | null = null
@@ -21,11 +24,13 @@ function openNotifications(userId: number | string) {
     `/api/.well-known/mercure?topic=${encodeURIComponent(`user/${userId}/notifications`)}`,
   )
   eventSource.onmessage = event => {
-    const data = JSON.parse(event.data)
-    toast.info(data.type, {
-      description: data.message,
+    const notif: Notifications = JSON.parse(event.data)
+    toast.info(notif.type, {
+      description: notif.data.content,
       closeButton: true,
     })
+
+    notifications.notifications.push(notif)
   }
 }
 
@@ -49,6 +54,7 @@ onMounted(async () => {
 
   if (!authStore.user && localStorage.getItem('jwt')) {
     await authStore.fetchMe()
+    await notifications.fetchNotifications()
   }
 })
 

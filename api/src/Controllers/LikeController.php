@@ -3,27 +3,37 @@
 namespace Matcha\Api\Controllers;
 
 use Flight;
+use Matcha\Api\Enums\NotificationType;
 use Matcha\Api\Model\User;
 
 class LikeController
 {
     public function store(string $username)
     {
-        $target = User::find(['username' => $username]);
+        /** @var User $me */
         $me = Flight::user();
+        $target = User::find(['username' => $username]);
 
         if (is_null($target) || $target->isBlocking($me)) {
             Flight::json(['message' => 'User not found'], 404);
             return;
         }
 
-        Flight::user()->like($target);
+        $me->like($target);
 
-        Flight::notifier()->publish("user/" . $target->id . "/notifications", [
-            'type' => 'like',
-            'message' => Flight::user()->username . " has liked your profile",
-        ], private: false);
+        if ($target->hasMatch($me->username)) {
+            $notif = [
+                'type' => NotificationType::MATCH,
+                'message' => 'Vous avez match avec ' . $me->first_name . " ! Ecrivez lui un message !",
+            ];
+        } else {
+            $notif = [
+                'type' => NotificationType::LIKE,
+                'message' => ucfirst($me->first_name) . ' vous a like !',
+            ];
+        }
 
+        Flight::notifier()->notify($target, $notif, private: false);
         Flight::json([], 201);
     }
 
@@ -41,7 +51,18 @@ class LikeController
             return;
         }
 
-        Flight::user()->unlike($user);
+        /** @var User $me */
+        $me = Flight::user();
+
+        if ($user->hasMatch($me->username)) {
+            Flight::notifier()->notify($user, [
+                'type' => NotificationType::MESSAGE,
+                'message' => "Finalement " . ucfirst($me->first_name) . " vous a unlike...",
+            ], private: false);
+        }
+
+        $me->unlike($user);
+
         Flight::json([], 203);
     }
 }
