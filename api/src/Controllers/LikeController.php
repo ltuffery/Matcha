@@ -10,6 +10,8 @@ class LikeController
 {
     public function store(string $username)
     {
+        /** @var User $me */
+        $me = Flight::user();
         $user = User::find([
             'username' => $username,
         ]);
@@ -22,12 +24,21 @@ class LikeController
             return;
         }
 
-        Flight::user()->like($user);
+        $me->like($user);
 
-        Flight::notifier()->notify($user, [
-            'type' => NotificationType::LIKE,
-            'message' => Flight::user()->username . " a aimé ton profil",
-        ], private: false);
+        if ($user->hasMatch($me->username)) {
+            $notif = [
+                'type' => NotificationType::MATCH,
+                'message' => 'Vous avez match avec ' . $me->first_name . " ! Ecrivez lui un message !",
+            ];
+        } else {
+            $notif = [
+                'type' => NotificationType::MATCH,
+                'message' => ucfirst($me->first_name) . ' vous a like !',
+            ];
+        }
+
+        Flight::notifier()->notify($user, $notif, private: false);
 
         Flight::json([], 203);
     }
@@ -46,7 +57,15 @@ class LikeController
             return;
         }
 
-        Flight::user()->unlike($user);
+        /** @var User $me */
+        $me = Flight::user();
+
+        $me->unlike($user);
+
+        Flight::notifier()->notify($user, [
+            'type' => NotificationType::MESSAGE,
+            'message' => "Finalement " . ucfirst($me->first_name) . " vous a unlike...",
+        ], private: false);
         Flight::json([], 203);
     }
 }
