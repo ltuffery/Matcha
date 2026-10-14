@@ -21,7 +21,7 @@ class LikeController
 
         $me->like($target);
 
-        if ($user->hasMatch($me->username)) {
+        if ($target->hasMatch($me->username)) {
             $notif = [
                 'type' => NotificationType::MATCH,
                 'message' => 'Vous avez match avec ' . $me->first_name . " ! Ecrivez lui un message !",
@@ -33,7 +33,7 @@ class LikeController
             ];
         }
 
-        Flight::notifier()->notify($user, $notif, private: false);
+        Flight::notifier()->notify($target, $notif, private: false);
         Flight::json([], 201);
     }
 
@@ -54,14 +54,14 @@ class LikeController
         /** @var User $me */
         $me = Flight::user();
 
-        $me->unlike($user);
-
         if ($user->hasMatch($me->username)) {
             Flight::notifier()->notify($user, [
                 'type' => NotificationType::MESSAGE,
                 'message' => "Finalement " . ucfirst($me->first_name) . " vous a unlike...",
             ], private: false);
         }
+
+        $me->unlike($user);
 
         Flight::json([], 203);
     }
