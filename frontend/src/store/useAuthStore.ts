@@ -46,7 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // PUT|PATCH /users/me
-  async function updateProfile(data: Partial<User>): Promise<User | null> {
+  async function updateProfile(data: Partial<User & { password?: string }>): Promise<User | null> {
     loading.value = true
     error.value = null
     try {

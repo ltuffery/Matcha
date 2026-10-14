@@ -2,13 +2,16 @@ import { useAuth } from '@/composable/useAuth'
 import { ApiError, type ApiErrorBody, ApiErrorCode } from '@/api/errors'
 import { useAuthStore } from '@/store/useAuthStore'
 
+type Body = Record<string, any> | FormData | null
+
 export class ApiClient<T> {
   method = ''
   path = ''
   headers: Record<string, string> = {
     'Content-Type': 'application/json',
   }
-  private refreshPromise: Promise<boolean> | null = null
+  private retried = false
+  private static refreshPromise: Promise<boolean> | null = null
 
   static get<T>(
     path: string,
@@ -24,10 +27,11 @@ export class ApiClient<T> {
     return this.request<T>('DELETE', path, body)
   }
 
-  static post<T>(
-    path: string,
-    body: Record<string, any> | null = null,
-  ): Promise<ApiResponse<T>> {
+  post(path: string, body: Body = null): Promise<ApiResponse<T>> {
+    return this.request('POST', path, body)
+  }
+
+  static post<T>(path: string, body: Body = null): Promise<ApiResponse<T>> {
     return this.request<T>('POST', path, body)
   }
 
@@ -38,6 +42,17 @@ export class ApiClient<T> {
     return this.request<T>('PUT', path, body)
   }
 
+  async request(
+    method: string,
+    path: string,
+    body: Body = null,
+  ): Promise<ApiResponse<T>> {
+    this.method = method
+    this.path = path.replace(/^\/+|\/+$/g, '')
+
+    return await this.send(body)
+  }
+
   static async request<T>(
     method: string,
     path: string,
@@ -45,10 +60,7 @@ export class ApiClient<T> {
   ): Promise<ApiResponse<T>> {
     const self = new this<T>()
 
-    self.method = method
-    self.path = path.replace(/^\/+|\/+$/g, '')
-
-    return await self.send(body)
+    return self.request(method, path, body)
   }
 
   header(name: string, value: string): this {
@@ -57,9 +69,14 @@ export class ApiClient<T> {
     return this
   }
 
-  private async send(
-    body: Record<string, any> | null = null,
-  ): Promise<ApiResponse<T>> {
+  static header<T>(name: string, value: string): ApiClient<T> {
+    const self = new this<T>()
+    self.headers[name] = value
+
+    return self
+  }
+
+  private async send(body: Body = null): Promise<ApiResponse<T>> {
     const jwt = localStorage.getItem('jwt')
 
     if (jwt != null) {
@@ -74,20 +91,33 @@ export class ApiClient<T> {
       if (query) url += `?${query}`
     }
 
+    const headers = { ...this.headers }
+    let payload: BodyInit | null = null
+
+    if (body != null && this.method !== 'GET') {
+      if (body instanceof FormData) {
+        delete headers['Content-Type']
+        payload = body
+      } else {
+        payload = JSON.stringify(body)
+      }
+    }
+
     const res = await fetch(url, {
       method: this.method,
-      headers: this.headers,
-      body: body != null && this.method !== 'GET' ? JSON.stringify(body) : null,
+      headers: headers,
+      body: payload,
     })
 
-    if (res.status === 401 && this.path !== 'auth/refresh') {
-      this.refreshPromise ??= useAuth()
+    if (res.status === 401 && this.path !== 'auth/refresh' && !this.retried) {
+      this.retried = true
+      ApiClient.refreshPromise ??= useAuth()
         .refreshSession()
         .finally(() => {
-          this.refreshPromise = null
+          ApiClient.refreshPromise = null
         })
-      await this.refreshPromise
-      return await this.send(body)
+      const ok = await ApiClient.refreshPromise
+      if (ok) return await this.send(body)
     }
 
     if (res.status === 403) {

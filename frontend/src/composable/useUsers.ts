@@ -6,7 +6,7 @@ export function useUsers() {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
-  const userProfile = ref<any>(null)
+  const userProfile = ref<Profile | null>(null)
   const blockedUsers = ref<any[]>([])
   const hasMore = ref(true)
   const suggestedProfiles = ref<Profile[]>([])

@@ -2,7 +2,11 @@
 
 namespace Matcha\Api\Model;
 
+use Flight;
+use flight\net\UploadedFile;
+use Matcha\Api\Exceptions\PhotoException;
 use Matcha\Api\Validator\Asserts\NotBlank;
+use Matcha\Api\Services\Photo as PhotoService;
 
 class Photo extends Model
 {
@@ -18,5 +22,20 @@ class Photo extends Model
         return User::find([
             'id' => $this->user_id,
         ]);
+    }
+
+    public static function upload(UploadedFile $file): self
+    {
+        $service = PhotoService::new($file);
+
+        if (!$service->isValidExtension()) {
+            throw new PhotoException();
+        }
+
+        if (!is_dir(BASE_PATH . "/storage/photos")) {
+            mkdir(BASE_PATH . "/storage/photos", recursive: true);
+        }
+
+        return $service->save(Flight::user());
     }
 }

@@ -5,6 +5,7 @@ namespace Matcha\Api\Services;
 use Exception;
 use flight\net\UploadedFile;
 use Matcha\Api\Model\User;
+use RuntimeException;
 
 class Photo
 {
@@ -38,7 +39,7 @@ class Photo
         };
     }
 
-    public function save(User $user): void
+    public function save(User $user): \Matcha\Api\Model\Photo
     {
         try {
             $name = bin2hex(random_bytes(15));
@@ -51,7 +52,10 @@ class Photo
         $photo->name = $name;
         $photo->user_id = $user->id;
 
-        $photo->save();
-        $this->file->moveTo(BASE_PATH . "/storage/photos/" . $name . ".png");
+        if (!move_uploaded_file($this->file->getTempName(), BASE_PATH . "/storage/photos/" . $name . ".png")) {
+            throw new RuntimeException('Failed to store photo.');
+        }
+
+        return $photo->save();
     }
 }

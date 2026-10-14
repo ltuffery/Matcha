@@ -29,6 +29,7 @@ export interface User {
   created_at: string
   last_connection: string
   profile_complete: boolean
+  verified: boolean
 }
 
 export interface LoginCredentials {
