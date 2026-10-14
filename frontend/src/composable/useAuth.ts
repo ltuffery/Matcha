@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { authApi, type LoginResponse, type RegisterCredentials } from '@/api/auth'
-import { getSocket } from '@/plugins/socket'
+import { disconnectSocket, getSocket } from '@/plugins/socket'
 import router from '@/router'
 import { useAuthStore } from '@/store/useAuthStore'
 
@@ -99,12 +99,12 @@ export function useAuth() {
 
     useAuthStore().clearSession()
 
-    getSocket().close()
+    disconnectSocket()
   }
 
-  const disconnect = (): void => {
+  const disconnect = async (): Promise<void> => {
     logout()
-    router.push({ name: 'home' }).then(r => {})
+    await router.push({ name: 'auth' })
   }
 
   const forgotPassword = async (email: string): Promise<boolean> => {

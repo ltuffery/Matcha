@@ -5,8 +5,10 @@ import {
   Search,
   MessageCircle,
   Settings,
+  LogOut,
 } from '@lucide/vue'
 import NotificationIcon from '@/components/notifications/NotificationIcon.vue'
+import { useAuth } from '@/composable/useAuth'
 
 interface NavItem {
   label: string
@@ -30,6 +32,10 @@ const isActive = (path: string) => {
 }
 
 const goTo = (path: string) => router.push(path)
+
+const logout = () => {
+  useAuth().disconnect()
+}
 </script>
 
 <template>
@@ -37,21 +43,31 @@ const goTo = (path: string) => router.push(path)
   <nav
     class="hidden md:flex md:flex-col md:justify-between md:items-center lg:items-stretch md:w-20 lg:w-64 md:h-screen md:sticky md:top-0 border-r bg-background"
   >
-    <div class="flex flex-col gap-2 p-3 mt-4">
+    <div class="h-full flex flex-col justify-between p-3">
+      <div class="flex flex-col gap-2 mt-4">
+        <button
+          v-for="item in navItems"
+          :key="item.path"
+          @click="goTo(item.path)"
+          :class="[
+            'flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors',
+            'hover:bg-muted',
+            isActive(item.path)
+              ? 'bg-primary/10 text-primary font-medium'
+              : 'text-muted-foreground',
+          ]"
+        >
+          <component :is="item.icon" class="h-6 w-6 shrink-0 md:items-center" />
+          <span class="hidden lg:inline text-sm">{{ item.label }}</span>
+        </button>
+      </div>
+
       <button
-        v-for="item in navItems"
-        :key="item.path"
-        @click="goTo(item.path)"
-        :class="[
-          'flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors',
-          'hover:bg-muted',
-          isActive(item.path)
-            ? 'bg-primary/10 text-primary font-medium'
-            : 'text-muted-foreground',
-        ]"
+        class="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-muted text-destructive"
+        @click="() => logout()"
       >
-        <component :is="item.icon" class="h-6 w-6 shrink-0 md:items-center" />
-        <span class="hidden lg:inline text-sm">{{ item.label }}</span>
+        <LogOut class="h-6 w-6 shrink-0 md:items-center" />
+        <span class="hidden lg:inline text-sm">Logout</span>
       </button>
     </div>
   </nav>
@@ -76,6 +92,13 @@ const goTo = (path: string) => router.push(path)
           :class="isActive(item.path) && 'fill-primary/20'"
         />
         <span class="leading-none">{{ item.label }}</span>
+      </button>
+      <button
+        @click="() => logout()"
+        class="flex flex-col items-center justify-center gap-1 flex-1 h-full text-xs transition-colors text-muted-foreground"
+      >
+        <LogOut class="h-6 w-6" />
+        <span class="leading-none">Logout</span>
       </button>
     </div>
   </nav>
