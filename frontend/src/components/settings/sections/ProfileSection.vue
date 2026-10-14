@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { useForm, Field as VeeField } from 'vee-validate'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { toast } from 'vue-sonner'
+import { storeToRefs } from 'pinia'
 import {
   CalendarDate,
   DateFormatter,
@@ -39,100 +40,16 @@ import {
 } from '@/components/ui/field'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/useAuthStore'
-import { useUsers } from '@/composable/useUsers'
-import type { Profile } from '@/api/users'
 import { usePhotos } from '@/composable/usePhotos'
+import type { User } from '@/api/auth'
 
 const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
 const photosComposable = usePhotos()
-
-const me = authStore.user
-
-/* ------------------------------------------------------------------ */
-/*  Photos                                                            */
-/* ------------------------------------------------------------------ */
-const MAX_PHOTOS = 5
-const MAX_SIZE = 5 * 1024 * 1024 // 5 Mo
-const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp']
-
-type Photo = { id: number | null; url: string; uploading?: boolean }
-
-const photos = ref<Photo[]>([])
-const fileInput = ref<HTMLInputElement | null>(null)
-const objectUrls: string[] = []
-
-const openPicker = () => {
-  if (photos.value.length < MAX_PHOTOS) fileInput.value?.click()
-}
-
-const onFilesSelected = async (e: Event) => {
-  const input = e.target as HTMLInputElement
-  const files = Array.from(input.files ?? []).slice(
-    0,
-    MAX_PHOTOS - photos.value.length,
-  )
-  input.value = ''
-
-  for (const file of files) {
-    if (!ACCEPTED.includes(file.type)) {
-      toast.error(`${file.name}: unsupported format`)
-      continue
-    }
-    if (file.size > MAX_SIZE) {
-      toast.error(`${file.name}: max 5 MB`)
-      continue
-    }
-
-    const preview = URL.createObjectURL(file)
-    objectUrls.push(preview)
-
-    const photo = ref<Photo>({
-      id: null,
-      url: preview,
-      uploading: true,
-    }).value
-    photos.value.push(photo)
-
-    try {
-      const saved = await photosComposable.upload(file)
-      Object.assign(photo, {
-        id: saved[0].id,
-        url: `http://localhost:8011/api/medias/p/${saved[0].name}`,
-        uploading: false,
-      })
-    } catch {
-      photos.value = photos.value.filter(p => p.url !== photo.url)
-      toast.error(`${file.name}: upload failed`)
-    }
-  }
-}
-
-const removePhoto = async (index: number) => {
-  const photo = photos.value[index]
-  if (!photo) return
-  try {
-    if (photo.id) {
-      await photosComposable.remove(photo.id)
-    }
-    photos.value.splice(index, 1)
-  } catch {
-    toast.error('Unable to delete photo')
-  }
-}
-
-onMounted(async () => {
-  photos.value = (await photosComposable.fetchAll()).map(value => ({
-    uploading: false,
-    url: `http://localhost:8011/api/medias/p/${value.name}`,
-    id: value.id,
-  }))
-})
-
-onBeforeUnmount(() => objectUrls.forEach(URL.revokeObjectURL))
 
 const BIO_MAX = 500
 const tz = getLocalTimeZone()
-const maxBirthdate = today(tz).subtract({ years: 18 }) // 18 year minimum
+const maxBirthdate = today(tz).subtract({ years: 18 })
 const minBirthdate = today(tz).subtract({ years: 100 })
 const df = new DateFormatter('en-US', { dateStyle: 'long' })
 
@@ -141,26 +58,48 @@ const schema = toTypedSchema(
     firstName: z.string().trim().min(1, 'First name is required').max(50),
     lastName: z.string().trim().min(1, 'Last name is required').max(50),
     birthdate: z
-      .string({ required_error: 'Birthdate is required' })
+      .string()
       .min(1, 'Birthdate is required')
-      .refine(
-        v => parseDate(v).compare(maxBirthdate) <= 0,
-        'You must be at least 18 years old',
-      ),
+      .refine(v => /^\d{4}-\d{2}-\d{2}$/.test(v), 'Invalid date')
+      .refine(v => {
+        try {
+          return parseDate(v).compare(maxBirthdate) <= 0
+        } catch {
+          return false
+        }
+      }, 'You must be at least 18 years old'),
     bio: z.string().max(BIO_MAX, `Max ${BIO_MAX} characters`).optional(),
   }),
 )
 
-const { handleSubmit, isSubmitting, setFieldValue, values, setErrors } =
-  useForm({
-    validationSchema: schema,
-    initialValues: {
-      firstName: me?.first_name ?? '',
-      lastName: me?.last_name ?? '',
-      birthdate: me?.birthday, // format 'YYYY-MM-DD'
-      bio: me?.biography ?? '',
-    },
-  })
+const toFormValues = (u: User | null) => ({
+  firstName: u?.first_name ?? '',
+  lastName: u?.last_name ?? '',
+  birthdate: u?.birthday?.slice(0, 10) ?? '',
+  bio: u?.biography ?? '',
+})
+
+const {
+  handleSubmit,
+  isSubmitting,
+  setFieldValue,
+  values,
+  errors,
+  setErrors,
+  resetForm,
+  defineField,
+} = useForm({
+  validationSchema: schema,
+  initialValues: toFormValues(user.value),
+})
+
+const [firstName, firstNameAttrs] = defineField('firstName')
+const [lastName, lastNameAttrs] = defineField('lastName')
+const [bio, bioAttrs] = defineField('bio')
+
+watch(user, u => {
+  if (u) resetForm({ values: toFormValues(u) })
+})
 
 const birthdateValue = computed<DateValue | undefined>({
   get: () => (values.birthdate ? parseDate(values.birthdate) : undefined),
@@ -193,6 +132,80 @@ const onSubmit = handleSubmit(async vals => {
     toast.error(e?.response?.data?.message ?? 'Update failed')
   }
 })
+
+const MAX_PHOTOS = 5
+const MAX_SIZE = 5 * 1024 * 1024
+const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp']
+const MEDIA_URL = 'http://localhost:8011/api/medias/p/'
+
+type Photo = { id: number | null; url: string; uploading?: boolean }
+
+const photos = ref<Photo[]>([])
+const fileInput = ref<HTMLInputElement | null>(null)
+const objectUrls: string[] = []
+
+const openPicker = () => {
+  if (photos.value.length < MAX_PHOTOS) fileInput.value?.click()
+}
+
+const onFilesSelected = async (e: Event) => {
+  const input = e.target as HTMLInputElement
+  const files = Array.from(input.files ?? []).slice(
+    0,
+    MAX_PHOTOS - photos.value.length,
+  )
+  input.value = ''
+
+  for (const file of files) {
+    if (!ACCEPTED.includes(file.type)) {
+      toast.error(`${file.name}: unsupported format`)
+      continue
+    }
+    if (file.size > MAX_SIZE) {
+      toast.error(`${file.name}: max 5 MB`)
+      continue
+    }
+
+    const preview = URL.createObjectURL(file)
+    objectUrls.push(preview)
+
+    photos.value.push({ id: null, url: preview, uploading: true })
+    const photo = photos.value[photos.value.length - 1] // version réactive
+
+    try {
+      const saved = await photosComposable.upload(file)
+      Object.assign(photo, {
+        id: saved[0].id,
+        url: MEDIA_URL + saved[0].name,
+        uploading: false,
+      })
+    } catch {
+      photos.value = photos.value.filter(p => p !== photo)
+      toast.error(`${file.name}: upload failed`)
+    }
+  }
+}
+
+const removePhoto = async (index: number) => {
+  const photo = photos.value[index]
+  if (!photo) return
+  try {
+    if (photo.id) await photosComposable.remove(photo.id)
+    photos.value.splice(index, 1)
+  } catch {
+    toast.error('Unable to delete photo')
+  }
+}
+
+onMounted(async () => {
+  photos.value = (await photosComposable.fetchAll()).map(p => ({
+    id: p.id,
+    url: MEDIA_URL + p.name,
+    uploading: false,
+  }))
+})
+
+onBeforeUnmount(() => objectUrls.forEach(URL.revokeObjectURL))
 </script>
 
 <template>
@@ -233,7 +246,7 @@ const onSubmit = handleSubmit(async vals => {
               Principal
             </span>
             <div
-              v-if="photos[i - 1] && photos[i - 1].uploading"
+              v-if="photos[i - 1].uploading"
               class="absolute inset-0 flex items-center justify-center bg-background/60"
             >
               <Loader2 class="h-6 w-6 animate-spin" />
@@ -275,102 +288,107 @@ const onSubmit = handleSubmit(async vals => {
       <form @submit="onSubmit">
         <FieldGroup>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <VeeField v-slot="{ field, errors }" name="firstName">
-              <Field :data-invalid="!!errors.length">
-                <FieldLabel for="firstName">First name</FieldLabel>
-                <Input
-                  id="firstName"
-                  placeholder="Camille"
-                  autocomplete="given-name"
-                  v-bind="field"
-                  :aria-invalid="!!errors.length"
-                />
-                <FieldError v-if="errors.length" :errors="errors" />
-              </Field>
-            </VeeField>
+            <!-- Prénom -->
+            <Field :data-invalid="!!errors.firstName">
+              <FieldLabel for="firstName">First name</FieldLabel>
+              <Input
+                id="firstName"
+                v-model="firstName"
+                v-bind="firstNameAttrs"
+                placeholder="Camille"
+                autocomplete="given-name"
+                :aria-invalid="!!errors.firstName"
+              />
+              <FieldError
+                v-if="errors.firstName"
+                :errors="[errors.firstName]"
+              />
+            </Field>
 
-            <VeeField v-slot="{ field, errors }" name="lastName">
-              <Field :data-invalid="!!errors.length">
-                <FieldLabel for="lastName">Last name</FieldLabel>
-                <Input
-                  id="lastName"
-                  placeholder="Dupond"
-                  autocomplete="family-name"
-                  v-bind="field"
-                  :aria-invalid="!!errors.length"
-                />
-                <FieldError v-if="errors.length" :errors="errors" />
-              </Field>
-            </VeeField>
+            <!-- Nom -->
+            <Field :data-invalid="!!errors.lastName">
+              <FieldLabel for="lastName">Last name</FieldLabel>
+              <Input
+                id="lastName"
+                v-model="lastName"
+                v-bind="lastNameAttrs"
+                placeholder="Dupond"
+                autocomplete="family-name"
+                :aria-invalid="!!errors.lastName"
+              />
+              <FieldError v-if="errors.lastName" :errors="[errors.lastName]" />
+            </Field>
 
-            <VeeField v-slot="{ errors }" name="birthdate">
-              <Field :data-invalid="!!errors.length">
-                <FieldLabel for="birthdate">Birthdate</FieldLabel>
-                <Popover>
-                  <PopoverTrigger as-child>
-                    <Button
-                      id="birthdate"
-                      type="button"
-                      variant="outline"
-                      :aria-invalid="!!errors.length"
-                      :class="
-                        cn(
-                          'w-full justify-start text-left font-normal',
-                          !birthdateValue && 'text-muted-foreground',
-                        )
-                      "
-                    >
-                      <CalendarIcon class="mr-2 h-4 w-4" />
-                      {{
-                        birthdateValue
-                          ? df.format(birthdateValue.toDate(tz))
-                          : 'Pick a date'
-                      }}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent class="w-auto p-0" align="start">
-                    <Calendar
-                      v-model="birthdateValue"
-                      :default-placeholder="maxBirthdate"
-                      :min-value="minBirthdate"
-                      :max-value="maxBirthdate"
-                      layout="month-and-year"
-                      initial-focus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FieldDescription v-if="age !== null">
-                  {{ age }} years old
-                </FieldDescription>
-                <FieldError v-if="errors.length" :errors="errors" />
-              </Field>
-            </VeeField>
+            <!-- Date de naissance -->
+            <Field :data-invalid="!!errors.birthdate">
+              <FieldLabel for="birthdate">Birthdate</FieldLabel>
+              <Popover>
+                <PopoverTrigger as-child>
+                  <Button
+                    id="birthdate"
+                    type="button"
+                    variant="outline"
+                    :aria-invalid="!!errors.birthdate"
+                    :class="
+                      cn(
+                        'w-full justify-start text-left font-normal',
+                        !birthdateValue && 'text-muted-foreground',
+                      )
+                    "
+                  >
+                    <CalendarIcon class="mr-2 h-4 w-4" />
+                    {{
+                      birthdateValue
+                        ? df.format(birthdateValue.toDate(tz))
+                        : 'Pick a date'
+                    }}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent class="w-auto p-0" align="start">
+                  <Calendar
+                    v-model="birthdateValue"
+                    :default-placeholder="maxBirthdate"
+                    :min-value="minBirthdate"
+                    :max-value="maxBirthdate"
+                    layout="month-and-year"
+                    initial-focus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FieldDescription v-if="age !== null"
+                >{{ age }} years old</FieldDescription
+              >
+              <FieldError
+                v-if="errors.birthdate"
+                :errors="[errors.birthdate]"
+              />
+            </Field>
           </div>
 
-          <VeeField v-slot="{ field, errors }" name="bio">
-            <Field :data-invalid="!!errors.length">
-              <FieldLabel for="bio">Bio</FieldLabel>
-              <Textarea
-                id="bio"
-                class="min-h-24"
-                placeholder="Tell us a little about yourself..."
-                :maxlength="BIO_MAX"
-                v-bind="field"
-                :aria-invalid="!!errors.length"
-              />
-              <p
-                class="text-xs text-right"
-                :class="
-                  bioLength >= BIO_MAX
-                    ? 'text-destructive'
-                    : 'text-muted-foreground'
-                "
-              >
-                {{ bioLength }} / {{ BIO_MAX }}
-              </p>
-              <FieldError v-if="errors.length" :errors="errors" />
-            </Field>
-          </VeeField>
+          <!-- Bio -->
+          <Field :data-invalid="!!errors.bio">
+            <FieldLabel for="bio">Bio</FieldLabel>
+            <Textarea
+              id="bio"
+              v-model="bio"
+              v-bind="bioAttrs"
+              class="min-h-24"
+              placeholder="Tell us a little about yourself..."
+              :maxlength="BIO_MAX"
+              :aria-invalid="!!errors.bio"
+            />
+            <p
+              class="text-xs text-right"
+              :class="
+                bioLength >= BIO_MAX
+                  ? 'text-destructive'
+                  : 'text-muted-foreground'
+              "
+            >
+              {{ bioLength }} / {{ BIO_MAX }}
+            </p>
+            <FieldError v-if="errors.bio" :errors="[errors.bio]" />
+          </Field>
 
           <div class="flex justify-end">
             <Button type="submit" :disabled="isSubmitting">

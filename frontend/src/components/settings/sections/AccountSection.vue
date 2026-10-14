@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { useForm, Field as VeeField } from 'vee-validate'
+import { ref, watch } from 'vue'
+import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import { ref } from 'vue'
 import { toast } from 'vue-sonner'
+import { storeToRefs } from 'pinia'
 
 import {
   Card,
@@ -25,6 +26,7 @@ import {
 import { useAuthStore } from '@/store/useAuthStore'
 
 const authStore = useAuthStore()
+const { user } = storeToRefs(authStore)
 
 const schema = toTypedSchema(
   z
@@ -37,19 +39,40 @@ const schema = toTypedSchema(
         .or(z.literal('')),
       passwordConfirm: z.string().optional().or(z.literal('')),
     })
-    .refine(d => !d.password || !d.passwordConfirm || d.password === d.passwordConfirm, {
+    .refine(d => !d.password || d.password === d.passwordConfirm, {
       message: 'Passwords do not match',
       path: ['passwordConfirm'],
     }),
 )
 
-const { handleSubmit, isSubmitting, resetField, setErrors } = useForm({
+const {
+  handleSubmit,
+  isSubmitting,
+  errors,
+  setErrors,
+  resetForm,
+  defineField,
+} = useForm({
   validationSchema: schema,
+  // Le user est déjà dans Pinia (navigation sans F5)
   initialValues: {
-    email: authStore.user?.email ?? '',
+    email: user.value?.email ?? '',
     password: '',
     passwordConfirm: '',
   },
+})
+
+const [email, emailAttrs] = defineField('email')
+const [password, passwordAttrs] = defineField('password')
+const [passwordConfirm, passwordConfirmAttrs] = defineField('passwordConfirm')
+
+// Le user arrive plus tard (F5) ou change (après une sauvegarde)
+watch(user, u => {
+  if (u) {
+    resetForm({
+      values: { email: u.email ?? '', password: '', passwordConfirm: '' },
+    })
+  }
 })
 
 const serverError = ref<string | null>(null)
@@ -62,8 +85,10 @@ const onSubmit = handleSubmit(async values => {
       ...(values.password ? { password: values.password } : {}),
     })
 
-    resetField('password')
-    resetField('passwordConfirm')
+    // Vide les champs mot de passe en gardant l'email actuel
+    resetForm({
+      values: { email: values.email, password: '', passwordConfirm: '' },
+    })
     toast.success('Profile updated successfully')
   } catch (e: any) {
     const apiErrors = e?.response?.data?.errors
@@ -84,52 +109,58 @@ const onSubmit = handleSubmit(async values => {
     <CardContent>
       <form class="space-y-4" @submit="onSubmit">
         <FieldGroup>
-          <VeeField v-slot="{ field, errors }" name="email">
-            <Field :data-invalid="!!errors.length">
-              <FieldLabel for="email">Email</FieldLabel>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                v-bind="field"
-                :aria-invalid="!!errors.length"
-              />
-              <FieldError v-if="errors.length" :errors="errors" />
-            </Field>
-          </VeeField>
+          <!-- Email -->
+          <Field :data-invalid="!!errors.email">
+            <FieldLabel for="email">Email</FieldLabel>
+            <Input
+              id="email"
+              v-model="email"
+              v-bind="emailAttrs"
+              type="email"
+              placeholder="your@email.com"
+              autocomplete="email"
+              :aria-invalid="!!errors.email"
+            />
+            <FieldError v-if="errors.email" :errors="[errors.email]" />
+          </Field>
 
           <Separator />
 
-          <VeeField v-slot="{ field, errors }" name="password">
-            <Field :data-invalid="!!errors.length">
-              <FieldLabel for="password">New password</FieldLabel>
-              <Input
-                id="password"
-                type="password"
-                placeholder="********"
-                v-bind="field"
-                :aria-invalid="!!errors.length"
-              />
-              <FieldDescription>
-                Leave empty to keep your current password.
-              </FieldDescription>
-              <FieldError v-if="errors.length" :errors="errors" />
-            </Field>
-          </VeeField>
+          <!-- Nouveau mot de passe -->
+          <Field :data-invalid="!!errors.password">
+            <FieldLabel for="password">New password</FieldLabel>
+            <Input
+              id="password"
+              v-model="password"
+              v-bind="passwordAttrs"
+              type="password"
+              placeholder="********"
+              autocomplete="new-password"
+              :aria-invalid="!!errors.password"
+            />
+            <FieldDescription>
+              Leave empty to keep your current password.
+            </FieldDescription>
+            <FieldError v-if="errors.password" :errors="[errors.password]" />
+          </Field>
 
-          <VeeField v-slot="{ field, errors }" name="passwordConfirm">
-            <Field :data-invalid="!!errors.length">
-              <FieldLabel for="passwordConfirm">Confirm password</FieldLabel>
-              <Input
-                id="passwordConfirm"
-                type="password"
-                placeholder="********"
-                v-bind="field"
-                :aria-invalid="!!errors.length"
-              />
-              <FieldError v-if="errors.length" :errors="errors" />
-            </Field>
-          </VeeField>
+          <!-- Confirmation -->
+          <Field :data-invalid="!!errors.passwordConfirm">
+            <FieldLabel for="passwordConfirm">Confirm password</FieldLabel>
+            <Input
+              id="passwordConfirm"
+              v-model="passwordConfirm"
+              v-bind="passwordConfirmAttrs"
+              type="password"
+              placeholder="********"
+              autocomplete="new-password"
+              :aria-invalid="!!errors.passwordConfirm"
+            />
+            <FieldError
+              v-if="errors.passwordConfirm"
+              :errors="[errors.passwordConfirm]"
+            />
+          </Field>
 
           <p v-if="serverError" class="text-sm text-destructive">
             {{ serverError }}
