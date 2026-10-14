@@ -44,7 +44,7 @@ class LikeControllerTest extends MatchaTestCase
             'Authorization' => 'Bearer ' . $this->user->generateJWT(),
         ])->post('/users/' . $liked->username . '/like');
 
-        $response->assertStatus(203);
+        $response->assertStatus(201);
     }
 
     public function testUnLikeUserNotFound(): void
@@ -92,7 +92,7 @@ class LikeControllerTest extends MatchaTestCase
             'Authorization' => 'Bearer ' . $this->user->generateJWT(),
         ])->post('/users/' . $liked->username . '/like');
 
-        $response->assertStatus(203);
+        $response->assertStatus(201);
 
         $this->expectException(UniqueConstraintException::class);
 
@@ -112,7 +112,7 @@ class LikeControllerTest extends MatchaTestCase
                 'Authorization' => 'Bearer ' . $this->user->generateJWT(),
             ])->post('/users/' . $user->username . '/like');
 
-            $response->assertStatus(203);
+            $response->assertStatus(201);
         }
 
         $this->assertCount(5, $this->user->likes());

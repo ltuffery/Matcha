@@ -1,23 +1,29 @@
 import { ApiClient } from '@/api/client'
 
+export interface Notifications {
+  id: number
+  type: string
+  data: {
+    username: string
+    first_name: string
+    last_name: string
+    avatar: string
+    content: string
+    view: boolean
+    created_at: string
+  }
+}
+
 export const notificationsApi = {
   async getMyNotifications() {
-    return ApiClient.get('/users/me/notifications').then(res => res.json())
+    return ApiClient.get<Notifications[]>('/users/me/notifications').then(res =>
+      res.json(),
+    )
   },
 
   async markAsViewed(notificationId: number) {
     return ApiClient.post(
       `/users/me/notifications/${notificationId}/view`,
     ).then(res => res.json())
-  },
-
-  // Route POST /users/@username/notifications
-  /**
-   * @deprecated frontend cannot send notification a another user
-   */
-  async sendToUser(username: string, data: { type: string; content: string }) {
-    return ApiClient.post(`/users/${username}/notifications`, data).then(res =>
-      res.json(),
-    )
   },
 }
