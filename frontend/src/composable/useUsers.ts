@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { usersApi } from '@/api/users'
+import type { Profile, SuggestionParams } from '@/api/users'
 
 export function useUsers() {
   const isLoading = ref(false)
@@ -7,6 +8,8 @@ export function useUsers() {
 
   const userProfile = ref<any>(null)
   const blockedUsers = ref<any[]>([])
+  const hasMore = ref(true)
+  const suggestedProfiles = ref<Profile[]>([])
 
   // --- Consultation ---
   const fetchProfile = async (username: string) => {
@@ -120,12 +123,50 @@ export function useUsers() {
     }
   }
 
+  const suggestion = async (params: SuggestionParams) => {
+    // if (isLoading.value) return
+    if (!hasMore.value) return
+    isLoading.value = true
+    error.value = null
+    try {
+      const data = await usersApi.suggestion(params)
+      const known = new Set(suggestedProfiles.value.map(p => p.username))
+      suggestedProfiles.value.push(...data.profiles.filter((p) => !known.has(p.username)))
+      hasMore.value = data.has_more;
+    } catch (err: any) {
+      error.value =
+        err.response?.data?.message || 'suggestion error'
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const suggestionReset = () => {
+    suggestedProfiles.value = []
+  }
+
+  const pass = async (username: string) => {
+    if (isLoading.value) return
+    isLoading.value = true
+    error.value = null
+    try {
+      await usersApi.pass(username)
+    } catch (err: any) {
+      error.value =
+        err.response?.data?.message || 'pass error'
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     // États réactifs
     isLoading,
     error,
     userProfile,
     blockedUsers,
+    suggestedProfiles,
+    hasMore,
 
     // Méthodes
     fetchProfile,
@@ -136,5 +177,8 @@ export function useUsers() {
     block,
     unblock,
     report,
+    suggestion,
+    suggestionReset,
+    pass,
   }
 }

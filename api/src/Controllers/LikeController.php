@@ -12,19 +12,14 @@ class LikeController
     {
         /** @var User $me */
         $me = Flight::user();
-        $user = User::find([
-            'username' => $username,
-        ]);
+        $target = User::find(['username' => $username]);
 
-        if (is_null($user)) {
-            Flight::json([
-                'message' => 'User not found',
-            ], 404);
-
+        if (is_null($target) || $target->isBlocking($me)) {
+            Flight::json(['message' => 'User not found'], 404);
             return;
         }
 
-        $me->like($user);
+        $me->like($target);
 
         if ($user->hasMatch($me->username)) {
             $notif = [
@@ -39,8 +34,7 @@ class LikeController
         }
 
         Flight::notifier()->notify($user, $notif, private: false);
-
-        Flight::json([], 203);
+        Flight::json([], 201);
     }
 
     public function destroy(string $username)

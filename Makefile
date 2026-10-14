@@ -1,6 +1,6 @@
 DC := docker compose
 
-all: set_app_host up
+all: up
 
 up:
 	$(DC) up --build

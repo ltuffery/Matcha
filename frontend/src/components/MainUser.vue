@@ -113,6 +113,8 @@ function btnLike() {
           :src="image"
           alt="Photo de profil"
           class="h-full w-full object-cover rounded-lg"
+          loading="lazy"
+          decoding="async"
           v-double-tap="userLike"
         />
       </swiper-slide>

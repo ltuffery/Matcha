@@ -38,7 +38,7 @@ const pref = ref<UserPreferences>({
   sexual_preferences: 'A',
   lat: 50,
   lon: 11,
-  is_custom_loc: false,
+  fame_gap: 10,
 })
 
 const distanceRange = computed({
@@ -71,7 +71,10 @@ const locations = computed<Location | null>({
   },
 })
 const city = ref('')
-const fameRatingRange = ref([100])
+const fameRatingRange = computed({
+  get: () => [pref.value.fame_gap],
+  set: ([v]) => (pref.value.fame_gap = v),
+})
 const byTags = computed({
   get: () => pref.value.by_tags,
   set: v => {
@@ -170,7 +173,7 @@ async function save() {
       </div>
 
       <div class="flex justify-end">
-        <Button :disabled="saved" @click="() => save()">Save change</Button>
+        <Button @click="() => save()">Save change</Button>
       </div>
     </CardContent>
   </Card>
