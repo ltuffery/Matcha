@@ -62,10 +62,13 @@ class LikeController
 
         $me->unlike($user);
 
-        Flight::notifier()->notify($user, [
-            'type' => NotificationType::MESSAGE,
-            'message' => "Finalement " . ucfirst($me->first_name) . " vous a unlike...",
-        ], private: false);
+        if ($user->hasMatch($me->username)) {
+            Flight::notifier()->notify($user, [
+                'type' => NotificationType::MESSAGE,
+                'message' => "Finalement " . ucfirst($me->first_name) . " vous a unlike...",
+            ], private: false);
+        }
+
         Flight::json([], 203);
     }
 }
