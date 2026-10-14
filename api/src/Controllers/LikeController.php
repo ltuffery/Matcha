@@ -13,7 +13,7 @@ class LikeController
         $me = Flight::user();
 
         if (is_null($target) || $target->isBlocking($me)) {
-            Flight::json(['message' => 'User not found'], 404)
+            Flight::json(['message' => 'User not found'], 404);
             return;
         }
 
