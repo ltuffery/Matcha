@@ -25,7 +25,7 @@ class PreferencesResource extends JsonResource
             'sexual_preferences' => $this->model->sexual_preferences,
             'lat' => $this->model->lat,
             'lon' => $this->model->lon,
-            'is_custom_loc' => $this->model->is_custom_loc,
+            'fame_gap' => $this->model->fame_gap,
         ];
     }
 }

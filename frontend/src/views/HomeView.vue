@@ -1,56 +1,28 @@
 <script setup lang="ts">
 import MainUser from '@/components/MainUser.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
-import { getSocket } from '@/plugins/socket'
-import Filter from '@/components/main/Filter.vue'
 import { EffectCreative } from 'swiper/modules'
 import type { Swiper as SwiperType } from 'swiper/types'
-import type { Profile } from '@/api/users'
+import type { Profile, SuggestionParams } from '@/api/users'
+import { useUsers } from '@/composable/useUsers'
+import SortDropdown from '@/components/SortDropdown.vue'
+
+const users = useUsers()
+
+const usedSort = ref<'age' | 'distance' | 'fame' | 'common_tags' | null>(null)
+const order = ref<'asc' | 'desc'>('asc')
+const buildParams = (): SuggestionParams => ({
+  limit: 5,
+  ...(usedSort.value && { sort: usedSort.value }),
+  ...(usedSort.value && { order: order.value }),
+})
 
 const swiperInstance = ref<SwiperType | null>(null)
-const sections = ref<Profile[]>([
-  {
-    username: 'test',
-    first_name: 'Pablo',
-    last_name: 'test_name',
-    biography: 'dsfsdfsdfsd',
-    age: 22,
-    avatar:
-      'https://images.unsplash.com/photo-1643023234393-776f2624061b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8OHwxMTU0MDcyNnx8ZW58MHx8fHx8',
-    photos: [
-      'https://images.unsplash.com/photo-1643023234393-776f2624061b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8OHwxMTU0MDcyNnx8ZW58MHx8fHx8',
-      'https://images.unsplash.com/photo-1552134378-71b4a8333430?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8MTR8MTE1NDA3MjZ8fGVufDB8fHx8fA%3D%3D',
-    ],
-    tags: ['tags', 'tegs'],
-    common_tags: [],
-    fame_rating: 1400,
-    distance: 100,
-    me: false,
-    gender: 'M',
-  },
-  {
-    username: 'test2',
-    first_name: 'John',
-    last_name: 'Doe',
-    biography: 'Unsiojghoihfoighjofighjoifhg',
-    age: 23,
-    avatar:
-      'https://images.unsplash.com/photo-1718749861351-918524751a6b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    photos: [
-      'https://images.unsplash.com/photo-1718749861351-918524751a6b?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      'https://images.unsplash.com/photo-1701163802834-46d90f8b452a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxjb2xsZWN0aW9uLXBhZ2V8M3wxMTU0MDcyNnx8ZW58MHx8fHx8',
-      'https://images.unsplash.com/photo-1645441261871-e468b99a8d7c?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    ],
-    tags: ['tagsss', 'tegs'],
-    common_tags: [],
-    fame_rating: 1560,
-    distance: 2000,
-    me: false,
-    gender: 'M',
-  },
-])
+const MAX_PROFILES = 50
+const PRELOAD_THRESHOLD = 0
+
 const skeleton = ref(true)
 const modules = ref([EffectCreative])
 
@@ -58,35 +30,62 @@ const onSwiperInit = (swiper: SwiperType) => {
   swiperInstance.value = swiper
 }
 
-const onSlideChange = () => {
-  // getSocket().emit('browsing')
+const loadMore = async () => {
+  if (!users.hasMore.value) return
+  console.log("Je charge nouveau copain")
+  const swiper = swiperInstance.value
+
+  const params = buildParams()
+  params.offset = swiper!.activeIndex
+  await users.suggestion(params)
+
+  // Delete old profiles (if > max)
+  const list = users.suggestedProfiles.value
+  if (list.length > MAX_PROFILES) {
+    const removed = list.length - MAX_PROFILES
+    list.splice(0, removed)
+  }
+}
+
+const onSlideChange = (swiper: SwiperType) => {
+  if (swiper.activeIndex > swiper.previousIndex) {
+      for (let i = swiper.previousIndex; i < swiper.activeIndex; i++) {
+        const profile = users.suggestedProfiles.value[i]
+        if (profile) users.pass(profile.username)
+      }
+    }
+
+    const remaining = users.suggestedProfiles.value.length - 1 - swiper.activeIndex
+    if (remaining <= PRELOAD_THRESHOLD) loadMore()
 }
 
 const goToNextSlide = () => {
   if (swiperInstance.value) {
     swiperInstance.value.slideNext()
-  } else {
-    console.log("Swiper instance n'est pas encore prête.")
   }
 }
-//
-// getSocket().on('browsing', (user: User) => {
-//   if (user !== null) {
-//     sections.value.push(user)
-//     skeleton.value = false
-//   }
-// })
 
-onMounted(() => {
-  // getSocket().emit('browsing')
-  // getSocket().emit('browsing')
+watch([usedSort, order], async ([newSort], [oldSort]) => {
+  if (!newSort && !oldSort) return
+  users.suggestionReset()
+  await users.suggestion(buildParams())
+  swiperInstance.value?.slideTo(0, 0, false)
+})
+
+onMounted(async () => {
+  await users.suggestion(buildParams())
 })
 </script>
 
 <template>
   <div class="flex w-full justify-center overflow-hidden rounded-lg py-4">
     <div class="relative h-full w-full max-w-lg">
+      <SortDropdown v-model:sort="usedSort" v-model:order="order"/>
+
       <Swiper
+        v-if="users.suggestedProfiles.value.length"
+        :observer="true"
+        :observe-parents="true"
         :direction="'vertical'"
         :slides-per-view="1"
         :loop="false"
@@ -108,8 +107,8 @@ onMounted(() => {
         @slideChange="onSlideChange"
       >
         <SwiperSlide
-          v-for="(content, index) in sections"
-          :key="index"
+          v-for="content in users.suggestedProfiles.value"
+          :key="content.username"
           class="h-full! flex! items-center justify-center rounded-lg"
         >
           <MainUser

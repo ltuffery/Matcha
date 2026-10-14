@@ -32,7 +32,7 @@ class Preference extends Model
 
     public float $lon = 0;
 
-    public bool $is_custom_loc = false;
+    public int $fame_gap = 10;
 
     public function user(): User
     {

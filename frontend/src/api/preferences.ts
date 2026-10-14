@@ -10,7 +10,7 @@ export interface UserPreferences {
   sexual_preferences: SexualPreference
   lat: number
   lon: number
-  is_custom_loc: boolean
+  fame_gap: number
 }
 
 export const apiPreferences = {
