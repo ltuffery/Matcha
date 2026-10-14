@@ -19,6 +19,7 @@ class PreferenceFactory extends Factory
             "by_tags" => (bool)rand(0, 1),
             'lon' => 10,
             'lat' => 10,
+            'fame_gap' => 10,
         ];
     }
 }
