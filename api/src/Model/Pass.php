@@ -14,9 +14,9 @@ class Pass extends Model
     public int $target_id;
     public string $created_at;
 
-    public function liked(): User
+    public function passed(): User
     {
-        return User::find(['id' => $this->$target_id]);
+        return User::find(['id' => $this->target_id]);
     }
 
     public function user(): User
