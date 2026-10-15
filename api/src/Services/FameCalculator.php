@@ -4,6 +4,7 @@ namespace Matcha\Api\Services;
 
 use Exception;
 use Matcha\Api\Model\User;
+use Flight;
 
 class FameCalculator
 {
@@ -12,7 +13,7 @@ class FameCalculator
     private const K_VIEW = 2;
 
     private const MIN_FAME = 0;
-    private const MAX_FAME = 2000;
+    private const MAX_FAME = 2500;
 
     public function __construct(
         private User $actor,   // liker

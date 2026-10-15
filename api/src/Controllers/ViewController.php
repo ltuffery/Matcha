@@ -30,6 +30,11 @@ class ViewController
         }
 
         $me->view($user);
+        try {
+            (new FameCalculator($me, $user))->onView();
+        } catch (\Throwable $e) {
+            // calcul error
+        }
 
         Flight::notifier()->notify($user, [
             'type' => NotificationType::VIEW,
