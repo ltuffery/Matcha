@@ -4,7 +4,9 @@ namespace Matcha\Api\Controllers;
 
 use Flight;
 use Matcha\Api\Model\User;
+use Matcha\Api\Model\Pass;
 use Matcha\Api\Services\FameCalculator;
+use Matcha\Api\Exceptions\UniqueConstraintException;
 
 class PassController
 {
@@ -21,13 +23,16 @@ class PassController
             return;
         }
 
-        $me->pass($target);
         try {
+            $me->pass($target);
             (new FameCalculator($me, $target))->onPass();
-        } catch (\Throwable $e) {
-            // calcul error
-        }
+        } catch (UniqueConstraintException $e) {
+            $pass = Pass::find(['user_id' => $me->id, 'target_id' => $target->id]);
 
+            $pass->created_at = date('Y-m-d H:i:s');
+
+            $pass->update(['user_id' => $me->id, 'target_id' => $target->id]);
+        }
         Flight::json(['success' => true,], 204);
     }
 }

@@ -43,9 +43,18 @@ abstract class Model
         return $this->id > 0 ? $this->update() : $this->create();
     }
 
-    private function update(): Model
+    public function update(array $where = []): Model
     {
         $data = $this->getData();
+
+        if (empty($where)) {
+            $where = ['id' => $this->id];
+        }
+
+        $whereList = array_map(function ($k, $v) {
+            return $k . " = " . $v;
+        }, array_keys($where), $where);
+
         $sqlQuery = "UPDATE " . $this->getTable()
         . " SET " . implode(
             ", ",
@@ -55,7 +64,7 @@ abstract class Model
                 array_values($data)
             )
         )
-        . ' WHERE id = ' . $this->id;
+        . ' WHERE ' . implode(" AND ", $whereList);
 
         self::db()->exec($sqlQuery);
         $this->reload();
