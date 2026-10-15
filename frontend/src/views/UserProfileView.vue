@@ -32,7 +32,7 @@ interface Profile {
   city: string | null
   biography: string | null
   avatar: string | null
-  photos: { id: number; path: string }[]
+  photos: string []
   tags: string[]
   liked_by_me: boolean
   is_match: boolean
@@ -133,9 +133,9 @@ watch(() => route.params.id, load)
       <Card class="overflow-hidden">
         <Carousel v-if="profile.photos.length" class="w-full">
           <CarouselContent>
-            <CarouselItem v-for="p in profile.photos" :key="p.id">
+            <CarouselItem v-for="(p, index) in profile.photos" :key="index">
               <img
-                :src="p.path"
+                :src="p"
                 :alt="profile.username"
                 class="w-full aspect-3/4 object-cover"
               />
