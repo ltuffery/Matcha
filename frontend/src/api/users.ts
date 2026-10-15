@@ -86,4 +86,10 @@ export const usersApi = {
       res.json(),
     )
   },
+
+  async view(username: string) {
+    return ApiClient.post(`/users/${username}/view`).then(res =>
+      res.json(),
+    )
+  },
 }

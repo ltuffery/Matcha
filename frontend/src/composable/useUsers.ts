@@ -61,6 +61,15 @@ export function useUsers() {
     }
   }
 
+  const view = async (who: string) => {
+    error.value = null
+    try {
+      await usersApi.view(who)
+    } catch (err: any) {
+      error.value = err.response?.data?.message || "You can't view this user."
+    }
+  }
+
   // --- Modération (Blocages et Signalement) ---
   const fetchBlockedList = async () => {
     isLoading.value = true
@@ -180,5 +189,6 @@ export function useUsers() {
     suggestion,
     suggestionReset,
     pass,
+    view,
   }
 }

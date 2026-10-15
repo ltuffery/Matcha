@@ -24,6 +24,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { ApiClient } from '@/api/client'
+import { useUsers } from '@/composable/useUsers'
 
 interface Profile {
   id: number
@@ -49,6 +50,7 @@ const error = ref('')
 const showMatch = ref(false)
 const editing = ref(false)
 const form = ref({ bio: '', city: '', tags: '' })
+const useUser = useUsers()
 
 async function load() {
   loading.value = true
@@ -110,7 +112,10 @@ async function saveProfile() {
 
 const initials = (name: string) => name.slice(0, 2).toUpperCase()
 
-onMounted(load)
+onMounted(() => {
+  load()
+  useUser.view(`${route.params.username}`);
+})
 watch(() => route.params.id, load)
 </script>
 
