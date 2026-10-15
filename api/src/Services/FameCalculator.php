@@ -26,6 +26,11 @@ class FameCalculator
         $this->save(self::K_LIKE * (1 - $this->expected()));
     }
 
+    public function onUnLike(): void
+    {
+        $this->save(-self::K_LIKE * (1 - $this->expected()));
+    }
+
     public function onPass(): void
     {
         $this->save(-self::K_PASS * $this->expected());

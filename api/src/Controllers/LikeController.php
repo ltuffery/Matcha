@@ -68,6 +68,11 @@ class LikeController
         }
 
         $me->unlike($user);
+        try {
+            (new FameCalculator($me, $user))->onUnLike();
+        } catch (\Throwable $e) {
+            // calcul error
+        }
 
         Flight::json([], 203);
     }
