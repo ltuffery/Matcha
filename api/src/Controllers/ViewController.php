@@ -5,6 +5,7 @@ namespace Matcha\Api\Controllers;
 use Flight;
 use Matcha\Api\Enums\NotificationType;
 use Matcha\Api\Model\User;
+use Matcha\Api\Services\FameCalculator;
 
 class ViewController
 {
