@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu"
-import { Button } from "./ui/button";
-import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
-import { Cake, Hash, MapPin, TrendingUp, SlidersHorizontal } from "@lucide/vue";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+} from '@/components/ui/dropdown-menu'
+import { Button } from './ui/button'
+import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group'
+import { Cake, Hash, MapPin, TrendingUp, SlidersHorizontal } from '@lucide/vue'
 import { computed } from 'vue'
 
 type Sort = 'age' | 'distance' | 'fame' | 'common_tags'
@@ -23,7 +27,7 @@ const toggleOrder = () => {
 const orderClass = computed(() =>
   order.value === 'asc'
     ? 'bg-slate-400/20 text-slate-400 border-slate-400/50'
-    : 'bg-cyan-200/20 text-cyan-200 border-cyan-200/50'
+    : 'bg-cyan-200/20 text-cyan-200 border-cyan-200/50',
 )
 </script>
 
@@ -37,7 +41,8 @@ const orderClass = computed(() =>
         >
           <SlidersHorizontal class="size-5" />
           <span
-            class="absolute -right-0.5 -top-0.5 size-3 rounded-full bg-linear-to-br from-rose-400 to-fuchsia-500 ring-2 ring-black/40"
+            v-if="sort"
+            class="absolute top-0 right-0 h-3 min-w-3 px-1 rounded-full bg-primary text-primary-foreground flex items-center justify-center"
           />
         </Button>
       </DropdownMenuTrigger>
@@ -47,26 +52,25 @@ const orderClass = computed(() =>
         :side-offset="10"
         class="w-72 rounded-2xl border-white/10 bg-zinc-900/80 p-2 text-white shadow-2xl backdrop-blur-2xl"
       >
-
         <div class="flex items-center justify-between px-2 pb-2 pt-1">
-           <span class="text-sm font-semibold tracking-tight"
-            >Trier par</span
-          >
+          <span class="text-sm font-semibold tracking-tight">Trier par</span>
           <button
-              type="button"
-              :class="[
-                'rounded-md border px-1 py-0.5 transition-colors',
-                orderClass
-              ]"
-              @click="toggleOrder"
-            >
-              {{ order === 'asc' ? 'asc ↑' : 'desc ↓' }}
-            </button>
+            type="button"
+            :class="[
+              'rounded-md border px-1 py-0.5 transition-colors',
+              orderClass,
+            ]"
+            @click="toggleOrder"
+          >
+            {{ order === 'asc' ? 'asc ↑' : 'desc ↓' }}
+          </button>
         </div>
 
-
-
-        <ToggleGroup v-model="sort" class="flex flex-col w-full gap-3" type="single">
+        <ToggleGroup
+          v-model="sort"
+          class="flex flex-col w-full gap-3"
+          type="single"
+        >
           <ToggleGroupItem
             className="
               w-full rounded-xl border border-transparent
@@ -76,8 +80,11 @@ const orderClass = computed(() =>
               data-[state=on]:bg-white/10
               data-[state=on]:text-white
             "
-            value="age">
-            <div class="flex w-full items-center justify-between rounded-xl px-2 py-2 transition-colors hover:bg-white/5">
+            value="age"
+          >
+            <div
+              class="flex w-full items-center justify-between rounded-xl px-2 py-2 transition-colors hover:bg-white/5"
+            >
               <div class="flex items-center gap-3">
                 <div
                   class="flex size-8 items-center justify-center rounded-lg bg-white/10"
@@ -98,8 +105,11 @@ const orderClass = computed(() =>
                 data-[state=on]:bg-white/10
                 data-[state=on]:text-white
               "
-            value="distance">
-            <div class="flex w-full items-center justify-between rounded-xl px-2 py-2 transition-colors hover:bg-white/5">
+            value="distance"
+          >
+            <div
+              class="flex w-full items-center justify-between rounded-xl px-2 py-2 transition-colors hover:bg-white/5"
+            >
               <div class="flex items-center gap-3">
                 <div
                   class="flex size-8 items-center justify-center rounded-lg bg-white/10"
@@ -120,8 +130,11 @@ const orderClass = computed(() =>
                 data-[state=on]:bg-white/10
                 data-[state=on]:text-white
               "
-              value="fame">
-            <div class="flex w-full items-center justify-between rounded-xl px-2 py-2 transition-colors hover:bg-white/5">
+            value="fame"
+          >
+            <div
+              class="flex w-full items-center justify-between rounded-xl px-2 py-2 transition-colors hover:bg-white/5"
+            >
               <div class="flex items-center gap-3">
                 <div
                   class="flex size-8 items-center justify-center rounded-lg bg-white/10"
@@ -142,8 +155,11 @@ const orderClass = computed(() =>
                 data-[state=on]:bg-white/10
                 data-[state=on]:text-white
               "
-              value="common_tags">
-            <div class="flex w-full items-center justify-between rounded-xl px-2 py-2 transition-colors hover:bg-white/5">
+            value="common_tags"
+          >
+            <div
+              class="flex w-full items-center justify-between rounded-xl px-2 py-2 transition-colors hover:bg-white/5"
+            >
               <div class="flex items-center gap-3">
                 <div
                   class="flex size-8 items-center justify-center rounded-lg bg-white/10"
@@ -156,7 +172,7 @@ const orderClass = computed(() =>
           </ToggleGroupItem>
         </ToggleGroup>
         <div class="w-full flex justify-end">
-            <Button variant="link" @click="reset"> Réinitialiser </Button>
+          <Button variant="link" @click="reset"> Réinitialiser </Button>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

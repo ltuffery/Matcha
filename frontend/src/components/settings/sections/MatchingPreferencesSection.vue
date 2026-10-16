@@ -27,6 +27,7 @@ import { MapPin } from 'lucide-vue-next'
 import { usePreferences } from '@/composable/usePreferences'
 import type { SexualPreference, UserPreferences } from '@/api/preferences'
 import { Switch } from '@/components/ui/switch'
+import { toast } from 'vue-sonner'
 
 const preference = usePreferences()
 
@@ -66,7 +67,6 @@ const locations = computed<Location | null>({
     if (!loc) return
     pref.value.lat = loc.lat
     pref.value.lon = loc.lng
-    pref.value.is_custom_loc = true
     city.value = loc.city ?? ''
   },
 })
@@ -91,6 +91,7 @@ onMounted(async () => {
 async function save() {
   saved.value = false
   await preference.updatePreferences(pref.value)
+  toast.success('Preferences updated successfully')
   saved.value = true
 }
 </script>
@@ -142,7 +143,7 @@ async function save() {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Sexual Preference</SelectLabel>
-              <SelectItem value="W"> Women </SelectItem>
+              <SelectItem value="F"> Women </SelectItem>
               <SelectItem value="M"> Man </SelectItem>
               <SelectItem value="O"> Other </SelectItem>
               <SelectItem value="A"> All </SelectItem>

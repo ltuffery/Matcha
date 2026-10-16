@@ -1,6 +1,6 @@
 import { ApiClient } from '@/api/client'
 
-export type SexualPreference = 'M' | 'W' | 'O' | 'A'
+export type SexualPreference = 'M' | 'F' | 'O' | 'A'
 
 export interface UserPreferences {
   age_minimum: number
