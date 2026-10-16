@@ -24,6 +24,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { ApiClient } from '@/api/client'
+import { useUsers } from '@/composable/useUsers'
 
 interface Profile {
   id: number
@@ -32,7 +33,7 @@ interface Profile {
   city: string | null
   biography: string | null
   avatar: string | null
-  photos: { id: number; path: string }[]
+  photos: string []
   tags: string[]
   liked_by_me: boolean
   is_match: boolean
@@ -49,6 +50,7 @@ const error = ref('')
 const showMatch = ref(false)
 const editing = ref(false)
 const form = ref({ bio: '', city: '', tags: '' })
+const useUser = useUsers()
 
 async function load() {
   loading.value = true
@@ -110,7 +112,10 @@ async function saveProfile() {
 
 const initials = (name: string) => name.slice(0, 2).toUpperCase()
 
-onMounted(load)
+onMounted(() => {
+  load()
+  useUser.view(`${route.params.username}`);
+})
 watch(() => route.params.id, load)
 </script>
 
@@ -133,9 +138,9 @@ watch(() => route.params.id, load)
       <Card class="overflow-hidden">
         <Carousel v-if="profile.photos.length" class="w-full">
           <CarouselContent>
-            <CarouselItem v-for="p in profile.photos" :key="p.id">
+            <CarouselItem v-for="(p, index) in profile.photos" :key="index">
               <img
-                :src="p.path"
+                :src="p"
                 :alt="profile.username"
                 class="w-full aspect-3/4 object-cover"
               />
