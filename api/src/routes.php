@@ -63,7 +63,7 @@ Flight::group('/users', function () {
 
 Flight::group('/users', function () {
 
-    Flight::group('/@username:[a-zA-Z0-9\.]{5,25}', function () {
+    Flight::group('/@username:[a-zA-Z0-9\._\-]{5,25}', function () {
         Flight::route('GET /', [ProfileController::class, 'show']);
         Flight::route('POST /like', [LikeController::class, 'store']);
         Flight::route('DELETE /unlike', [LikeController::class, 'destroy']);

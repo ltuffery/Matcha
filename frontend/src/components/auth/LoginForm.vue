@@ -78,6 +78,7 @@ async function loginUserAccount(values: GenericObject) {
     toast.error(res.error as string)
   } else {
     toast.success(`Welcome ${username}`)
+    await connectSocket()
     await router.push({ name: 'home' })
   }
 }

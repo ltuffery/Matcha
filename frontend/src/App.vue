@@ -10,6 +10,7 @@ import { storeToRefs } from 'pinia'
 import CompleteProfileDialog from '@/components/CompleteProfileDialog.vue'
 import { useNotificationStore } from '@/store/useNotificationStore'
 import type { Notifications } from '@/api/notifications'
+import { connectSocket } from '@/plugins/socket'
 
 const mode = useColorMode()
 const authStore = useAuthStore()
@@ -53,6 +54,7 @@ onMounted(async () => {
   mode.value = theme ?? 'dark'
 
   if (!authStore.user && localStorage.getItem('jwt')) {
+    await connectSocket()
     await authStore.fetchMe()
     await notifications.fetchNotifications()
   }

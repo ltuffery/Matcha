@@ -25,7 +25,7 @@ export function socketAuthMiddleware(socket: Socket, next: (err?: Error) => void
   }
 
   try {
-    const payload = jwt.verify(token, config.jwtSecret) as JwtPayload;
+    const payload = jwt.verify(token, config.secretKey) as JwtPayload;
 
     if (!payload.username) {
       return next(new Error("AUTH_INVALID_PAYLOAD"));

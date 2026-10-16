@@ -1,5 +1,4 @@
 import { io, type Socket } from 'socket.io-client'
-import { useOnlineUsersStore } from '@/store/onlineUsers'
 import type { MessageData } from '@/types'
 import { useTypingStore } from '@/store/isTyping'
 import { useMessagesStore } from '@/store/messages'
@@ -24,7 +23,6 @@ export async function connectSocket(): Promise<void> {
   })
 
   socket.on('connect', () => {
-    // const onlineUsersStore = useOnlineUsersStore()
     console.log("WS Connected");
     const typingStore = useTypingStore();
     const messageStore = useMessagesStore();
@@ -41,19 +39,6 @@ export async function connectSocket(): Promise<void> {
       console.log("message recived :", message);
       messageStore.addMessage(message.sender, message);
     })
-
-    // socket!.on('online_users', (users: string[]) => {
-    //   onlineUsersStore.setOnlineUsers(users)
-    // })
-
-    // socket!.on('user_online', (username: string) => {
-    //   if (!onlineUsersStore.isOnlineUser(username))
-    //     onlineUsersStore.addOnlineUser(username)
-    // })
-
-    // socket!.on('user_offline', (username: string) => {
-    //   onlineUsersStore.removeOnlineUser(username)
-    // })
   })
 
   socket.on('disconnect', () => {})

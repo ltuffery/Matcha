@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Heart, MapPin, MessageCircle, Pencil, Sparkles } from 'lucide-vue-next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -25,6 +25,8 @@ import {
 } from '@/components/ui/dialog'
 import { ApiClient } from '@/api/client'
 import { useUsers } from '@/composable/useUsers'
+import { getSocket } from '@/plugins/socket'
+import { usePresenceStore } from '@/store/presenceStore'
 
 interface Profile {
   id: number
@@ -33,7 +35,7 @@ interface Profile {
   city: string | null
   biography: string | null
   avatar: string | null
-  photos: string []
+  photos: string[]
   tags: string[]
   liked_by_me: boolean
   is_match: boolean
@@ -44,6 +46,7 @@ interface Profile {
 
 const route = useRoute()
 const router = useRouter()
+const presenceStore = usePresenceStore()
 const profile = ref<Profile | null>(null)
 const loading = ref(true)
 const error = ref('')
@@ -51,6 +54,9 @@ const showMatch = ref(false)
 const editing = ref(false)
 const form = ref({ bio: '', city: '', tags: '' })
 const useUser = useUsers()
+const isOnline = computed(() =>
+  presenceStore.isOnline(route.params.username as string),
+)
 
 async function load() {
   loading.value = true
@@ -110,13 +116,21 @@ async function saveProfile() {
   load()
 }
 
+getSocket()?.on('presence', ({ userId, status }) => {
+  presenceStore.setUser(userId, status)
+})
+
 const initials = (name: string) => name.slice(0, 2).toUpperCase()
 
 onMounted(() => {
   load()
-  useUser.view(`${route.params.username}`);
+  useUser.view(`${route.params.username}`)
+
+  getSocket()?.emit('presence:subscribe', route.params.username, res => {
+    presenceStore.setUser(route.params.username as string, res.status)
+  })
 })
-watch(() => route.params.id, load)
+watch(() => route.params.username, load)
 </script>
 
 <template>
@@ -188,11 +202,9 @@ watch(() => route.params.id, load)
                   <span class="flex items-center gap-1">
                     <span
                       class="h-2 w-2 rounded-full"
-                      :class="
-                        profile.is_online ? 'bg-green-500' : 'bg-gray-400'
-                      "
+                      :class="isOnline ? 'bg-green-500' : 'bg-gray-400'"
                     />
-                    {{ profile.is_online ? 'En ligne' : 'Hors ligne' }}
+                    {{ isOnline ? 'En ligne' : 'Hors ligne' }}
                   </span>
                 </div>
               </div>

@@ -167,7 +167,10 @@ onMounted(() => {
                 <ItemTitle
                   >{{ person.first_name }} {{ person.last_name }}</ItemTitle
                 >
-                <ItemDescription v-if="typingStore.isTyping(person.username)">
+                <ItemDescription
+                  class="shimmer"
+                  v-if="typingStore.isTyping(person.username)"
+                >
                   {{ person.username }} is typing...</ItemDescription
                 >
                 <ItemDescription v-else>{{
