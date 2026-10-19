@@ -23,7 +23,6 @@ const swiperInstance = ref<SwiperType | null>(null)
 const MAX_PROFILES = 50
 const PRELOAD_THRESHOLD = 0
 
-const skeleton = ref(true)
 const modules = ref([EffectCreative])
 
 const onSwiperInit = (swiper: SwiperType) => {
@@ -32,12 +31,7 @@ const onSwiperInit = (swiper: SwiperType) => {
 
 const loadMore = async () => {
   if (!users.hasMore.value) return
-  console.log("Je charge nouveau copain")
-  const swiper = swiperInstance.value
-
-  const params = buildParams()
-  params.offset = swiper!.activeIndex
-  await users.suggestion(params)
+  await users.suggestion(buildParams())
 
   // Delete old profiles (if > max)
   const list = users.suggestedProfiles.value
@@ -45,6 +39,7 @@ const loadMore = async () => {
     const removed = list.length - MAX_PROFILES
     list.splice(0, removed)
   }
+  users.suggestedProfiles.value = list
 }
 
 const onSlideChange = (swiper: SwiperType) => {
@@ -118,6 +113,12 @@ onMounted(async () => {
           />
         </SwiperSlide>
       </Swiper>
+      <div v-else class="h-full! flex! items-center justify-center rounded-lg bg-gray-200/5">
+        <div class="flex flex-col">
+          <span class="text-xl">Plus de profil disponible 😖</span>
+          <span>Modifie tes preferences et/ou filtres</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
