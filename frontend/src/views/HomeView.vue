@@ -112,6 +112,16 @@ onMounted(async () => {
             :user="content"
           />
         </SwiperSlide>
+        <SwiperSlide
+          v-if="!users.hasMore.value"
+          key="end-of-list"
+          class="h-full! flex! items-center justify-center rounded-lg"
+        >
+          <div class="flex h-full w-full flex-col items-center justify-center rounded-lg bg-neutral-900">
+            <span class="text-xl">Plus de profil disponible 😖</span>
+            <span>Modifie tes préférences et/ou filtres</span>
+          </div>
+        </SwiperSlide>
       </Swiper>
       <div v-else class="h-full! flex! items-center justify-center rounded-lg bg-gray-200/5">
         <div class="flex flex-col">
