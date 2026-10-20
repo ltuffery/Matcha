@@ -8,6 +8,7 @@ import type { Swiper as SwiperType } from 'swiper/types'
 import type { Profile, SuggestionParams } from '@/api/users'
 import { useUsers } from '@/composable/useUsers'
 import SortDropdown from '@/components/SortDropdown.vue'
+import NoMoreProfiles from '@/components/NoMoreProfiles.vue'
 
 const users = useUsers()
 
@@ -78,7 +79,6 @@ onMounted(async () => {
       <SortDropdown v-model:sort="usedSort" v-model:order="order"/>
 
       <Swiper
-        v-if="users.suggestedProfiles.value.length"
         :observer="true"
         :observe-parents="true"
         :direction="'vertical'"
@@ -117,18 +117,10 @@ onMounted(async () => {
           key="end-of-list"
           class="h-full! flex! items-center justify-center rounded-lg"
         >
-          <div class="flex h-full w-full flex-col items-center justify-center rounded-lg bg-neutral-900">
-            <span class="text-xl">Plus de profil disponible 😖</span>
-            <span>Modifie tes préférences et/ou filtres</span>
-          </div>
+          <NoMoreProfiles class="h-full w-full" />
         </SwiperSlide>
       </Swiper>
-      <div v-else class="h-full! flex! items-center justify-center rounded-lg bg-gray-200/5">
-        <div class="flex flex-col">
-          <span class="text-xl">Plus de profil disponible 😖</span>
-          <span>Modifie tes preferences et/ou filtres</span>
-        </div>
-      </div>
+      <!-- <div v-else class="
     </div>
   </div>
 </template>
