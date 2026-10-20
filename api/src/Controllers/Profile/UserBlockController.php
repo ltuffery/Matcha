@@ -13,7 +13,13 @@ class UserBlockController
         // TODO: Use resource (security!!!)
         Flight::json(
             array_map(
-                fn ($id) => User::find(['id' => $id]),
+                function ($block) {
+                    $user = User::find(['id' => $block->blocked_id]);
+                    return [
+                        'username' => $user->username,
+                        'avatar'   => $user->getPhotosUrl()[0], // adapte au nom réel
+                    ];
+                },
                 Block::all(['user_id' => Flight::user()->id])
             )
         );
@@ -42,7 +48,8 @@ class UserBlockController
 
     public function destroy(string $username): void
     {
-        $block = Block::find(['blocked_id' => $username]);
+        $blocked = User::find(['username' => $username]);
+        $block = Block::find(['blocked_id' => $blocked->id]);
 
         if (!$block) {
             Flight::json([

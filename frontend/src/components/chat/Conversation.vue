@@ -190,7 +190,7 @@ onMounted(async () => {
           <CalendarPlusIcon class="size-5" />
         </Button>
 
-        <MoreButton />
+        <MoreButton :username="user?.username" />
       </div>
     </header>
 
