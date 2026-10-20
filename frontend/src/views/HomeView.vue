@@ -120,7 +120,6 @@ onMounted(async () => {
           <NoMoreProfiles class="h-full w-full" />
         </SwiperSlide>
       </Swiper>
-      <!-- <div v-else class="
     </div>
   </div>
 </template>
