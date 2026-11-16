@@ -32,7 +32,9 @@ import {
 } from '@/components/ui/stepper'
 import DateOfBirthPicker from '@/components/forms/DateOfBirthPicker.vue'
 import { useAuth } from '@/composable/useAuth'
+import { useMail } from '@/composable/useMail'
 import { TagsInput, TagsInputInput } from '@/components/ui/tags-input'
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface ImageItem {
   file: File
@@ -40,10 +42,13 @@ interface ImageItem {
 }
 
 const auth = useAuth()
+const mail = useMail()
 
+const isDone = ref(false)
 const stepIndex = ref(1)
 const inputImage = ref<HTMLInputElement | null>(null)
 const images = ref<ImageItem[]>([])
+const registeredEmail = ref('')
 
 const formSchema = [
   z.object({
@@ -54,14 +59,15 @@ const formSchema = [
   z.object({
     first_name: z.string().min(2, 'First name required'),
     last_name: z.string().min(2, 'Last name required'),
-    birthday: z.string().min(1, 'Date of birthday required'),
+    birthday: z
+      .string({ required_error: 'Date of birth required' })
+      .min(1, 'Date of birth required')
+      .refine(v => v <= getMaxBirthday(), 'You must be at least 18'),
   }),
   z.object({
     gender: z.enum(['M', 'F', 'O'], {
       message: 'Sélectionne un genre',
     }),
-  }),
-  z.object({
     biography: z.string().max(500).optional(),
     tags: z.array(z.string()).optional(),
   }),
@@ -92,10 +98,6 @@ const steps = [
     description: 'Add your photos',
   },
 ]
-
-const maxAge = new Date()
-maxAge.setFullYear(maxAge.getFullYear() - 18)
-const maxBirthday = maxAge.toISOString().split('T')[0]
 
 function handleFileUpload(event: Event) {
   const target = event.target as HTMLInputElement
@@ -138,22 +140,50 @@ async function handleSubmit(values: Record<string, unknown>) {
 
     const response = await auth.register(form)
 
-    if (!auth.error) {
+    if (auth.error.value) {
       toast.error(auth.error ?? 'Une erreur est survenue')
       return
     }
 
-    toast.success('Compte créé avec succès')
-    stepIndex.value = steps.length
+    registeredEmail.value = String(values.email)
+    isDone.value = true
   } catch (error) {
     console.error(error)
     toast.error('Erreur lors de la création du compte')
   }
 }
+
+function getMaxBirthday() {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() - 18)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
+const resendMail = (email: string) => {
+  mail.verify(email)
+}
 </script>
 
 <template>
+  <Card v-if="isDone" class="mx-auto mt-12 w-full max-w-md text-center">
+    <CardHeader>
+      <CardTitle>Compte créé 🎉</CardTitle>
+      <CardDescription>
+        Un email de confirmation a été envoyé à
+        <span class="font-medium text-foreground">{{ registeredEmail }}</span>.
+        Valide ton adresse pour pouvoir te connecter.
+      </CardDescription>
+    </CardHeader>
+    <CardFooter class="justify-center">
+      <Button @click="resendMail(registeredEmail)">
+        Renvoyer
+      </Button>
+    </CardFooter>
+  </Card>
+
   <VeeForm
+    v-else
     v-slot="{ meta, values, validate }"
     as=""
     keep-values
@@ -176,7 +206,12 @@ async function handleSubmit(values: Record<string, unknown>) {
             event.preventDefault()
             const result = await validate()
 
-            if (!result.valid) return
+            if (!result.valid) {
+              if (stepIndex === steps.length && !images.length) {
+                toast.error('Add at least one photo')
+                }
+                return
+            }
 
             if (stepIndex === steps.length) {
               await handleSubmit(values)
@@ -404,7 +439,7 @@ async function handleSubmit(values: Record<string, unknown>) {
                 </div>
               </div>
 
-              <Input
+              <input
                 ref="inputImage"
                 type="file"
                 accept="image/*"

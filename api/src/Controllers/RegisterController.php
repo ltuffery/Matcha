@@ -75,6 +75,12 @@ class RegisterController
                     $this->uploadPhotos($saved, $photos);
                 }
 
+                try {
+                    EmailController::emailVerifySend($user);
+                } catch (\Throwable $e) {
+                    error_log('Verification mail failed: ' . $e->getMessage());
+                }
+
                 Flight::json(new UserResource($saved), 201);
             }
         } catch (Exception $e) {
