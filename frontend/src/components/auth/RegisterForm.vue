@@ -141,15 +141,22 @@ async function handleSubmit(values: Record<string, unknown>) {
     const response = await auth.register(form)
 
     if (auth.error.value) {
-      toast.error(auth.error ?? 'Une erreur est survenue')
+      toast.error(auth.error.value ?? 'Une erreur est survenue')
       return
     }
 
     registeredEmail.value = String(values.email)
     isDone.value = true
   } catch (error) {
-    console.error(error)
-    toast.error('Erreur lors de la création du compte')
+    console.log(auth.error.value)
+    const message =
+        error?.response?.data?.error ??
+        error?.message ??
+        'Erreur lors de la création du compte'
+    toast.error(String(message))
+    if (String(message).toLowerCase().includes('password')) {
+      stepIndex.value = 1
+    }
   }
 }
 
