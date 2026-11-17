@@ -11,17 +11,15 @@ use ReflectionException;
 
 class EmailController
 {
-    private function emailVerifySend(User $userTarget): void
+    public static function emailVerifySend(User $userTarget): void
     {
-        // Generate token/link and save it in db
-        $temporaryToken = $userTarget->username . rand();
-        $temporaryToken = password_hash($temporaryToken, PASSWORD_DEFAULT);
-        $url = "http://" . getenv("APP_HOST") . ":1212/verify?user=" . $userTarget->username . "&token=" . $temporaryToken;
+        $temporaryToken = bin2hex(random_bytes(32));
+        $url = "http://" . getenv("APP_HOST") . ":8011/verify?user="
+            . urlencode($userTarget->username) . "&token=" . $temporaryToken;
 
         $userTarget->temporary_email_token = $temporaryToken;
         $userTarget->save();
 
-        // get and replace body mail
         $bodyMail = file_get_contents(template('verify-email.html'));
         $bodyMail = str_replace(
             ['{{username}}', '{{url}}'],
@@ -53,7 +51,7 @@ class EmailController
                 'error' => "this email doesn't exist",
             ], 404);
         } elseif (!$user->email_verified) {
-            $this->emailVerifySend($user);
+            self::emailVerifySend($user);
             Flight::json([
                 'success' => true,
             ]);

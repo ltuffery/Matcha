@@ -11,6 +11,7 @@ use Matcha\Api\Model\Preference;
 use Matcha\Api\Model\User;
 use Matcha\Api\Resources\UserResource;
 use Matcha\Api\Validator\Validator;
+use Matcha\Api\Services\PasswordPolicy;
 
 class RegisterController
 {
@@ -35,7 +36,7 @@ class RegisterController
         if (count($request->getUploadedFiles()) == 0) {
             Flight::json([
                 'success' => false,
-                'error' => "Photos is required.",
+                'message' => "Photos is required.",
             ], 400);
             return;
         }
@@ -46,8 +47,19 @@ class RegisterController
         if (!is_array($photos)) {
             Flight::json([
                 'success' => 0,
-                'error' => "Photos is not valid.",
+                'message' => "Photos is not valid.",
             ], 400);
+            return;
+        }
+
+        $error = PasswordPolicy::validate($request->data->password, [
+            $request->data->username,
+            $request->data->first_name,
+            $request->data->last_name,
+        ]);
+
+        if ($error !== null) {
+            Flight::json(['success' => false, 'message' => $error], 422);
             return;
         }
 
@@ -75,12 +87,18 @@ class RegisterController
                     $this->uploadPhotos($saved, $photos);
                 }
 
+                try {
+                    EmailController::emailVerifySend($user);
+                } catch (\Throwable $e) {
+                    error_log('Verification mail failed: ' . $e->getMessage());
+                }
+
                 Flight::json(new UserResource($saved), 201);
             }
         } catch (Exception $e) {
             Flight::json([
                 'success' => false,
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
