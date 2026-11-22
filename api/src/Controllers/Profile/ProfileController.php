@@ -8,6 +8,7 @@ use Matcha\Api\Model\UserTag;
 use Matcha\Api\Resources\ProfileResource;
 use Matcha\Api\Resources\UserResource;
 use Matcha\Api\Services\Photo;
+use Matcha\Api\Policies\PasswordPolicy;
 
 class ProfileController
 {
@@ -59,6 +60,15 @@ class ProfileController
             }
 
             if ($key === 'password') {
+                $error = PasswordPolicy::validate($value, [
+                    $user->username,
+                    $user->first_name,
+                    $user->last_name,
+                ]);
+                if ($error !== null) {
+                    Flight::json(['success' => false, 'message' => $error], 422);
+                    return;
+                }
                 $value = password_hash($value, PASSWORD_DEFAULT);
             }
 

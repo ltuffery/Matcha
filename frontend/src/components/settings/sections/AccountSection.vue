@@ -80,10 +80,15 @@ const serverError = ref<string | null>(null)
 const onSubmit = handleSubmit(async values => {
   serverError.value = null
   try {
-    await authStore.updateProfile({
+    const response = await authStore.updateProfile({
       email: values.email,
       ...(values.password ? { password: values.password } : {}),
     })
+
+    if (authStore.error) {
+      toast.error(authStore.error)
+      return
+    }
 
     // Vide les champs mot de passe en gardant l'email actuel
     resetForm({
