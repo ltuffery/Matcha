@@ -8,6 +8,7 @@ use Matcha\Api\Model\User;
 use Matcha\Api\Services\MailSender;
 use Matcha\Api\Validator\Validator;
 use ReflectionException;
+use Matcha\Api\Policies\PasswordPolicy;
 
 class ForgotController
 {
@@ -114,6 +115,16 @@ class ForgotController
                 'error' => "2 password are not same",
             ], 400);
         } elseif ($user->temporary_email_token == $request->data->token && $request->data->token != "") {
+            $error = PasswordPolicy::validate($request->data->newPassword, [
+                $request->data->username,
+                $user->first_name,
+                $user->last_name,
+            ]);
+            if ($error !== null) {
+                Flight::json(['success' => false, 'message' => $error], 422);
+                return;
+            }
+
             $user->temporary_email_token = "";
             $user->password = password_hash($request->data->newPassword, PASSWORD_DEFAULT);
             $user->save();
