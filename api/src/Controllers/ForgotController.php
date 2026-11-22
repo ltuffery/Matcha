@@ -5,33 +5,12 @@ namespace Matcha\Api\Controllers;
 use Flight;
 use Matcha\Api\Exceptions\InvalidDataException;
 use Matcha\Api\Model\User;
-use Matcha\Api\Services\Mailer;
+use Matcha\Api\Services\MailSender;
 use Matcha\Api\Validator\Validator;
 use ReflectionException;
 
 class ForgotController
 {
-    private function emailForgotSend($userTarget): void
-    {
-        // Generate token/link and save it in db
-        $temporaryToken = $userTarget->username . (string)rand();
-        $temporaryToken = password_hash($temporaryToken, PASSWORD_DEFAULT);
-        $url = "http://" . getenv("APP_HOST") . ":1212/forgot?user=" . $userTarget->username . "&token=" . $temporaryToken;
-
-        $userTarget->temporary_email_token = $temporaryToken;
-        $userTarget->save();
-
-        // get and replace body mail
-        $bodyMail = file_get_contents(template('forgot.html'));
-        $bodyMail = str_replace(
-            ['{{username}}', '{{url}}'],
-            [htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $url],
-            $bodyMail
-        );
-
-        Mailer::to($userTarget->email, $userTarget->username)->send('Forgot credencial', $bodyMail);
-    }
-
     /**
      * @throws ReflectionException
      */
@@ -53,7 +32,9 @@ class ForgotController
                 'error' => "this email doesn't exist",
             ], 404);
         } elseif ($user->email_verified) {
-            $this->emailForgotSend($user);
+            $mailer = new MailSender($user);
+            $mailer->mailPasswordReset()->send();
+
             Flight::json([
                 'success' => true,
             ], 200);

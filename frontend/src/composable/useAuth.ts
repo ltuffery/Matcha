@@ -108,7 +108,7 @@ export function useAuth() {
   }
 
   const forgotPassword = async (email: string): Promise<boolean> => {
-    const res = await authApi.forgot(email)
+    const res = await authApi.forgot({email: email})
 
     return res.success
   }

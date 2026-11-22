@@ -5,31 +5,12 @@ namespace Matcha\Api\Controllers;
 use Flight;
 use Matcha\Api\Exceptions\InvalidDataException;
 use Matcha\Api\Model\User;
-use Matcha\Api\Services\Mailer;
+use Matcha\Api\Services\MailSender;
 use Matcha\Api\Validator\Validator;
 use ReflectionException;
 
 class EmailController
 {
-    public static function emailVerifySend(User $userTarget): void
-    {
-        $temporaryToken = bin2hex(random_bytes(32));
-        $url = "http://" . getenv("APP_HOST") . ":8011/verify?user="
-            . urlencode($userTarget->username) . "&token=" . $temporaryToken;
-
-        $userTarget->temporary_email_token = $temporaryToken;
-        $userTarget->save();
-
-        $bodyMail = file_get_contents(template('verify-email.html'));
-        $bodyMail = str_replace(
-            ['{{username}}', '{{url}}'],
-            [htmlspecialchars($userTarget->username, ENT_QUOTES, 'UTF-8'), $url],
-            $bodyMail
-        );
-
-        Mailer::to($userTarget->email, $userTarget->username)->send('Verify your email', $bodyMail);
-    }
-
     /**
      * @throws ReflectionException
      */
@@ -51,7 +32,9 @@ class EmailController
                 'error' => "this email doesn't exist",
             ], 404);
         } elseif (!$user->email_verified) {
-            self::emailVerifySend($user);
+            $mailer = new MailSender($user);
+            $mailer->mailVerify()->send();
+
             Flight::json([
                 'success' => true,
             ]);

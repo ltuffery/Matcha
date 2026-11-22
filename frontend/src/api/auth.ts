@@ -48,6 +48,10 @@ export interface RefreshTokenData {
   refresh: string
 }
 
+export interface ForgotPasswordData {
+  email: string
+}
+
 export interface RefreshTokenResponse {
   success: boolean
   error?: string
@@ -76,8 +80,8 @@ export const authApi = {
       res => res.json(),
     )
   },
-  async forgot(email: string) {
-    return ApiClient.post<ForgotCredentialResponse>(`/forgot/credencial`).then(
+  async forgot(data: ForgotPasswordData) {
+    return ApiClient.post<ForgotCredentialResponse>(`/forgot/credencial`, data).then(
       res => res.json(),
     )
   },

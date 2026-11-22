@@ -12,6 +12,7 @@ use Matcha\Api\Model\User;
 use Matcha\Api\Resources\UserResource;
 use Matcha\Api\Validator\Validator;
 use Matcha\Api\Policies\PasswordPolicy;
+use Matcha\Api\Services\MailSender;
 
 class RegisterController
 {
@@ -88,7 +89,8 @@ class RegisterController
                 }
 
                 try {
-                    EmailController::emailVerifySend($user);
+                    $mailer = new MailSender($user);
+                    $mailer->mailVerify()->send();
                 } catch (\Throwable $e) {
                     error_log('Verification mail failed: ' . $e->getMessage());
                 }
