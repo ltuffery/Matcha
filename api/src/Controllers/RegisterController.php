@@ -11,7 +11,7 @@ use Matcha\Api\Model\Preference;
 use Matcha\Api\Model\User;
 use Matcha\Api\Resources\UserResource;
 use Matcha\Api\Validator\Validator;
-use Matcha\Api\Services\PasswordPolicy;
+use Matcha\Api\Policies\PasswordPolicy;
 
 class RegisterController
 {

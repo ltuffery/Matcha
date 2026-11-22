@@ -1,6 +1,6 @@
 <?php
 
-namespace Matcha\Api\Services;
+namespace Matcha\Api\Policies;
 
 class PasswordPolicy
 {
