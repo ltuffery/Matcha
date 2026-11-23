@@ -63,7 +63,7 @@ class RegisterControllerTest extends MatchaTestCase
             $this->post('/auth/register', [
                 'username' => "--test--",
                 'email' => "test@test.com",
-                'password' => "password",
+                'password' => "passwordNotInWordlist",
                 'age' => 19,
                 'first_name' => 'John',
                 'last_name' => 'Doe',
@@ -83,7 +83,7 @@ class RegisterControllerTest extends MatchaTestCase
         $response = $this->post('/auth/register', [
             'username' => "teste",
             'email' => "test@test.com",
-            'password' => "password",
+            'password' => "passwordNotInWordlist",
             'birthday' => "2004-12-04",
             'first_name' => 'John',
             'last_name' => 'Doe',
@@ -103,7 +103,7 @@ class RegisterControllerTest extends MatchaTestCase
         $response = $this->post('/auth/register', [
             'username' => "teste",
             'email' => $user->email,
-            'password' => "password",
+            'password' => "passwordNotInWordlist",
             'birthday' => "2004-12-04",
             'first_name' => 'John',
             'last_name' => 'Doe',
@@ -121,7 +121,7 @@ class RegisterControllerTest extends MatchaTestCase
         $response = $this->post('/auth/register', [
             'username' => "teste",
             'email' => 'email@test.com',
-            'password' => "password",
+            'password' => "passwordNotInWordlist",
             'birthday' => ($currentYear - 21) . "-12-04",
             'first_name' => 'John',
             'last_name' => 'Doe',
@@ -145,5 +145,23 @@ class RegisterControllerTest extends MatchaTestCase
         $this->assertEquals(18, $preferences->age_minimum);
         $this->assertEquals(23, $preferences->age_maximum);
         $this->assertTrue($preferences->by_tags);
+    }
+
+    public function testBadPassword(): void
+    {
+        $currentYear = (int)date('Y');
+        $response = $this->post('/auth/register', [
+            'username' => "teste",
+            'email' => 'email@test.com',
+            'password' => "password",
+            'birthday' => ($currentYear - 21) . "-12-04",
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'gender' => 'M',
+            'biography' => 'Lorem lorem',
+            'tags' => 'Netflix,Bike',
+        ]);
+
+        $response->assertStatus(422);
     }
 }
