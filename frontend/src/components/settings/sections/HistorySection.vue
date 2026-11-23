@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -6,35 +6,23 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Heart, Eye } from 'lucide-vue-next'
 import UserItem from '@/components/users/UserItem.vue'
-import { useMe } from '@/composable/useMe.ts'
+import { useMe } from '@/composable/useMe'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card/index.ts'
+} from '@/components/ui/card/index'
+import { formatRelativeDate } from '@/lib/format'
+import type { SmallProfile } from '@/api/profile'
 
 const me = useMe()
 
 const isLoading = ref(false)
 
-const viewedProfiles = ref([])
-const likedProfiles = ref([])
-
-function formatRelativeDate(dateString) {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now - date
-  const diffMin = Math.floor(diffMs / 60000)
-  const diffH = Math.floor(diffMin / 60)
-  const diffDays = Math.floor(diffH / 24)
-
-  if (diffMin < 60) return `There are ${diffMin} min`
-  if (diffH < 24) return `There are ${diffH} h`
-  if (diffDays === 1) return 'Yesterday'
-  return `There are ${diffDays} days`
-}
+const viewedProfiles = ref<SmallProfile[]>([])
+const likedProfiles = ref<SmallProfile[]>([])
 
 const viewedCount = computed(() => viewedProfiles.value.length)
 const likedCount = computed(() => likedProfiles.value.length)
@@ -94,7 +82,7 @@ onMounted(async () => {
               <div v-else class="space-y-3">
                 <UserItem
                   v-for="profile in viewedProfiles"
-                  :key="profile.id"
+                  :key="profile.username"
                   :profile="profile"
                   :description="formatRelativeDate(profile.created_at)"
                 />
@@ -126,7 +114,7 @@ onMounted(async () => {
               <div v-else class="space-y-3">
                 <UserItem
                   v-for="profile in likedProfiles"
-                  :key="profile.id"
+                  :key="profile.username"
                   :profile="profile"
                   :description="formatRelativeDate(profile.created_at)"
                 />

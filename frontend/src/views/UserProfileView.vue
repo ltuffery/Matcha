@@ -27,6 +27,7 @@ import { ApiClient } from '@/api/client'
 import { useUsers } from '@/composable/useUsers'
 import { getSocket } from '@/plugins/socket'
 import { usePresenceStore } from '@/store/presenceStore'
+import { formatLastSeen } from '@/lib/format'
 
 interface Profile {
   id: number
@@ -42,6 +43,7 @@ interface Profile {
   is_online: boolean
   is_me: boolean
   created_at: string
+  last_seen_at: string
 }
 
 const route = useRoute()
@@ -199,13 +201,18 @@ watch(() => route.params.username, load)
                   <span v-if="profile.city" class="flex items-center gap-1">
                     <MapPin class="h-4 w-4" /> {{ profile.city }}
                   </span>
-                  <span class="flex items-center gap-1">
-                    <span
-                      class="h-2 w-2 rounded-full"
-                      :class="isOnline ? 'bg-green-500' : 'bg-gray-400'"
-                    />
-                    {{ isOnline ? 'En ligne' : 'Hors ligne' }}
-                  </span>
+                  <div class="flex flex-col">
+                    <span class="flex items-center gap-1">
+                      <span
+                        class="h-2 w-2 rounded-full"
+                        :class="isOnline ? 'bg-green-500' : 'bg-gray-400'"
+                      />
+                      {{ isOnline ? 'En ligne' : 'Hors ligne' }}
+                    </span>
+                    <span v-if="!isOnline">
+                      {{ formatLastSeen(profile.last_seen_at) }}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

@@ -23,6 +23,7 @@ use Matcha\Api\Controllers\User\PhotoController;
 use Matcha\Api\Controllers\ViewController;
 use Matcha\Api\Middleware\AuthMiddleware;
 use Matcha\Api\Middleware\CompleteProfileMiddleware;
+use Matcha\Api\Middleware\LastSeenMiddleware;
 
 Flight::route('GET /', function () {
     $content = file_get_contents(dirname(__DIR__) . '/composer.json');
@@ -59,7 +60,7 @@ Flight::group('/users', function () {
         Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
 
     });
-}, [AuthMiddleware::class]);
+}, [AuthMiddleware::class, LastSeenMiddleware::class]);
 
 Flight::group('/users', function () {
 
@@ -106,13 +107,13 @@ Flight::group('/users', function () {
         });
     });
 
-}, [AuthMiddleware::class, CompleteProfileMiddleware::class]);
+}, [AuthMiddleware::class, CompleteProfileMiddleware::class, LastSeenMiddleware::class]);
 
 Flight::route('GET /tags', [TagsController::class, 'index']);
 
 Flight::group('/search', function () {
     Flight::route('GET /users', [SearchProfileController::class, 'index']);
-}, [AuthMiddleware::class, CompleteProfileMiddleware::class]);
+}, [AuthMiddleware::class, CompleteProfileMiddleware::class, LastSeenMiddleware::class]);
 
 Flight::group('/medias', function () {
     Flight::route('GET /p/@name', function (string $name) {
