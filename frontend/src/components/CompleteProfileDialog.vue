@@ -28,7 +28,7 @@ async function submit(): Promise<void> {
         localisation.value.lng,
         localisation.value.lat,
       )
-      await auth.fetchMe()
+      window.location.reload()
     }
   } catch (err: unknown) {
     errorMessage.value =
