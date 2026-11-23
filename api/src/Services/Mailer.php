@@ -15,6 +15,7 @@ class Mailer
 
         $this->mailer->isSMTP();
         $this->mailer->SMTPDebug = 2;
+        $this->mailer->Debugoutput = 'error_log';
         $this->mailer->Host = getenv('SMTP_HOST');
         $this->mailer->Username = getenv('SMTP_USER');
         $this->mailer->Password = getenv('SMTP_PASS');
