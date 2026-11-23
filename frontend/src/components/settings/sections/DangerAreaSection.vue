@@ -8,9 +8,15 @@ import {
 } from '@/components/ui/card'
 import { Trash2 } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+import DangerDeleteDialog from '@/components/settings/sections/danger_area/DangerDeleteDialog.vue'
+import { ref } from 'vue'
+
+const open = ref<boolean>(false)
 </script>
 
 <template>
+  <DangerDeleteDialog v-model:open="open" />
+
   <Card class="border-destructive/50">
     <CardHeader>
       <CardTitle class="text-destructive">Danger zone</CardTitle>
@@ -28,7 +34,7 @@ import { Button } from '@/components/ui/button'
             All of your data will be permanently deleted.
           </p>
         </div>
-        <Button variant="destructive" class="w-full md:w-auto">
+        <Button variant="destructive" class="w-full md:w-auto" @click="open = true">
           <Trash2 class="h-4 w-4 mr-2" />
           Delete
         </Button>
