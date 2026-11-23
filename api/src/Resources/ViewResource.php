@@ -23,6 +23,7 @@ class ViewResource extends JsonResource
             'username' => $user->username,
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
+            'last_seen_at' => $user->last_connection,
             'created_at' => $user->created_at,
         ];
     }

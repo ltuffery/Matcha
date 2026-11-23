@@ -1,25 +1,8 @@
-export function formatRelativeDate(dateString: string) {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now - date
-  const diffMin = Math.floor(diffMs / 60000)
-  const diffH = Math.floor(diffMin / 60)
-  const diffDays = Math.floor(diffH / 24)
-
-  if (diffMin < 60) return `There are ${diffMin} min`
-  if (diffH < 24) return `There are ${diffH} h`
-  if (diffDays === 1) return 'Yesterday'
-  return `There are ${diffDays} days`
-}
-
 export function formatLastSeen(
   input: string,
 ): string {
   const date = new Date(input)
   const now = new Date()
-
-  console.log(date)
-  console.log(now)
 
   const diffSeconds = Math.max(0, Math.floor((+now - date.getTime()) / 1000))
 

@@ -6,6 +6,7 @@ export interface SmallProfile {
   username: string
   first_name: string
   last_name: string
+  last_seen_at: string
   created_at: string
 }
 

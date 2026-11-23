@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card/index'
-import { formatRelativeDate } from '@/lib/format'
+import { formatLastSeen } from '@/lib/format'
 import type { SmallProfile } from '@/api/profile'
 
 const me = useMe()
@@ -84,7 +84,7 @@ onMounted(async () => {
                   v-for="profile in viewedProfiles"
                   :key="profile.username"
                   :profile="profile"
-                  :description="formatRelativeDate(profile.created_at)"
+                  :description="formatLastSeen(profile.last_seen_at)"
                 />
               </div>
             </ScrollArea>
@@ -116,7 +116,7 @@ onMounted(async () => {
                   v-for="profile in likedProfiles"
                   :key="profile.username"
                   :profile="profile"
-                  :description="formatRelativeDate(profile.created_at)"
+                  :description="formatLastSeen(profile.last_seen_at)"
                 />
               </div>
             </ScrollArea>
