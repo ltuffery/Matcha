@@ -11,6 +11,6 @@ export const config = {
   frontOrigin: process.env.FRONT_ORIGIN ?? "http://localhost:5173",
   redisUrl: process.env.REDIS_URL ?? "redis://redis:6379",
 
-  jwtSecret: requireEnv("JWT_SECRET"),
+  secretKey: requireEnv("SECRET_KEY"),
   internalSecret: requireEnv("INTERNAL_SECRET"),
 };

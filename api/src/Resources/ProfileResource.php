@@ -59,6 +59,7 @@ class ProfileResource extends JsonResource
             'common_tags' => $this->countCommonTags(),
             'gender' => $this->model->gender,
             'tags' => $this->model->getTags(),
+            'last_seen_at' => $this->model->last_connection,
         ];
 
         if ($resource['me']) {

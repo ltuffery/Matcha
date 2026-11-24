@@ -1,30 +1,26 @@
 <script setup lang="ts">
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import vDoubleTap from '@/directives/doubleTap'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import 'swiper/swiper-bundle.css'
 import { EffectCreative, Pagination } from 'swiper/modules'
 import ReportModal from '@/components/report/ReportModal.vue'
-import {
-  Heart,
-  X,
-  MapPin,
-  BadgeCheck,
-  ChevronUp,
-  TrendingUpIcon,
-} from 'lucide-vue-next'
+import { Heart, X, ChevronUp, TrendingUpIcon } from 'lucide-vue-next'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import router from '@/router'
 import { ApiClient } from '@/api/client'
-import type { User } from '@/api/auth'
 import { useUsers } from '@/composable/useUsers'
 import type { Profile } from '@/api/users'
+import OnlineStatus from '@/components/core/OnlineStatus.vue'
+import { usePresenceStore } from '@/store/presenceStore'
 
 const props = defineProps<{
   user: Profile
 }>()
+
+const presenceStore = usePresenceStore()
 
 const isLiked = ref(false)
 const animated = ref(false)
@@ -38,6 +34,7 @@ const emit = defineEmits<{
 }>()
 
 const photosCount = computed(() => props.user.photos?.length ?? 0)
+const isOnline = computed(() => presenceStore.isOnline(props.user.username))
 
 function userLike() {
   isLiked.value = true
@@ -138,32 +135,39 @@ function btnLike() {
     />
 
     <div
-      class="absolute bottom-28 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center text-white/70 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      class="absolute bottom-47 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center text-white/70 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
     >
       <ChevronUp class="size-6 animate-bounce" />
-      <span class="text-[11px] font-medium tracking-wide">More profile</span>
+      <span class="text-[11px] font-medium tracking-wide">
+        Plus de profiles
+      </span>
     </div>
 
-    <div class="absolute bottom-0 left-0 z-20 w-full p-5 pb-24 text-white">
-      <div class="flex items-baseline gap-2">
-        <h2
-          class="truncate text-5xl font-bold tracking-tight drop-shadow-sm"
-          @click="
-            router.push({
-              name: 'profile',
-              params: {
-                username: user.username,
-              },
-            })
-          "
-        >
-          {{ user.first_name }}
-        </h2>
+    <div class="absolute bottom-0 left-0 z-20 w-full px-5 pb-24 text-white">
+      <div class="flex items-center gap-2">
+        <div class="flex flex-col">
+          <h2
+            class="truncate text-5xl font-bold tracking-tight drop-shadow-sm"
+            @click="
+              router.push({
+                name: 'profile',
+                params: {
+                  username: user.username,
+                },
+              })
+            "
+          >
+            {{ user.first_name }}
+          </h2>
+
+          <OnlineStatus :is-online="isOnline" :show-text-status="true" />
+        </div>
+
         <span v-if="props.user.age" class="text-xl font-light text-white/85">
           {{ user.age }}
         </span>
 
-        <Badge variant="outline" class="ml-1">
+        <Badge variant="outline">
           {{ user.fame_rating }}
           <TrendingUpIcon />
         </Badge>

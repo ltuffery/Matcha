@@ -19,6 +19,7 @@ class UserFactory extends Factory
             'birthday' => faker()->dateTimeBetween('-50 years', '-18 years')->format('Y-m-d'),
             'gender' => faker()->randomElement(['M', 'F', 'O']),
             'biography' => faker()->sentence(),
+            'last_connection' => date('Y-m-d H:i:s'),
         ];
     }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MainUser from '@/components/MainUser.vue'
+import MainUser from '@/components/main/MainUser.vue'
 import { onMounted, ref, watch } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/swiper-bundle.css'
