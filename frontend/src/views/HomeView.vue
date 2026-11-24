@@ -8,6 +8,7 @@ import type { Swiper as SwiperType } from 'swiper/types'
 import type { Profile, SuggestionParams } from '@/api/users'
 import { useUsers } from '@/composable/useUsers'
 import SortDropdown from '@/components/SortDropdown.vue'
+import NoMoreProfiles from '@/components/NoMoreProfiles.vue'
 
 const users = useUsers()
 
@@ -23,7 +24,6 @@ const swiperInstance = ref<SwiperType | null>(null)
 const MAX_PROFILES = 50
 const PRELOAD_THRESHOLD = 0
 
-const skeleton = ref(true)
 const modules = ref([EffectCreative])
 
 const onSwiperInit = (swiper: SwiperType) => {
@@ -32,12 +32,7 @@ const onSwiperInit = (swiper: SwiperType) => {
 
 const loadMore = async () => {
   if (!users.hasMore.value) return
-  console.log("Je charge nouveau copain")
-  const swiper = swiperInstance.value
-
-  const params = buildParams()
-  params.offset = swiper!.activeIndex
-  await users.suggestion(params)
+  await users.suggestion(buildParams())
 
   // Delete old profiles (if > max)
   const list = users.suggestedProfiles.value
@@ -45,6 +40,7 @@ const loadMore = async () => {
     const removed = list.length - MAX_PROFILES
     list.splice(0, removed)
   }
+  users.suggestedProfiles.value = list
 }
 
 const onSlideChange = (swiper: SwiperType) => {
@@ -83,7 +79,6 @@ onMounted(async () => {
       <SortDropdown v-model:sort="usedSort" v-model:order="order"/>
 
       <Swiper
-        v-if="users.suggestedProfiles.value.length"
         :observer="true"
         :observe-parents="true"
         :direction="'vertical'"
@@ -116,6 +111,13 @@ onMounted(async () => {
             @nextSlide="goToNextSlide"
             :user="content"
           />
+        </SwiperSlide>
+        <SwiperSlide
+          v-if="!users.hasMore.value"
+          key="end-of-list"
+          class="h-full! flex! items-center justify-center rounded-lg"
+        >
+          <NoMoreProfiles class="h-full w-full" />
         </SwiperSlide>
       </Swiper>
     </div>

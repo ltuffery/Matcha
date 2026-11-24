@@ -1,161 +1,193 @@
 <template>
-  <main v-if="skeleton">
-    <div
-      class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-muted px-2"
-    >
-      <div class="card bg-background w-full max-w-sm shrink-0 shadow-2xl">
-        <div class="skeleton card-body h-24"></div>
-      </div>
-    </div>
-  </main>
-
   <main
-    v-else
-    class="grid grid-cols-1 place-content-center h-dvh place-items-center bg-muted px-2"
+    class="grid h-dvh grid-cols-1 place-content-center place-items-center bg-muted px-2"
   >
-    <div class="card bg-background w-full max-w-sm shrink-0 shadow-2xl">
-      <div class="card-body">
-        <form v-if="pageState == 'goodToken'" @submit.prevent="changePassword">
-          <div v-if="successed" class="toast toast-top toast-right">
-            <div class="alert alert-success">
-              <span>{{ successContent }}</span>
-            </div>
-          </div>
-          <div v-if="successed == false" class="toast toast-top toast-right">
-            <div class="alert alert-error">
-              <span>{{ errorContent }}</span>
-            </div>
-          </div>
+    <Toaster position="top-right" rich-colors />
 
-          <h3 class="text-3xl font-bold my-5">Create a new password !</h3>
-          <div class="form-control">
-            <label class="label">
-              <span class="label-text">New password</span>
-            </label>
-            <label class="input input-bordered flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 16 16"
-                fill="currentColor"
-                class="h-4 w-4 opacity-70"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <input
+    <Card class="w-full max-w-sm shadow-2xl">
+      <!-- Chargement -->
+      <template v-if="skeleton">
+        <CardHeader class="gap-3">
+          <Skeleton class="h-6 w-48" />
+          <Skeleton class="h-4 w-64" />
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <Skeleton class="h-9 w-full" />
+          <Skeleton class="h-9 w-full" />
+        </CardContent>
+      </template>
+
+      <!-- Formulaire -->
+      <form
+        v-else-if="pageState === 'goodToken'"
+        @submit.prevent="changePassword"
+      >
+        <CardHeader>
+          <CardTitle class="text-2xl">Create a new password</CardTitle>
+          <CardDescription>
+            Choose a new password for your account.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent class="space-y-4">
+          <div class="space-y-2">
+            <Label for="new-password">New password</Label>
+            <div class="relative">
+              <KeyRound
+                class="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              />
+              <Input
+                id="new-password"
                 v-model="newPassword"
                 type="password"
-                class="grow"
                 placeholder="********"
+                autocomplete="new-password"
+                class="pl-9"
                 required
               />
-            </label>
-            <label class="label mt-2">
-              <span class="label-text">Confirm new password</span>
-            </label>
-            <label class="input input-bordered flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 16 16"
-                fill="currentColor"
-                class="h-4 w-4 opacity-70"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <input
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <Label for="confirm-password">Confirm new password</Label>
+            <div class="relative">
+              <KeyRound
+                class="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+              />
+              <Input
+                id="confirm-password"
                 v-model="confirmPassword"
                 type="password"
-                class="grow"
                 placeholder="********"
+                autocomplete="new-password"
+                class="pl-9"
                 required
               />
-            </label>
+            </div>
           </div>
-          <div class="flex justify-end mt-3 w-full">
-            <button class="btn btn-outline btn-success ml-2" type="submit">
-              Send
-            </button>
-          </div>
-        </form>
+        </CardContent>
 
-        <span v-if="pageState == 'badToken'" class="text-destructive"
-          >You don't have right to change this password or your link has
-          expired</span
-        >
+        <CardFooter class="justify-end">
+          <Button type="submit" :disabled="submitting">
+            <Loader2 v-if="submitting" class="size-4 animate-spin" />
+            Send
+          </Button>
+        </CardFooter>
+      </form>
 
-        <span v-if="pageState == 'updatePwdSuccess'" class="text-success"
-          >Your password has been successfully changed !</span
+      <!-- Token invalide / expiré -->
+      <CardHeader v-else-if="pageState === 'badToken'" class="items-center text-center">
+        <div
+          class="mb-2 flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive"
         >
-      </div>
-    </div>
+          <XCircle class="size-6" />
+        </div>
+        <CardTitle>Link invalid</CardTitle>
+        <CardDescription>
+          You don't have right to change this password or your link has
+          expired.
+        </CardDescription>
+      </CardHeader>
+
+      <!-- Succès -->
+      <CardHeader v-else class="items-center text-center">
+        <div
+          class="mb-2 flex size-12 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-950"
+        >
+          <CheckCircle2 class="size-6" />
+        </div>
+        <CardTitle>Password changed</CardTitle>
+        <CardDescription>
+          Your password has been successfully changed!
+        </CardDescription>
+      </CardHeader>
+    </Card>
   </main>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { CheckCircle2, KeyRound, Loader2, XCircle } from 'lucide-vue-next'
+import { toast } from 'vue-sonner'
 import { ApiClient } from '@/api/client'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Toaster } from '@/components/ui/sonner'
+import { ApiError } from '@/api/errors'
 
 const pageState = ref<'badToken' | 'goodToken' | 'updatePwdSuccess'>('badToken')
 const skeleton = ref(true)
-const successed = ref<boolean | null>(null)
-const errorContent = ref('')
-const successContent = ref('')
+const submitting = ref(false)
 const tokenPwd = ref<string>()
 
-const newPassword = ref<string>()
-const confirmPassword = ref<string>()
+const newPassword = ref('')
+const confirmPassword = ref('')
 
 const urlParams = new URLSearchParams(window.location.search)
 
-function printBack(state: boolean, info: string) {
-  if (!state) errorContent.value = info
-  else successContent.value = info
-  successed.value = state
-  setTimeout(() => {
-    successed.value = null
-  }, 2500)
-}
-
 async function changePassword() {
-  if (newPassword.value != confirmPassword.value) {
-    printBack(false, 'the password need to be same')
-  } else {
-    const info = {
+  if (newPassword.value !== confirmPassword.value) {
+    toast.error('The passwords need to be the same')
+    return
+  }
+
+  submitting.value = true
+  try {
+    const req = await ApiClient.post('forgot/change-password', {
       username: urlParams.get('user'),
       newPassword: newPassword.value,
       confirmPassword: confirmPassword.value,
       token: tokenPwd.value,
-    }
-    const req = await ApiClient.post('forgot/change-password', info)
+    })
     const data = (await req.json()) as { success: boolean; error?: string }
+
     if (data.success) {
-      printBack(true, 'The password is changed')
+      toast.success('The password is changed')
       pageState.value = 'updatePwdSuccess'
-    } else printBack(false, data.error ?? 'Unknown error')
+    } else {
+      toast.error(data.error ?? 'Unknown error')
+    }
+  } catch (err) {
+    if (err instanceof ApiError || err instanceof Error) {
+      toast.error(err.message)
+    } else {
+      toast.error('Unknown error')
+    }
+  } finally {
+    submitting.value = false
+    newPassword.value = ''
+    confirmPassword.value = ''
   }
-  newPassword.value = ''
-  confirmPassword.value = ''
 }
 
 const checkToken = async () => {
-  const info = {
-    username: urlParams.get('user'),
-    token: urlParams.get('token'),
+  try {
+    const req = await ApiClient.post('forgot/token-verify', {
+      username: urlParams.get('user'),
+      token: urlParams.get('token'),
+    })
+    const data = (await req.json()) as { success: boolean; token?: string }
+    if (data.success) {
+      pageState.value = 'goodToken'
+      tokenPwd.value = data.token
+    } else {
+      pageState.value = 'badToken'
+    }
+  } catch {
+    pageState.value = 'badToken'
+  } finally {
+    skeleton.value = false
   }
-  const req = await ApiClient.post('forgot/token-verify', info)
-  const data = (await req.json()) as { success: boolean; token?: string }
-  if (data.success) {
-    pageState.value = 'goodToken'
-    tokenPwd.value = data.token
-  } else pageState.value = 'badToken'
-  skeleton.value = false
 }
 checkToken()
 </script>
