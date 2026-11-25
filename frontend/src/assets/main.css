@@ -45,7 +45,397 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
-    --font-heading: var(--font-sans);
+    --font-heading: var(--font-heading, ui-sans-serif, system-ui, sans-serif);
+    --animate-accordion-down: accordion-down 0.2s ease-out;
+    --animate-accordion-up: accordion-up 0.2s ease-out;
+    --animate-caret-blink: caret-blink 1.25s ease-out infinite;
+    --animate-slide-up: slideUp 0.2s ease-out;
+    --animate-slide-down: slideDown 0.2s ease-out;
+    --animate-slide-in: slideIn 0.2s ease-out;
+    --animate-slide-out: slideOut 0.2s ease-out;
+    --animate-marquee-x: marqueeX var(--marquee-duration) linear infinite var(--marquee-delay);
+    --animate-marquee-y: marqueeY var(--marquee-duration) linear infinite var(--marquee-delay);
+    --animate-indeterminate: indeterminate 1.5s ease-in-out infinite;
+    --animate-expand: expand 0.2s ease-out;
+    --animate-collapse: collapse 0.2s ease-out;
+    --animate-marquee-3d: marquee-3d var(--marquee-3d-duration, 20s) linear infinite;
+    --animate-animated-beam: animated-beam var(--animated-beam-duration, 5s) ease-in-out var(--animated-beam-delay, 0s) infinite backwards;
+    --animate-animated-beam-reverse: animated-beam-reverse var(--animated-beam-duration, 5s) ease-in-out var(--animated-beam-delay, 0s) infinite backwards;
+    --animate-animated-testimonials-in: animated-testimonials-in 200ms ease-in-out both;
+    --animate-animated-testimonials-rise: animated-testimonials-rise 400ms ease-in-out;
+    --animate-animated-testimonials-word: animated-testimonials-word 200ms ease-in-out calc(var(--animated-testimonials-word, 0) * 20ms) both;
+    --animate-hello-effect-draw: hello-effect-draw var(--hello-effect-duration, 1s) var(--hello-effect-ease, ease-in-out) var(--hello-effect-delay, 0s) both;
+    --animate-pin-3d-ring: pin-3d-ring 6s linear infinite;
+    --animate-pixel-image-color: pixel-image-color var(--pixel-image-duration, 1000ms) cubic-bezier(0.4, 0, 0.2, 1) var(--pixel-image-color-delay, 1300ms) both;
+    --animate-pixel-image-color-again: pixel-image-color-again var(--pixel-image-duration, 1000ms) cubic-bezier(0.4, 0, 0.2, 1) var(--pixel-image-color-delay, 1300ms) both;
+    --animate-pixel-image-piece: pixel-image-piece var(--pixel-image-duration, 1000ms) ease-out var(--pixel-image-delay, 0ms) both;
+    --animate-pixel-image-piece-again: pixel-image-piece-again var(--pixel-image-duration, 1000ms) ease-out var(--pixel-image-delay, 0ms) both;
+    --animate-canvas-edge-dot: canvas-edge-dot 2s linear infinite;
+    --animate-generated-image-in: generated-image-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-generated-image-sweep: generated-image-sweep 2s linear infinite;
+    --animate-speech-input-ring: speech-input-ring 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+    --animate-flip-in: flip-in 0.2s ease-out;
+    --animate-flip-out: flip-out 0.2s ease-out;
+    --animate-drawer-slide-in-bottom: drawer-slide-in-bottom 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    --animate-drawer-slide-out-bottom: drawer-slide-out-bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --animate-drawer-slide-in-top: drawer-slide-in-top 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    --animate-drawer-slide-out-top: drawer-slide-out-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --animate-drawer-slide-in-left: drawer-slide-in-left 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    --animate-drawer-slide-out-left: drawer-slide-out-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --animate-drawer-slide-in-right: drawer-slide-in-right 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+    --animate-drawer-slide-out-right: drawer-slide-out-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --animate-in: enter var(--tw-animation-duration, var(--tw-duration, 150ms)) var(--tw-ease, ease) var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal) var(--tw-animation-fill-mode, none);
+    --animate-out: exit var(--tw-animation-duration, var(--tw-duration, 150ms)) var(--tw-ease, ease) var(--tw-animation-delay, 0s) var(--tw-animation-iteration-count, 1) var(--tw-animation-direction, normal) var(--tw-animation-fill-mode, none);
+    --font-mono: var(--font-mono, ui-monospace, monospace);
+    --font-sans: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+    --percentage-0: 0;
+    --percentage-5: 0.05;
+    --percentage-10: 0.1;
+    --percentage-15: 0.15;
+    --percentage-20: 0.2;
+    --percentage-25: 0.25;
+    --percentage-30: 0.3;
+    --percentage-35: 0.35;
+    --percentage-40: 0.4;
+    --percentage-45: 0.45;
+    --percentage-50: 0.5;
+    --percentage-55: 0.55;
+    --percentage-60: 0.6;
+    --percentage-65: 0.65;
+    --percentage-70: 0.7;
+    --percentage-75: 0.75;
+    --percentage-80: 0.8;
+    --percentage-85: 0.85;
+    --percentage-90: 0.9;
+    --percentage-95: 0.95;
+    --percentage-100: 1;
+    --color-destructive-foreground: var(--destructive-foreground);
+  @keyframes accordion-down {
+  from {
+    height: 0;
+        }
+  to {
+    height: var( --radix-accordion-content-height, var( --accordion-panel-height, var( --disclosure-panel-height, var( --radix-collapsible-content-height, var(--collapsible-panel-height, auto) ) ) ) );
+        }
+    }
+  @keyframes accordion-up {
+  from {
+    height: var( --radix-accordion-content-height, var( --accordion-panel-height, var( --disclosure-panel-height, var( --radix-collapsible-content-height, var(--collapsible-panel-height, auto) ) ) ) );
+        }
+  to {
+    height: 0;
+        }
+    }
+  @keyframes caret-blink {
+  0%, 70%, 100% {
+    opacity: 1;
+        }
+  20%, 50% {
+    opacity: 0;
+        }
+    }
+  @keyframes slideUp {
+  from {
+    height: var(--height);
+        }
+  to {
+    height: 0;
+        }
+    }
+  @keyframes slideDown {
+  from {
+    height: 0;
+        }
+  to {
+    height: var(--height);
+        }
+    }
+  @keyframes slideIn {
+  from {
+    width: 0;
+        }
+  to {
+    width: var(--width);
+        }
+    }
+  @keyframes slideOut {
+  from {
+    width: var(--width);
+        }
+  to {
+    width: 0;
+        }
+    }
+  @keyframes marqueeX {
+  from {
+    transform: translateX(0);
+        }
+  to {
+    transform: translateX(var(--marquee-translate));
+        }
+    }
+  @keyframes marqueeY {
+  from {
+    transform: translateY(0);
+        }
+  to {
+    transform: translateY(var(--marquee-translate));
+        }
+    }
+  @keyframes expand {
+  from {
+    height: var(--collapsed-height, 0);
+        }
+  to {
+    height: var( --radix-collapsible-content-height, var(--collapsible-panel-height, var(--height, auto)) );
+        }
+    }
+  @keyframes collapse {
+  from {
+    height: var( --radix-collapsible-content-height, var(--collapsible-panel-height, var(--height, auto)) );
+        }
+  to {
+    height: var(--collapsed-height, 0);
+        }
+    }
+  @keyframes indeterminate {
+  0% {
+    transform: translateX(-100%);
+        }
+  100% {
+    transform: translateX(400%);
+        }
+    }
+  @keyframes flip-in {
+  from {
+    transform: rotateY(180deg);
+        }
+  to {
+    transform: rotateY(0deg);
+        }
+    }
+  @keyframes flip-out {
+  from {
+    transform: rotateY(0deg);
+        }
+  to {
+    transform: rotateY(180deg);
+        }
+    }
+  @keyframes drawer-slide-in-bottom {
+  from {
+    transform: translate3d(0, 100%, 0);
+        }
+  to {
+    transform: translate3d( var(--drawer-translate-x, 0), var(--drawer-translate-y, 0), 0 );
+        }
+    }
+  @keyframes drawer-slide-out-bottom {
+  from {
+    transform: translate3d( var(--drawer-translate-x, 0), var(--drawer-translate-y, 0), 0 );
+        }
+  to {
+    transform: translate3d(0, 100%, 0);
+        }
+    }
+  @keyframes drawer-slide-in-top {
+  from {
+    transform: translate3d(0, -100%, 0);
+        }
+  to {
+    transform: translate3d( var(--drawer-translate-x, 0), var(--drawer-translate-y, 0), 0 );
+        }
+    }
+  @keyframes drawer-slide-out-top {
+  from {
+    transform: translate3d( var(--drawer-translate-x, 0), var(--drawer-translate-y, 0), 0 );
+        }
+  to {
+    transform: translate3d(0, -100%, 0);
+        }
+    }
+  @keyframes drawer-slide-in-left {
+  from {
+    transform: translate3d(-100%, 0, 0);
+        }
+  to {
+    transform: translate3d( var(--drawer-translate-x, 0), var(--drawer-translate-y, 0), 0 );
+        }
+    }
+  @keyframes drawer-slide-out-left {
+  from {
+    transform: translate3d( var(--drawer-translate-x, 0), var(--drawer-translate-y, 0), 0 );
+        }
+  to {
+    transform: translate3d(-100%, 0, 0);
+        }
+    }
+  @keyframes drawer-slide-in-right {
+  from {
+    transform: translate3d(100%, 0, 0);
+        }
+  to {
+    transform: translate3d( var(--drawer-translate-x, 0), var(--drawer-translate-y, 0), 0 );
+        }
+    }
+  @keyframes drawer-slide-out-right {
+  from {
+    transform: translate3d( var(--drawer-translate-x, 0), var(--drawer-translate-y, 0), 0 );
+        }
+  to {
+    transform: translate3d(100%, 0, 0);
+        }
+    }
+  @keyframes marquee-3d {
+  from {
+    transform: translateY(calc(100% / 6));
+        }
+  to {
+    transform: translateY(calc(100% / -6));
+        }
+    }
+  @keyframes animated-beam {
+  from {
+    stroke-dashoffset: var(--animated-beam-length);
+        }
+  to {
+    stroke-dashoffset: calc(var(--animated-beam-length) - 1.45px);
+        }
+    }
+  @keyframes animated-beam-reverse {
+  from {
+    stroke-dashoffset: -1px;
+        }
+  to {
+    stroke-dashoffset: 0.45px;
+        }
+    }
+  @keyframes animated-testimonials-in {
+  from {
+    opacity: 0;
+    translate: 0 1.25rem;
+        }
+    }
+  @keyframes animated-testimonials-rise {
+  50% {
+    translate: 0 -25%;
+        }
+    }
+  @keyframes animated-testimonials-word {
+  from {
+    filter: blur(10px);
+    opacity: 0;
+    translate: 0 5px;
+        }
+    }
+  @keyframes hello-effect-draw {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 1;
+        }
+  50% {
+    opacity: 1;
+        }
+  100% {
+    opacity: 1;
+    stroke-dashoffset: 0;
+        }
+    }
+  @keyframes pin-3d-ring {
+  0% {
+    opacity: 0;
+    scale: 0;
+        }
+  33% {
+    opacity: 1;
+        }
+  66% {
+    opacity: 0.5;
+        }
+  100% {
+    opacity: 0;
+    scale: 1;
+        }
+    }
+  @keyframes pixel-image-color {
+  from {
+    filter: grayscale(1);
+        }
+  to {
+    filter: grayscale(0);
+        }
+    }
+  @keyframes pixel-image-color-again {
+  from {
+    filter: grayscale(1);
+        }
+  to {
+    filter: grayscale(0);
+        }
+    }
+  @keyframes pixel-image-piece {
+  from {
+    opacity: 0;
+        }
+  to {
+    opacity: 1;
+        }
+    }
+  @keyframes pixel-image-piece-again {
+  from {
+    opacity: 0;
+        }
+  to {
+    opacity: 1;
+        }
+    }
+  @keyframes canvas-edge-dot {
+  from {
+    stroke-dashoffset: 0;
+        }
+  to {
+    stroke-dashoffset: -1;
+        }
+    }
+  @keyframes generated-image-in {
+  from {
+    filter: blur(12px);
+    opacity: 0;
+    scale: 1.04;
+        }
+    }
+  @keyframes generated-image-sweep {
+  from {
+    translate: -100% 0;
+        }
+  to {
+    translate: 100% 0;
+        }
+    }
+  @keyframes speech-input-ring {
+  from {
+    opacity: 1;
+    transform: scale(1);
+        }
+  to {
+    opacity: 0;
+    transform: scale(1.8);
+        }
+    }
+  @keyframes enter {
+  from {
+    filter: blur(var(--tw-enter-blur, 0));
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0));
+        }
+    }
+  @keyframes exit {
+  to {
+    filter: blur(var(--tw-exit-blur, 0));
+    opacity: var(--tw-exit-opacity, 1);
+    transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
+        }
+    }
 }
 
 :root {
@@ -120,10 +510,12 @@
 @layer base {
     * {
         @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50 ring-ring;
     }
 
     body {
         @apply bg-background text-foreground;
+    @apply bg-background text-foreground flex min-h-svh flex-col font-sans;
     }
   .maplibregl-popup-content {
     @apply bg-transparent! shadow-none! p-0! rounded-none!;
@@ -131,4 +523,256 @@
   .maplibregl-popup-tip {
     @apply hidden!;
     }
+  ::selection {
+    @apply bg-primary/80 text-primary-foreground;
+    }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+    }
+  html {
+    @apply antialiased;
+    }
+  main {
+    @apply flex-1 flex flex-col;
+    }
+}
+
+@custom-variant data-open {
+  &:where([data-state="open"]), &:where([data-open]:not([data-open="false"])) {
+    @slot;
+    }
+}
+
+@custom-variant data-closed {
+  &:where([data-state="closed"]), &:where([data-closed]:not([data-closed="false"])) {
+    @slot;
+    }
+}
+
+@custom-variant data-checked {
+  &:where([data-state="checked"]), &:where([data-checked]:not([data-checked="false"])) {
+    @slot;
+    }
+}
+
+@custom-variant data-unchecked {
+  &:where([data-state="unchecked"]), &:where([data-unchecked]:not([data-unchecked="false"])) {
+    @slot;
+    }
+}
+
+@custom-variant data-selected {
+  &:where([data-selected="true"]) {
+    @slot;
+    }
+}
+
+@custom-variant data-disabled {
+  &:where([data-disabled="true"]), &:where([data-disabled]:not([data-disabled="false"])) {
+    @slot;
+    }
+}
+
+@custom-variant data-active {
+  &:where([data-state="active"]), &:where([data-active]:not([data-active="false"])) {
+    @slot;
+    }
+}
+
+@custom-variant data-horizontal {
+  &:where([data-orientation="horizontal"]) {
+    @slot;
+    }
+}
+
+@custom-variant data-vertical {
+  &:where([data-orientation="vertical"]) {
+    @slot;
+    }
+}
+
+@custom-variant data-entering {
+  &:where([data-entering]:not([data-entering="false"])) {
+    @slot;
+    }
+}
+
+@custom-variant data-exiting {
+  &:where([data-exiting]:not([data-exiting="false"])) {
+    @slot;
+    }
+}
+
+@custom-variant data-highlighted {
+  &:where([data-highlighted]:not([data-highlighted="false"])) {
+    @slot;
+    }
+}
+  @property --tw-animation-delay {
+    inherits: false;
+    syntax: "*";
+    initial-value: 0s;
+}
+  @property --tw-animation-direction {
+    inherits: false;
+    syntax: "*";
+    initial-value: normal;
+}
+  @property --tw-animation-duration {
+    inherits: false;
+    syntax: "*";
+}
+  @property --tw-animation-fill-mode {
+    inherits: false;
+    syntax: "*";
+    initial-value: none;
+}
+  @property --tw-animation-iteration-count {
+    inherits: false;
+    syntax: "*";
+    initial-value: 1;
+}
+  @property --tw-enter-blur {
+    inherits: false;
+    syntax: "*";
+    initial-value: 0;
+}
+  @property --tw-enter-opacity {
+    inherits: false;
+    syntax: "*";
+    initial-value: 1;
+}
+  @property --tw-enter-rotate {
+    inherits: false;
+    syntax: "*";
+    initial-value: 0;
+}
+  @property --tw-enter-scale {
+    inherits: false;
+    syntax: "*";
+    initial-value: 1;
+}
+  @property --tw-enter-translate-x {
+    inherits: false;
+    syntax: "*";
+    initial-value: 0;
+}
+  @property --tw-enter-translate-y {
+    inherits: false;
+    syntax: "*";
+    initial-value: 0;
+}
+  @property --tw-exit-blur {
+    inherits: false;
+    syntax: "*";
+    initial-value: 0;
+}
+  @property --tw-exit-opacity {
+    inherits: false;
+    syntax: "*";
+    initial-value: 1;
+}
+  @property --tw-exit-rotate {
+    inherits: false;
+    syntax: "*";
+    initial-value: 0;
+}
+  @property --tw-exit-scale {
+    inherits: false;
+    syntax: "*";
+    initial-value: 1;
+}
+  @property --tw-exit-translate-x {
+    inherits: false;
+    syntax: "*";
+    initial-value: 0;
+}
+  @property --tw-exit-translate-y {
+    inherits: false;
+    syntax: "*";
+    initial-value: 0;
+}
+
+@utility blur-in-* {
+    --tw-enter-blur: --value(--blur-*, [*]);
+}
+
+@utility blur-out-* {
+    --tw-exit-blur: --value(--blur-*, [*]);
+}
+
+@utility fade-in-* {
+    --tw-enter-opacity: --value(--percentage-*, [*]);
+}
+
+@utility fade-out-* {
+    --tw-exit-opacity: --value(--percentage-*, [*]);
+}
+
+@utility slide-in-from-bottom-* {
+    --tw-enter-translate-y: calc(--value(integer) * var(--spacing));
+}
+
+@utility slide-in-from-end-* {
+  &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+    --tw-enter-translate-x: calc(--value(integer) * var(--spacing));
+    }
+  &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+    --tw-enter-translate-x: calc(--value(integer) * var(--spacing) * -1);
+    }
+}
+
+@utility slide-in-from-start-* {
+  &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+    --tw-enter-translate-x: calc(--value(integer) * var(--spacing) * -1);
+    }
+  &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+    --tw-enter-translate-x: calc(--value(integer) * var(--spacing));
+    }
+}
+
+@utility slide-in-from-top-* {
+    --tw-enter-translate-y: calc(--value(integer) * var(--spacing) * -1);
+}
+
+@utility slide-out-to-bottom-* {
+    --tw-exit-translate-y: calc(--value(integer) * var(--spacing));
+}
+
+@utility slide-out-to-end-* {
+  &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+    --tw-exit-translate-x: calc(--value(integer) * var(--spacing));
+    }
+  &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+    --tw-exit-translate-x: calc(--value(integer) * var(--spacing) * -1);
+    }
+}
+
+@utility slide-out-to-start-* {
+  &:where(:dir(ltr), [dir="ltr"], [dir="ltr"] *) {
+    --tw-exit-translate-x: calc(--value(integer) * var(--spacing) * -1);
+    }
+  &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *) {
+    --tw-exit-translate-x: calc(--value(integer) * var(--spacing));
+    }
+}
+
+@utility slide-out-to-top-* {
+    --tw-exit-translate-y: calc(--value(integer) * var(--spacing) * -1);
+}
+
+@utility spin-in-* {
+    --tw-enter-rotate: --value(--rotate-*, [*]);
+}
+
+@utility spin-out-* {
+    --tw-exit-rotate: --value(--rotate-*, [*]);
+}
+
+@utility zoom-in-* {
+    --tw-enter-scale: --value(--percentage-*, [*]);
+}
+
+@utility zoom-out-* {
+    --tw-exit-scale: --value(--percentage-*, [*]);
 }
