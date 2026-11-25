@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { computed, ref } from 'vue'
 import { useAuthStore } from '@/store/useAuthStore'
+import {useAuth} from "@/composable/useAuth";
 
 const open = defineModel<boolean>('open', { required: true })
 
@@ -24,7 +25,8 @@ const disabled = computed(() => {
 
 const onDelete = async () => {
   await me.deleteAccount()
-  // window.location.reload()
+  await useAuth().disconnect()
+  window.location.reload()
 }
 </script>
 

@@ -139,13 +139,4 @@ class ProfileController
             'message' => 'Delete success',
         ]);
     }
-
-    public function offline(): void
-    {
-        $user = Flight::user();
-
-        $user->last_connection = date('Y-m-d H:i:s');
-
-        $user->save();
-    }
 }
