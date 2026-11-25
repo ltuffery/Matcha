@@ -67,20 +67,6 @@ const report = (username: string) => {
             Unblock
           </Button>
 
-          <!-- <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button variant="ghost" size="icon" class="size-8">
-                <MoreHorizontal class="size-4" />
-                <span class="sr-only">More actions</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem class="text-destructive" @click="report(user.username)">
-                <Flag class="mr-2 size-4" />
-                Report
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> -->
         </li>
       </ul>
     </CardContent>
