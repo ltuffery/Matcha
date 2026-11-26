@@ -1,6 +1,6 @@
 <?php
 
-namespace Matcha\Api\Controllers;
+namespace Matcha\Api\Controllers\Chat;
 
 use Flight;
 use Matcha\Api\Enums\NotificationType;
@@ -36,6 +36,8 @@ class ChatController
         ]);
 
         $messages = Message::allOf(Flight::user(), $receiver);
+
+        usort($messages, fn(Message $a, Message $b) => strtotime($a->created_at) <=> strtotime($b->created_at));
 
         $this->updateMessageViews($messages);
 
@@ -88,23 +90,20 @@ class ChatController
 
         $saved = $message->save();
 
-        $redis = new Client([
-                'scheme' => 'tcp',
-                'host'   => 'redis',
-                'port'   => 6379,
-        ]);
+        /** @var Client $redis */
+        $redis = Flight::redis();
 
         try {
             $redis->publish('app_events', json_encode([
-                    'type' => 'new_message',
-                    'target_username' => $receiver->username,
-                    'payload' => [
-                        'id' => $saved->id,
-                        'sender' => $user->username,
-                        'receiver' => $receiver->username,
-                        'content' => $message->content,
-                        'created_at' => $saved->created_at,
-                    ],
+                'type' => 'new_message',
+                'target_username' => $receiver->username,
+                'payload' => [
+                    'id' => $saved->id,
+                    'sender' => $user->username,
+                    'receiver' => $receiver->username,
+                    'content' => $message->content,
+                    'created_at' => $saved->created_at,
+                ],
             ]));
 
             Flight::notifier()->notify($user, [

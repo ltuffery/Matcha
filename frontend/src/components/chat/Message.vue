@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Bubble, BubbleContent, BubbleReactions } from '@/components/ui/bubble'
 import { ButtonGroup } from '@/components/ui/button-group'
 import {
@@ -7,7 +7,6 @@ import {
   MessageContent,
   MessageGroup,
 } from '@/components/ui/message'
-import type { MessageData } from '@/types'
 import { Button } from '@/components/ui/button'
 import {
   EmojiPicker,
@@ -20,48 +19,82 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { FaceSlightlySmilingPlus } from '@lucide/vue'
+import { FaceSlightlySmilingPlus, Trash } from '@lucide/vue'
+import type { SelectedEmoji } from '@/components/ui/emoji-picker/emoji-picker.vue'
+import type { Message } from '@/api/chat'
+import type { Reaction } from '@/api/reactions'
 
-interface SelectedEmoji {
+export interface InternalReactionEmit {
+  message: Message
   emoji: string
-  label: string
+  active: boolean
+}
+
+interface GroupedReaction {
+  emoji: string
+  count: number
+  mine: boolean
 }
 
 const props = defineProps<{
   isMe: boolean
-  messages: MessageData[]
+  messages: Message[]
 }>()
 
 const emit = defineEmits<{
-  (
-    e: 'react',
-    payload: { message: MessageData; emoji: string; active: boolean },
-  ): void
+  (e: 'react', payload: InternalReactionEmit): void
+  (e: 'delete', messageId: number): void
 }>()
 
-const hoveredMessageIndex = ref<number | null>(null)
-const openMessageIndex = ref<number | null>(null)
-const reactions = ref<Record<number, string | null>>({})
+const hoveredMessageId = ref<number | null>(null)
+const openMessageId = ref<number | null>(null)
 
-const isToolbarVisible = (msgIndex: number) =>
-  hoveredMessageIndex.value === msgIndex || openMessageIndex.value === msgIndex
+const reactions = ref<Record<number, Reaction[]>>({})
 
-const toggleReaction = (emoji: string, msgIndex: number) => {
-  const exist = reactions.value[msgIndex] == emoji
+watch(
+  () => props.messages,
+  msgs => {
+    const map: Record<number, Reaction[]> = {}
+    msgs.forEach(m => {
+      map[m.id] = [...(m.reactions ?? [])]
+    })
+    reactions.value = map
+  },
+  { immediate: true, deep: true },
+)
 
-  reactions.value[msgIndex] = exist ? null : emoji
+const isToolbarVisible = (id: number) =>
+  hoveredMessageId.value === id || openMessageId.value === id
 
-  emit('react', {
-    message: props.messages[msgIndex],
-    emoji,
-    active: !exist,
-  })
+const groupedReactions = (id: number): GroupedReaction[] => {
+  const groups = new Map<string, GroupedReaction>()
+  for (const r of reactions.value[id] ?? []) {
+    const g = groups.get(r.emoji) ?? { emoji: r.emoji, count: 0, mine: false }
+    g.count++
+    if (r.is_me) g.mine = true
+    groups.set(r.emoji, g)
+  }
+  return [...groups.values()]
 }
 
-const handleEmojiSelect = (emoji: SelectedEmoji, msgIndex: number) => {
-  toggleReaction(emoji.emoji, msgIndex)
+const toggleReaction = (emoji: string, message: Message) => {
+  const list = reactions.value[message.id] ?? []
+  const mine = list.find(r => r.is_me)
+  const others = list.filter(r => !r.is_me)
+
+  const active = mine?.emoji !== emoji
+
+  reactions.value[message.id] = active
+    ? [...others, { username: '', message_id: message.id, emoji, is_me: true }]
+    : others
+
+  emit('react', { message, emoji, active })
+}
+
+const handleEmojiSelect = (emoji: SelectedEmoji, message: Message) => {
+  toggleReaction(emoji.emoji, message)
   setTimeout(() => {
-    openMessageIndex.value = null
+    openMessageId.value = null
   }, 0)
 }
 </script>
@@ -71,29 +104,29 @@ const handleEmojiSelect = (emoji: SelectedEmoji, msgIndex: number) => {
     <ShadcnMessage :align="isMe ? 'end' : 'start'">
       <MessageContent class="flex flex-col gap-1">
         <Bubble
-          v-for="(message, msgIndex) in messages"
-          :key="msgIndex"
+          v-for="message in messages"
+          :key="message.id"
           :variant="isMe ? 'default' : 'secondary'"
           class="relative"
-          :class="{ 'mb-4': reactions[msgIndex]?.length }"
-          @mouseenter="hoveredMessageIndex = msgIndex"
-          @mouseleave="hoveredMessageIndex = null"
+          :class="{ 'mb-4': groupedReactions(message.id).length > 0 }"
+          @mouseenter="hoveredMessageId = message.id"
+          @mouseleave="hoveredMessageId = null"
         >
           <ButtonGroup
-            v-show="isToolbarVisible(msgIndex)"
+            v-show="isToolbarVisible(message.id)"
             class="absolute bg-popover -top-4 right-2 z-50 rounded-md shadow-sm"
           >
             <Button
               variant="outline"
               class="bg-popover hover:bg-accent"
-              @click="toggleReaction('❤️', msgIndex)"
+              @click="toggleReaction('❤️', message)"
             >
               ❤️
             </Button>
 
             <Popover
-              :open="openMessageIndex === msgIndex"
-              @update:open="val => (openMessageIndex = val ? msgIndex : null)"
+              :open="openMessageId === message.id"
+              @update:open="val => (openMessageId = val ? message.id : null)"
             >
               <PopoverTrigger as-child>
                 <Button
@@ -110,7 +143,7 @@ const handleEmojiSelect = (emoji: SelectedEmoji, msgIndex: number) => {
                 <EmojiPicker
                   class="h-85.5 border-none! shadow-none!"
                   @emoji-select="
-                    (emoji: SelectedEmoji) => handleEmojiSelect(emoji, msgIndex)
+                    (emoji: SelectedEmoji) => handleEmojiSelect(emoji, message)
                   "
                 >
                   <EmojiPickerSearch />
@@ -119,19 +152,34 @@ const handleEmojiSelect = (emoji: SelectedEmoji, msgIndex: number) => {
                 </EmojiPicker>
               </PopoverContent>
             </Popover>
+
+            <Button
+              v-if="isMe"
+              variant="outline"
+              class="bg-popover hover:bg-accent"
+              @click="emit('delete', message.id)"
+            >
+              <Trash />
+            </Button>
           </ButtonGroup>
 
           <BubbleContent class="whitespace-pre-line">{{
             message.content
           }}</BubbleContent>
 
-          <!-- Réactions -->
+          <!-- Reactions -->
           <BubbleReactions
-            v-if="reactions[msgIndex] != null"
-            @click="toggleReaction(reactions[msgIndex], msgIndex)"
+            v-if="groupedReactions(message.id).length > 0"
             class="mb-1"
           >
-            {{ reactions[msgIndex] }}
+            <span
+              v-for="g in groupedReactions(message.id)"
+              :key="g.emoji"
+              @click="toggleReaction(g.emoji, message)"
+            >
+              {{ g.emoji }}
+              <span v-if="g.count > 1" class="text-xs">{{ g.count }}</span>
+            </span>
           </BubbleReactions>
         </Bubble>
       </MessageContent>

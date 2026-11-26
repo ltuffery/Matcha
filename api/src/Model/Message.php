@@ -9,8 +9,8 @@ use PDOStatement;
 use ReflectionException;
 
 /**
+ * @extends Model<Message>
  * @method static Message find(array $where)
- * @method Message save()
  */
 class Message extends Model
 {
@@ -56,11 +56,11 @@ class Message extends Model
             ['sender_id', '=', $user1->id],
             ['receiver_id', '=', $user2->id],
         ])
-        ->orWhere('sender_id', '=', $user2->id)
-        ->andWhere('receiver_id', '=', $user1->id)
-        ->orderBy('created_at', 'DESC')
-        ->limit($limit)
-        ->get(true);
+            ->orWhere('sender_id', '=', $user2->id)
+            ->andWhere('receiver_id', '=', $user1->id)
+            ->orderBy('created_at', 'DESC')
+            ->limit($limit)
+            ->get(true);
 
         return $messages;
     }
@@ -75,10 +75,10 @@ class Message extends Model
     public static function countUnreadOf(User $me, User $other, int $limit = 50): int
     {
         $messages = Message::where([
-                ['sender_id', '=', $other->id],
-                ['receiver_id', '=', $me->id],
-                ['view', '=', 0]
-            ])
+            ['sender_id', '=', $other->id],
+            ['receiver_id', '=', $me->id],
+            ['view', '=', 0]
+        ])
             ->orderBy('created_at', 'DESC')
             ->limit($limit)
             ->get(true);
@@ -88,5 +88,23 @@ class Message extends Model
         }
 
         return count($messages);
+    }
+
+    /**
+     * Add reaction
+     */
+    public function addReaction(int $user_id, string $emoji): Reaction
+    {
+        $reaction = Reaction::find(['user_id' => $user_id, 'message_id' => $this->id]);
+
+        if (is_null($reaction)) {
+            $reaction = new Reaction();
+            $reaction->user_id = $user_id;
+            $reaction->message_id = $this->id;
+        }
+
+        $reaction->emoji = $emoji;
+
+        return $reaction->save();
     }
 }

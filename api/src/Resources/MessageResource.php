@@ -3,6 +3,7 @@
 namespace Matcha\Api\Resources;
 
 use Matcha\Api\Model\Message;
+use Matcha\Api\Model\Reaction;
 use Matcha\Api\Model\User;
 
 /**
@@ -18,6 +19,7 @@ class MessageResource extends JsonResource
     public function jsonSerialize(): array
     {
         $user = User::find(['id' => $this->model->sender_id]);
+        $reactions = Reaction::all(['message_id' => $this->model->id]);
 
         return [
             'id' => $this->model->id,
@@ -25,6 +27,7 @@ class MessageResource extends JsonResource
             'avatar' => $user->getAvatar(),
             'content' => htmlspecialchars_decode($this->model->content),
             'view' => $this->model->view,
+            'reactions' => ReactionResource::collection($reactions),
             'created_at' => $this->model->created_at,
         ];
     }

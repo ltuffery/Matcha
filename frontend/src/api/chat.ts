@@ -1,4 +1,5 @@
 import { ApiClient } from '@/api/client'
+import type { Reaction } from '@/api/reactions'
 
 export interface Message {
   id: number
@@ -6,7 +7,16 @@ export interface Message {
   avatar: string
   content: string
   view: boolean
+  reactions: Reaction[]
   created_at: string
+}
+
+export interface Conversation {
+  avatar: string
+  username: string
+  first_name: string
+  last_name: string
+  messages: Message[]
 }
 
 export interface MatchUser {
@@ -23,14 +33,14 @@ export const chatApi = {
   },
 
   async getMessages(username: string) {
-    return ApiClient.get<Message[]>(`/users/me/matches/${username}`).then(res =>
+    return ApiClient.get<Conversation>(`/users/me/matches/${username}`).then(res =>
       res.json(),
     )
   },
 
   async sendMessage(username: string, text: string) {
     return ApiClient.post<Message>(`/users/me/matches/${username}`, {
-      text,
+      content: text,
     }).then(res => res.json())
   },
 

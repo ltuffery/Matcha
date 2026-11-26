@@ -6,6 +6,7 @@ use Matcha\Api\Exceptions\InvalidDataException;
 use Matcha\Api\Exceptions\UniqueConstraintException;
 use Matcha\Api\Model\User;
 use Matcha\Api\Services\MercurePublisher;
+use Predis\Client;
 
 $_SERVER['SCRIPT_NAME'] = 'index.php';
 
@@ -16,6 +17,11 @@ Flight::register('db', PDO::class, [
 ]);
 
 Flight::register('notifier', MercurePublisher::class, [getenv('MERCURE_PUBLISHER_JWT_KEY')]);
+Flight::register('redis', Client::class, ['parameters' => [
+    'scheme' => 'tcp',
+    'host' => 'redis',
+    'port' => 6379,
+]]);
 
 Flight::map('user', function () {
     $token = Flight::request()->header('Authorization');

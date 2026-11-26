@@ -2,22 +2,23 @@
 
 use Matcha\Api\Controllers\Auth\VerifyTokenController;
 use Matcha\Api\Controllers\AuthenticatedSessionController;
-use Matcha\Api\Controllers\ChatController;
+use Matcha\Api\Controllers\Chat\ChatController;
+use Matcha\Api\Controllers\Chat\ReactionController;
 use Matcha\Api\Controllers\EmailController;
 use Matcha\Api\Controllers\ForgotController;
 use Matcha\Api\Controllers\HistoryController;
 use Matcha\Api\Controllers\LikeController;
-use Matcha\Api\Controllers\PassController;
 use Matcha\Api\Controllers\LocalisationController;
 use Matcha\Api\Controllers\Notifications\NotificationsController;
+use Matcha\Api\Controllers\PassController;
 use Matcha\Api\Controllers\Profile\PreferencesController;
 use Matcha\Api\Controllers\Profile\ProfileController;
-use Matcha\Api\Controllers\SuggestionController;
 use Matcha\Api\Controllers\Profile\ReportController;
 use Matcha\Api\Controllers\Profile\UserBlockController;
 use Matcha\Api\Controllers\RefreshTokenController;
 use Matcha\Api\Controllers\RegisterController;
 use Matcha\Api\Controllers\SearchProfileController;
+use Matcha\Api\Controllers\SuggestionController;
 use Matcha\Api\Controllers\TagsController;
 use Matcha\Api\Controllers\User\PhotoController;
 use Matcha\Api\Controllers\ViewController;
@@ -104,6 +105,11 @@ Flight::group('/users', function () {
             Flight::route('GET /@username', [ChatController::class, 'show']);
             Flight::route('POST /@username', [ChatController::class, 'store']);
             Flight::route('DELETE /@username/@id', [ChatController::class, 'delete']);
+
+            Flight::group('/@username/@messageId/reactions', function () {
+                Flight::route('POST /', [ReactionController::class, 'store']);
+                Flight::route('DELETE /', [ReactionController::class, 'destroy']);
+            });
         });
     });
 

@@ -13,6 +13,9 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
 
+/**
+ * @template T of object
+ */
 #[AllowDynamicProperties]
 abstract class Model
 {
@@ -35,6 +38,7 @@ abstract class Model
 
     /**
      * @throws Exception
+     * @return Model<T>
      */
     public function save(): Model
     {
