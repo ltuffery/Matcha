@@ -56,7 +56,7 @@ class AuthenticatedSessionControllerTest extends MatchaTestCase
         $this->response->assertStatus(400);
         $this->response->assertJson([
             'success' => false,
-            'error' => 'Invalid username or password',
+            'message' => 'Invalid username or password',
         ]);
     }
 
@@ -72,7 +72,7 @@ class AuthenticatedSessionControllerTest extends MatchaTestCase
         $this->response->assertStatus(400);
         $this->response->assertJson([
             'success' => false,
-            'error' => 'Invalid username or password',
+            'message' => 'Invalid username or password',
         ]);
     }
 
