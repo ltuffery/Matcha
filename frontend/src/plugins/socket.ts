@@ -34,11 +34,6 @@ export async function connectSocket(): Promise<void> {
     socket!.on("stop_typing", ({ from_username }) => {
       typingStore.stopTyping(from_username);
     })
-
-    socket!.on("new_message", (message: MessageData) => {
-      console.log("message recived :", message);
-      messageStore.addMessage(message.sender, message);
-    })
   })
 
   socket.on('disconnect', () => {})

@@ -5,7 +5,14 @@ import {
   MessageCircleIcon,
   FaceSlightlySmilingPlus,
 } from '@lucide/vue'
-import { computed, onMounted, ref, watch } from 'vue'
+import {
+  computed,
+  onBeforeMount,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+} from 'vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   InputGroup,
@@ -160,8 +167,27 @@ watch(
   { immediate: true },
 )
 
+const onCreateMessage = (message: ChatMessage) => {
+  chat.activeConversation.value?.messages.push(message)
+}
+
+const onDeleteMessage = (message: { id: number }) => {
+  chat.activeConversation.value!.messages =
+    chat.activeConversation.value!.messages.filter(m => m.id != message.id)
+}
+
+const socket = getSocket()
+
+socket?.on('create_message', onCreateMessage)
+socket?.on('delete_message', onDeleteMessage)
+
 onMounted(async () => {
   await chat.fetchConversation(route.params.username as string)
+})
+
+onBeforeUnmount(() => {
+  socket.off('create_message', onCreateMessage)
+  socket.off('delete_message', onDeleteMessage)
 })
 </script>
 

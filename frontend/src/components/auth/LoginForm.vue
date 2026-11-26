@@ -16,6 +16,7 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { useAuth } from '@/composable/useAuth'
 import { toast } from 'vue-sonner'
 import Password from '@/components/inputs/Password.vue'
+import { connectSocket } from '@/plugins/socket'
 
 const auth = useAuth()
 

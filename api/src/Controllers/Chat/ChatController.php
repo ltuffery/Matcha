@@ -105,7 +105,7 @@ class ChatController
 
         try {
             $redis->publish('app_events', json_encode([
-                'type' => 'new_message',
+                'type' => 'create_message',
                 'target_username' => $receiver->username,
                 'payload' => [
                     'id' => $saved->id,
@@ -147,6 +147,13 @@ class ChatController
             return;
         }
 
+        Flight::redis()->publish('app_events', json_encode([
+            'type' => 'delete_message',
+            'target_username' => $username,
+            'payload' => [
+                'id' => $message->id,
+            ],
+        ]));
         $message->delete();
 
         Flight::json([], 203);
