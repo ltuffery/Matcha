@@ -74,7 +74,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex w-full justify-center overflow-hidden rounded-lg py-4">
+  <div class="flex w-full justify-center overflow-hidden rounded-lg py-4 h-full">
     <div class="relative h-full w-full max-w-lg">
       <SortDropdown v-model:sort="usedSort" v-model:order="order"/>
 
