@@ -6,6 +6,7 @@ export interface SmallUser {
 }
 
 export interface MessageData {
+  id: number
   sender: string
   avatar: string
   content: string

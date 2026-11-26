@@ -1,12 +1,16 @@
 import { ref } from 'vue'
-import { chatApi, type MatchUser, type Message } from '@/api/chat'
+import {
+  chatApi,
+  type Conversation,
+  type MatchUser,
+} from '@/api/chat'
 
 export function useChat() {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
   const matches = ref<MatchUser[]>([])
-  const activeMessages = ref<Message[]>([])
+  const activeConversation = ref<Conversation>()
 
   const fetchMatches = async () => {
     isLoading.value = true
@@ -25,12 +29,12 @@ export function useChat() {
     }
   }
 
-  const fetchMessages = async (username: string) => {
+  const fetchConversation = async (username: string) => {
     isLoading.value = true
     error.value = null
     try {
       const data = await chatApi.getMessages(username)
-      activeMessages.value = data
+      activeConversation.value = data
       return data
     } catch (err: any) {
       error.value =
@@ -45,7 +49,7 @@ export function useChat() {
     error.value = null
     try {
       const newMessage = await chatApi.sendMessage(username, text)
-      activeMessages.value.push(newMessage)
+      activeConversation.value?.messages.push(newMessage)
       return newMessage
     } catch (err: any) {
       error.value =
@@ -58,9 +62,10 @@ export function useChat() {
     error.value = null
     try {
       await chatApi.deleteMessage(username, messageId)
-      activeMessages.value = activeMessages.value.filter(
-        msg => msg.id !== messageId,
-      )
+      activeConversation.value!.messages =
+        activeConversation.value?.messages.filter(
+          msg => msg.id !== messageId,
+        ) ?? []
     } catch (err: any) {
       error.value =
         err.response?.data?.message || 'Impossible de supprimer le message.'
@@ -71,10 +76,10 @@ export function useChat() {
     isLoading,
     error,
     matches,
-    activeMessages,
+    activeConversation,
 
     fetchMatches,
-    fetchMessages,
+    fetchConversation,
     sendMessage,
     deleteMessage,
   }

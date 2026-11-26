@@ -3,17 +3,16 @@ import {
   SendHorizontalIcon,
   MessagesCircleIcon,
   MessageCircleIcon,
+  FaceSlightlySmilingPlus,
 } from '@lucide/vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Bubble, BubbleContent } from '@/components/ui/bubble'
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupTextarea,
 } from '@/components/ui/input-group'
-import { Message, MessageContent, MessageGroup } from '@/components/ui/message'
 import {
   MessageScroller,
   MessageScrollerButton,
@@ -33,37 +32,53 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 import { useRoute } from 'vue-router'
-import type { MessageData, SmallUser } from '@/types'
 import router from '@/router'
 import { getSocket } from '@/plugins/socket'
 import { useTypingStore } from '@/store/isTyping'
-import { useMessagesStore } from '@/store/messages'
-import { ApiClient } from '@/api/client'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import {
+  EmojiPicker,
+  EmojiPickerContent,
+  EmojiPickerFooter,
+  EmojiPickerSearch,
+} from '@/components/ui/emoji-picker'
+import { useShiftKeyWatcher } from '@/composable/useShiftKeyWatcher'
+import Message, {
+  type InternalReactionEmit,
+} from '@/components/chat/Message.vue'
+import type { SelectedEmoji } from '@/components/ui/emoji-picker/emoji-picker.vue'
+import { useReaction } from '@/composable/useReaction'
+import { useChat } from '@/composable/useChat'
+import type { Message as ChatMessage } from '@/api/chat'
 
 interface MessageGroup {
   isMe: boolean
-  messages: MessageData[]
+  messages: ChatMessage[]
 }
 
 const route = useRoute()
-
-const messagesStore = useMessagesStore()
-// const messages = ref<MessageData[]>([])
-const messages = computed(() =>
-  messagesStore.getMessages(route.params.username as string),
-)
-const user = ref<SmallUser>()
-
+const chat = useChat()
+const { addReaction, removeReaction } = useReaction()
 const typingStore = useTypingStore()
-const isOtherTyping = computed(() => typingStore.isTyping(user.value?.username))
+
+const isOtherTyping = computed(() =>
+  typingStore.isTyping(chat.activeConversation.value?.username ?? ''),
+)
 
 const displayName = computed(
-  () => user.value?.first_name + ' ' + user.value?.last_name,
+  () =>
+    chat.activeConversation.value?.first_name +
+    ' ' +
+    chat.activeConversation.value?.last_name,
 )
 const messageGroups = computed<MessageGroup[]>(() => {
   const groups: MessageGroup[] = []
 
-  for (const message of messages.value) {
+  for (const message of chat.activeConversation.value?.messages ?? []) {
     const lastGroup = groups[groups.length - 1]
     const isMe = message.sender !== route.params.username
 
@@ -80,64 +95,73 @@ const messageGroups = computed<MessageGroup[]>(() => {
 const suggestMsg = ['Salut ! 👋', 'Comment ça va ?', 'On se lance un café ?']
 const draft = ref('')
 
-const fetchMessages = async () => {
-  if (route.params.username === undefined) {
-    return
-  }
-
-  const response = await ApiClient.get(
-    `/users/me/matches/${route.params.username}`,
-  )
-
-  if (response.ok()) {
-    const data: SmallUser & {
-      messages: MessageData[]
-    } = await response.json()
-
-    user.value = {
-      username: data.username,
-      avatar: data.avatar,
-      first_name: data.first_name,
-      last_name: data.last_name,
-    }
-    // messages.value = data.messages
-    messagesStore.setMessages(data.username, data.messages)
-  }
-}
-
 function sendMessage(content?: string) {
   const text = (content ?? draft.value).trim()
-  if (!text || !user.value?.username) return
-  getSocket().emit('stop_typing', { to_username: user.value.username })
-  messagesStore.sendMessage(user.value.username, text)
-  // const res = Api.post(`/users/me/matches/${user.value?.username}`).send({content: text});
-  // getSocket().emit("send_message", {to_username: user.value?.username, content: text});
+  const username = chat.activeConversation.value?.username
+
+  if (!text || !username) return
+  getSocket().emit('stop_typing', { to_username: username })
+  chat.sendMessage(username, text)
   draft.value = ''
 }
 
 let typingTimeoutMs: NodeJS.Timeout
 
 function onChatInput() {
-  getSocket().emit('typing', { to_username: user.value?.username })
-  console.log('Typing Sended to ', user.value?.username)
+  const username = chat.activeConversation.value?.username
+
+  getSocket()?.emit('typing', { to_username: username })
 
   clearTimeout(typingTimeoutMs)
   typingTimeoutMs = setTimeout(() => {
-    getSocket().emit('stop_typing', { to_username: user.value?.username })
-    console.log('Stop Typing Sended')
+    getSocket().emit('stop_typing', { to_username: username })
   }, 2000)
 }
+
+async function onReaction(payload: InternalReactionEmit) {
+  const username = route.params.username as string
+
+  try {
+    if (payload.active) {
+      await addReaction(username, payload.message.id, payload.emoji)
+    } else {
+      await removeReaction(username, payload.message.id)
+    }
+  } catch (e) {
+    console.error('Erreur réaction :', e)
+  }
+}
+
+async function onDelete(messageId: number) {
+  const username = route.params.username as string
+
+  await chat.deleteMessage(username, messageId)
+}
+
+const hoveredItem = ref<MouseEvent | null>(null)
+const shiftPressed = useShiftKeyWatcher()
+const selectedItem = computed(() =>
+  shiftPressed.value ? hoveredItem.value : null,
+)
+
+const handleEmojiSelect = (emoji: SelectedEmoji) => {
+  if (selectedItem.value == null) isOpen.value = false
+
+  draft.value += emoji.emoji
+}
+
+const isOpen = ref(false)
 
 watch(
   () => route.params.username,
   async () => {
-    await fetchMessages()
+    await chat.fetchConversation(route.params.username as string)
   },
   { immediate: true },
 )
 
 onMounted(async () => {
-  await fetchMessages()
+  await chat.fetchConversation(route.params.username as string)
 })
 </script>
 
@@ -170,12 +194,12 @@ onMounted(async () => {
 
       <Avatar class="size-10">
         <AvatarImage
-          v-if="user?.avatar"
-          :src="user?.avatar"
-          :alt="user?.username"
+          v-if="chat.activeConversation.value?.avatar"
+          :src="chat.activeConversation.value.avatar"
+          :alt="chat.activeConversation.value.username"
         />
         <AvatarFallback>{{
-          user?.username.charAt(0).toUpperCase()
+          chat.activeConversation.value?.username.charAt(0).toUpperCase()
         }}</AvatarFallback>
       </Avatar>
       <div class="min-w-0">
@@ -183,7 +207,7 @@ onMounted(async () => {
           {{ displayName }}
         </p>
         <p class="text-muted-foreground truncate text-xs">
-          {{ user?.username }}
+          {{ chat.activeConversation.value?.username }}
         </p>
       </div>
 
@@ -196,14 +220,14 @@ onMounted(async () => {
           <CalendarPlusIcon class="size-5" />
         </Button>
 
-        <MoreButton :username="user?.username" />
+        <MoreButton :username="chat.activeConversation.value?.username" />
       </div>
     </header>
 
     <div class="min-h-0 flex-1">
       <MessageScrollerProvider
         v-if="messageGroups.length > 0"
-        default-scroll-position="last-anchor"
+        default-scroll-position="end"
         auto-scroll
       >
         <MessageScroller>
@@ -214,22 +238,14 @@ onMounted(async () => {
                 :key="groupIndex"
                 :message-id="`group-${groupIndex}`"
                 :scroll-anchor="group.isMe"
+                class="[content-visibility:visible] focus-within:[content-visibility:visible]"
               >
-                <MessageGroup>
-                  <Message :align="group.isMe ? 'end' : 'start'">
-                    <MessageContent class="flex flex-col gap-1">
-                      <Bubble
-                        v-for="(message, msgIndex) in group.messages"
-                        :key="msgIndex"
-                        :variant="group.isMe ? 'default' : 'secondary'"
-                      >
-                        <BubbleContent class="whitespace-pre-line">{{
-                          message.content
-                        }}</BubbleContent>
-                      </Bubble>
-                    </MessageContent>
-                  </Message>
-                </MessageGroup>
+                <Message
+                  @react="onReaction"
+                  @delete="onDelete"
+                  :is-me="group.isMe"
+                  :messages="group.messages"
+                />
               </MessageScrollerItem>
             </MessageScrollerContent>
           </MessageScrollerViewport>
@@ -264,7 +280,7 @@ onMounted(async () => {
       v-if="isOtherTyping"
       class="shimmer px-4 pb-1 text-xs text-muted-foreground"
     >
-      {{ user?.username }} is typing...
+      {{ chat.activeConversation.value?.first_name }} is typing...
     </div>
     <form class="border-t p-3" @submit.prevent="sendMessage()">
       <InputGroup>
@@ -276,6 +292,27 @@ onMounted(async () => {
           @keydown.enter.exact.prevent="sendMessage()"
         />
         <InputGroupAddon align="inline-end">
+          <Popover v-model:open="isOpen">
+            <PopoverTrigger as-child>
+              <InputGroupButton size="icon-sm" aria-label="Emoji">
+                <FaceSlightlySmilingPlus />
+                <span class="sr-only">Emoji</span>
+              </InputGroupButton>
+            </PopoverTrigger>
+            <PopoverContent class="w-fit p-0 rounded-xl">
+              <EmojiPicker
+                class="h-85.5 border-none! shadow-none!"
+                @emoji-select="handleEmojiSelect"
+                @mouseenter="(event: MouseEvent) => (hoveredItem = event)"
+                @mouseleave="hoveredItem = null"
+              >
+                <EmojiPickerSearch />
+                <EmojiPickerContent />
+                <EmojiPickerFooter />
+              </EmojiPicker>
+            </PopoverContent>
+          </Popover>
+
           <InputGroupButton
             type="submit"
             size="icon-sm"
