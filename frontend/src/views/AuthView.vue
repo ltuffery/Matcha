@@ -29,11 +29,6 @@
 
     <div class="relative hidden w-2/3 lg:block">
       <Marquee3D class="h-full w-full object-cover" :images="images" />
-      <!--      <img-->
-      <!--        src="https://placehold.co/600x400"-->
-      <!--        alt="Login background"-->
-      <!--        class="h-full w-full object-cover"-->
-      <!--      />-->
     </div>
   </div>
 </template>
