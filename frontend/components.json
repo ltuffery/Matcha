@@ -1,12 +1,12 @@
 {
   "$schema": "https://shadcn-vue.com/schema.json",
-  "style": "reka-vega",
-  "font": "inter",
+  "style": "new-york",
+  "font": "",
   "typescript": true,
   "tailwind": {
     "config": "",
     "css": "src/assets/main.css",
-    "baseColor": "pink",
+    "baseColor": "neutral",
     "cssVariables": true,
     "prefix": ""
   },
@@ -20,6 +20,5 @@
     "lib": "@/lib",
     "composables": "@/composables"
   },
-  "registries": {
-  }
+  "registries": {}
 }

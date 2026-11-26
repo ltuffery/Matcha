@@ -18,23 +18,32 @@ export function useAuth() {
     password: string,
   ): Promise<LoginResponse> => {
     isLoading.value = true
+    let res: LoginResponse = {success:false}
 
-    const res = await authApi.login({
-      username: username,
-      password: password
-    })
+    try {
+      res = await authApi.login({
+        username: username,
+        password: password
+      })
 
-    if (!res.success) {
-      error.value = res.error as string
-    } else {
-      localStorage.setItem('jwt', res.token as string)
-      localStorage.setItem('refresh', res.refresh as string)
+      if (!res.success) {
+        error.value = res.error as string
+      } else {
+        localStorage.setItem('jwt', res.token as string)
+        localStorage.setItem('refresh', res.refresh as string)
 
-      await useAuthStore().fetchMe()
+        await useAuthStore().fetchMe()
+      }
+    } catch (err) {
+      error.value =
+        err?.response?.data?.error ??
+        err?.message ?? 'Erreur lors de la connexion'
+      res.success = false
+      res.error = error.value as string
+
+    } finally {
+      isLoading.value = false
     }
-
-    isLoading.value = false
-
     return res
   }
 

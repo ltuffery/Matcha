@@ -34,7 +34,14 @@ import DateOfBirthPicker from '@/components/forms/DateOfBirthPicker.vue'
 import { useAuth } from '@/composable/useAuth'
 import { useMail } from '@/composable/useMail'
 import { TagsInput, TagsInputInput } from '@/components/ui/tags-input'
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import Password from '@/components/inputs/Password.vue'
 
 interface ImageItem {
   file: File
@@ -138,7 +145,7 @@ async function handleSubmit(values: Record<string, unknown>) {
       form.append('photos[]', image.file, image.file.name)
     })
 
-    const response = await auth.register(form)
+    await auth.register(form)
 
     if (auth.error.value) {
       toast.error(auth.error.value ?? 'Une erreur est survenue')
@@ -148,11 +155,10 @@ async function handleSubmit(values: Record<string, unknown>) {
     registeredEmail.value = String(values.email)
     isDone.value = true
   } catch (error) {
-    console.log(auth.error.value)
     const message =
-        error?.response?.data?.error ??
-        error?.message ??
-        'Erreur lors de la création du compte'
+      error?.response?.data?.error ??
+      error?.message ??
+      'Erreur lors de la création du compte'
     toast.error(String(message))
     if (String(message).toLowerCase().includes('password')) {
       stepIndex.value = 1
@@ -178,14 +184,12 @@ const resendMail = (email: string) => {
       <CardTitle>Compte créé 🎉</CardTitle>
       <CardDescription>
         Un email de confirmation a été envoyé à
-        <span class="font-medium text-foreground">{{ registeredEmail }}</span>.
-        Valide ton adresse pour pouvoir te connecter.
+        <span class="font-medium text-foreground">{{ registeredEmail }}</span
+        >. Valide ton adresse pour pouvoir te connecter.
       </CardDescription>
     </CardHeader>
     <CardFooter class="justify-center">
-      <Button @click="resendMail(registeredEmail)">
-        Renvoyer
-      </Button>
+      <Button @click="resendMail(registeredEmail)"> Renvoyer </Button>
     </CardFooter>
   </Card>
 
@@ -208,6 +212,7 @@ const resendMail = (email: string) => {
       class="mx-auto w-full max-w-4xl mt-6"
     >
       <form
+        class="w-full"
         @submit="
           async event => {
             event.preventDefault()
@@ -216,8 +221,8 @@ const resendMail = (email: string) => {
             if (!result.valid) {
               if (stepIndex === steps.length && !images.length) {
                 toast.error('Add at least one photo')
-                }
-                return
+              }
+              return
             }
 
             if (stepIndex === steps.length) {
@@ -313,11 +318,7 @@ const resendMail = (email: string) => {
             <VeeField v-slot="{ componentField, errors }" name="password">
               <Field :data-invalid="!!errors.length">
                 <FieldLabel>Password</FieldLabel>
-                <Input
-                  v-bind="componentField"
-                  type="password"
-                  :aria-invalid="!!errors.length"
-                />
+                <Password v-bind="componentField" :invalid="!!errors.length" />
                 <FieldError :errors="errors" />
               </Field>
             </VeeField>
