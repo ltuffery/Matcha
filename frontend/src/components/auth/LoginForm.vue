@@ -70,12 +70,13 @@ async function loginUserAccount(values: GenericObject) {
   const username = values.username as string
   const password = values.password as string
   const res = await auth.login(username, password)
-
   if (!res.success) {
     toast.error(res.error as string)
   } else {
     toast.success(`Welcome ${username}`)
-    await connectSocket()
+    try {
+      await connectSocket()
+    } catch {}
     await router.push({ name: 'home' })
   }
 }

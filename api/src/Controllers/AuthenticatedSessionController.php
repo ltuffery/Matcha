@@ -26,8 +26,8 @@ class AuthenticatedSessionController
             if (!$user->email_verified) {
                 Flight::json([
                     'success' => false,
-                    'error' => "Your email is not verified",
-                ], 401);
+                    'message' => "Your email is not verified",
+                ], 403);
 
                 return;
             }
@@ -40,7 +40,7 @@ class AuthenticatedSessionController
         } else {
             Flight::json([
                 'success' => false,
-                'error' => "Invalid username or password",
+                'message' => "Invalid username or password",
             ], 400);
         }
     }
