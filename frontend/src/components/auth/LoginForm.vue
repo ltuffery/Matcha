@@ -9,18 +9,15 @@ import {
 import * as z from 'zod'
 
 import router from '@/router'
-import { connectSocket } from '@/plugins/socket'
 
-import FeedbackToast from '@/components/FeedbackToast.vue'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { useAuth } from '@/composable/useAuth'
 import { toast } from 'vue-sonner'
-import { useAuthStore } from '@/store/useAuthStore'
+import Password from '@/components/inputs/Password.vue'
 
 const auth = useAuth()
-const profile = useAuthStore()
 
 const forgotPwd = ref(false)
 
@@ -161,13 +158,7 @@ async function loginUserAccount(values: GenericObject) {
       <Field :data-invalid="!!errors.length">
         <FieldLabel for="password"> Password </FieldLabel>
 
-        <Input
-          id="password"
-          v-bind="componentField"
-          type="password"
-          placeholder="Password"
-          :aria-invalid="!!errors.length"
-        />
+        <Password v-bind="componentField" :invalid="!!errors.length" />
 
         <FieldError v-if="errors.length" :errors="errors" />
       </Field>
