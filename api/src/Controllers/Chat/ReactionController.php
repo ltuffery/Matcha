@@ -34,10 +34,12 @@ class ReactionController
             $reaction = $message->addReaction($user->id, $emoji);
 
             Flight::redis()->publish('app_events', json_encode([
-                'type' => 'add_message_reaction',
-                'target_message' => $messageId,
+                'type' => 'create_reaction',
+                'target_username' => $username,
                 'payload' => [
-                    'emoji' => $emoji,
+                    'username' => $user->username,
+                    'message_id' => $messageId,
+                    'emoji' => $reaction->emoji,
                 ],
             ]));
 
@@ -69,8 +71,13 @@ class ReactionController
         }
 
         Flight::redis()->publish('app_events', json_encode([
-            'type' => 'remove_message_reaction',
-            'target_message' => $messageId,
+            'type' => 'delete_reaction',
+            'target_username' => $username,
+            'payload' => [
+                'username' => $user->username,
+                'message_id' => $messageId,
+                'emoji' => $reaction->emoji,
+            ],
         ]));
 
         $reaction->delete();

@@ -81,8 +81,18 @@ class ChatController
         $receiver = User::find([
             'username' => $username,
         ]);
-        $message = new Message();
+        /** @var User $user */
         $user = Flight::user();
+
+        if ($receiver->isBlocking($user)) {
+            Flight::json([
+                "success" => false,
+                "message" => "Forbidden.",
+            ], 403);
+            return;
+        }
+
+        $message = new Message();
 
         $message->sender_id = $user->id;
         $message->receiver_id = $receiver->id;
@@ -106,7 +116,7 @@ class ChatController
                 ],
             ]));
 
-            Flight::notifier()->notify($user, [
+            Flight::notifier()->notify($receiver, [
                 'type' => NotificationType::MESSAGE,
                 'message' => "Vous avez recus un message de " . ucfirst(Flight::user()->first_name),
             ], private: false);

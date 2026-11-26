@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { Bubble, BubbleContent, BubbleReactions } from '@/components/ui/bubble'
 import { ButtonGroup } from '@/components/ui/button-group'
 import {
@@ -23,6 +23,7 @@ import { FaceSlightlySmilingPlus, Trash } from '@lucide/vue'
 import type { SelectedEmoji } from '@/components/ui/emoji-picker/emoji-picker.vue'
 import type { Message } from '@/api/chat'
 import type { Reaction } from '@/api/reactions'
+import { getSocket } from '@/plugins/socket'
 
 export interface InternalReactionEmit {
   message: Message
@@ -97,6 +98,37 @@ const handleEmojiSelect = (emoji: SelectedEmoji, message: Message) => {
     openMessageId.value = null
   }, 0)
 }
+
+const isSameAuthor = (r: Reaction, incoming: Reaction) =>
+  r.username === incoming.username || (incoming.is_me && r.is_me)
+
+const onCreateReaction = (reaction: Reaction) => {
+  if (!(reaction.message_id in reactions.value)) return
+
+  const list = reactions.value[reaction.message_id] ?? []
+
+  reactions.value[reaction.message_id] = [
+    ...list.filter(r => !isSameAuthor(r, reaction)),
+    reaction,
+  ]
+}
+
+const onDeleteReaction = (reaction: Reaction) => {
+  if (!(reaction.message_id in reactions.value)) return
+
+  reactions.value[reaction.message_id] = (
+    reactions.value[reaction.message_id] ?? []
+  ).filter(r => !isSameAuthor(r, reaction))
+}
+
+const socket = getSocket()
+socket?.on('create_reaction', onCreateReaction)
+socket?.on('delete_reaction', onDeleteReaction)
+
+onBeforeUnmount(() => {
+  socket?.off('create_reaction', onCreateReaction)
+  socket?.off('delete_reaction', onDeleteReaction)
+})
 </script>
 
 <template>
