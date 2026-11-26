@@ -55,7 +55,7 @@ Flight::group('/forgot', function () {
 
 Flight::group('/users', function () {
     Flight::group('/me', function () {
-        Flight::route('DELETE /', ProfileController::class . 'destroy');
+        Flight::route('DELETE /', [ProfileController::class, 'destroy']);
 
         Flight::route('PUT|PATCH /localisation', [LocalisationController::class, 'update']);
 
@@ -82,8 +82,6 @@ Flight::group('/users', function () {
     Flight::group('/me', function () {
         Flight::route('GET /', [ProfileController::class, 'index']);
         Flight::route('PUT|PATCH /', [ProfileController::class, 'update']);
-
-        Flight::route('POST /offline', [ProfileController::class, 'offline']);
 
         Flight::route('PUT|PATCH /preferences', [PreferencesController::class, 'update']);
         Flight::route('GET /preferences', [PreferencesController::class, 'index']);

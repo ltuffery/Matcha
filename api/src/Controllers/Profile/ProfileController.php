@@ -134,15 +134,9 @@ class ProfileController
     {
         Flight::user()->delete();
 
-        Flight::json([], 203);
-    }
-
-    public function offline(): void
-    {
-        $user = Flight::user();
-
-        $user->last_connection = date('Y-m-d H:i:s');
-
-        $user->save();
+        Flight::json([
+            'success' => true,
+            'message' => 'Delete success',
+        ]);
     }
 }
