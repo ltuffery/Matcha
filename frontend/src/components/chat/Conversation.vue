@@ -3,17 +3,16 @@ import {
   SendHorizontalIcon,
   MessagesCircleIcon,
   MessageCircleIcon,
+  FaceSlightlySmilingPlus,
 } from '@lucide/vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Bubble, BubbleContent } from '@/components/ui/bubble'
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupTextarea,
 } from '@/components/ui/input-group'
-import { Message, MessageContent, MessageGroup } from '@/components/ui/message'
 import {
   MessageScroller,
   MessageScrollerButton,
@@ -39,6 +38,20 @@ import { getSocket } from '@/plugins/socket'
 import { useTypingStore } from '@/store/isTyping'
 import { useMessagesStore } from '@/store/messages'
 import { ApiClient } from '@/api/client'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import {
+  EmojiPicker,
+  EmojiPickerContent,
+  EmojiPickerFooter,
+  EmojiPickerSearch,
+} from '@/components/ui/emoji-picker'
+import { useShiftKeyWatcher } from '@/composable/useShiftKeyWatcher'
+import Message from '@/components/chat/Message.vue'
+import type { SelectedEmoji } from '@/components/ui/emoji-picker/emoji-picker.vue'
 
 interface MessageGroup {
   isMe: boolean
@@ -55,7 +68,9 @@ const messages = computed(() =>
 const user = ref<SmallUser>()
 
 const typingStore = useTypingStore()
-const isOtherTyping = computed(() => typingStore.isTyping(user.value?.username))
+const isOtherTyping = computed(() =>
+  typingStore.isTyping(user.value?.username ?? ''),
+)
 
 const displayName = computed(
   () => user.value?.first_name + ' ' + user.value?.last_name,
@@ -110,23 +125,33 @@ function sendMessage(content?: string) {
   if (!text || !user.value?.username) return
   getSocket().emit('stop_typing', { to_username: user.value.username })
   messagesStore.sendMessage(user.value.username, text)
-  // const res = Api.post(`/users/me/matches/${user.value?.username}`).send({content: text});
-  // getSocket().emit("send_message", {to_username: user.value?.username, content: text});
   draft.value = ''
 }
 
 let typingTimeoutMs: NodeJS.Timeout
 
 function onChatInput() {
-  getSocket().emit('typing', { to_username: user.value?.username })
-  console.log('Typing Sended to ', user.value?.username)
+  getSocket()?.emit('typing', { to_username: user.value?.username })
 
   clearTimeout(typingTimeoutMs)
   typingTimeoutMs = setTimeout(() => {
     getSocket().emit('stop_typing', { to_username: user.value?.username })
-    console.log('Stop Typing Sended')
   }, 2000)
 }
+
+const hoveredItem = ref<MouseEvent | null>(null)
+const shiftPressed = useShiftKeyWatcher()
+const selectedItem = computed(() =>
+  shiftPressed.value ? hoveredItem.value : null,
+)
+
+const handleEmojiSelect = (emoji: SelectedEmoji) => {
+  if (selectedItem.value == null) isOpen.value = false
+
+  draft.value += emoji.emoji
+}
+
+const isOpen = ref(false)
 
 watch(
   () => route.params.username,
@@ -203,7 +228,7 @@ onMounted(async () => {
     <div class="min-h-0 flex-1">
       <MessageScrollerProvider
         v-if="messageGroups.length > 0"
-        default-scroll-position="last-anchor"
+        default-scroll-position="end"
         auto-scroll
       >
         <MessageScroller>
@@ -214,22 +239,9 @@ onMounted(async () => {
                 :key="groupIndex"
                 :message-id="`group-${groupIndex}`"
                 :scroll-anchor="group.isMe"
+                class="[content-visibility:visible] focus-within:[content-visibility:visible]"
               >
-                <MessageGroup>
-                  <Message :align="group.isMe ? 'end' : 'start'">
-                    <MessageContent class="flex flex-col gap-1">
-                      <Bubble
-                        v-for="(message, msgIndex) in group.messages"
-                        :key="msgIndex"
-                        :variant="group.isMe ? 'default' : 'secondary'"
-                      >
-                        <BubbleContent class="whitespace-pre-line">{{
-                          message.content
-                        }}</BubbleContent>
-                      </Bubble>
-                    </MessageContent>
-                  </Message>
-                </MessageGroup>
+                <Message :is-me="group.isMe" :messages="group.messages" />
               </MessageScrollerItem>
             </MessageScrollerContent>
           </MessageScrollerViewport>
@@ -276,6 +288,27 @@ onMounted(async () => {
           @keydown.enter.exact.prevent="sendMessage()"
         />
         <InputGroupAddon align="inline-end">
+          <Popover v-model:open="isOpen">
+            <PopoverTrigger as-child>
+              <InputGroupButton size="icon-sm" aria-label="Emoji">
+                <FaceSlightlySmilingPlus />
+                <span class="sr-only">Emoji</span>
+              </InputGroupButton>
+            </PopoverTrigger>
+            <PopoverContent class="w-fit p-0 rounded-xl">
+              <EmojiPicker
+                class="h-85.5 border-none! shadow-none!"
+                @emoji-select="handleEmojiSelect"
+                @mouseenter="(event: MouseEvent) => (hoveredItem = event)"
+                @mouseleave="hoveredItem = null"
+              >
+                <EmojiPickerSearch />
+                <EmojiPickerContent />
+                <EmojiPickerFooter />
+              </EmojiPicker>
+            </PopoverContent>
+          </Popover>
+
           <InputGroupButton
             type="submit"
             size="icon-sm"
