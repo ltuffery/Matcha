@@ -120,8 +120,14 @@ Flight::group('/medias', function () {
         if (!is_dir(BASE_PATH . "/storage/photos")) {
             mkdir(BASE_PATH . "/storage/photos", true);
         }
-
-        echo file_get_contents(BASE_PATH . "/storage/photos/" . $name . ".png");
+        if (file_exists(BASE_PATH . "/storage/photos/" . $name . ".png")) {
+            echo file_get_contents(BASE_PATH . "/storage/photos/" . $name . ".png");
+        } else {
+        Flight::json([
+            "success" => false,
+            "message" => "Not found"
+        ], 404);
+        }
     });
 });
 

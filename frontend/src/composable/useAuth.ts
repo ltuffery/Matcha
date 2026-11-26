@@ -31,6 +31,7 @@ export function useAuth() {
       localStorage.setItem('refresh', res.refresh as string)
 
       await useAuthStore().fetchMe()
+      router.push({name: 'home'})
     }
 
     isLoading.value = false
