@@ -155,126 +155,153 @@ onMounted(fetchUsers)
 </script>
 
 <template>
-  <div class="w-full h-full">
+  <div class="w-full h-full min-w-0">
     <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold tracking-tight">Search</h1>
-      <p class="text-muted-foreground mt-1">Search all profile</p>
+    <div class="mb-6 md:mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">Search</h1>
+      <p class="text-sm md:text-base text-muted-foreground mt-1">
+        Search all profile
+      </p>
     </div>
 
     <div
-      class="w-full flex items-center rounded-full border bg-background shadow-md hover:shadow-lg transition-shadow"
+      class="w-full flex flex-col md:flex-row md:items-center gap-2 md:gap-0 p-2 md:p-0 rounded-3xl md:rounded-full border bg-background shadow-md hover:shadow-lg transition-shadow"
     >
-      <!-- Year -->
-      <Popover>
-        <PopoverTrigger as-child>
-          <Button variant="ghost" size="lg" class="flex-1 rounded-l-full py-6">
-            <Cake class="h-3.5 w-3.5" /> Year
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent class="w-80" align="start">
-          <p class="font-semibold mb-1">Tranche d'âge</p>
-          <p class="text-sm text-muted-foreground mb-5">
-            {{ filters.age[0] }} – {{ filters.age[1] }} ans
-          </p>
-          <Slider v-model="filters.age" :min="18" :max="99" :step="1" />
-        </PopoverContent>
-      </Popover>
-
-      <Separator orientation="vertical" />
-
-      <!-- Fame rating -->
-      <Popover>
-        <PopoverTrigger as-child>
-          <Button variant="ghost" size="lg" class="flex-1 rounded-none py-6">
-            <TrendingUp class="h-3.5 w-3.5" /> Fame rating
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent class="w-80">
-          <p class="font-semibold mb-1">Fame rating</p>
-          <p class="text-sm text-muted-foreground mb-5">
-            Entre {{ filters.fame[0] }} et {{ filters.fame[1] }}
-          </p>
-          <Slider v-model="filters.fame" :min="0" :max="100" :step="5" />
-        </PopoverContent>
-      </Popover>
-
-      <Separator orientation="vertical" />
-
-      <!-- Localisation -->
-      <Popover>
-        <PopoverTrigger as-child>
-          <Button variant="ghost" size="lg" class="flex-1 rounded-none py-6">
-            <MapPin class="h-3.5 w-3.5" /> Localisation
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent class="w-80">
-          <p class="font-semibold mb-3">Où ?</p>
-
-          <MapLocator />
-
-          <div class="mt-5">
-            <p class="text-sm text-muted-foreground mb-4">
-              Distance max : {{ filters.distance }} km
-            </p>
-            <Slider
-              :model-value="[filters.distance]"
-              @update:model-value="v => v && (filters.distance = v[0])"
-              :min="5"
-              :max="200"
-              :step="5"
-            />
-          </div>
-        </PopoverContent>
-      </Popover>
-
-      <Separator orientation="vertical" />
-
-      <!-- Tags -->
-      <Popover>
-        <PopoverTrigger as-child>
-          <Button variant="ghost" size="lg" class="flex-1 rounded-none py-6">
-            <Tags class="h-3.5 w-3.5" /> Tags
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent class="w-80" align="end">
-          <p class="font-semibold mb-3">Centres d'intérêt</p>
-          <div class="flex flex-wrap gap-2">
-            <Badge
-              v-for="tag in []"
-              :key="tag"
-              :variant="filters.tags.includes(tag) ? 'default' : 'outline'"
-              class="cursor-pointer select-none px-3 py-1"
-              @click="toggleTag(tag)"
+      <div
+        class="grid grid-cols-2 gap-1 md:flex md:flex-1 md:items-center md:gap-0 md:self-stretch"
+      >
+        <!-- Year -->
+        <Popover>
+          <PopoverTrigger as-child>
+            <Button
+              variant="ghost"
+              size="lg"
+              class="md:flex-1 rounded-2xl md:rounded-none md:rounded-l-full py-5 md:py-6"
             >
-              <Check v-if="filters.tags.includes(tag)" class="h-3 w-3 mr-1" />
-              #{{ tag }}
-            </Badge>
-          </div>
-        </PopoverContent>
-      </Popover>
+              <Cake class="h-3.5 w-3.5" /> Year
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent class="w-[calc(100vw-2rem)] sm:w-80" align="start">
+            <p class="font-semibold mb-1">Tranche d'âge</p>
+            <p class="text-sm text-muted-foreground mb-5">
+              {{ filters.age[0] }} – {{ filters.age[1] }} ans
+            </p>
+            <Slider v-model="filters.age" :min="18" :max="99" :step="1" />
+          </PopoverContent>
+        </Popover>
+
+        <Separator orientation="vertical" class="hidden md:block" />
+
+        <!-- Fame rating -->
+        <Popover>
+          <PopoverTrigger as-child>
+            <Button
+              variant="ghost"
+              size="lg"
+              class="md:flex-1 rounded-2xl md:rounded-none py-5 md:py-6"
+            >
+              <TrendingUp class="h-3.5 w-3.5" /> Fame rating
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent class="w-[calc(100vw-2rem)] sm:w-80">
+            <p class="font-semibold mb-1">Fame rating</p>
+            <p class="text-sm text-muted-foreground mb-5">
+              Entre {{ filters.fame[0] }} et {{ filters.fame[1] }}
+            </p>
+            <Slider v-model="filters.fame" :min="0" :max="100" :step="5" />
+          </PopoverContent>
+        </Popover>
+
+        <Separator orientation="vertical" class="hidden md:block" />
+
+        <!-- Localisation -->
+        <Popover>
+          <PopoverTrigger as-child>
+            <Button
+              variant="ghost"
+              size="lg"
+              class="md:flex-1 rounded-2xl md:rounded-none py-5 md:py-6"
+            >
+              <MapPin class="h-3.5 w-3.5" /> Localisation
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent class="w-[calc(100vw-2rem)] sm:w-80">
+            <p class="font-semibold mb-3">Où ?</p>
+
+            <MapLocator />
+
+            <div class="mt-5">
+              <p class="text-sm text-muted-foreground mb-4">
+                Distance max : {{ filters.distance }} km
+              </p>
+              <Slider
+                :model-value="[filters.distance]"
+                @update:model-value="v => v && (filters.distance = v[0])"
+                :min="5"
+                :max="200"
+                :step="5"
+              />
+            </div>
+          </PopoverContent>
+        </Popover>
+
+        <Separator orientation="vertical" class="hidden md:block" />
+
+        <!-- Tags -->
+        <Popover>
+          <PopoverTrigger as-child>
+            <Button
+              variant="ghost"
+              size="lg"
+              class="md:flex-1 rounded-2xl md:rounded-none py-5 md:py-6"
+            >
+              <Tags class="h-3.5 w-3.5" /> Tags
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent class="w-[calc(100vw-2rem)] sm:w-80" align="end">
+            <p class="font-semibold mb-3">Centres d'intérêt</p>
+            <div class="flex flex-wrap gap-2">
+              <Badge
+                v-for="tag in []"
+                :key="tag"
+                :variant="filters.tags.includes(tag) ? 'default' : 'outline'"
+                class="cursor-pointer select-none px-3 py-1"
+                @click="toggleTag(tag)"
+              >
+                <Check v-if="filters.tags.includes(tag)" class="h-3 w-3 mr-1" />
+                #{{ tag }}
+              </Badge>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
 
       <!-- Bouton clear / search -->
-      <div class="flex items-center pl-2">
+      <div class="flex items-center gap-2 md:gap-0 md:pl-2 md:pr-1">
         <Button
           v-if="hasActiveFilters"
-          variant="ghost"
-          size="icon"
-          class="rounded-full h-11 w-11"
+          variant="outline"
+          class="flex-1 md:flex-none rounded-full h-11 md:w-11 md:p-0 md:border-transparent md:bg-transparent"
           title="Réinitialiser"
           @click="resetFilters"
         >
           <X class="h-4 w-4" />
+          <span class="md:hidden">Réinitialiser</span>
         </Button>
-        <Button size="icon" class="rounded-full h-11 w-11" @click="fetchUsers">
+        <Button
+          class="flex-1 md:flex-none rounded-full h-11 md:w-11 md:p-0"
+          title="Rechercher"
+          @click="fetchUsers"
+        >
           <Search class="h-4 w-4" />
+          <span class="md:hidden">Rechercher</span>
         </Button>
       </div>
     </div>
 
     <div
       v-if="!search.isLoading.value"
-      class="flex justify-between items-center mt-6"
+      class="flex justify-between items-center gap-2 mt-4 md:mt-6"
     >
       <p class="text-sm text-muted-foreground">
         {{ users.length }} profil{{ users.length > 1 ? 's' : '' }} trouvé{{
@@ -282,13 +309,15 @@ onMounted(fetchUsers)
         }}
       </p>
 
-      <div>
+      <div class="flex items-center gap-1 shrink-0">
         <FilterMenuButton v-model="subSelection" :filter="subFilters" />
         <SortMenuButton v-model="sorts" />
       </div>
     </div>
 
-    <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div
+      class="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 pb-20"
+    >
       <template v-if="search.isLoading.value">
         <Card
           v-for="i in 6"
