@@ -2,6 +2,7 @@
 
 namespace Matcha\Api\Controllers;
 
+use Exception;
 use Flight;
 use Matcha\Api\Exceptions\InvalidDataException;
 use Matcha\Api\Model\User;
@@ -33,7 +34,15 @@ class EmailController
             ], 404);
         } elseif (!$user->email_verified) {
             $mailer = new MailSender($user);
-            $mailer->mailVerify()->send();
+            try {
+                $mailer->mailVerify()->send();
+            } catch (Exception $e) {
+                Flight::json([
+                    'success' => false,
+                    'message' => "mail sending error",
+                ], 422);
+                return;
+            }
 
             Flight::json([
                 'success' => true,
@@ -41,7 +50,7 @@ class EmailController
         } else {
             Flight::json([
                 'success' => false,
-                'error' => "This email is already verified",
+                'message' => "This email is already verified",
             ], 409);
         }
     }
@@ -66,7 +75,7 @@ class EmailController
         if ($user == null) {
             Flight::json([
                 'success' => false,
-                'error' => "Bad Link (user not found)",
+                'message' => "Bad Link (user not found)",
             ], 404);
         } elseif (!$user->email_verified && $user->temporary_email_token == $request->data->token) {
             $user->temporary_email_token = "";
@@ -78,7 +87,7 @@ class EmailController
         } else {
             Flight::json([
                 'success' => false,
-                'error' => "Bad Link (Token broken or already verify)",
+                'message' => "Bad Link (Token broken or already verify)",
             ], 400);
         }
     }

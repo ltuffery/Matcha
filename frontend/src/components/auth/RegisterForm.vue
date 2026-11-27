@@ -2,7 +2,7 @@
 import { Check, Circle, Dot, Plus, X } from 'lucide-vue-next'
 import { toTypedSchema } from '@vee-validate/zod'
 import { Field as VeeField, Form as VeeForm } from 'vee-validate'
-import { ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import * as z from 'zod'
 
@@ -42,6 +42,8 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import Password from '@/components/inputs/Password.vue'
+import { Spinner } from '@/components/ui/spinner'
+import type { VerifyMailResponse } from '@/api/email'
 
 interface ImageItem {
   file: File
@@ -52,59 +54,97 @@ const auth = useAuth()
 const mail = useMail()
 
 const isDone = ref(false)
+const processing = ref(false)
 const stepIndex = ref(1)
 const inputImage = ref<HTMLInputElement | null>(null)
 const images = ref<ImageItem[]>([])
 const registeredEmail = ref('')
 
+const RESEND_COOLDOWN = 60
+const cooldown = ref(0)
+let timer: ReturnType<typeof setInterval> | undefined
+
 const formSchema = [
   z.object({
-    username: z.string().min(2, 'Username required'),
-    email: z.string().email('Invalid email'),
-    password: z.string().min(8, 'Minimum 8 character'),
+    username: z
+      .string({ required_error: 'Requis' })
+      .trim()
+      .min(1, 'Requis')
+      .min(5, 'Au moins 5 caractères')
+      .max(25, 'Au maximum 25 caractères')
+      .regex(
+        /^[a-zA-Z0-9.]+$/,
+        'Seuls les lettres, les chiffres et les points sont autorisés',
+      ),
+    email: z
+      .string({ required_error: 'Requis' })
+      .min(1, 'Requis')
+      .email('Email invalide'),
+    password: z
+      .string({ required_error: 'Requis' })
+      .min(1, 'Requis')
+      .min(8, 'Au moins 8 caractères')
+      .max(128, 'Au maximum 128 caractères')
+      .regex(/[a-z]/, 'Ajoutez une lettre minuscule')
+      .regex(/[A-Z]/, 'Ajoutez une majuscule')
+      .regex(/[0-9]/, 'Ajouter un nombre'),
   }),
   z.object({
-    first_name: z.string().min(2, 'First name required'),
-    last_name: z.string().min(2, 'Last name required'),
+    first_name: z.string({ required_error: 'Requis' }).min(1, 'requis'),
+    last_name: z.string({ required_error: 'Requis' }).min(1, 'requis'),
     birthday: z
-      .string({ required_error: 'Date of birth required' })
-      .min(1, 'Date of birth required')
-      .refine(v => v <= getMaxBirthday(), 'You must be at least 18'),
+      .string({ required_error: 'Date de naissance requise' })
+      .min(1, 'Date de naissance requise')
+      .refine(v => v <= getMaxBirthday(), 'Vous devez avoir au moins 18 ans'),
   }),
   z.object({
     gender: z.enum(['M', 'F', 'O'], {
       message: 'Sélectionne un genre',
     }),
-    biography: z.string().max(500).optional(),
+    biography: z
+      .string({ required_error: 'Requis' })
+      .max(142, 'La chaîne doit contenir au maximum 142 caractères'),
     tags: z.array(z.string()).optional(),
   }),
   z.object({
-    photos: z.custom(() => images.value.length > 0, 'Add at least one photo'),
+    photos: z.custom(
+      () => images.value.length > 0,
+      'Ajoutez au moins une photo',
+    ),
   }),
 ]
 
 const steps = [
   {
     step: 1,
-    title: 'Account',
-    description: 'Your account information',
+    title: 'Compte',
+    description: 'Les informations de votre compte',
   },
   {
     step: 2,
-    title: 'Identity',
-    description: 'Your personals information',
+    title: 'Identité',
+    description: 'Vos informations personnelles',
   },
   {
     step: 3,
-    title: 'Profile',
-    description: 'Profile personalisation',
+    title: 'Profil',
+    description: 'Personnalisation du profil',
   },
   {
     step: 4,
     title: 'Photos',
-    description: 'Add your photos',
+    description: 'Ajoutez vos photos',
   },
 ]
+
+function startCooldown(seconds = RESEND_COOLDOWN) {
+  clearInterval(timer)
+  cooldown.value = seconds
+  timer = setInterval(() => {
+    cooldown.value--
+    if (cooldown.value <= 0) clearInterval(timer)
+  }, 1000)
+}
 
 function handleFileUpload(event: Event) {
   const target = event.target as HTMLInputElement
@@ -129,6 +169,7 @@ function removeImage(index: number) {
 }
 
 async function handleSubmit(values: Record<string, unknown>) {
+  processing.value = true
   try {
     const form = new FormData()
 
@@ -146,6 +187,7 @@ async function handleSubmit(values: Record<string, unknown>) {
     })
 
     await auth.register(form)
+    processing.value = false
 
     if (auth.error.value) {
       toast.error(auth.error.value ?? 'Une erreur est survenue')
@@ -162,7 +204,12 @@ async function handleSubmit(values: Record<string, unknown>) {
     toast.error(String(message))
     if (String(message).toLowerCase().includes('password')) {
       stepIndex.value = 1
+    } else if (String(message).toLowerCase().includes('username')) {
+      stepIndex.value = 1
+    } else if (String(message).toLowerCase().includes('email')) {
+      stepIndex.value = 1
     }
+    processing.value = false
   }
 }
 
@@ -173,9 +220,15 @@ function getMaxBirthday() {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
 }
 
-const resendMail = (email: string) => {
-  mail.verify(email)
+const resendMail = async (email: string) => {
+  if (cooldown.value > 0) return
+  startCooldown()
+  const res : VerifyMailResponse = await mail.verify(email)
+  if (!res.success){
+    toast.error(res.error as string)
+  }
 }
+onBeforeUnmount(() => clearInterval(timer))
 </script>
 
 <template>
@@ -189,7 +242,9 @@ const resendMail = (email: string) => {
       </CardDescription>
     </CardHeader>
     <CardFooter class="justify-center">
-      <Button @click="resendMail(registeredEmail)"> Renvoyer </Button>
+      <Button :disabled="cooldown > 0" @click="resendMail(registeredEmail)">
+        {{ cooldown > 0 ? `Renvoyer dans ${cooldown}s` : 'Renvoyer' }}
+      </Button>
     </CardFooter>
   </Card>
 
@@ -220,7 +275,7 @@ const resendMail = (email: string) => {
 
             if (!result.valid) {
               if (stepIndex === steps.length && !images.length) {
-                toast.error('Add at least one photo')
+                toast.error('Ajoutez au moins une photo')
               }
               return
             }
@@ -299,7 +354,7 @@ const resendMail = (email: string) => {
                   v-bind="componentField"
                   :aria-invalid="!!errors.length"
                 />
-                <FieldError :errors="errors" />
+                <FieldError class="text-right" :errors="errors.slice(0, 1)" />
               </Field>
             </VeeField>
 
@@ -311,7 +366,7 @@ const resendMail = (email: string) => {
                   type="email"
                   :aria-invalid="!!errors.length"
                 />
-                <FieldError :errors="errors" />
+                <FieldError class="text-right" :errors="errors.slice(0, 1)" />
               </Field>
             </VeeField>
 
@@ -319,7 +374,7 @@ const resendMail = (email: string) => {
               <Field :data-invalid="!!errors.length">
                 <FieldLabel>Password</FieldLabel>
                 <Password v-bind="componentField" :invalid="!!errors.length" />
-                <FieldError :errors="errors" />
+                <FieldError class="text-right" :errors="errors.slice(0, 1)" />
               </Field>
             </VeeField>
           </template>
@@ -333,7 +388,7 @@ const resendMail = (email: string) => {
                   v-bind="componentField"
                   :aria-invalid="!!errors.length"
                 />
-                <FieldError :errors="errors" />
+                <FieldError class="text-right" :errors="errors" />
               </Field>
             </VeeField>
 
@@ -344,7 +399,7 @@ const resendMail = (email: string) => {
                   v-bind="componentField"
                   :aria-invalid="!!errors.length"
                 />
-                <FieldError :errors="errors" />
+                <FieldError class="text-right" :errors="errors" />
               </Field>
             </VeeField>
 
@@ -357,7 +412,7 @@ const resendMail = (email: string) => {
                   class="w-full"
                 />
 
-                <FieldError :errors="errors" />
+                <FieldError class="text-right" :errors="errors" />
               </Field>
             </VeeField>
           </template>
@@ -380,11 +435,14 @@ const resendMail = (email: string) => {
                   </SelectContent>
                 </Select>
 
-                <FieldError :errors="errors" />
+                <FieldError class="text-right" :errors="errors" />
               </Field>
             </VeeField>
 
-            <VeeField v-slot="{ componentField, errors }" name="biography">
+            <VeeField
+              v-slot="{ componentField, errors, value }"
+              name="biography"
+            >
               <Field :data-invalid="!!errors.length">
                 <FieldLabel>Biographie</FieldLabel>
                 <Textarea
@@ -392,7 +450,19 @@ const resendMail = (email: string) => {
                   placeholder="Présente-toi..."
                   :aria-invalid="!!errors.length"
                 />
-                <FieldError :errors="errors" />
+
+                <div class="flex justify-between gap-2">
+                  <FieldError
+                    v-if="errors.length"
+                    :errors="errors.slice(0, 1)"
+                  />
+                  <span
+                    class="ml-auto text-xs text-muted-foreground"
+                    :class="{ 'text-destructive': (value?.length ?? 0) > 142 }"
+                  >
+                    {{ value?.length ?? 0 }}/142
+                  </span>
+                </div>
               </Field>
             </VeeField>
 
@@ -404,7 +474,7 @@ const resendMail = (email: string) => {
                   <TagsInputInput placeholder="Tags..." />
                 </TagsInput>
 
-                <FieldError :errors="errors" />
+                <FieldError class="text-right" :errors="errors" />
               </Field>
             </VeeField>
           </template>
@@ -434,12 +504,12 @@ const resendMail = (email: string) => {
                     alt="Selected photo"
                     class="h-full w-full object-cover"
                   />
-
                   <Button
                     type="button"
                     size="icon"
                     variant="destructive"
-                    class="absolute right-2 top-2 opacity-0 transition group-hover:opacity-100"
+                    class="absolute right-2 top-2 size-8 opacity-0 transition group-hover:opacity-100 pointer-coarse:opacity-100"
+                    aria-label="Supprimer la photo"
                     @click="removeImage(index)"
                   >
                     <X class="size-4" />
@@ -467,14 +537,19 @@ const resendMail = (email: string) => {
             :disabled="isPrevDisabled"
             @click="prevStep()"
           >
-            Previous
+            Précédent
           </Button>
 
           <Button
+            v-if="processing == false"
             type="submit"
             :disabled="isNextDisabled && stepIndex < steps.length"
           >
-            {{ stepIndex === steps.length ? 'Create my account' : 'Next' }}
+            {{ stepIndex === steps.length ? 'Créer mon compte' : 'Suivant' }}
+          </Button>
+          <Button v-else type="submit" disabled>
+            <Spinner />
+            Chargement
           </Button>
         </div>
       </form>
