@@ -1,15 +1,24 @@
 <template>
-  <div class="flex min-h-screen w-full">
+  <div class="relative isolate flex min-h-screen w-full overflow-hidden">
+    <!-- Fond (visible tant qu'on est sous xl) -->
+    <Marquee3D
+      class="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover opacity-30 xl:hidden"
+      :images="images"
+    />
+
+    <!-- Formulaire -->
     <div
-      class="flex w-full items-center justify-center lg:w-1/3 bg-background px-8"
+      class="flex w-full items-center justify-center px-8 xl:w-1/3 xl:bg-background"
     >
       <div class="w-full max-w-lg">
-        <Card class="border-0 shadow-none">
-          <Tabs defaultValue="login" className="w-full">
+        <Card
+          class="border-0 bg-background/80 shadow-none backdrop-blur-md xl:bg-transparent xl:backdrop-blur-none"
+        >
+          <Tabs default-value="login" class="w-full">
             <CardHeader>
               <TabsList class="w-full">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
+                <TabsTrigger value="login">Connexion</TabsTrigger>
+                <TabsTrigger value="register">Inscription</TabsTrigger>
               </TabsList>
             </CardHeader>
 
@@ -27,7 +36,8 @@
       </div>
     </div>
 
-    <div class="relative hidden w-2/3 lg:block">
+    <!-- Desktop : colonne de droite -->
+    <div class="relative hidden w-3/5 xl:block">
       <Marquee3D class="h-full w-full object-cover" :images="images" />
     </div>
   </div>

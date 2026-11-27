@@ -34,6 +34,23 @@ class RegisterController
 
         $request = Flight::request();
 
+        $username_already_exist = User::find(['username' => $request->data->username]);
+        $email_already_exist = User::find(['email' => $request->data->email]);
+        $error = "";
+
+        if ($username_already_exist)
+            $error = "This username already exist";
+        else if ($email_already_exist)
+            $error = "This email already exist";
+
+        if ($username_already_exist || $email_already_exist) {
+            Flight::json([
+                'success' => false,
+                'message' => $error,
+            ], 400);
+            return;
+        }
+
         if (count($request->getUploadedFiles()) == 0) {
             Flight::json([
                 'success' => false,

@@ -23,26 +23,19 @@ const forgotPwd = ref(false)
 
 const loginSchema = toTypedSchema(
   z.object({
-    username: z
-      .string()
-      .trim()
-      .min(1, 'Username is required')
-      .min(3, 'Username must contain at least 3 characters'),
+    username: z.string({ required_error: 'Requis' }).trim().min(1, 'Requis'),
 
-    password: z
-      .string()
-      .min(1, 'Password is required')
-      .min(8, 'Password must contain at least 8 characters'),
+    password: z.string({ required_error: 'Requis' }).min(1, 'Requis'),
   }),
 )
 
 const forgotSchema = toTypedSchema(
   z.object({
     email: z
-      .string()
+      .string({ required_error: 'Requis' })
       .trim()
-      .min(1, 'Email is required')
-      .email('Please enter a valid email'),
+      .min(1, 'Requis')
+      .email('Veuillez saisir une adresse e-mail valide'),
   }),
 )
 
@@ -57,12 +50,12 @@ async function forgetPassword(values: GenericObject) {
     const isSend = await auth.forgotPassword(email)
 
     if (isSend) {
-      toast.success('Email sent!')
+      toast.success('Email envoyé !')
     } else {
-      toast.error('Error!')
+      toast.error('Erreur !')
     }
   } catch {
-    toast.error('An unexpected error occurred')
+    toast.error('Une erreur inattendue s’est produite')
   }
 }
 
@@ -73,7 +66,7 @@ async function loginUserAccount(values: GenericObject) {
   if (!res.success) {
     toast.error(res.error as string)
   } else {
-    toast.success(`Welcome ${username}`)
+    toast.success(`Bienvenu ${username}`)
     try {
       await connectSocket()
     } catch {}
@@ -93,9 +86,9 @@ async function loginUserAccount(values: GenericObject) {
     <h3 class="my-5 text-3xl font-bold">Forgot credential</h3>
 
     <p>
-      Forgot your username or password?
+      Vous avez oublié votre nom d’utilisateur ou votre mot de passe ?
       <br />
-      Receive and change it by mail:
+      Recevez-le et modifiez-le par email
     </p>
 
     <VeeField v-slot="{ componentField, errors }" name="email">
@@ -116,7 +109,7 @@ async function loginUserAccount(values: GenericObject) {
 
     <div class="mt-6 flex justify-between">
       <Button type="button" class="w-2/6" @click="forgotSwitch">
-        Go back
+        Retour
       </Button>
 
       <Button
@@ -125,7 +118,7 @@ async function loginUserAccount(values: GenericObject) {
         class="ml-2 w-2/6"
         :disabled="isSubmitting"
       >
-        Send
+        envoyer
       </Button>
     </div>
   </VeeForm>
@@ -137,7 +130,7 @@ async function loginUserAccount(values: GenericObject) {
     :validation-schema="loginSchema"
     @submit="values => loginUserAccount(values)"
   >
-    <h3 class="my-5 text-3xl font-bold">Login!</h3>
+    <h3 class="my-5 text-3xl font-bold">Connectez-vous !</h3>
 
     <VeeField v-slot="{ componentField, errors }" name="username">
       <Field :data-invalid="!!errors.length">
@@ -151,7 +144,7 @@ async function loginUserAccount(values: GenericObject) {
           :aria-invalid="!!errors.length"
         />
 
-        <FieldError v-if="errors.length" :errors="errors" />
+        <FieldError class="text-right" v-if="errors.length" :errors="errors" />
       </Field>
     </VeeField>
 
@@ -161,7 +154,7 @@ async function loginUserAccount(values: GenericObject) {
 
         <Password v-bind="componentField" :invalid="!!errors.length" />
 
-        <FieldError v-if="errors.length" :errors="errors" />
+        <FieldError class="text-right" v-if="errors.length" :errors="errors" />
       </Field>
     </VeeField>
 
@@ -171,10 +164,10 @@ async function loginUserAccount(values: GenericObject) {
         class="cursor-pointer hover:underline"
         @click="forgotSwitch"
       >
-        Forgot credential?
+        Identifiants oubliés ?
       </button>
     </div>
 
-    <Button type="submit" class="mt-6 w-full"> Login </Button>
+    <Button type="submit" class="mt-6 w-full"> se connecter </Button>
   </VeeForm>
 </template>
