@@ -37,7 +37,7 @@
     </div>
 
     <!-- Desktop : colonne de droite -->
-    <div class="relative hidden w-3/5 xl:block">
+    <div class="relative hidden w-2/3 xl:block">
       <Marquee3D class="h-full w-full object-cover" :images="images" />
     </div>
   </div>
