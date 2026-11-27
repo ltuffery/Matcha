@@ -1,18 +1,10 @@
 <script setup lang="ts">
 import {
   SendHorizontalIcon,
-  MessagesCircleIcon,
   MessageCircleIcon,
   FaceSlightlySmilingPlus,
 } from '@lucide/vue'
-import {
-  computed,
-  onBeforeMount,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-} from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   InputGroup,
@@ -31,14 +23,6 @@ import {
 import { Button } from '@/components/ui/button'
 import { CalendarPlusIcon, ChevronLeftIcon } from 'lucide-vue-next'
 import MoreButton from '@/components/chat/header/MoreButton.vue'
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty'
-import { useRoute } from 'vue-router'
 import router from '@/router'
 import { getSocket } from '@/plugins/socket'
 import { useTypingStore } from '@/store/isTyping'
@@ -59,43 +43,38 @@ import Message, {
 } from '@/components/chat/Message.vue'
 import type { SelectedEmoji } from '@/components/ui/emoji-picker/emoji-picker.vue'
 import { useReaction } from '@/composable/useReaction'
-import { useChat } from '@/composable/useChat'
-import type { Message as ChatMessage } from '@/api/chat'
+import { useChatStore } from '@/store/useChatStore'
+import type { Message as ChatMessage, MatchUser } from '@/api/chat'
+import { storeToRefs } from 'pinia'
 
 interface MessageGroup {
   isMe: boolean
   messages: ChatMessage[]
 }
 
-const route = useRoute()
-const chat = useChat()
+const props = defineProps<{ selectedUser: MatchUser }>()
+
+const chatStore = useChatStore()
+const { activeConversation } = storeToRefs(chatStore)
 const { addReaction, removeReaction } = useReaction()
 const typingStore = useTypingStore()
 
 const isOtherTyping = computed(() =>
-  typingStore.isTyping(chat.activeConversation.value?.username ?? ''),
+  typingStore.isTyping(props.selectedUser.username),
 )
 
-const displayName = computed(
-  () =>
-    chat.activeConversation.value?.first_name +
-    ' ' +
-    chat.activeConversation.value?.last_name,
+const displayName = computed(() =>
+  `${props.selectedUser.first_name ?? ''} ${props.selectedUser.last_name ?? ''}`.trim(),
 )
+
 const messageGroups = computed<MessageGroup[]>(() => {
   const groups: MessageGroup[] = []
-
-  for (const message of chat.activeConversation.value?.messages ?? []) {
+  for (const message of activeConversation.value?.messages ?? []) {
     const lastGroup = groups[groups.length - 1]
-    const isMe = message.sender !== route.params.username
-
-    if (lastGroup && lastGroup.isMe === isMe) {
-      lastGroup.messages.push(message)
-    } else {
-      groups.push({ isMe: isMe, messages: [message] })
-    }
+    const isMe = message.sender !== props.selectedUser.username
+    if (lastGroup && lastGroup.isMe === isMe) lastGroup.messages.push(message)
+    else groups.push({ isMe, messages: [message] })
   }
-
   return groups
 })
 
@@ -104,29 +83,32 @@ const draft = ref('')
 
 function sendMessage(content?: string) {
   const text = (content ?? draft.value).trim()
-  const username = chat.activeConversation.value?.username
+  const username = props.selectedUser.username
+  if (!text) return
 
-  if (!text || !username) return
-  getSocket().emit('stop_typing', { to_username: username })
-  chat.sendMessage(username, text)
+  clearTimeout(typingTimeoutMs)
+  getSocket()?.emit('stop_typing', { to_username: username })
+  chatStore.sendMessage(username, text)
   draft.value = ''
 }
 
-let typingTimeoutMs: NodeJS.Timeout
+let typingTimeoutMs: ReturnType<typeof setTimeout>
 
 function onChatInput() {
-  const username = chat.activeConversation.value?.username
-
+  const username = props.selectedUser.username
   getSocket()?.emit('typing', { to_username: username })
-
   clearTimeout(typingTimeoutMs)
   typingTimeoutMs = setTimeout(() => {
-    getSocket().emit('stop_typing', { to_username: username })
+    getSocket()?.emit('stop_typing', { to_username: username })
   }, 2000)
 }
 
+async function onDelete(messageId: number) {
+  await chatStore.deleteMessage(props.selectedUser.username, messageId)
+}
+
 async function onReaction(payload: InternalReactionEmit) {
-  const username = route.params.username as string
+  const username = props.selectedUser.username
 
   try {
     if (payload.active) {
@@ -137,12 +119,6 @@ async function onReaction(payload: InternalReactionEmit) {
   } catch (e) {
     console.error('Erreur réaction :', e)
   }
-}
-
-async function onDelete(messageId: number) {
-  const username = route.params.username as string
-
-  await chat.deleteMessage(username, messageId)
 }
 
 const hoveredItem = ref<MouseEvent | null>(null)
@@ -160,55 +136,16 @@ const handleEmojiSelect = (emoji: SelectedEmoji) => {
 const isOpen = ref(false)
 
 watch(
-  () => route.params.username,
-  async () => {
-    await chat.fetchConversation(route.params.username as string)
-  },
+  () => props.selectedUser.username,
+  username => chatStore.fetchConversation(username),
   { immediate: true },
 )
 
-const onCreateMessage = (message: ChatMessage) => {
-  chat.activeConversation.value?.messages.push(message)
-}
-
-const onDeleteMessage = (message: { id: number }) => {
-  chat.activeConversation.value!.messages =
-    chat.activeConversation.value!.messages.filter(m => m.id != message.id)
-}
-
-const socket = getSocket()
-
-socket?.on('create_message', onCreateMessage)
-socket?.on('delete_message', onDeleteMessage)
-
-onMounted(async () => {
-  await chat.fetchConversation(route.params.username as string)
-})
-
-onBeforeUnmount(() => {
-  socket.off('create_message', onCreateMessage)
-  socket.off('delete_message', onDeleteMessage)
-})
+onBeforeUnmount(() => clearTimeout(typingTimeoutMs))
 </script>
 
 <template>
-  <div
-    v-if="route.params.username === undefined"
-    class="flex h-full min-h-0 flex-col"
-  >
-    <Empty>
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <MessagesCircleIcon />
-        </EmptyMedia>
-        <EmptyTitle>No conversation selected</EmptyTitle>
-        <EmptyDescription>
-          Select a conversation so that its content is displayed here
-        </EmptyDescription>
-      </EmptyHeader>
-    </Empty>
-  </div>
-  <div v-else class="flex h-full min-h-0 flex-col">
+  <div class="flex h-full min-h-0 flex-col">
     <header class="flex items-center gap-3 border-b px-4 py-3">
       <Button
         @click="router.push({ name: 'messages' })"
@@ -220,12 +157,12 @@ onBeforeUnmount(() => {
 
       <Avatar class="size-10">
         <AvatarImage
-          v-if="chat.activeConversation.value?.avatar"
-          :src="chat.activeConversation.value.avatar"
-          :alt="chat.activeConversation.value.username"
+          v-if="selectedUser.avatar"
+          :src="selectedUser.avatar"
+          :alt="selectedUser.username"
         />
         <AvatarFallback>{{
-          chat.activeConversation.value?.username.charAt(0).toUpperCase()
+          selectedUser.username.charAt(0).toUpperCase()
         }}</AvatarFallback>
       </Avatar>
       <div class="min-w-0">
@@ -233,7 +170,7 @@ onBeforeUnmount(() => {
           {{ displayName }}
         </p>
         <p class="text-muted-foreground truncate text-xs">
-          {{ chat.activeConversation.value?.username }}
+          {{ selectedUser.username }}
         </p>
       </div>
 
@@ -246,7 +183,7 @@ onBeforeUnmount(() => {
           <CalendarPlusIcon class="size-5" />
         </Button>
 
-        <MoreButton :username="chat.activeConversation.value?.username" />
+        <MoreButton :username="selectedUser.username" />
       </div>
     </header>
 
@@ -306,7 +243,7 @@ onBeforeUnmount(() => {
       v-if="isOtherTyping"
       class="shimmer px-4 pb-1 text-xs text-muted-foreground"
     >
-      {{ chat.activeConversation.value?.first_name }} is typing...
+      {{ selectedUser.first_name }} is typing...
     </div>
     <form class="border-t p-3" @submit.prevent="sendMessage()">
       <InputGroup>

@@ -1,7 +1,5 @@
 import { io, type Socket } from 'socket.io-client'
-import type { MessageData } from '@/types'
 import { useTypingStore } from '@/store/isTyping'
-import { useMessagesStore } from '@/store/messages'
 import { useAuth } from '@/composable/useAuth'
 
 let socket: Socket | null = null
@@ -25,7 +23,6 @@ export async function connectSocket(): Promise<void> {
   socket.on('connect', () => {
     console.log("WS Connected");
     const typingStore = useTypingStore();
-    const messageStore = useMessagesStore();
 
     socket!.on("typing", ({ from_username }) => {
       typingStore.addTypingUser(from_username);
