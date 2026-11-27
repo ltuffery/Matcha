@@ -1,60 +1,47 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import PeopleList from '@/components/chat/PeopleList.vue'
 import Conversation from '@/components/chat/Conversation.vue'
-import { useRoute } from 'vue-router'
-import { ApiClient } from '@/api/client'
-import type { User } from '@/api/auth'
-
-interface ChatUser {
-  username: string
-  email?: string
-  first_name?: string
-  last_name?: string
-  gender?: 'M' | 'F' | 'O'
-  biography?: string
-  birthday?: string
-  age?: number
-  photos?: string[]
-  tags?: string[]
-  avatar?: string
-  distance?: number
-  fame_rating?: number
-  me?: boolean
-  last_message?: { content: string; created_at: string }
-  unread?: number
-}
+import { useChatStore } from '@/store/useChatStore'
+import { getSocket } from '@/plugins/socket'
+import type { Message } from '@/api/chat'
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
+import { MessagesCircleIcon } from '@lucide/vue'
 
 const route = useRoute()
+const chatStore = useChatStore()
+const { matches } = storeToRefs(chatStore)
 
-const matches = ref<ChatUser[]>([])
-const people = ref<ChatUser[]>([])
-const selectedUser = ref<ChatUser>({
-  username: 'test',
-  avatar: 'https://github.com/shadcn.png',
-  first_name: 'Leo',
-  last_name: 'Tuffery',
+const selectedUser = computed(() => {
+  const username = route.params.username as string | undefined
+  if (!username) return null
+  return matches.value.find(m => m.username === username) ?? null
 })
 
-ApiClient.get('/users/me/matches')
-  .then(res => {
-    if (res.status() === 401) {
-      return []
-    }
+const socket = getSocket()
+const onCreateMessage = (message: Message) => chatStore.receiveMessage(message)
+const onDeleteMessage = (message: { id: number }) =>
+  chatStore.removeMessage(message.id)
 
-    return res.json()
-  })
-  .then((data: ChatUser[]) => {
-    for (const user of data) {
-      if (!user.last_message) matches.value.push(user)
-      else people.value.push(user)
-    }
-    people.value.sort(
-      (a, b) =>
-        new Date(b.last_message!.created_at).getTime() -
-        new Date(a.last_message!.created_at).getTime(),
-    )
-  })
+onMounted(() => {
+  chatStore.fetchMatches()
+  socket?.on('create_message', onCreateMessage)
+  socket?.on('delete_message', onDeleteMessage)
+})
+
+onBeforeUnmount(() => {
+  socket?.off('create_message', onCreateMessage)
+  socket?.off('delete_message', onDeleteMessage)
+  chatStore.clearActiveConversation()
+})
 </script>
 
 <template>
@@ -66,7 +53,7 @@ ApiClient.get('/users/me/matches')
         hidden: route.params.username != null,
       }"
     >
-      <PeopleList @change="console.log" :matches="matches" :people="people" />
+      <PeopleList />
     </div>
     <div
       class="w-full min-w-0 min-h-0 flex-col lg:flex"
@@ -76,9 +63,24 @@ ApiClient.get('/users/me/matches')
       }"
     >
       <Conversation
-        :user="selectedUser"
+        v-if="selectedUser"
+        :key="selectedUser.username"
+        :selected-user="selectedUser"
         class="min-w-0 overflow-x-hidden flex min-h-0"
       />
+      <div v-else class="flex h-full min-h-0 flex-col">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <MessagesCircleIcon />
+            </EmptyMedia>
+            <EmptyTitle>No conversation selected</EmptyTitle>
+            <EmptyDescription>
+              Select a conversation so that its content is displayed here
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      </div>
     </div>
   </div>
 </template>

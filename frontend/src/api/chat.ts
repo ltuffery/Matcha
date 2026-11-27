@@ -23,7 +23,8 @@ export interface MatchUser {
   avatar: string
   username: string
   first_name: string
-  last_message: string
+  last_name: string
+  last_message: Message | null
   unread: number
 }
 
